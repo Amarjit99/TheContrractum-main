@@ -20,6 +20,17 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6,
   },
+  // Profile fields
+  phone: { type: String, default: '' },
+  jobTitle: { type: String, default: '' },
+  company: { type: String, default: '' },
+  location: { type: String, default: '' },
+  bio: { type: String, default: '', maxlength: 500 },
+  website: { type: String, default: '' },
+  linkedin: { type: String, default: '' },
+  twitter: { type: String, default: '' },
+  avatar: { type: String, default: '' }, // URL or initials fallback
+  joinedDate: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 // Hash password before saving

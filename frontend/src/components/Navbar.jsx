@@ -252,10 +252,12 @@ export default function Navbar() {
           {/* Auth Button - Desktop */}
           {user ? (
             <div className="hidden lg:flex items-center gap-2 shrink-0 ml-2">
-              <span className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm">
-                {user.name?.charAt(0).toUpperCase()}
-              </span>
-              <span className="text-sm font-semibold text-gray-700 max-w-[100px] truncate">{user.name}</span>
+              <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition">
+                <span className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm">
+                  {user.name?.charAt(0).toUpperCase()}
+                </span>
+                <span className="text-sm font-semibold text-gray-700 max-w-[100px] truncate">{user.name}</span>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="px-3 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-600 font-semibold text-sm rounded-lg transition-all duration-200 whitespace-nowrap"
