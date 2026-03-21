@@ -1,8 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import location from "../assets/location.png";
 import phone from "../assets/phone.png";
 import email from "../assets/email.png";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const Registration = () => {
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus("success");
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setStatus("error");
+        setErrorMsg(data.error || "Something went wrong.");
+      }
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg("Could not reach the server. Please try again later.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       
@@ -29,11 +67,15 @@ const Registration = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="relative group">
               <input
                 type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
                 placeholder="Your Name"
+                required
                 className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
               />
             </div>
@@ -41,7 +83,11 @@ const Registration = () => {
             <div className="relative group">
               <input
                 type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
                 placeholder="Your Email"
+                required
                 className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
               />
             </div>
@@ -49,29 +95,47 @@ const Registration = () => {
             <div className="relative group">
               <input
                 type="text"
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
                 placeholder="Subject"
+                required
                 className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
               />
             </div>
 
             <div className="relative group">
               <textarea
+                name="message"
+                value={form.message}
+                onChange={handleChange}
                 placeholder="Your Message"
                 rows="4"
+                required
                 className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none"
               ></textarea>
             </div>
 
+            {/* Status feedback */}
+            {status === "success" && (
+              <p className="text-green-400 text-sm font-medium">✅ Message sent successfully! We'll get back to you soon.</p>
+            )}
+            {status === "error" && (
+              <p className="text-red-400 text-sm font-medium">❌ {errorMsg}</p>
+            )}
+
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-red-700 hover:to-pink-700 px-8 py-4 font-bold tracking-wide rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-1"
+                disabled={status === "loading"}
+                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-red-700 hover:to-pink-700 px-8 py-4 font-bold tracking-wide rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                SEND MESSAGE
+                {status === "loading" ? "SENDING..." : "SEND MESSAGE"}
               </button>
 
               <button
                 type="reset"
+                onClick={() => { setForm({ name: "", email: "", subject: "", message: "" }); setStatus(null); }}
                 className="px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300"
               >
                 RESET
@@ -152,8 +216,6 @@ const Registration = () => {
               </div>
             </div>
           </div>
-
-          
         </div>
       </div>
     </div>
