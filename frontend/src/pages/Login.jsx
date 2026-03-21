@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAdminAuth } from '../context/AdminAuthContext';
 
 export default function Login() {
   const { login } = useAuth();
+  const { setAdmin } = useAdminAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: '', password: '', remember: false });
@@ -20,8 +22,14 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(formData.email, formData.password);
-      navigate('/');
+      const u = await login(formData.email, formData.password);
+      if (u.role === 'admin') {
+        localStorage.setItem('adminUser', JSON.stringify(u));
+        setAdmin(u);
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
