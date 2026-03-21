@@ -1,6 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap, TrendingUp, Gift, FileText, ArrowLeft, Send } from "lucide-react";
+import { 
+  MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap, 
+  TrendingUp, Gift, FileText, ArrowLeft, Send, CheckCircle2, AlertCircle 
+} from "lucide-react";
 import { useState } from "react";
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function JobApplication() {
     const { jobId } = useParams();
@@ -9,9 +14,10 @@ export default function JobApplication() {
         fullName: "",
         email: "",
         phone: "",
-        resume: null,
+        resume: "",
         coverLetter: ""
     });
+    const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
     // Job data (in real app, fetch from API using jobId)
     const jobsData = {
@@ -206,13 +212,31 @@ export default function JobApplication() {
     };
 
     const handleFileChange = (e) => {
-        setFormData(prev => ({ ...prev, resume: e.target.files[0] }));
+        // Mock file upload as string for now
+        setFormData(prev => ({ ...prev, resume: e.target.files[0]?.name || '' }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Application submitted successfully! We will contact you soon.");
-        navigate("/careers/jobs");
+        setStatus({ loading: true, success: false, error: null });
+
+        try {
+            const res = await fetch(`${API}/api/cms/applications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formData,
+                    jobTitle: job.title
+                })
+            });
+
+            if (!res.ok) throw new Error('Submission failed');
+
+            setStatus({ loading: false, success: true, error: null });
+            setTimeout(() => navigate("/careers/jobs"), 2000);
+        } catch (err) {
+            setStatus({ loading: false, success: false, error: err.message });
+        }
     };
 
     return (
@@ -347,6 +371,19 @@ export default function JobApplication() {
                         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-6">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Apply for this position</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
+                                {status.success && (
+                                   <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3">
+                                     <CheckCircle2 size={20} />
+                                     <p className="font-semibold text-sm">Application submitted!</p>
+                                   </div>
+                                )}
+                                {status.error && (
+                                   <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-100 flex items-center gap-3">
+                                     <AlertCircle size={20} />
+                                     <p className="font-semibold text-sm">{status.error}</p>
+                                   </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                                         Full Name *
@@ -422,11 +459,18 @@ export default function JobApplication() {
                                 </div>
 
                                 <button
+                                    disabled={status.loading}
                                     type="submit"
-                                    className="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2"
+                                    className={`w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2 ${status.loading ? 'opacity-70' : ''}`}
                                 >
-                                    <Send size={18} />
-                                    Submit Application
+                                    {status.loading ? (
+                                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                    ) : (
+                                      <>
+                                        <Send size={18} />
+                                        Submit Application
+                                      </>
+                                    )}
                                 </button>
 
                                 <p className="text-xs text-gray-500 text-center">

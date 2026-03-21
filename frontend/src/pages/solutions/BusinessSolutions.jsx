@@ -1,3 +1,5 @@
+import DynamicServices from "../../components/DynamicServices";
+
 export default function BusinessSolutions() {
     const features = [
         { icon: "📊", title: "Strategic Planning", desc: "Data-driven business strategy" },
@@ -144,6 +146,9 @@ export default function BusinessSolutions() {
                     </button>
                 </div>
             </div>
+
+            {/* Dynamic Services Loop */}
+            <DynamicServices category="Business Solutions" />
         </div>
     );
 }

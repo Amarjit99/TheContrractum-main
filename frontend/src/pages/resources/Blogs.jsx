@@ -9,8 +9,32 @@ export default function Blogs() {
     const [searchQuery, setSearchQuery] = useState('');
     const [visiblePosts, setVisiblePosts] = useState(6);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [dbBlogs, setDbBlogs] = useState([]);
 
     const categories = ['All', 'Technology', 'Business', 'Innovation', 'Digital Transformation', 'AI & ML', 'Cybersecurity'];
+
+    // Fetch live blogs from DB
+    useEffect(() => {
+        const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        fetch(`${API}/api/cms/blogs`)
+            .then(res => res.json())
+            .then(data => {
+                // Formatting DB posts to match the static UI schema perfectly
+                const formatted = data.map(b => ({
+                    id: b._id,
+                    title: b.title,
+                    excerpt: b.excerpt || b.content || '...',
+                    author: b.author,
+                    date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    readTime: b.readTime || '5 min read',
+                    category: b.category,
+                    image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800'
+                }));
+                // Only show Published posts on public site
+                setDbBlogs(formatted.filter(b => data.find(raw => raw._id === b.id)?.status === 'Published'));
+            })
+            .catch(err => console.error("Error fetching blogs:", err));
+    }, []);
 
     // Handle scroll for scroll-to-top button
     useEffect(() => {
@@ -152,8 +176,11 @@ export default function Blogs() {
         }
     ];
 
+    // Combine database posts with legacy static posts
+    const allPosts = [...dbBlogs, ...blogPosts];
+
     // Filter by category and search
-    const filteredPosts = blogPosts.filter(post => {
+    const filteredPosts = allPosts.filter(post => {
         const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
         const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                              post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());

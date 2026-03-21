@@ -9,6 +9,12 @@ import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
 import AdminContacts from './pages/admin/Contacts';
+import AdminBlogs from './pages/admin/AdminBlogs';
+import AdminCareers from './pages/admin/AdminCareers';
+import AdminPartners from './pages/admin/AdminPartners';
+import AdminServices from './pages/admin/AdminServices';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import AdminSettings from './pages/admin/AdminSettings';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 
 /////////////////////// Company Pages//////////////////////////////////
@@ -101,127 +107,133 @@ import Location from './pages/contact/Location';
 export default function App() {
   return (
     <AdminAuthProvider>
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            {/* Admin Routes */}
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/contacts" element={<AdminContacts />} />
+      <Router>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              {/* Admin Routes */}
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/contacts" element={<AdminContacts />} />
+              <Route path="/admin/blogs" element={<AdminBlogs />} />
+              <Route path="/admin/careers" element={<AdminCareers />} />
+              <Route path="/admin/partners" element={<AdminPartners />} />
+              <Route path="/admin/services" element={<AdminServices />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
 
 
 
-{/* ///////////////////////// Company Routes///////////////////////// */}
-            <Route path="/company/about-us" element={<AboutUs />} />
-            <Route path="/company/about-us/vision" element={<Vision />} />
-            <Route path="/company/about-us/mission" element={<Mission />} />
-            <Route path="/company/about-us/values" element={<Value />} />
-            
-            <Route path="/company/leadership" element={<Leadership />} />
-            <Route path="/company/leadership/founders" element={<Founder />} />
-            <Route path="/company/leadership/management" element={<Leadership />} />
-            
-            <Route path="/company/our-journey" element={<OurJourney />} />
-            <Route path="/company/our-journey/timeline" element={<OurJourney />} />
-            
-            <Route path="/company/why-choose-us" element={<WhyChooseUs />} />
-            <Route path="/company/why-choose-us/innovation" element={<Innovation />} />
-            <Route path="/company/why-choose-us/reliability" element={<Reliability />} />
-            <Route path="/company/why-choose-us/scalability" element={<Scalability />} />
+              {/* ///////////////////////// Company Routes///////////////////////// */}
+              <Route path="/company/about-us" element={<AboutUs />} />
+              <Route path="/company/about-us/vision" element={<Vision />} />
+              <Route path="/company/about-us/mission" element={<Mission />} />
+              <Route path="/company/about-us/values" element={<Value />} />
 
-{/* ///////////////////////// team Routes///////////////////////// */}
-            <Route path="/team/core-team" element={<CoreTeam />} />
-            <Route path="/team/technical-experts" element={<TechnicalExperts />} />
-            <Route path="/team/industry-advisors" element={<IndustryAdvisors />} />
-            <Route path="/team/student-interns" element={<StudentInterns />} />
-            <Route path="/team/culture" element={<Culture />} />
+              <Route path="/company/leadership" element={<Leadership />} />
+              <Route path="/company/leadership/founders" element={<Founder />} />
+              <Route path="/company/leadership/management" element={<Leadership />} />
 
-{/* ///////////////////////// solutions Routes///////////////////////// */}
-            <Route path="/solutions/digital" element={<DigitalSolutions />} />
-            <Route path="/solutions/business/csit" element={<Csit />} />
-            <Route path="/solutions/business/gis" element={<Gissolution />} />
-            <Route path="/solutions/business/Mras" element={<MRASservies />} />
-            <Route path="/solutions/digital/e-commerce" element={<ECommerceSolutions />} />
-            <Route path="/solutions/digital/hrtech" element={<HrTech />} />
-            <Route path="/solutions/digital/bpo" element={<BPO />} />
-            <Route path="/solutions/connectivity/telecom" element={<TelecomSolutions />} />
-            <Route path="/solutions/connectivity/network-infra" element={<NetworkInfrastructure />} />
-            <Route path="/solutions/connectivity/cloud" element={<Cloud />} />
-            <Route path="/solutions/business" element={<BusinessSolutions />} />
-            <Route path="/solutions/connectivity" element={<ConnectivitySolutions />} />
+              <Route path="/company/our-journey" element={<OurJourney />} />
+              <Route path="/company/our-journey/timeline" element={<OurJourney />} />
 
+              <Route path="/company/why-choose-us" element={<WhyChooseUs />} />
+              <Route path="/company/why-choose-us/innovation" element={<Innovation />} />
+              <Route path="/company/why-choose-us/reliability" element={<Reliability />} />
+              <Route path="/company/why-choose-us/scalability" element={<Scalability />} />
 
-{/* ///////////////////////// industries Routes///////////////////////// */}
-            <Route path="/industries/government" element={<Government />} />
-            <Route path="/industries/healthcare" element={<Healthcare />} />
-            <Route path="/industries/education" element={<Education />} />
-            <Route path="/industries/retail" element={<Retail />} />
-            <Route path="/industries/telecom" element={<Telecom />} />
-            <Route path="/industries/banking" element={<Banking />} />
-            <Route path="/industries/manufacturing" element={<Manufacturing />} />
-            <Route path="/industries/agriculture" element={<Agriculture />} />
+              {/* ///////////////////////// team Routes///////////////////////// */}
+              <Route path="/team/core-team" element={<CoreTeam />} />
+              <Route path="/team/technical-experts" element={<TechnicalExperts />} />
+              <Route path="/team/industry-advisors" element={<IndustryAdvisors />} />
+              <Route path="/team/student-interns" element={<StudentInterns />} />
+              <Route path="/team/culture" element={<Culture />} />
+
+              {/* ///////////////////////// solutions Routes///////////////////////// */}
+              <Route path="/solutions/digital" element={<DigitalSolutions />} />
+              <Route path="/solutions/business/csit" element={<Csit />} />
+              <Route path="/solutions/business/gis" element={<Gissolution />} />
+              <Route path="/solutions/business/Mras" element={<MRASservies />} />
+              <Route path="/solutions/digital/e-commerce" element={<ECommerceSolutions />} />
+              <Route path="/solutions/digital/hrtech" element={<HrTech />} />
+              <Route path="/solutions/digital/bpo" element={<BPO />} />
+              <Route path="/solutions/connectivity/telecom" element={<TelecomSolutions />} />
+              <Route path="/solutions/connectivity/network-infra" element={<NetworkInfrastructure />} />
+              <Route path="/solutions/connectivity/cloud" element={<Cloud />} />
+              <Route path="/solutions/business" element={<BusinessSolutions />} />
+              <Route path="/solutions/connectivity" element={<ConnectivitySolutions />} />
 
 
-{/* ///////////////////////// Careers Routes///////////////////////// */}
-            <Route path="/careers/life" element={<Life />} />
-            <Route path="/careers/jobs" element={<JobOpenings />} />
-            <Route path="/careers/job-application/:jobId" element={<JobApplication />} />
-            <Route path="/careers/internships" element={<Internships />} />
-            <Route path="/careers/projects" element={<Projects />} />
-            <Route path="/careers/campus" element={<Campus />} />
-            <Route path="/careers/growth" element={<Growth />} />
-            <Route path="/careers/benefits" element={<Benefits />} />
+              {/* ///////////////////////// industries Routes///////////////////////// */}
+              <Route path="/industries/government" element={<Government />} />
+              <Route path="/industries/healthcare" element={<Healthcare />} />
+              <Route path="/industries/education" element={<Education />} />
+              <Route path="/industries/retail" element={<Retail />} />
+              <Route path="/industries/telecom" element={<Telecom />} />
+              <Route path="/industries/banking" element={<Banking />} />
+              <Route path="/industries/manufacturing" element={<Manufacturing />} />
+              <Route path="/industries/agriculture" element={<Agriculture />} />
 
 
-{/* ///////////////////////// projects Routes///////////////////////// */}
-            <Route path="/projects/ongoing" element={<Ongoing />} />
-            <Route path="/projects/:id" element={<ProjectDetails />} />
-            <Route path="/projects/completed" element={<Completed />} />
-            <Route path="/projects/completed/:id" element={<CompletedProjectDetails />} />
-            <Route path="/projects/case-studies" element={<CaseStudies />} />
-            <Route path="/projects/case-studies/:id" element={<CaseStudyDetails />} />
-            <Route path="/projects/research" element={<Research />} />
-            <Route path="/projects/testimonials" element={<Testimonials />} />
+              {/* ///////////////////////// Careers Routes///////////////////////// */}
+              <Route path="/careers/life" element={<Life />} />
+              <Route path="/careers/jobs" element={<JobOpenings />} />
+              <Route path="/careers/job-application/:jobId" element={<JobApplication />} />
+              <Route path="/careers/internships" element={<Internships />} />
+              <Route path="/careers/projects" element={<Projects />} />
+              <Route path="/careers/campus" element={<Campus />} />
+              <Route path="/careers/growth" element={<Growth />} />
+              <Route path="/careers/benefits" element={<Benefits />} />
 
 
-{/* ///////////////////////// Cresources Routes///////////////////////// */}
-            <Route path="/resources/blogs" element={<Blogs />} />
-            <Route path="/resources/blogs/:id" element={<BlogArticle />} />
-            <Route path="/resources/news" element={<News />} />
-            <Route path="/resources/events" element={<Events />} />
-            <Route path="/resources/csr" element={<CSR />} />
-            <Route path="/resources/whitepapers" element={<Whitepapers />} />
-            <Route path="/resources/reports" element={<Reports />} />
-            <Route path="/resources/media" element={<Media />} />
+              {/* ///////////////////////// projects Routes///////////////////////// */}
+              <Route path="/projects/ongoing" element={<Ongoing />} />
+              <Route path="/projects/:id" element={<ProjectDetails />} />
+              <Route path="/projects/completed" element={<Completed />} />
+              <Route path="/projects/completed/:id" element={<CompletedProjectDetails />} />
+              <Route path="/projects/case-studies" element={<CaseStudies />} />
+              <Route path="/projects/case-studies/:id" element={<CaseStudyDetails />} />
+              <Route path="/projects/research" element={<Research />} />
+              <Route path="/projects/testimonials" element={<Testimonials />} />
 
 
-{/* ///////////////////////// joins Routes///////////////////////// */}
-            <Route path="/join/partner" element={<Partner />} />
-            <Route path="/join/collaborate" element={<Collaborate />} />
-            <Route path="/join/startup" element={<Startup />} />
-            <Route path="/join/volunteer" element={<Volunteer />} />
+              {/* ///////////////////////// Cresources Routes///////////////////////// */}
+              <Route path="/resources/blogs" element={<Blogs />} />
+              <Route path="/resources/blogs/:id" element={<BlogArticle />} />
+              <Route path="/resources/news" element={<News />} />
+              <Route path="/resources/events" element={<Events />} />
+              <Route path="/resources/csr" element={<CSR />} />
+              <Route path="/resources/whitepapers" element={<Whitepapers />} />
+              <Route path="/resources/reports" element={<Reports />} />
+              <Route path="/resources/media" element={<Media />} />
+
+
+              {/* ///////////////////////// joins Routes///////////////////////// */}
+              <Route path="/join/partner" element={<Partner />} />
+              <Route path="/join/collaborate" element={<Collaborate />} />
+              <Route path="/join/startup" element={<Startup />} />
+              <Route path="/join/volunteer" element={<Volunteer />} />
 
 
 
-{/* ///////////////////////// Contact Routes///////////////////////// */}
-            <Route path="/contact/touch" element={<Touch />} />
-            <Route path="/contact/quote" element={<Quote />} />
-            <Route path="/contact/support" element={<Support />} />
-            <Route path="/contact/feedback" element={<Feedback />} />
-            <Route path="/contact/location" element={<Location />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+              {/* ///////////////////////// Contact Routes///////////////////////// */}
+              <Route path="/contact/touch" element={<Touch />} />
+              <Route path="/contact/quote" element={<Quote />} />
+              <Route path="/contact/support" element={<Support />} />
+              <Route path="/contact/feedback" element={<Feedback />} />
+              <Route path="/contact/location" element={<Location />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
     </AdminAuthProvider>
   );
 }

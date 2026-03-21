@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import {
   Linkedin,
   Twitter,
@@ -13,6 +14,10 @@ import {
 import VisitorCounter from "./VisitorCounter";
 
 const Footer = () => {
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/admin')) return null;
+
   return (
     <footer className="relative">
 

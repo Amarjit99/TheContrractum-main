@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { Search } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -45,72 +46,86 @@ export default function AdminUsers() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl font-black text-white">Users</h1>
-          <p className="text-gray-500 text-sm">{data.total} total users</p>
+          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+          <p className="text-gray-500 text-sm mt-1">{data.total} total registered users</p>
         </div>
-        <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-          placeholder="Search by name or email…"
-          className="px-4 py-2 bg-gray-800 border border-gray-700 text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-64" />
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input 
+            value={search} 
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search users..."
+            className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white" 
+          />
+        </div>
       </div>
 
-      {msg && <div className="mb-4 p-2 bg-green-900/40 border border-green-700 text-green-400 rounded-xl text-sm text-center">{msg}</div>}
+      {msg && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-medium shadow-sm animate-fade-in">
+          {msg}
+        </div>
+      )}
 
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-800 bg-gray-800/50">
-                <th className="text-left text-gray-400 font-semibold px-4 py-3">User</th>
-                <th className="text-left text-gray-400 font-semibold px-4 py-3 hidden md:table-cell">Joined</th>
-                <th className="text-left text-gray-400 font-semibold px-4 py-3">Role</th>
-                <th className="text-right text-gray-400 font-semibold px-4 py-3">Actions</th>
+            <thead className="bg-[#f8fafc] border-b border-gray-100">
+              <tr>
+                <th className="text-left text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">User Name</th>
+                <th className="text-left text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs hidden md:table-cell">Joined Date</th>
+                <th className="text-center text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Role</th>
+                <th className="text-right text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {loading ? (
-                <tr><td colSpan={4} className="py-10 text-center text-gray-600">Loading…</td></tr>
+                <tr><td colSpan={4} className="py-12 text-center text-gray-400 font-medium">Loading user data...</td></tr>
               ) : data.users?.length === 0 ? (
-                <tr><td colSpan={4} className="py-10 text-center text-gray-600">No users found.</td></tr>
+                <tr><td colSpan={4} className="py-12 text-center text-gray-400 font-medium">No users found.</td></tr>
               ) : data.users.map(u => (
-                <tr key={u._id} className="border-b border-gray-800 hover:bg-gray-800/30 transition">
-                  <td className="px-4 py-3">
+                <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-sm shrink-0 border border-blue-200">
                         {u.avatar
                           ? <img src={u.avatar} className="w-full h-full object-cover rounded-full" alt="" />
                           : u.name?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-white font-medium">{u.name}</p>
-                        <p className="text-gray-500 text-xs">{u.email}</p>
+                        <p className="text-gray-800 font-semibold">{u.name}</p>
+                        <p className="text-gray-500 text-xs mt-0.5">{u.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">
-                    {new Date(u.createdAt).toLocaleDateString('en-IN')}
+                  <td className="px-6 py-4 text-gray-500 text-sm hidden md:table-cell whitespace-nowrap">
+                    {new Date(u.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${u.role === 'admin' ? 'bg-red-900/40 text-red-400 border border-red-800' : 'bg-gray-800 text-gray-400'}`}>
-                      {u.role}
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
+                      u.role === 'admin' 
+                        ? 'bg-blue-50 text-[#1e5cdc] border border-blue-200' 
+                        : 'bg-gray-100 text-gray-500 border border-gray-200'
+                    }`}>
+                      {u.role.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-6 py-4 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-2">
                       {u.role === 'user' ? (
                         <button onClick={() => updateRole(u._id, 'admin')}
-                          className="px-2.5 py-1 text-xs font-semibold bg-red-900/30 text-red-400 border border-red-800 rounded-lg hover:bg-red-900/60 transition">
+                          className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200 rounded-md hover:bg-[#1e5cdc] hover:text-white hover:border-[#1e5cdc] transition-colors">
                           Make Admin
                         </button>
                       ) : (
                         <button onClick={() => updateRole(u._id, 'user')}
-                          className="px-2.5 py-1 text-xs font-semibold bg-gray-800 text-gray-400 border border-gray-700 rounded-lg hover:bg-gray-700 transition">
+                          className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200 rounded-md hover:bg-gray-200 transition-colors">
                           Demote
                         </button>
                       )}
                       <button onClick={() => deleteUser(u._id, u.name)}
-                        className="px-2.5 py-1 text-xs font-semibold bg-red-950 text-red-500 border border-red-900 rounded-lg hover:bg-red-900 transition">
+                        className="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 border border-red-100 rounded-md hover:bg-red-600 hover:text-white transition-colors">
                         Delete
                       </button>
                     </div>
@@ -123,15 +138,15 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         {data.pages > 1 && (
-          <div className="flex justify-between items-center px-4 py-3 border-t border-gray-800">
+          <div className="flex justify-between items-center px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <button disabled={page <= 1} onClick={() => setPage(p => p-1)}
-              className="px-3 py-1.5 text-xs font-semibold text-gray-400 bg-gray-800 rounded-lg disabled:opacity-40 hover:bg-gray-700 transition">
-              ← Prev
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+              Previous
             </button>
-            <span className="text-gray-500 text-xs">Page {page} of {data.pages}</span>
+            <span className="text-gray-500 text-sm font-medium">Page {page} of {data.pages}</span>
             <button disabled={page >= data.pages} onClick={() => setPage(p => p+1)}
-              className="px-3 py-1.5 text-xs font-semibold text-gray-400 bg-gray-800 rounded-lg disabled:opacity-40 hover:bg-gray-700 transition">
-              Next →
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+              Next Step
             </button>
           </div>
         )}
