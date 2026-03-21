@@ -31,6 +31,7 @@ app.get("/api/health", (req, res) => {
 // Feature routes
 app.use("/api/contact", require("./routes/contact"));
 app.use("/api/visitors", require("./routes/visitors"));
+app.use("/api/auth", require("./routes/auth"));
 
 // ---------- Start Server ----------
 app.listen(PORT, () => {

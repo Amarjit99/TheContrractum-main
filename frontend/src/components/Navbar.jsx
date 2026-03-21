@@ -1,10 +1,18 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [closeTimeout, setCloseTimeout] = useState(null);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const menuItems = [
     {
@@ -241,16 +249,31 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Login Button - Desktop */}
-          <Link
-            to="/login"
-            className="hidden lg:flex items-center gap-1.5 shrink-0 ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow transition-all duration-200 whitespace-nowrap"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-            </svg>
-            Login
-          </Link>
+          {/* Auth Button - Desktop */}
+          {user ? (
+            <div className="hidden lg:flex items-center gap-2 shrink-0 ml-2">
+              <span className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm">
+                {user.name?.charAt(0).toUpperCase()}
+              </span>
+              <span className="text-sm font-semibold text-gray-700 max-w-[100px] truncate">{user.name}</span>
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-600 font-semibold text-sm rounded-lg transition-all duration-200 whitespace-nowrap"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden lg:flex items-center gap-1.5 shrink-0 ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow transition-all duration-200 whitespace-nowrap"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Login
+            </Link>
+          )}
 
           {/* Mobile Menu Button */}
           <button
