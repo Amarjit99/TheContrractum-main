@@ -5,6 +5,11 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import AdminLogin from './pages/admin/AdminLogin';
+import Dashboard from './pages/admin/Dashboard';
+import AdminUsers from './pages/admin/Users';
+import AdminContacts from './pages/admin/Contacts';
+import { AdminAuthProvider } from './context/AdminAuthContext';
 
 /////////////////////// Company Pages//////////////////////////////////
 import AboutUs from './pages/company/AboutUs';
@@ -95,6 +100,7 @@ import Location from './pages/contact/Location';
 
 export default function App() {
   return (
+    <AdminAuthProvider>
     <Router>
       <div className="flex flex-col min-h-screen">
         <Navbar />
@@ -104,6 +110,11 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/contacts" element={<AdminContacts />} />
 
 
 
@@ -210,5 +221,6 @@ export default function App() {
         <Footer />
       </div>
     </Router>
+    </AdminAuthProvider>
   );
 }

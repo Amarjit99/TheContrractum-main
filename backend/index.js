@@ -33,6 +33,7 @@ app.use("/api/contact", require("./routes/contact"));
 app.use("/api/visitors", require("./routes/visitors"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/admin", require("./routes/admin"));
 
 // ---------- Start Server ----------
 app.listen(PORT, () => {
