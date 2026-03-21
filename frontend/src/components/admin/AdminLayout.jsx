@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 
@@ -13,6 +13,13 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (!admin) navigate('/admin/login', { replace: true });
+  }, [admin, navigate]);
+
+  if (!admin) return null; // Prevent flash of content before redirect
+
 
   const handleLogout = () => { logout(); navigate('/admin/login'); };
 

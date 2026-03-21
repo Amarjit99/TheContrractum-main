@@ -1,13 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 
 export default function AdminLogin() {
-  const { login } = useAdminAuth();
+  const { login, admin } = useAdminAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (admin) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [admin, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
