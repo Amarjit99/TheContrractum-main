@@ -23,7 +23,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
           {/* Header */}
@@ -84,7 +84,7 @@ export default function Login() {
                 </label>
               </div>
               <div className="text-sm">
-                <a href="#" className="text-primary hover:text-primary-light transition duration-300">
+                <a href="#" className="text-red-600 hover:text-red-800 transition duration-300">
                   Forgot password?
                 </a>
               </div>
@@ -93,7 +93,7 @@ export default function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-2xl transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-2xl transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
             >
               Sign In
             </button>
@@ -103,7 +103,7 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary hover:text-primary-light font-medium transition duration-300">
+              <Link to="/register" className="text-red-600 hover:text-red-800 font-medium transition duration-300">
                 Sign up
               </Link>
             </p>

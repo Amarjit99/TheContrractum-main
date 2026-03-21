@@ -68,17 +68,17 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+        <div className="bg-white rounded-2xl shadow-xl p-5 md:p-7">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
             <p className="text-gray-600">Join us today and get started</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* Full Name */}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -99,7 +99,7 @@ export default function Register() {
                 placeholder="John Doe"
               />
               {errors.fullName && (
-                <p className="mt-1 text-sm text-primary">{errors.fullName}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
               )}
             </div>
 
@@ -123,7 +123,7 @@ export default function Register() {
                 placeholder="you@example.com"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-primary">{errors.email}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
               )}
             </div>
 
@@ -147,7 +147,7 @@ export default function Register() {
                 placeholder="••••••••"
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-primary">{errors.password}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
             </div>
 
@@ -171,14 +171,14 @@ export default function Register() {
                 placeholder="••••••••"
               />
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-primary">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
               )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-2xl transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-2xl transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
             >
               Create Account
             </button>
@@ -188,7 +188,7 @@ export default function Register() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:text-primary-light font-medium transition duration-300">
+              <Link to="/login" className="text-red-600 hover:text-red-800 font-medium transition duration-300">
                 Sign in
               </Link>
             </p>
