@@ -11,24 +11,24 @@ export default function Navbar() {
       name: 'Home',
       path: '/'
     },
-    
-     {
-  name: 'Company',
-  submenu: [
-    { title: 'Our Vision', path: '/company/about-us/vision', items: [] },
-    { title: 'Our Mission', path: '/company/about-us/mission', items: [] },
-    { title: 'Our Values', path: '/company/about-us/values' , items: []},
 
-    { title: 'Founders & Directors', path: '/company/leadership/founders', items: [] },
-    { title: 'Management Team', path: '/company/leadership/management', items: [] },
+    {
+      name: 'Company',
+      submenu: [
+        { title: 'Our Vision', path: '/company/about-us/vision', items: [] },
+        { title: 'Our Mission', path: '/company/about-us/mission', items: [] },
+        { title: 'Our Values', path: '/company/about-us/values', items: [] },
 
-    { title: 'Our Journey', path: '/company/our-journey', items: [] },
-    { title: 'Company Timeline', path: '/company/our-journey/timeline', items: [] },
+        { title: 'Founders & Directors', path: '/company/leadership/founders', items: [] },
+        { title: 'Management Team', path: '/company/leadership/management', items: [] },
 
-    { title: 'Innovation', path: '/company/why-choose-us/innovation' , items: []},
-    { title: 'Reliability', path: '/company/why-choose-us/reliability', items: [] },
-    { title: 'Scalability', path: '/company/why-choose-us/scalability', items: [] }
-  ]
+        { title: 'Our Journey', path: '/company/our-journey', items: [] },
+        { title: 'Company Timeline', path: '/company/our-journey/timeline', items: [] },
+
+        { title: 'Innovation', path: '/company/why-choose-us/innovation', items: [] },
+        { title: 'Reliability', path: '/company/why-choose-us/reliability', items: [] },
+        { title: 'Scalability', path: '/company/why-choose-us/scalability', items: [] }
+      ]
 
     },
     {
@@ -161,7 +161,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Company Name */}
-          <Link to="/" className="flex items-center group -ml-8 transform hover:scale-110 transition-all duration-300">
+          <Link to="/" className="flex items-center group -ml-24 transform hover:scale-110 transition-all duration-300">
             <span className="text-3xl lg:text-4xl font-black">
               <span className="text-blue-600 drop-shadow-md">The</span>{" "}
               <span className="text-red-600 drop-shadow-md">Contractum</span>
@@ -240,6 +240,17 @@ export default function Navbar() {
               </div>
             ))}
           </div>
+
+          {/* Login Button - Desktop */}
+          <Link
+            to="/login"
+            className="hidden lg:flex items-center gap-1.5 shrink-0 ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow transition-all duration-200 whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            Login
+          </Link>
 
           {/* Mobile Menu Button */}
           <button
@@ -360,6 +371,20 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+
+            {/* Login Button - Mobile */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-3 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all duration-300"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Login
+              </Link>
+            </div>
           </div>
         </div>
       </div>
