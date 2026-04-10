@@ -1,7 +1,5 @@
-import p5 from "../../assets/p5.webp";
-import p6 from "../../assets/p6.webp";
-import p7 from "../../assets/p7.webp";
-import p8 from "../../assets/p8.webp";
+import DynamicServices from "../../components/DynamicServices";
+
 export default function DigitalSolutions() {
     const features = [
         { icon: "🌍", title: "Global Coverage", desc: "Serve customers across 150+ countries" },
@@ -138,25 +136,24 @@ export default function DigitalSolutions() {
                 </div>
             </div>
 
+            {/* Dynamic Services from CMS */}
+            <DynamicServices category="Digital Solutions" />
+
             {/* CTA Section – Professional Dark */}
-<div className="bg-blue-900 py-20">
-  <div className="max-w-5xl mx-auto px-6 text-center text-white">
-
-    <h2 className="text-3xl sm:text-4xl font-semibold mb-4 text-white">
-      Ready to Transform Your Business?
-    </h2>
-
-    <p className="text-gray-100 text-sm sm:text-base mb-8 max-w-2xl mx-auto">
-      Contact our experts to discuss how our digital solutions can drive
-      your success and accelerate growth.
-    </p>
-
-    <button className="bg-white text-blue-900 font-medium px-8 py-3 rounded-lg shadow-md hover:bg-gray-100 transition">
-      Schedule Consultation
-    </button>
-
-  </div>
-</div>
+            <div className="bg-blue-900 py-20">
+              <div className="max-w-5xl mx-auto px-6 text-center text-white">
+                <h2 className="text-3xl sm:text-4xl font-semibold mb-4 text-white">
+                  Ready to Transform Your Business?
+                </h2>
+                <p className="text-gray-100 text-sm sm:text-base mb-8 max-w-2xl mx-auto">
+                  Contact our experts to discuss how our digital solutions can drive
+                  your success and accelerate growth.
+                </p>
+                <button className="bg-white text-blue-900 font-medium px-8 py-3 rounded-lg shadow-md hover:bg-gray-100 transition">
+                  Schedule Consultation
+                </button>
+              </div>
+            </div>
 
         </div>
     );

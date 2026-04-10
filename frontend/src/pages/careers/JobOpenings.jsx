@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Briefcase, Clock, Filter, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import join  from "../../assets/join.png"
@@ -6,6 +6,29 @@ import join  from "../../assets/join.png"
 export default function JobOpenings() {
     const [filterDepartment, setFilterDepartment] = useState("All");
     const [filterLocation, setFilterLocation] = useState("All");
+    const [dbJobs, setDbJobs] = useState([]);
+
+    // Fetch live jobs from DB
+    useEffect(() => {
+        const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        fetch(`${API}/api/cms/jobs`)
+            .then(res => res.json())
+            .then(data => {
+                const formatted = data.map(j => ({
+                    id: j._id,
+                    title: j.title,
+                    department: j.department,
+                    location: j.location,
+                    type: j.type,
+                    posted: j.posted || 'Today',
+                    tags: j.tags && j.tags.length > 0 ? j.tags : ['New'],
+                    status: j.status
+                }));
+                // Only show Active jobs on public site
+                setDbJobs(formatted.filter(j => j.status === 'Active'));
+            })
+            .catch(err => console.error("Error fetching jobs:", err));
+    }, []);
 
     const jobs = [
         {
@@ -58,7 +81,10 @@ export default function JobOpenings() {
     const departments = ["All", "Engineering", "Data Science", "Design", "Marketing"];
     const locations = ["All", "Bangalore", "Mumbai", "Delhi", "Remote"];
 
-    const filteredJobs = jobs.filter(job => {
+    // Combine database jobs with legacy static jobs
+    const allJobs = [...dbJobs, ...jobs];
+
+    const filteredJobs = allJobs.filter(job => {
         const matchDept = filterDepartment === "All" || job.department === filterDepartment;
         const matchLoc = filterLocation === "All" || job.location === filterLocation;
         return matchDept && matchLoc;

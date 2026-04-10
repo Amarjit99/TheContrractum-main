@@ -9,6 +9,7 @@ import p12 from "../../assets/p12.webp";
 import p13 from "../../assets/p13.webp";
 import p14 from "../../assets/p14.webp";
 import p15 from "../../assets/p15.webp";
+import DynamicServices from "../../components/DynamicServices";
 
 export default function ConnectivitySolutions() {
   const features = [
@@ -232,6 +233,9 @@ export default function ConnectivitySolutions() {
           </button>
         </div>
       </div>
+
+      {/* Dynamic Services Loop */}
+      <DynamicServices category="Connectivity" />
 
     </div>
   );

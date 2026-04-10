@@ -1,0 +1,90 @@
+const express = require('express');
+const Blog = require('../models/Blog');
+const Job = require('../models/Job');
+const Partner = require('../models/Partner');
+const Service = require('../models/Service');
+const JobApplication = require('../models/JobApplication');
+const { protect } = require('../middleware/auth');
+const { adminOnly } = require('../middleware/admin');
+
+const router = express.Router();
+
+// Helper to generate full CRUD routes for a specific Model
+const generateCRUDRoutes = (Model, pathName) => {
+  // Public GET all
+  router.get(`/${pathName}`, async (req, res) => {
+    try {
+      const items = await Model.find().sort({ createdAt: -1 });
+      res.json(items);
+    } catch (err) {
+      res.status(500).json({ message: `Failed to fetch ${pathName}` });
+    }
+  });
+
+  // Public GET single
+  router.get(`/${pathName}/:id`, async (req, res) => {
+    try {
+      const item = await Model.findById(req.params.id);
+      if (!item) return res.status(404).json({ message: 'Not found' });
+      res.json(item);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching item' });
+    }
+  });
+
+  // Protected POST create
+  router.post(`/${pathName}`, protect, adminOnly, async (req, res) => {
+    try {
+      const item = await Model.create(req.body);
+      res.status(201).json(item);
+    } catch (err) {
+      res.status(400).json({ message: `Failed to create ${pathName}`, error: err.message });
+    }
+  });
+
+  // Protected PUT update
+  router.put(`/${pathName}/:id`, protect, adminOnly, async (req, res) => {
+    try {
+      const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!item) return res.status(404).json({ message: 'Not found' });
+      res.json(item);
+    } catch (err) {
+      res.status(400).json({ message: 'Failed to update', error: err.message });
+    }
+  });
+
+  // Protected DELETE
+  router.delete(`/${pathName}/:id`, protect, adminOnly, async (req, res) => {
+    try {
+      const item = await Model.findByIdAndDelete(req.params.id);
+      if (!item) return res.status(404).json({ message: 'Not found' });
+      res.json({ message: 'Deleted successfully' });
+    } catch (err) {
+      res.status(500).json({ message: 'Failed to delete' });
+    }
+  });
+};
+
+// Generate standard routes
+generateCRUDRoutes(Blog, 'blogs');
+generateCRUDRoutes(Job, 'jobs');
+generateCRUDRoutes(Partner, 'partners');
+generateCRUDRoutes(Service, 'services');
+
+// Job Applications
+router.get('/applications', protect, adminOnly, async (req, res) => {
+  const apps = await JobApplication.find().sort({ createdAt: -1 });
+  res.json(apps);
+});
+
+router.post('/applications', async (req, res) => {
+  try {
+    const app = new JobApplication(req.body);
+    await app.save();
+    res.status(201).json(app);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+module.exports = router;

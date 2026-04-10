@@ -2,6 +2,9 @@ const express = require('express');
 const User = require('../models/User');
 const Contact = require('../models/Contact');
 const Visitor = require('../models/Visitor');
+const JobApplication = require('../models/JobApplication');
+const Partner = require('../models/Partner');
+const Blog = require('../models/Blog');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -13,16 +16,28 @@ router.use(protect, adminOnly);
 // GET /api/admin/stats — Dashboard overview numbers
 router.get('/stats', async (req, res) => {
   try {
-    const [totalUsers, totalContacts, totalVisitors] = await Promise.all([
+    const [
+      totalUsers, totalContacts, totalVisitors, 
+      totalApplications, totalPartners, totalBlogs
+    ] = await Promise.all([
       User.countDocuments(),
       Contact.countDocuments(),
       Visitor.countDocuments(),
+      JobApplication.countDocuments(),
+      Partner.countDocuments(),
+      Blog.countDocuments(),
     ]);
-    const recentUsers = await User.find().sort({ createdAt: -1 }).limit(5).select('-password');
-    const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(5);
-    res.json({ totalUsers, totalContacts, totalVisitors, recentUsers, recentContacts });
-  } catch {
-    res.status(500).json({ message: 'Failed to fetch stats' });
+    
+    const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(10);
+    const recentApplications = await JobApplication.find().sort({ createdAt: -1 }).limit(5);
+
+    res.json({ 
+      totalUsers, totalContacts, totalVisitors, 
+      totalApplications, totalPartners, totalBlogs,
+      recentContacts, recentApplications 
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch stats', error: err.message });
   }
 });
 

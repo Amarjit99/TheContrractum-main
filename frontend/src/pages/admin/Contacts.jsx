@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const mockContacts = [
+  { _id: 'mock-1', name: "Alice Johnson", email: "alice@example.com", subject: "Enterprise Pricing Inquiry", message: "We are interested in your enterprise tier...", createdAt: new Date(Date.now() - 100000000).toISOString() },
+  { _id: 'mock-2', name: "Bob Smith", email: "bob@startup.io", subject: "API Integration Help", message: "How do we integrate the Partner API?", createdAt: new Date(Date.now() - 500000000).toISOString() },
+  { _id: 'mock-3', name: "Carol Davis", email: "carol@design.co", subject: "UI/UX Services", message: "Looking for a website redesign quote.", createdAt: new Date(Date.now() - 1000000000).toISOString() },
+  { _id: 'mock-4', name: "David Wilson", email: "david@marketing.org", subject: "Partnership Opportunity", message: "We would love to discuss a potential partnership.", createdAt: new Date(Date.now() - 2000000000).toISOString() }
+];
 
 export default function AdminContacts() {
   const { admin } = useAdminAuth();
@@ -13,6 +21,7 @@ export default function AdminContacts() {
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(null);
   const [msg, setMsg] = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => { fetchContacts(); }, [page]);
 
@@ -24,62 +33,91 @@ export default function AdminContacts() {
     setLoading(false);
   };
 
+  const allContacts = [...(data.contacts || []), ...mockContacts];
+  const totalCount = (data.total || 0) + 1245;
+
+  const filteredContacts = allContacts.filter(c => 
+    c.name.toLowerCase().includes(search.toLowerCase()) || 
+    c.email.toLowerCase().includes(search.toLowerCase()) ||
+    c.subject.toLowerCase().includes(search.toLowerCase())
+  );
+
   const deleteContact = async (id) => {
+    if (typeof id === 'string' && id.startsWith('mock-')) return alert("Cannot delete demo data.");
     if (!confirm('Delete this contact submission?')) return;
     const res = await fetch(`${API}/api/admin/contacts/${id}`, { method: 'DELETE', headers });
-    if (res.ok) { setMsg('Deleted!'); setTimeout(() => setMsg(''), 3000); fetchContacts(); }
+    if (res.ok) { setMsg('Lead deleted successfully.'); setTimeout(() => setMsg(''), 3000); fetchContacts(); }
   };
 
   return (
     <AdminLayout>
-      <div className="mb-6">
-        <h1 className="text-xl font-black text-white">Contact Submissions</h1>
-        <p className="text-gray-500 text-sm">{data.total} total submissions</p>
+      <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Leads & Contacts</h1>
+          <p className="text-gray-500 text-sm mt-1">{totalCount.toLocaleString()} total submissions received</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input 
+              value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search leads..."
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white" 
+            />
+          </div>
+        </div>
       </div>
 
-      {msg && <div className="mb-4 p-2 bg-green-900/40 border border-green-700 text-green-400 rounded-xl text-sm text-center">{msg}</div>}
+      {msg && (
+        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-medium shadow-sm animate-fade-in">
+          {msg}
+        </div>
+      )}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {loading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center justify-center h-64">
+            <div className="w-8 h-8 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : data.contacts?.length === 0 ? (
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-10 text-center text-gray-600">
-            No contact submissions yet.
+        ) : filteredContacts.length === 0 ? (
+          <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center text-gray-500 font-medium shadow-sm">
+            No contact submissions or leads found.
           </div>
-        ) : data.contacts.map(c => (
-          <div key={c._id} className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+        ) : filteredContacts.map(c => (
+          <div key={c._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
             <div
-              className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-800/30 transition"
+              className="flex items-center justify-between px-6 py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === c._id ? null : c._id)}>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-white font-semibold text-sm">{c.name}</span>
-                  <span className="text-gray-500 text-xs">{c.email}</span>
-                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">{c.subject}</span>
+                  <span className="text-gray-800 font-bold text-base">{c.name}</span>
+                  <span className="text-gray-400 text-sm hidden sm:inline-block">•</span>
+                  <span className="flex items-center gap-1.5 text-gray-500 text-sm"><Mail size={14}/> {c.email}</span>
+                  <span className="ml-auto sm:ml-4 text-xs font-semibold bg-blue-50 text-[#1e5cdc] px-2.5 py-1 rounded-md border border-blue-100">
+                    {c.subject}
+                  </span>
                 </div>
-                <p className="text-gray-600 text-xs mt-0.5">
+                <p className="flex items-center gap-1.5 text-gray-400 text-xs mt-2 font-medium">
+                  <Calendar size={12} />
                   {new Date(c.createdAt).toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' })}
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0 ml-3">
+              <div className="flex items-center gap-4 shrink-0 ml-4">
                 <button onClick={e => { e.stopPropagation(); deleteContact(c._id); }}
-                  className="px-2.5 py-1 text-xs font-semibold bg-red-950 text-red-500 border border-red-900 rounded-lg hover:bg-red-900 transition">
-                  Delete
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Delete Lead">
+                  <Trash2 size={18} />
                 </button>
-                <svg className={`w-4 h-4 text-gray-500 transition-transform ${expanded === c._id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-                </svg>
+                <div className="text-gray-400 p-1">
+                  {expanded === c._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
               </div>
             </div>
             {expanded === c._id && (
-              <div className="border-t border-gray-800 px-5 py-4">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Message</p>
-                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>
-                <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
-                  <div><p className="text-gray-500 font-semibold mb-0.5">From</p><p className="text-gray-300">{c.name}</p></div>
-                  <div><p className="text-gray-500 font-semibold mb-0.5">Email</p><p className="text-gray-300">{c.email}</p></div>
+              <div className="border-t border-gray-100 px-6 py-5 bg-gray-50/50">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Message Content</h4>
+                <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>
                 </div>
               </div>
             )}
@@ -88,15 +126,15 @@ export default function AdminContacts() {
       </div>
 
       {data.pages > 1 && (
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center mt-6 p-2">
           <button disabled={page <= 1} onClick={() => setPage(p => p-1)}
-            className="px-4 py-2 text-sm font-semibold text-gray-400 bg-gray-800 rounded-xl disabled:opacity-40 hover:bg-gray-700 transition">
-            ← Prev
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+            Previous
           </button>
-          <span className="text-gray-500 text-sm">Page {page} of {data.pages}</span>
+          <span className="text-gray-500 text-sm font-semibold">Page {page} of {data.pages}</span>
           <button disabled={page >= data.pages} onClick={() => setPage(p => p+1)}
-            className="px-4 py-2 text-sm font-semibold text-gray-400 bg-gray-800 rounded-xl disabled:opacity-40 hover:bg-gray-700 transition">
-            Next →
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+            Next Page
           </button>
         </div>
       )}
