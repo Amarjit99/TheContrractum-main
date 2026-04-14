@@ -148,6 +148,8 @@ export default function Volunteer() {
             quote: "Through this volunteer program, I've discovered my passion for education and community service. Highly recommended!",
             image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80"
         },
+    ];
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Section */}
