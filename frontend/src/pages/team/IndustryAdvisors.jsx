@@ -46,9 +46,11 @@ export default function IndustryAdvisors() {
                         <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
                             Guiding our journey with decades of experience and strategic foresight from world-class industry leaders
                         </p>
-                        <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                            Meet Our Advisors
-                        </button>
+                        <Link to="/team/advisors-details">
+                            <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
+                                Meet Our Advisors
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -115,7 +117,7 @@ export default function IndustryAdvisors() {
                     <p className="text-slate-200 text-lg sm:text-xl mb-10 leading-relaxed max-w-2xl mx-auto">
                         We value wisdom and experience. If you're an industry veteran looking to make an impact, let's talk.
                     </p>
-                    <Link to="/join/partner">
+                    <Link to="/team/become-advisor">
                         <button className="bg-white text-purple-900 hover:bg-slate-100 font-black py-4 px-10 rounded-xl transition-all transform hover:scale-105 shadow-2xl inline-flex items-center gap-3">
                             <Users className="w-5 h-5" />
                             Become an Advisor

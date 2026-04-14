@@ -1,24 +1,53 @@
 import { GraduationCap, Briefcase, Star, Rocket, Users, Sparkles, BookOpen, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import intern from "../../assets/intern.webp";
+import venkateshImg from "../../assets/venkatesh.jpeg";
+import ankitImg from "../../assets/ankit.png";
+
+import { useState, useEffect } from 'react';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function StudentInterns() {
-    const interns = [
+    const [interns, setInterns] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchInterns = async () => {
+            try {
+                const res = await fetch(`${API}/api/interns`);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    setInterns(data);
+                } else {
+                    // Fallback to static data if DB is empty
+                    setInterns(staticInterns);
+                }
+            } catch (err) {
+                console.error("Failed to fetch interns:", err);
+                setInterns(staticInterns);
+            }
+            setLoading(false);
+        };
+        fetchInterns();
+    }, []);
+
+    const staticInterns = [
         {
-            name: "Aryan Gupta",
-            role: "Frontend Developer Intern",
-            school: "IIT Delhi",
-            image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=400",
+            name: "Puttoju Venkatesh",
+            role: "Software Web Development Project Intern",
+            school: "Pondicherry University",
+            image: venkateshImg,
             quote: "Working on real-world projects from day one has been an incredible learning curve.",
-            tags: ["React", "UI/UX", "Web Performance"],
+            tags: ["React", "Express.js", "Web Devolopement", "MongoDB", "Node.js"],
         },
         {
-            name: "Sneha Patel",
-            role: "Data Science Intern",
-            school: "BITS Pilani",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
+            name: "Ankit Kumar",
+            role: "Software Developer Intern",
+            school: "Pondicherry University",
+            image: ankitImg,
             quote: "The mentorship here is unmatched. I've learned more in 3 months than a year of college.",
-            tags: ["Python", "Pandas", "Machine Learning"],
+            tags: ["Python", "React", "Web Devolopement", "MongoDB", "Node.js"],
         },
         {
             name: "Rahul Singh",
@@ -54,9 +83,11 @@ export default function StudentInterns() {
                         <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
                             Fueling growth, innovation, and fresh perspectives. Meet the bright minds shaping tomorrow.
                         </p>
-                        <button className="bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold px-10 py-4 rounded-xl hover:from-orange-700 hover:to-red-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                            Join Our Team
-                        </button>
+                        <Link to="/contact/touch">
+                            <button className="bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold px-10 py-4 rounded-xl hover:from-orange-700 hover:to-red-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
+                                Join Our Team
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -82,7 +113,7 @@ export default function StudentInterns() {
                                 <div className="md:flex">
                                     <div className="md:w-1/3 h-64 md:h-auto relative overflow-hidden">
                                         <img
-                                            src={intern.image}
+                                            src={intern.image && intern.image.startsWith('/') ? `${API}${intern.image}` : intern.image}
                                             alt={intern.name}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
@@ -100,14 +131,14 @@ export default function StudentInterns() {
 
                                         <div className="flex items-center gap-2 text-slate-600 text-sm mb-4 bg-slate-100 w-fit px-3 py-1.5 rounded-lg">
                                             <GraduationCap size={16} />
-                                            <span className="font-semibold">{intern.school}</span>
+                                            <span className="font-semibold">{intern.collegeName || intern.school}</span>
                                         </div>
 
                                         <div className="bg-orange-50 p-4 rounded-xl mb-4 relative border-l-4 border-orange-500">
                                             <div className="absolute top-3 right-3">
                                                 <QuoteIcon className="text-orange-200 w-6 h-6" />
                                             </div>
-                                            <p className="text-slate-700 italic text-sm leading-relaxed">"{intern.quote}"</p>
+                                            <p className="text-slate-700 italic text-sm leading-relaxed">"{intern.description || intern.quote}"</p>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2">

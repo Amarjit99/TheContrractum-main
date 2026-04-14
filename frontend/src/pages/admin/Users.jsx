@@ -25,15 +25,11 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10`, { headers });
+    // Fetch only regular users
+    const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10&role=user`, { headers });
     const d = await res.json();
     setData(d);
     setLoading(false);
-  };
-
-  const updateRole = async (id, role) => {
-    const res = await fetch(`${API}/api/admin/users/${id}/role`, { method: 'PUT', headers, body: JSON.stringify({ role }) });
-    if (res.ok) { showMsg('Role updated!'); fetchUsers(); } else showMsg('Failed to update role');
   };
 
   const deleteUser = async (id, name) => {
@@ -48,7 +44,7 @@ export default function AdminUsers() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">User & Employee Management</h1>
           <p className="text-gray-500 text-sm mt-1">{data.total} total registered users</p>
         </div>
         <div className="relative">
@@ -103,27 +99,12 @@ export default function AdminUsers() {
                     {new Date(u.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${
-                      u.role === 'admin' 
-                        ? 'bg-blue-50 text-[#1e5cdc] border border-blue-200' 
-                        : 'bg-gray-100 text-gray-500 border border-gray-200'
-                    }`}>
-                      {u.role.toUpperCase()}
+                    <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-gray-100 text-gray-500 border border-gray-200">
+                      USER
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-2">
-                      {u.role === 'user' ? (
-                        <button onClick={() => updateRole(u._id, 'admin')}
-                          className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200 rounded-md hover:bg-[#1e5cdc] hover:text-white hover:border-[#1e5cdc] transition-colors">
-                          Make Admin
-                        </button>
-                      ) : (
-                        <button onClick={() => updateRole(u._id, 'user')}
-                          className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-200 rounded-md hover:bg-gray-200 transition-colors">
-                          Demote
-                        </button>
-                      )}
                       <button onClick={() => deleteUser(u._id, u.name)}
                         className="px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 border border-red-100 rounded-md hover:bg-red-600 hover:text-white transition-colors">
                         Delete

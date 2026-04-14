@@ -5,64 +5,40 @@ import { useEffect, useState } from "react";
 export default function OurClients() {
   const clients = [
     {
-      name: "HCL Technologies",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=500&h=400&fit=crop",
-    },
-    {
       name: "Meesho",
       image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&h=400&fit=crop",
     },
     {
-      name: "Amazon",
+      name: "HCL Technologies",
+      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=500&h=400&fit=crop",
+    },
+    {
+      name: "Amazon Seller Central",
       image: "https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=500&h=400&fit=crop",
     },
     {
-      name: "Infosys",
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&h=400&fit=crop",
-    },
-    {
-      name: "Wipro",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=400&fit=crop",
-    },
-    {
-      name: "TCS",
-      image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=500&h=400&fit=crop",
-    },
-    {
-      name: "Tech Mahindra",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=400&fit=crop",
-    },
-    {
-      name: "Cognizant",
-      image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=400&fit=crop",
-    },
-    {
-      name: "Accenture",
-      image: "https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=500&h=400&fit=crop",
-    },
-    {
-      name: "Capgemini",
-      image: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&h=400&fit=crop",
-    },
-    {
-      name: "IBM",
+      name: "IBM India Private Limited",
       image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=500&h=400&fit=crop",
     },
     {
-      name: "Microsoft",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=400&fit=crop",
+      name: "RICOH INNOVATIONS PRIVATE LIMITED",
+      image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=500&h=400&fit=crop",
     },
     {
-      name: "Google",
-      image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=500&h=400&fit=crop",
+      name: "Central Warehousing Corporation",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&h=400&fit=crop",
     },
     {
-      name: "Oracle",
+      name: "Food Corporation of India",
+      image: "https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=500&h=400&fit=crop",
+    },
+    {
+      name: "TOMTOM INDIA PRIVATE LIMITED",
+      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=400&fit=crop",
+    },
+    {
+      name: "HERE Technologies",
       image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=400&fit=crop",
-    },
-    {
-      name: "SAP",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop",
     },
   ];
 
@@ -85,11 +61,11 @@ export default function OurClients() {
   return (
     <section className="relative bg-gray-100 py-24 overflow-hidden">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-fixed opacity-10"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop')" }}
       ></div>
-      
+
       <div className="max-w-7xl mx-auto px-6 relative z-10">
 
         {/* Top Label */}

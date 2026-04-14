@@ -20,8 +20,15 @@ export default function AdminPartners() {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const [newPartner, setNewPartner] = useState({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   useEffect(() => { fetchPartners(); }, []);
 
@@ -54,26 +61,42 @@ export default function AdminPartners() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if(!newPartner.name) return alert("Please fill partner name");
-    
+    if (!newPartner.name || !newPartner.pointOfContact) return showToast('Please fill all required fields.', 'error');
+    setSubmitting(true);
     try {
       const res = await fetch(`${API}/api/cms/partners`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ ...newPartner, status: 'Active' })
       });
-      if(res.ok) {
-        fetchPartners();
+      if (res.ok) {
+        await fetchPartners();
         setIsModalOpen(false);
         setNewPartner({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '' });
+        showToast(`Partner "${newPartner.name}" enrolled successfully!`, 'success');
       } else {
-        alert("Failed to enroll partner");
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.message || 'Failed to enroll partner. Please try again.', 'error');
       }
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error. Please check your connection.', 'error');
+    }
+    setSubmitting(false);
   };
 
   return (
     <AdminLayout>
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed top-6 right-6 z-[100] px-5 py-3.5 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-3 animate-in slide-in-from-top-4 duration-300 ${
+          toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+        }`}>
+          <span>{toast.type === 'success' ? '✓' : '✗'}</span>
+          {toast.message}
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Partner Network</h1>
@@ -175,8 +198,10 @@ export default function AdminPartners() {
                 <input required type="text" value={newPartner.pointOfContact} onChange={e => setNewPartner({...newPartner, pointOfContact: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Jane Doe" />
               </div>
               <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm">Enroll Partner</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setNewPartner({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '' }); }} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button type="submit" disabled={submitting} className="px-5 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2">
+                  {submitting ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span> Enrolling...</> : 'Enroll Now'}
+                </button>
               </div>
             </form>
           </div>

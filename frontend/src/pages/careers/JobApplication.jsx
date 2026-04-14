@@ -1,210 +1,276 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { 
-  MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap, 
-  TrendingUp, Gift, FileText, ArrowLeft, Send, CheckCircle2, AlertCircle 
+import {
+    MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap,
+    TrendingUp, Gift, FileText, ArrowLeft, Send, CheckCircle2, AlertCircle, Loader2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { COUNTRIES } from "../../constants/countries";
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// ─── Common static content shown on every job application page ───
+const STATIC_BENEFITS = [
+    'Comprehensive Health Insurance (Medical, Dental, Vision)',
+    'Flexible working hours and hybrid/remote work options',
+    'Annual professional development & certification budget',
+    'Performance bonuses and growth-linked incentives',
+    'Collaborative culture with regular team events & outings',
+];
+
+const STATIC_APPLICATION_PROCESS = [
+    'Submit your application with resume and cover letter',
+    'Initial screening call with our HR team (15–20 mins)',
+    'Technical / domain-specific assessment or case study',
+    'Interview round with the hiring manager / team lead',
+    'Final round with leadership and culture-fit discussion',
+    'Offer letter and onboarding within 7 business days',
+];
+
+// Static job bios for the hardcoded careers (ids 1-9)
+const staticJobsData = {
+    1: {
+        title: "Senior Business Development Manager (BDM)",
+        company: "TheContrractum",
+        location: "India",
+        type: "Full-Time",
+        roles: [
+            "Identify and develop new business opportunities",
+            "Build and maintain strong client relationships",
+            "Lead contract negotiations and deal closures",
+            "Collaborate with internal teams to deliver solutions",
+            "Achieve monthly and quarterly revenue targets",
+        ],
+        skills: ["Sales Strategy", "Enterprise Sales", "CRM Tools", "Negotiation", "Leadership", "Market Research"],
+        qualification: "Bachelor's degree in Business, Management, or related field",
+        experience: "5+ years in BD/Sales with 2+ years in a senior role",
+        salary: "₹10,00,000 – ₹16,00,000 per annum + incentives",
+        benefits: [
+            "Performance-based incentives",
+            "Health Insurance",
+            "Travel allowances",
+            "Professional development budget",
+            "Flexible working hours",
+        ],
+    },
+    2: {
+        title: "Junior Business Development Manager (BDM)",
+        company: "TheContrractum",
+        location: "India",
+        type: "Full-Time",
+        roles: [
+            "Assist in identifying new business opportunities",
+            "Support senior BDM in maintaining client relationships",
+            "Conduct market research and competitor analysis",
+            "Prepare proposals and presentations",
+            "Achieve assigned sales targets",
+        ],
+        skills: ["B2B Sales", "Networking", "Communication", "Research", "MS Office"],
+        qualification: "Bachelor's degree in Business or related field",
+        experience: "1–3 years of sales or business development experience",
+        salary: "₹5,00,000 – ₹8,00,000 per annum + incentives",
+        benefits: [
+            "Performance bonuses",
+            "Health Insurance",
+            "Learning & development support",
+            "Collaborative work environment",
+        ],
+    },
+    3: {
+        title: "Content Writer (YTDP)",
+        company: "TheContrractum",
+        location: "Remote",
+        type: "Part-Time",
+        roles: [
+            "Create engaging and SEO-optimized content",
+            "Write blogs, articles, and social media posts",
+            "Support the Young Talent Development Program content needs",
+            "Proofread and edit content for accuracy and clarity",
+        ],
+        skills: ["Creative Writing", "SEO", "Research", "Editing", "Content Strategy"],
+        qualification: "Pursuing or completed any undergraduate degree",
+        experience: "Fresher or up to 1 year of writing experience",
+        salary: "Stipend based (Part-Time / YTDP)",
+        benefits: [
+            "Remote work flexibility",
+            "Certificate of internship",
+            "Mentorship from professionals",
+            "Portfolio-building opportunity",
+        ],
+    },
+    4: {
+        title: "Corporate Ambassador (YTDP)",
+        company: "TheContrractum",
+        location: "Remote",
+        type: "Part-Time",
+        roles: [
+            "Represent TheContrractum in college events and platforms",
+            "Build brand awareness among student communities",
+            "Coordinate with the marketing team for campaigns",
+            "Generate leads through referrals and networking",
+        ],
+        skills: ["Branding", "Communication", "Networking", "Social Media", "Presentation"],
+        qualification: "Currently enrolled in any undergraduate program",
+        experience: "No prior experience required",
+        salary: "Stipend + performance incentives",
+        benefits: [
+            "Flexible schedule",
+            "Certificate + letter of recommendation",
+            "Opportunity for pre-placement offer",
+        ],
+    },
+    5: {
+        title: "Social Media Marketer (YTDP)",
+        company: "TheContrractum",
+        location: "Remote",
+        type: "Part-Time",
+        roles: [
+            "Manage and grow social media profiles",
+            "Create creative content for Instagram, LinkedIn, Twitter",
+            "Track engagement metrics and produce reports",
+            "Run targeted social media campaigns",
+        ],
+        skills: ["Social Media Marketing", "Content Creation", "Analytics", "Canva", "Engagement Strategy"],
+        qualification: "Pursuing any degree; marketing background preferred",
+        experience: "0–1 year; personal social media presence is a plus",
+        salary: "Stipend + performance bonus",
+        benefits: [
+            "Remote & flexible working",
+            "Certificate of completion",
+            "Learn from experienced marketers",
+        ],
+    },
+    6: {
+        title: "Social Media Internship Program (YTDP)",
+        company: "TheContrractum",
+        location: "Worldwide",
+        type: "Internship",
+        roles: [
+            "Assist in social media strategy and execution",
+            "Create multimedia content for global platforms",
+            "Engage with international audiences",
+            "Analyse and report performance metrics",
+        ],
+        skills: ["Social Media", "Content Writing", "Canva / Adobe Tools", "Analytics", "Research"],
+        qualification: "Open to students worldwide (undergraduate / postgraduate)",
+        experience: "No experience required — training provided",
+        salary: "Unpaid internship with certificate",
+        benefits: [
+            "Global exposure and networking",
+            "Certificate + LOR",
+            "Mentorship program",
+            "Flexible time commitment",
+        ],
+    },
+    7: {
+        title: "Software Development Engineer (SDE I)",
+        company: "TheContrractum",
+        location: "Kota, Rajasthan",
+        type: "Full-Time",
+        roles: [
+            "Build and maintain front-end and back-end features",
+            "Write clean, well-documented code",
+            "Participate in code reviews",
+            "Collaborate with product and design teams",
+            "Debug and fix production issues",
+        ],
+        skills: ["React.js", "JavaScript", "Node.js", "MongoDB", "REST APIs", "Git"],
+        qualification: "B.Tech / B.E. in Computer Science or related field",
+        experience: "0–2 years of professional experience",
+        salary: "₹6,00,000 – ₹10,00,000 per annum",
+        benefits: [
+            "Health Insurance",
+            "Learning & certification budget",
+            "Modern tech stack",
+            "5-day work week",
+        ],
+    },
+    8: {
+        title: "Software Development Engineer (SDE II)",
+        company: "TheContrractum",
+        location: "Kota, Rajasthan",
+        type: "Full-Time",
+        roles: [
+            "Lead development of complex features end-to-end",
+            "Mentor SDE I engineers",
+            "Design scalable system architectures",
+            "Drive technical discussions and code quality",
+        ],
+        skills: ["System Design", "Node.js", "React.js", "PostgreSQL / MongoDB", "AWS", "Docker"],
+        qualification: "B.Tech / M.Tech in Computer Science or equivalent",
+        experience: "2–5 years of relevant development experience",
+        salary: "₹10,00,000 – ₹18,00,000 per annum",
+        benefits: [
+            "Health & wellness benefits",
+            "Remote work options",
+            "Performance bonuses",
+            "Stock options",
+            "Professional development",
+        ],
+    },
+    9: {
+        title: "SDE III - Backend Developer",
+        company: "TheContrractum",
+        location: "Kota, Rajasthan",
+        type: "Full-Time",
+        roles: [
+            "Architect and build highly scalable backend systems",
+            "Define technical standards and best practices",
+            "Lead backend team and review critical code",
+            "Optimise database performance and infrastructure",
+            "Collaborate with product on technical feasibility",
+        ],
+        skills: ["Scalability", "System Architecture", "Node.js", "Microservices", "Kubernetes", "AWS", "Redis"],
+        qualification: "B.Tech / M.Tech / MCA in CS or equivalent",
+        experience: "5+ years with 2+ years in senior backend role",
+        salary: "₹20,00,000 – ₹30,00,000 per annum",
+        benefits: [
+            "Executive health coverage",
+            "Flexible / hybrid work",
+            "ESOP / stock options",
+            "Conference & training budget",
+            "Relocation assistance",
+        ],
+    },
+};
 
 export default function JobApplication() {
     const { jobId } = useParams();
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        fullName: "",
-        email: "",
-        phone: "",
-        resume: "",
-        coverLetter: ""
-    });
+
+    const [job, setJob] = useState(null);
+    const [jobLoading, setJobLoading] = useState(true);
+    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: "", coverLetter: "" });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
-    // Job data (in real app, fetch from API using jobId)
-    const jobsData = {
-        1: {
-            title: "Senior Full Stack Engineer",
-            company: "TheContrractum",
-            location: "Bangalore, India",
-            type: "Full-Time",
-            roles: [
-                "Design, develop, and maintain scalable web applications",
-                "Collaborate with cross-functional teams to define and ship new features",
-                "Write clean, maintainable, and efficient code",
-                "Participate in code reviews and mentor junior developers",
-                "Optimize applications for maximum speed and scalability"
-            ],
-            skills: ["React.js", "Node.js", "AWS", "MongoDB", "RESTful APIs", "Git", "Agile/Scrum"],
-            qualification: "Bachelor's or Master's degree in Computer Science, Engineering, or related field",
-            experience: "5+ years of professional software development experience",
-            salary: "₹18,00,000 - ₹25,00,000 per annum",
-            benefits: [
-                "Health Insurance (Medical, Dental, Vision)",
-                "Flexible working hours and remote work options",
-                "Professional development and training budget",
-                "Paid time off and holidays",
-                "Performance bonuses and stock options",
-                "Gym membership and wellness programs"
-            ],
-            applicationProcess: [
-                "Submit your application with resume and cover letter",
-                "Initial screening call with HR (15-20 mins)",
-                "Technical assessment or coding challenge",
-                "Technical interview with engineering team",
-                "Final round with leadership team",
-                "Offer and onboarding"
-            ]
-        },
-        2: {
-            title: "Machine Learning Architect",
-            company: "TheContrractum",
-            location: "Remote",
-            type: "Full-Time",
-            roles: [
-                "Design and implement ML models and algorithms",
-                "Lead the development of AI/ML solutions",
-                "Build scalable ML pipelines and infrastructure",
-                "Collaborate with data engineers and product teams",
-                "Research and implement state-of-the-art ML techniques"
-            ],
-            skills: ["Python", "TensorFlow", "PyTorch", "Kubernetes", "Docker", "AWS/GCP", "MLOps"],
-            qualification: "Master's or Ph.D. in Computer Science, Machine Learning, or related field",
-            experience: "6+ years in ML/AI with 2+ years in architecture role",
-            salary: "₹25,00,000 - ₹35,00,000 per annum",
-            benefits: [
-                "Comprehensive health insurance",
-                "100% remote work flexibility",
-                "Annual conference and learning budget",
-                "Latest hardware and tools",
-                "Stock options and performance bonuses",
-                "Unlimited PTO policy"
-            ],
-            applicationProcess: [
-                "Submit application with resume and portfolio",
-                "HR screening call",
-                "Technical deep-dive interview",
-                "ML system design round",
-                "Leadership and culture fit interview",
-                "Offer and negotiation"
-            ]
-        },
-        3: {
-            title: "Product Designer (UI/UX)",
-            company: "TheContrractum",
-            location: "Mumbai, India",
-            type: "Full-Time",
-            roles: [
-                "Create user-centered designs for web and mobile applications",
-                "Conduct user research and usability testing",
-                "Develop wireframes, prototypes, and high-fidelity mockups",
-                "Collaborate with product managers and developers",
-                "Maintain and evolve design systems and guidelines"
-            ],
-            skills: ["Figma", "User Research", "Prototyping", "UI Design", "UX Design", "Design Systems", "HTML/CSS"],
-            qualification: "Bachelor's degree in Design, HCI, or related field",
-            experience: "3-5 years of product design experience",
-            salary: "₹12,00,000 - ₹18,00,000 per annum",
-            benefits: [
-                "Health and wellness benefits",
-                "Flexible work arrangements",
-                "Design tools and software licenses",
-                "Learning and development opportunities",
-                "Team outings and events",
-                "Competitive salary with annual reviews"
-            ],
-            applicationProcess: [
-                "Submit application with portfolio",
-                "Portfolio review",
-                "Design challenge (take-home)",
-                "Presentation and discussion of challenge",
-                "Team fit and final interview",
-                "Offer"
-            ]
-        },
-        4: {
-            title: "DevOps Engineer",
-            company: "TheContrractum",
-            location: "Bangalore, India",
-            type: "Full-Time",
-            roles: [
-                "Manage and optimize CI/CD pipelines",
-                "Maintain cloud infrastructure (AWS/Azure/GCP)",
-                "Implement monitoring, logging, and alerting systems",
-                "Automate deployment and infrastructure provisioning",
-                "Ensure system reliability, security, and performance"
-            ],
-            skills: ["Docker", "Kubernetes", "CI/CD", "Linux", "AWS", "Terraform", "Jenkins", "Git"],
-            qualification: "Bachelor's degree in Computer Science or related field",
-            experience: "3-5 years of DevOps or Infrastructure experience",
-            salary: "₹15,00,000 - ₹22,00,000 per annum",
-            benefits: [
-                "Health insurance coverage",
-                "Remote work flexibility",
-                "Certification and training support",
-                "Paid time off",
-                "Performance bonuses",
-                "Latest tech stack and tools"
-            ],
-            applicationProcess: [
-                "Submit application with resume",
-                "HR screening",
-                "Technical assessment",
-                "System design and troubleshooting round",
-                "Final interview with team lead",
-                "Offer and onboarding"
-            ]
-        },
-        5: {
-            title: "Marketing Manager",
-            company: "TheContrractum",
-            location: "Delhi, India",
-            type: "Full-Time",
-            roles: [
-                "Develop and execute marketing strategies",
-                "Manage digital marketing campaigns (SEO, SEM, Social Media)",
-                "Create compelling content and marketing materials",
-                "Analyze marketing metrics and ROI",
-                "Lead and mentor marketing team members"
-            ],
-            skills: ["SEO", "Content Strategy", "Google Analytics", "Social Media Marketing", "Marketing Automation", "Copywriting"],
-            qualification: "Bachelor's degree in Marketing, Business, or related field",
-            experience: "4-6 years of marketing experience with 2+ years in management",
-            salary: "₹10,00,000 - ₹16,00,000 per annum",
-            benefits: [
-                "Health insurance benefits",
-                "Flexible working hours",
-                "Professional development budget",
-                "Performance-based incentives",
-                "Travel opportunities",
-                "Collaborative work environment"
-            ],
-            applicationProcess: [
-                "Submit application with resume",
-                "Initial HR discussion",
-                "Marketing case study presentation",
-                "Interview with marketing leadership",
-                "Final round with executive team",
-                "Offer"
-            ]
-        }
-    };
+    useEffect(() => {
+        const loadJob = async () => {
+            setJobLoading(true);
 
-    const job = jobsData[jobId];
+            // Check if it's a numeric id (static job)
+            const numericId = parseInt(jobId, 10);
+            if (!isNaN(numericId) && staticJobsData[numericId]) {
+                setJob({ ...staticJobsData[numericId], _isStatic: true });
+                setJobLoading(false);
+                return;
+            }
 
-    if (!job) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Job not found</h2>
-                    <button
-                        onClick={() => navigate("/careers/jobs")}
-                        className="text-blue-600 hover:underline"
-                    >
-                        Back to Job Openings
-                    </button>
-                </div>
-            </div>
-        );
-    }
+            // Otherwise try to fetch from DB (dynamic job posted from admin)
+            try {
+                const res = await fetch(`${API}/api/cms/jobs/${jobId}`);
+                if (!res.ok) throw new Error('Not found');
+                const data = await res.json();
+                setJob({
+                    ...data,
+                    company: 'TheContrractum',
+                    _isStatic: false,
+                });
+            } catch {
+                setJob(null);
+            }
+            setJobLoading(false);
+        };
+        loadJob();
+    }, [jobId]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -212,32 +278,56 @@ export default function JobApplication() {
     };
 
     const handleFileChange = (e) => {
-        // Mock file upload as string for now
         setFormData(prev => ({ ...prev, resume: e.target.files[0]?.name || '' }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, success: false, error: null });
-
+        const phoneWithCode = `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`;
+        const submissionData = { ...formData, phone: phoneWithCode };
         try {
             const res = await fetch(`${API}/api/cms/applications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    jobTitle: job.title
-                })
+                body: JSON.stringify({ ...submissionData, jobTitle: job?.title })
             });
-
             if (!res.ok) throw new Error('Submission failed');
-
             setStatus({ loading: false, success: true, error: null });
             setTimeout(() => navigate("/careers/jobs"), 2000);
         } catch (err) {
             setStatus({ loading: false, success: false, error: err.message });
         }
     };
+
+    // Loading state
+    if (jobLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="animate-spin text-blue-600" size={40} />
+                    <p className="text-gray-500 font-medium">Loading job details...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Not found state
+    if (!job) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Job not found</h2>
+                    <p className="text-gray-500 mb-6">The job you're looking for may have been removed or the link is invalid.</p>
+                    <button onClick={() => navigate("/careers/jobs")} className="bg-blue-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-700 transition-all">
+                        Back to Job Openings
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const hasBio = (job.roles?.length > 0) || job.qualification || job.experience || job.salary;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -255,7 +345,7 @@ export default function JobApplication() {
                     <div className="flex flex-wrap gap-4 text-blue-100">
                         <div className="flex items-center gap-2">
                             <Briefcase size={18} />
-                            <span>{job.company}</span>
+                            <span>{job.company || 'TheContrractum'}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <MapPin size={18} />
@@ -265,6 +355,12 @@ export default function JobApplication() {
                             <Clock size={18} />
                             <span>{job.type}</span>
                         </div>
+                        {job.department && (
+                            <div className="flex items-center gap-2">
+                                <Briefcase size={18} />
+                                <span>{job.department}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -273,72 +369,91 @@ export default function JobApplication() {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Roles & Responsibilities */}
-                        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Briefcase className="text-blue-600" size={24} />
-                                <h2 className="text-2xl font-bold text-gray-900">Roles & Responsibilities</h2>
+
+                        {/* If no bio yet — show a message */}
+                        {!hasBio && (
+                            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+                                <p className="text-amber-700 font-semibold text-lg mb-1">Job details coming soon</p>
+                                <p className="text-amber-600 text-sm">The admin is still filling in the details for this role. Check back shortly!</p>
                             </div>
-                            <ul className="space-y-2">
-                                {job.roles.map((role, idx) => (
-                                    <li key={idx} className="flex gap-3 text-gray-700">
-                                        <span className="text-blue-600 font-bold">•</span>
-                                        <span>{role}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
+                        )}
+
+                        {/* Roles & Responsibilities */}
+                        {job.roles?.length > 0 && (
+                            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Briefcase className="text-blue-600" size={24} />
+                                    <h2 className="text-2xl font-bold text-gray-900">Roles & Responsibilities</h2>
+                                </div>
+                                <ul className="space-y-2">
+                                    {job.roles.map((role, idx) => (
+                                        <li key={idx} className="flex gap-3 text-gray-700">
+                                            <span className="text-blue-600 font-bold">•</span>
+                                            <span>{role}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
 
                         {/* Required Skills */}
-                        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Award className="text-blue-600" size={24} />
-                                <h2 className="text-2xl font-bold text-gray-900">Required Skills</h2>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {job.skills.map((skill, idx) => (
-                                    <span key={idx} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm">
-                                        {skill}
-                                    </span>
-                                ))}
-                            </div>
-                        </section>
+                        {job.skills?.length > 0 && (
+                            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Award className="text-blue-600" size={24} />
+                                    <h2 className="text-2xl font-bold text-gray-900">Required Skills</h2>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {job.skills.map((skill, idx) => (
+                                        <span key={idx} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm">
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
 
                         {/* Qualification */}
-                        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <GraduationCap className="text-blue-600" size={24} />
-                                <h2 className="text-2xl font-bold text-gray-900">Qualification</h2>
-                            </div>
-                            <p className="text-gray-700">{job.qualification}</p>
-                        </section>
+                        {job.qualification && (
+                            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <GraduationCap className="text-blue-600" size={24} />
+                                    <h2 className="text-2xl font-bold text-gray-900">Qualification</h2>
+                                </div>
+                                <p className="text-gray-700">{job.qualification}</p>
+                            </section>
+                        )}
 
                         {/* Experience */}
-                        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <TrendingUp className="text-blue-600" size={24} />
-                                <h2 className="text-2xl font-bold text-gray-900">Experience</h2>
-                            </div>
-                            <p className="text-gray-700">{job.experience}</p>
-                        </section>
+                        {job.experience && (
+                            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <TrendingUp className="text-blue-600" size={24} />
+                                    <h2 className="text-2xl font-bold text-gray-900">Experience</h2>
+                                </div>
+                                <p className="text-gray-700">{job.experience}</p>
+                            </section>
+                        )}
 
                         {/* Salary */}
-                        <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <DollarSign className="text-blue-600" size={24} />
-                                <h2 className="text-2xl font-bold text-gray-900">Salary / Compensation</h2>
-                            </div>
-                            <p className="text-gray-700 font-semibold text-lg">{job.salary}</p>
-                        </section>
+                        {job.salary && (
+                            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <DollarSign className="text-blue-600" size={24} />
+                                    <h2 className="text-2xl font-bold text-gray-900">Salary / Compensation</h2>
+                                </div>
+                                <p className="text-gray-700 font-semibold text-lg">{job.salary}</p>
+                            </section>
+                        )}
 
-                        {/* Benefits */}
+                        {/* Benefits — always shown (static/common) */}
                         <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                             <div className="flex items-center gap-3 mb-4">
                                 <Gift className="text-blue-600" size={24} />
                                 <h2 className="text-2xl font-bold text-gray-900">Benefits</h2>
                             </div>
                             <ul className="space-y-2">
-                                {job.benefits.map((benefit, idx) => (
+                                {(job.benefits?.length > 0 ? job.benefits : STATIC_BENEFITS).map((benefit, idx) => (
                                     <li key={idx} className="flex gap-3 text-gray-700">
                                         <span className="text-green-600 font-bold">✓</span>
                                         <span>{benefit}</span>
@@ -347,23 +462,22 @@ export default function JobApplication() {
                             </ul>
                         </section>
 
-                        {/* Application Process */}
+                        {/* Application Process — always shown (static/common) */}
                         <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                             <div className="flex items-center gap-3 mb-4">
                                 <FileText className="text-blue-600" size={24} />
                                 <h2 className="text-2xl font-bold text-gray-900">Application Process</h2>
                             </div>
                             <ol className="space-y-3">
-                                {job.applicationProcess.map((step, idx) => (
+                                {STATIC_APPLICATION_PROCESS.map((step, idx) => (
                                     <li key={idx} className="flex gap-3 text-gray-700">
-                                        <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">
-                                            {idx + 1}
-                                        </span>
+                                        <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{idx + 1}</span>
                                         <span>{step}</span>
                                     </li>
                                 ))}
                             </ol>
                         </section>
+
                     </div>
 
                     {/* Application Form Sidebar */}
@@ -372,104 +486,71 @@ export default function JobApplication() {
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Apply for this position</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {status.success && (
-                                   <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3">
-                                     <CheckCircle2 size={20} />
-                                     <p className="font-semibold text-sm">Application submitted!</p>
-                                   </div>
+                                    <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3">
+                                        <CheckCircle2 size={20} />
+                                        <p className="font-semibold text-sm">Application submitted!</p>
+                                    </div>
                                 )}
                                 {status.error && (
-                                   <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-100 flex items-center gap-3">
-                                     <AlertCircle size={20} />
-                                     <p className="font-semibold text-sm">{status.error}</p>
-                                   </div>
+                                    <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-100 flex items-center gap-3">
+                                        <AlertCircle size={20} />
+                                        <p className="font-semibold text-sm">{status.error}</p>
+                                    </div>
                                 )}
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Full Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="fullName"
-                                        value={formData.fullName}
-                                        onChange={handleInputChange}
-                                        required
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                                    <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="John Doe"
-                                    />
+                                        placeholder="John Doe" />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        required
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="john@example.com"
-                                    />
+                                        placeholder="john@example.com" />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Phone *
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="+91 98765 43210"
-                                    />
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                                    <div className="flex gap-2">
+                                        <select
+                                            name="countryIndex"
+                                            value={formData.countryIndex}
+                                            onChange={handleInputChange}
+                                            className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer"
+                                        >
+                                            {COUNTRIES.map((c, i) => (
+                                                <option key={i} value={i}>{c.code} ({c.iso})</option>
+                                            ))}
+                                        </select>
+                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                            placeholder="98765 43210" />
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Resume/CV *
-                                    </label>
-                                    <input
-                                        type="file"
-                                        name="resume"
-                                        onChange={handleFileChange}
-                                        required
-                                        accept=".pdf,.doc,.docx"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Resume/CV *</label>
+                                    <input type="file" name="resume" onChange={handleFileChange} required accept=".pdf,.doc,.docx"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                                     <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Cover Letter
-                                    </label>
-                                    <textarea
-                                        name="coverLetter"
-                                        value={formData.coverLetter}
-                                        onChange={handleInputChange}
-                                        rows="4"
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Letter</label>
+                                    <textarea name="coverLetter" value={formData.coverLetter} onChange={handleInputChange} rows="4"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                                        placeholder="Tell us why you're a great fit..."
-                                    />
+                                        placeholder="Tell us why you're a great fit..." />
                                 </div>
 
-                                <button
-                                    disabled={status.loading}
-                                    type="submit"
-                                    className={`w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2 ${status.loading ? 'opacity-70' : ''}`}
-                                >
+                                <button disabled={status.loading} type="submit"
+                                    className={`w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2 ${status.loading ? 'opacity-70' : ''}`}>
                                     {status.loading ? (
-                                      <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                        <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                                     ) : (
-                                      <>
-                                        <Send size={18} />
-                                        Submit Application
-                                      </>
+                                        <><Send size={18} /> Submit Application</>
                                     )}
                                 </button>
 

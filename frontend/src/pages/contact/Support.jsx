@@ -1,7 +1,64 @@
-import React from 'react';
-import { Mail, Phone, MessageCircle, Book, Clock, Headphones, Search, AlertCircle, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MessageCircle, Book, Clock, Headphones, Search, AlertCircle, CheckCircle, RefreshCcw } from 'lucide-react';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Support = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    category: '',
+    priority: '',
+    subject: '',
+    otherSubject: '',
+    description: ''
+  });
+
+  const [status, setStatus] = useState({ loading: false, error: null });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleReset = () => {
+    setFormData({
+      fullName: '',
+      email: '',
+      category: '',
+      priority: '',
+      subject: '',
+      otherSubject: '',
+      description: ''
+    });
+    setStatus({ loading: false, error: null });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ loading: true, error: null });
+
+    const submissionData = {
+      ...formData,
+      subject: formData.subject === "Others" ? formData.otherSubject : formData.subject,
+    };
+
+    try {
+      const res = await fetch(`${API}/api/support-tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionData)
+      });
+
+      if (!res.ok) throw new Error('Failed to submit ticket');
+
+      alert('Support ticket submitted successfully!');
+      handleReset();
+    } catch (err) {
+      setStatus({ loading: false, error: err.message });
+      alert('Error submitting ticket: ' + err.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -16,33 +73,37 @@ const Support = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-16">
-        
+
         {/* Quick Support Options */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">How Can We Help You?</h2>
-          <p className="text-gray-600 text-center mb-10">Choose your preferred support channel</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            
-            <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 p-6 group">
-              <div className="bg-gradient-to-br from-green-500 to-green-600 w-14 h-14 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Phone size={26} className="text-white" />
+        <div className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-black text-gray-900 mb-4 italic">How Can We Help You?</h2>
+            <p className="text-gray-500 font-light text-lg">Choose your preferred support channel for immediate assistance.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+            <div className="bg-white rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 p-10 group border border-slate-100 hover:border-blue-200 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:rotate-12 transition-transform">
+                <Phone size={28} className="text-white" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Phone Support</h3>
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">Speak with our expert support team</p>
-              <a href="tel:+919680534740" className="text-primary font-semibold text-sm hover:text-green-700 flex items-center gap-1">
-                Call Now <span>→</span>
+              <h3 className="text-2xl font-black text-gray-900 mb-2 italic">Phone Support</h3>
+              <p className="text-slate-500 text-sm mb-6 leading-relaxed font-light">Speak directly with our technical experts for real-time troubleshooting.</p>
+              <a href="tel:+919680534740" className="inline-flex items-center gap-2 text-blue-600 font-black text-sm uppercase tracking-widest hover:gap-4 transition-all group/link">
+                Call Now <span className="text-xl">→</span>
               </a>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-200 p-6 group">
-              <div className="bg-gradient-to-br from-purple-500 to-primary w-14 h-14 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Mail size={26} className="text-white" />
+            <div className="bg-white rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-500 p-10 group border border-slate-100 hover:border-blue-200 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:-rotate-12 transition-transform">
+                <Mail size={28} className="text-white" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Email Support</h3>
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">Detailed assistance via email</p>
-              <a href="mailto:info@thecontractum.com" className="text-primary font-semibold text-sm hover:text-primary-dark flex items-center gap-1">
-                Send Email <span>→</span>
+              <h3 className="text-2xl font-black text-gray-900 mb-2 italic">Email Support</h3>
+              <p className="text-slate-500 text-sm mb-6 leading-relaxed font-light">Send us a detailed request and we'll get back to you with a solution.</p>
+              <a href="mailto:info@thecontractum.com" className="inline-flex items-center gap-2 text-slate-800 font-black text-sm uppercase tracking-widest hover:gap-4 transition-all group/link">
+                Send Email <span className="text-xl">→</span>
               </a>
             </div>
 
@@ -50,145 +111,209 @@ const Support = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
           {/* Left Side - Submit Ticket Form */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-md border border-gray-200 p-8">
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Submit a Support Ticket</h2>
-              <p className="text-gray-600">Our team will review your request and respond within 2-4 business hours</p>
+          <div className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl border border-slate-50 p-10 lg:p-12 relative overflow-hidden">
+            <div className="mb-10">
+              <h2 className="text-4xl font-black text-gray-900 mb-2 italic">Submit a Support Ticket</h2>
+              <p className="text-slate-500 font-light text-lg">Our team typically responds within 2-4 business hours.</p>
             </div>
 
-            <form className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Full Name <span className="text-primary">*</span>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Full Name
                   </label>
                   <input
                     type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
-                    placeholder="Your name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
+                    placeholder="Enter your name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email Address <span className="text-primary">*</span>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Email Address
                   </label>
                   <input
                     type="email"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
                     placeholder="your@email.com"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Issue Category <span className="text-primary">*</span>
-                </label>
-                <select className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white" required>
-                  <option value="">Select a category</option>
-                  <option>Technical Issue</option>
-                  <option>Billing & Payment</option>
-                  <option>Account Access</option>
-                  <option>Feature Request</option>
-                  <option>Bug Report</option>
-                  <option>General Inquiry</option>
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Issue Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Technical Issue">Technical Issue</option>
+                    <option value="Billing & Payment">Billing & Payment</option>
+                    <option value="Account Access">Account Access</option>
+                    <option value="Feature Request">Feature Request</option>
+                    <option value="Bug Report">Bug Report</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Priority Level
+                  </label>
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
+                    required
+                  >
+                    <option value="">Select priority</option>
+                    <option value="Low - General question">Low - General question</option>
+                    <option value="Medium - Minor issue">Medium - Minor issue</option>
+                    <option value="High - Impacting work">High - Impacting work</option>
+                    <option value="Critical - System down">Critical - System down</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Priority Level <span className="text-primary">*</span>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                  Subject
                 </label>
-                <select className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white" required>
-                  <option value="">Select priority</option>
-                  <option>Low - General question</option>
-                  <option>Medium - Minor issue</option>
-                  <option>High - Impacting work</option>
-                  <option>Critical - System down</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Subject <span className="text-primary">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
-                  placeholder="Brief description of your issue"
+                <select
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
                   required
-                />
+                >
+                  <option value="">Select Subject</option>
+                  <option value="Internship">Internship</option>
+                  <option value="Mentorship">Mentorship</option>
+                  <option value="Counseling">Counseling</option>
+                  <option value="Job">Job</option>
+                  <option value="Others">Others</option>
+                </select>
               </div>
 
+              {formData.subject === "Others" && (
+                <div className="animate-fadeIn">
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Specify Subject
+                  </label>
+                  <input
+                    type="text"
+                    name="otherSubject"
+                    value={formData.otherSubject}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
+                    placeholder="Enter your subject"
+                    required
+                  />
+                </div>
+              )}
+
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description <span className="text-primary">*</span>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                  Description
                 </label>
                 <textarea
-                  rows="6"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all resize-none"
-                  placeholder="Please provide detailed information about your issue..."
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows="5"
+                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all resize-none"
+                  placeholder="Provide details about your inquiry..."
                   required
                 ></textarea>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Attachment (Optional)
-                </label>
-                <input
-                  type="file"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
-                />
-                <p className="text-xs text-gray-500 mt-1">Max file size: 10MB. Supported formats: PDF, PNG, JPG</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <button
+                  type="submit"
+                  disabled={status.loading}
+                  className="md:col-span-2 bg-slate-900 hover:bg-blue-600 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all duration-300 shadow-xl hover:shadow-blue-500/20 transform hover:-translate-y-1 active:scale-[0.98] flex items-center justify-center gap-3 group/btn disabled:opacity-50"
+                >
+                  {status.loading ? "Submitting..." : "Submit Support Ticket"}
+                  <span className="text-xl group-hover:translate-x-2 transition-transform">→</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-500 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
+                >
+                  <RefreshCcw size={16} /> Reset
+                </button>
               </div>
-
-              <button className="w-full bg-primary hover:bg-primary text-white py-4 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg">
-                Submit Ticket
-              </button>
             </form>
           </div>
 
           {/* Right Side - Info Sections */}
-          <div className="space-y-6">
-            
+          <div className="space-y-8">
+
             {/* Support Hours */}
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-md p-6 text-white">
-              <div className="flex items-center gap-3 mb-5">
-                <Headphones size={26} className="text-white" />
+            <div className="bg-slate-900 rounded-[2rem] shadow-2xl p-8 lg:p-10 text-white relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+
+              <div className="flex items-center gap-4 mb-10 relative z-10">
+                <div className="bg-blue-600 p-3 rounded-xl">
+                  <Clock size={24} className="text-white" />
+                </div>
                 <div>
-                  <h3 className="text-xl font-bold">Support Hours</h3>
-                  <p className="text-xs text-gray-300">When we're available</p>
+                  <h3 className="text-2xl font-black italic tracking-tight">Support Hours</h3>
+                  <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Global Availability</p>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="pb-4 border-b border-gray-700">
-                  <p className="text-sm text-gray-300 mb-1">Monday - Friday</p>
-                  <p className="text-2xl font-bold">9:00 AM - 6:00 PM</p>
-                  <p className="text-xs text-gray-400 mt-1">Indian Standard Time</p>
+
+              <div className="space-y-6 relative z-10">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group/card">
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-2">Weekdays</p>
+                  <p className="text-2xl font-black italic group-hover:text-blue-400 transition-colors">9:00 AM - 6:00 PM</p>
+                  <p className="text-[10px] text-slate-500 mt-1 italic">Monday to Friday (IST)</p>
                 </div>
-                <div className="pb-4 border-b border-gray-700">
-                  <p className="text-sm text-gray-300 mb-1">Saturday</p>
-                  <p className="text-2xl font-bold">10:00 AM - 4:00 PM</p>
-                  <p className="text-xs text-gray-400 mt-1">Indian Standard Time</p>
+
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group/card">
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-2">Saturdays</p>
+                  <p className="text-2xl font-black italic group-hover:text-blue-400 transition-colors">10:00 AM - 4:00 PM</p>
+                  <p className="text-[10px] text-slate-500 mt-1 italic">Extended Support (IST)</p>
                 </div>
-                <div className="bg-white/10 rounded-lg p-3">
-                  <p className="text-xs text-gray-200 leading-relaxed">
-                    <CheckCircle size={14} className="inline mr-1" />
-                    24/7 emergency support available for critical issues
+
+                <div className="p-4 bg-blue-600/20 rounded-xl border border-blue-600/30 flex items-center gap-3">
+                  <AlertCircle size={18} className="text-blue-400 shrink-0" />
+                  <p className="text-[10px] text-blue-100 font-bold leading-relaxed uppercase tracking-widest">
+                    24/7 Priority support for Enterprise Users
                   </p>
                 </div>
               </div>
             </div>
 
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[2rem] shadow-2xl p-10 text-white">
+              <h4 className="text-2xl font-black mb-4 italic tracking-tight">Urgent Issue?</h4>
+              <p className="text-blue-100 text-sm font-light leading-relaxed mb-6">If your system is down or you're facing a critical security issue, please call our emergency hotline immediately.</p>
+              <a href="tel:+919680534740" className="block text-center bg-white text-blue-600 py-4 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-blue-50 transition-colors shadow-lg">
+                Emergency Line
+              </a>
+            </div>
           </div>
-
         </div>
 
         {/* FAQ Section */}
@@ -197,7 +322,7 @@ const Support = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Frequently Asked Questions</h2>
             <p className="text-gray-600">Quick answers to help you get started</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             <div className="p-6 bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all">
               <h4 className="font-bold text-gray-900 mb-3 text-lg">How do I reset my password?</h4>

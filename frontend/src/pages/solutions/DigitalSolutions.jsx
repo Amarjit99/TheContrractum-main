@@ -1,4 +1,11 @@
 import DynamicServices from "../../components/DynamicServices";
+import { Link } from 'react-router-dom';
+import p5 from "../../assets/p5.webp";
+import p6 from "../../assets/p6.webp";
+import p7 from "../../assets/p7.webp";
+import p8 from "../../assets/p8.webp";
+
+
 
 export default function DigitalSolutions() {
     const features = [
@@ -21,9 +28,11 @@ export default function DigitalSolutions() {
                             <p className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed mb-6">
                                 Transform your business with cutting-edge digital technologies. Our comprehensive solutions drive innovation, efficiency, and growth.
                             </p>
-                            <button className="bg-primary hover:bg-primary-dark text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition text-sm sm:text-base">
+                            <Link to="/solutions/digital/e-commerce" className="bg-primary hover:bg-primary-dark text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition text-sm sm:text-base inline-block text-center">
                                 Get Started
-                            </button>
+                            </Link>
+
+
                         </div>
                         <img src={p5} alt="Digital Solutions" className="w-full h-auto rounded-lg shadow-lg" />
                     </div>
@@ -106,7 +115,38 @@ export default function DigitalSolutions() {
                 </div>
             </div>
 
+            {/* HR Tech Solutions */}
+            <div className="bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                        <img src={p7} alt="HR Tech" className="w-full h-auto rounded-lg shadow-lg order-2 md:order-1" />
+                        <div className="order-1 md:order-2">
+                            <p className="text-blue-500 font-bold text-xs sm:text-sm uppercase tracking-wide mb-2">Human Resources Technology</p>
+                            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4">HR Tech Solutions</h2>
+                            <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                                Streamline your HR operations with our comprehensive technology suite. From recruitment automation to performance management, we help you build and manage high-performing teams.
+                            </p>
+                            <ul className="space-y-3 mb-6">
+                                <li className="flex gap-3 text-sm sm:text-base text-slate-700">
+                                    <span className="text-blue-500 font-bold">✓</span> AI-powered recruitment
+                                </li>
+                                <li className="flex gap-3 text-sm sm:text-base text-slate-700">
+                                    <span className="text-blue-500 font-bold">✓</span> Talent management & analytics
+                                </li>
+                                <li className="flex gap-3 text-sm sm:text-base text-slate-700">
+                                    <span className="text-blue-500 font-bold">✓</span> Automated payroll processing
+                                </li>
+                            </ul>
+                            <Link to="/solutions/digital/hrtech" className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg transition text-sm sm:text-base inline-block text-center">
+                                Get Started
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* MRAS Services */}
+
             <div className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -149,9 +189,10 @@ export default function DigitalSolutions() {
                   Contact our experts to discuss how our digital solutions can drive
                   your success and accelerate growth.
                 </p>
-                <button className="bg-white text-blue-900 font-medium px-8 py-3 rounded-lg shadow-md hover:bg-gray-100 transition">
+                <Link to="/contact/request-demo" className="bg-white text-blue-900 font-medium px-8 py-3 rounded-lg shadow-md hover:bg-gray-100 transition inline-block text-center">
                   Schedule Consultation
-                </button>
+                </Link>
+
               </div>
             </div>
 

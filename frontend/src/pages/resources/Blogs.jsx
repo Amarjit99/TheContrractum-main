@@ -10,6 +10,8 @@ export default function Blogs() {
     const [visiblePosts, setVisiblePosts] = useState(6);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [dbBlogs, setDbBlogs] = useState([]);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [isSubscribing, setIsSubscribing] = useState(false);
 
     const categories = ['All', 'Technology', 'Business', 'Innovation', 'Digital Transformation', 'AI & ML', 'Cybersecurity'];
 
@@ -51,6 +53,32 @@ export default function Blogs() {
 
     const scrollToBlogs = () => {
         document.getElementById('blog-section')?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const handleSubscribe = async (e) => {
+        e.preventDefault();
+        if (isSubscribed || isSubscribing) return;
+
+        setIsSubscribing(true);
+        try {
+            const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${API}/api/subscription/subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                setIsSubscribed(true);
+            } else {
+                console.error("Subscription failed");
+            }
+        } catch (err) {
+            console.error("Error subscribing:", err);
+        } finally {
+            setIsSubscribing(false);
+        }
     };
 
     const blogPosts = [
@@ -222,12 +250,17 @@ export default function Blogs() {
                             >
                                 Explore Articles
                             </button>
-                            <a 
-                                href="#newsletter"
-                                className="px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 text-center"
+                            <button 
+                                onClick={handleSubscribe}
+                                disabled={isSubscribed || isSubscribing}
+                                className={`px-6 sm:px-8 py-3 sm:py-4 border-2 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-semibold ${
+                                    isSubscribed 
+                                    ? "bg-green-500/20 border-green-500/50 text-green-400 cursor-default" 
+                                    : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 active:scale-95"
+                                }`}
                             >
-                                Subscribe
-                            </a>
+                                {isSubscribing ? "Subscribing..." : isSubscribed ? "Subscribed" : "Subscribe"}
+                            </button>
                         </div>
                     </div>
 

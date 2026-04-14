@@ -1,238 +1,50 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, DollarSign, Users, Clock, CheckCircle, Target, TrendingUp } from "lucide-react";
-
-// Ongoing Projects Data (same as in Ongoing.jsx)
-const projectsData = [
-  {
-    id: 1,
-    title: "Smart City GIS Mapping System",
-    client: "Government Infrastructure Department",
-    category: "Government",
-    startDate: "January 2026",
-    expectedCompletion: "June 2026",
-    status: "In Progress",
-    progress: 70,
-    teamSize: 12,
-    budget: "$450,000",
-    technologies: ["React", "Node.js", "PostgreSQL", "GIS", "AWS"],
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=500&fit=crop",
-    description: "Development of an advanced GIS-based smart city monitoring platform to track infrastructure assets, road networks, utilities, and urban planning data in real-time with predictive analytics.",
-    keyFeatures: ["Real-time Tracking", "Predictive Analytics", "3D Mapping", "Mobile Access"],
-    priority: "High",
-    challenges: [
-      "Integration with legacy systems",
-      "Real-time data synchronization across multiple sources",
-      "Scalability to handle city-wide infrastructure data"
-    ],
-    milestones: [
-      { name: "Requirements Analysis", status: "Completed", date: "January 2026" },
-      { name: "System Design", status: "Completed", date: "February 2026" },
-      { name: "Development Phase 1", status: "In Progress", date: "March 2026" },
-      { name: "Testing & QA", status: "Pending", date: "May 2026" },
-      { name: "Deployment", status: "Pending", date: "June 2026" }
-    ],
-    objectives: [
-      "Develop comprehensive GIS mapping infrastructure",
-      "Implement real-time monitoring dashboards",
-      "Create predictive analytics models for city planning",
-      "Enable mobile access for field workers"
-    ]
-  },
-  {
-    id: 2,
-    title: "AI-Based Healthcare Analytics Platform",
-    client: "MedTech Solutions Inc.",
-    category: "Healthcare",
-    startDate: "December 2025",
-    expectedCompletion: "May 2026",
-    status: "In Progress",
-    progress: 55,
-    teamSize: 8,
-    budget: "$320,000",
-    technologies: ["Python", "TensorFlow", "React", "MongoDB", "Docker"],
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop",
-    description: "Building a predictive analytics system to assist doctors in early disease detection using AI models and real-time patient data processing with HIPAA compliance.",
-    keyFeatures: ["AI Diagnostics", "Patient Dashboard", "Secure Data", "Report Generation"],
-    priority: "High",
-    challenges: [
-      "HIPAA compliance and data security",
-      "Training AI models with diverse medical data",
-      "Integration with existing hospital systems"
-    ],
-    milestones: [
-      { name: "Data Collection & Preparation", status: "Completed", date: "December 2025" },
-      { name: "AI Model Development", status: "In Progress", date: "February 2026" },
-      { name: "Dashboard Development", status: "In Progress", date: "March 2026" },
-      { name: "Security Audit", status: "Pending", date: "April 2026" },
-      { name: "Launch", status: "Pending", date: "May 2026" }
-    ],
-    objectives: [
-      "Develop accurate AI diagnostic models",
-      "Create intuitive patient dashboards",
-      "Ensure HIPAA compliance throughout",
-      "Enable real-time data processing"
-    ]
-  },
-  {
-    id: 3,
-    title: "Enterprise Resource Planning (ERP) System",
-    client: "Global Manufacturing Corp.",
-    category: "Enterprise",
-    startDate: "November 2025",
-    expectedCompletion: "April 2026",
-    status: "In Progress",
-    progress: 80,
-    teamSize: 15,
-    budget: "$580,000",
-    technologies: ["React", "Java", "Oracle", "Spring Boot", "Kubernetes"],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    description: "Designing and implementing a full-scale ERP solution to manage finance, HR, inventory, supply chain, and production operations efficiently across multiple locations.",
-    keyFeatures: ["Multi-Module", "Cloud-Based", "Analytics", "Mobile App"],
-    priority: "Critical",
-    challenges: [
-      "Complex integration across multiple departments",
-      "Data migration from legacy systems",
-      "Multi-location synchronization"
-    ],
-    milestones: [
-      { name: "Requirements Gathering", status: "Completed", date: "November 2025" },
-      { name: "Core Module Development", status: "Completed", date: "January 2026" },
-      { name: "Integration & Testing", status: "In Progress", date: "March 2026" },
-      { name: "User Training", status: "Pending", date: "April 2026" },
-      { name: "Go-Live", status: "Pending", date: "April 2026" }
-    ],
-    objectives: [
-      "Unify all business operations in single platform",
-      "Enable real-time reporting and analytics",
-      "Improve operational efficiency by 40%",
-      "Facilitate multi-location management"
-    ]
-  },
-  {
-    id: 4,
-    title: "E-Commerce Marketplace Platform",
-    client: "RetailHub Ventures",
-    category: "E-Commerce",
-    startDate: "January 2026",
-    expectedCompletion: "July 2026",
-    status: "In Progress",
-    progress: 45,
-    teamSize: 10,
-    budget: "$280,000",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe", "Redis"],
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&h=500&fit=crop",
-    description: "Creating a scalable multi-vendor e-commerce platform with advanced search, real-time inventory management, and integrated payment processing.",
-    keyFeatures: ["Multi-Vendor", "Payment Gateway", "Inventory Sync", "Analytics"],
-    priority: "Medium",
-    challenges: [
-      "Managing multi-vendor operations",
-      "Real-time inventory synchronization",
-      "High-traffic scalability"
-    ],
-    milestones: [
-      { name: "Platform Architecture", status: "Completed", date: "January 2026" },
-      { name: "Vendor Portal Development", status: "In Progress", date: "March 2026" },
-      { name: "Payment Integration", status: "In Progress", date: "April 2026" },
-      { name: "Load Testing", status: "Pending", date: "June 2026" },
-      { name: "Launch", status: "Pending", date: "July 2026" }
-    ],
-    objectives: [
-      "Create seamless multi-vendor marketplace",
-      "Implement secure payment processing",
-      "Enable real-time inventory management",
-      "Support 10,000+ concurrent users"
-    ]
-  },
-  {
-    id: 5,
-    title: "Financial Management & Trading Platform",
-    client: "FinTech Innovations Ltd.",
-    category: "Finance",
-    startDate: "October 2025",
-    expectedCompletion: "March 2026",
-    status: "In Progress",
-    progress: 65,
-    teamSize: 9,
-    budget: "$410,000",
-    technologies: ["React", "Python", "PostgreSQL", "WebSocket", "AWS"],
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=500&fit=crop",
-    description: "Building a comprehensive financial management system with real-time trading capabilities, portfolio management, and risk assessment tools.",
-    keyFeatures: ["Real-Time Trading", "Portfolio Analytics", "Risk Management", "Compliance"],
-    priority: "High",
-    challenges: [
-      "Real-time data processing at scale",
-      "Financial compliance and regulations",
-      "High-frequency trading requirements"
-    ],
-    milestones: [
-      { name: "System Design", status: "Completed", date: "October 2025" },
-      { name: "Trading Engine Development", status: "Completed", date: "December 2025" },
-      { name: "Portfolio Management Module", status: "In Progress", date: "February 2026" },
-      { name: "Compliance Testing", status: "Pending", date: "March 2026" },
-      { name: "Launch", status: "Pending", date: "March 2026" }
-    ],
-    objectives: [
-      "Enable real-time trading capabilities",
-      "Provide comprehensive portfolio analytics",
-      "Implement advanced risk management",
-      "Ensure regulatory compliance"
-    ]
-  },
-  {
-    id: 6,
-    title: "Online Education & Learning Management System",
-    client: "EduTech Global",
-    category: "Education",
-    startDate: "December 2025",
-    expectedCompletion: "June 2026",
-    status: "In Progress",
-    progress: 50,
-    teamSize: 7,
-    budget: "$195,000",
-    technologies: ["React", "Node.js", "MySQL", "WebRTC", "S3"],
-    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=500&fit=crop",
-    description: "Developing a feature-rich LMS with live classes, interactive content, assessments, progress tracking, and certification management.",
-    keyFeatures: ["Live Classes", "Interactive Content", "Progress Tracking", "Certifications"],
-    priority: "Medium",
-    challenges: [
-      "Reliable video streaming for live classes",
-      "Interactive content engagement",
-      "Scalable assessment system"
-    ],
-    milestones: [
-      { name: "Platform Setup", status: "Completed", date: "December 2025" },
-      { name: "Live Class Integration", status: "In Progress", date: "February 2026" },
-      { name: "Content Management", status: "In Progress", date: "March 2026" },
-      { name: "Assessment System", status: "Pending", date: "May 2026" },
-      { name: "Launch", status: "Pending", date: "June 2026" }
-    ],
-    objectives: [
-      "Create engaging online learning experience",
-      "Enable live interactive classes",
-      "Implement comprehensive assessment system",
-      "Provide certification management"
-    ]
-  }
-];
+import { ArrowLeft, Calendar, DollarSign, Users, Clock, CheckCircle, Target, TrendingUp, RefreshCw } from "lucide-react";
 
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Find the project by ID
-  const project = projectsData.find(p => p.id === parseInt(id));
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // If project not found, show error
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/projects/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProject(data);
+        }
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchProject();
+  }, [id]);
+
+  if (loading) {
+      return (
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col items-center justify-center">
+              <RefreshCw className="animate-spin text-blue-600 mb-4" size={40} />
+              <p className="text-gray-500 font-semibold tracking-wide">Loading Case Study...</p>
+          </div>
+      );
+  }
+
   if (!project) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center bg-white p-10 rounded-2xl shadow-xl">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Project Not Found</h1>
+          <p className="text-slate-500 mb-6">The case study you are looking for does not exist or was removed.</p>
           <button
             onClick={() => navigate("/projects/ongoing")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all"
+            className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all font-semibold"
           >
-            Back to Projects
+            Back to All Projects
           </button>
         </div>
       </div>
@@ -363,6 +175,7 @@ export default function ProjectDetails() {
             </div>
 
             {/* Key Features */}
+            {project.keyFeatures && project.keyFeatures.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
               <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                 <div className="w-1 h-8 bg-blue-600 rounded"></div>
@@ -377,8 +190,10 @@ export default function ProjectDetails() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Project Objectives */}
+            {project.objectives && project.objectives.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
               <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                 <div className="w-1 h-8 bg-blue-600 rounded"></div>
@@ -393,8 +208,10 @@ export default function ProjectDetails() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Challenges */}
+            {project.challenges && project.challenges.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
               <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                 <div className="w-1 h-8 bg-blue-600 rounded"></div>
@@ -409,8 +226,10 @@ export default function ProjectDetails() {
                 ))}
               </div>
             </div>
+            )}
 
             {/* Project Milestones */}
+            {project.milestones && project.milestones.length > 0 && (
             <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
               <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                 <div className="w-1 h-8 bg-blue-600 rounded"></div>
@@ -441,6 +260,7 @@ export default function ProjectDetails() {
                 ))}
               </div>
             </div>
+            )}
           </div>
 
           {/* Right Column - Sidebar */}

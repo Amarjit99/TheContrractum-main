@@ -1,114 +1,38 @@
 import { useState, useEffect } from "react";
-
-// NEWS DATA STRUCTURE
-const newsData = [
-  {
-    id: 1,
-    title: "Exploring the Connection Between Gut Health and Mental Well-being",
-    category: "Health",
-    image: "https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=1200",
-    date: "2026-02-18",
-    featured: true,
-    description: "Recent studies reveal surprising links between gut microbiome and mental health, opening new treatment possibilities."
-  },
-  {
-    id: 2,
-    title: "Olympics 2026: The Athletes to Watch",
-    category: "Sport",
-    image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800",
-    date: "2026-02-17",
-    featured: false,
-    description: "Meet the rising stars who are expected to dominate the upcoming Olympic games."
-  },
-  {
-    id: 3,
-    title: "New Breakthrough in Cancer Research",
-    category: "Health",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800",
-    date: "2026-02-16",
-    featured: false,
-    description: "Scientists discover innovative treatment method showing promising results in clinical trials."
-  },
-  {
-    id: 4,
-    title: "Global Climate Summit 2026 Outcomes",
-    category: "World",
-    image: "https://images.unsplash.com/photo-1569163139394-de4798aa62b4?q=80&w=800",
-    date: "2026-02-15",
-    featured: false,
-    description: "World leaders reach historic agreement on carbon emission targets."
-  },
-  {
-    id: 5,
-    title: "Tech Giants Announce AI Collaboration",
-    category: "Business",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800",
-    date: "2026-02-14",
-    featured: false,
-    description: "Major technology companies form alliance to develop ethical AI standards."
-  },
-  {
-    id: 6,
-    title: "Election Results: Government Changes Course",
-    category: "Politics",
-    image: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?q=80&w=800",
-    date: "2026-02-13",
-    featured: false,
-    description: "Historic election brings new leadership and policy shifts across the nation."
-  },
-  {
-    id: 7,
-    title: "Understanding the Human Brain: New Insights",
-    category: "Health",
-    image: "https://images.unsplash.com/photo-1581090700227-1e8d44f11d9e?q=80&w=1200",
-    date: "2026-02-12",
-    featured: false,
-    description: "Neuroscience breakthrough reveals how memories are formed and retrieved."
-  },
-  {
-    id: 8,
-    title: "Stock Market Hits Record High",
-    category: "Business",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800",
-    date: "2026-02-11",
-    featured: false,
-    description: "Markets surge as tech sector leads unprecedented growth rally."
-  },
-  {
-    id: 9,
-    title: "World Cup Qualifiers: Surprising Upsets",
-    category: "Sport",
-    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800",
-    date: "2026-02-10",
-    featured: false,
-    description: "Underdog teams shock favorites in dramatic qualification matches."
-  },
-  {
-    id: 10,
-    title: "Mental Health Awareness Campaign Launched",
-    category: "Health",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800",
-    date: "2026-02-09",
-    featured: false,
-    description: "Global initiative aims to reduce stigma and improve access to mental health services."
-  }
-];
+import newsBrain from "../../assets/news_brain.png";
+import newsClimate from "../../assets/news_climate.png";
 
 export default function News() {
+  const [newsData, setNewsData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [email, setEmail] = useState("");
   const [visibleNews, setVisibleNews] = useState(8);
   const [showNavbar, setShowNavbar] = useState(true);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  const categories = ["All", "Health", "Sport", "Politics", "Business", "World"];
+  const categories = ["All", "Health", "Sport", "Politics", "Business", "World", "Technology", "Entertainment"];
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const res = await fetch(`${API}/api/news`);
+        const data = await res.json();
+        setNewsData(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to fetch news:", err);
+      }
+    };
+    fetchNews();
+  }, []);
 
   // Scroll detection for smart navbar
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Show navbar when at top
       if (currentScrollY < 10) {
         setShowNavbar(true);
@@ -119,12 +43,12 @@ export default function News() {
       } else {
         setShowNavbar(true); // Scrolling up
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
@@ -132,19 +56,38 @@ export default function News() {
   const filteredNews = newsData.filter(news => {
     const matchesCategory = selectedCategory === "All" || news.category === selectedCategory;
     const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         news.description.toLowerCase().includes(searchTerm.toLowerCase());
+      news.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const featuredNews = filteredNews.find(news => news.featured);
-  const sideNews = filteredNews.filter(news => !news.featured && news.category === "Sport").slice(0, 2);
-  const categoryNews = filteredNews.filter(news => !news.featured).slice(0, visibleNews);
+  const featuredNews = filteredNews.find(news => news.featured) || (filteredNews.length > 0 ? filteredNews[0] : null);
+  const featuredId = featuredNews ? (featuredNews._id || featuredNews.id) : null;
+  const sideNews = filteredNews.filter(news => (news._id || news.id) !== featuredId && news.category === "Sport").slice(0, 2);
+  const categoryNews = filteredNews.filter(news => (news._id || news.id) !== featuredId).slice(0, visibleNews);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (email) {
-      alert(`Thank you for subscribing with: ${email}`);
-      setEmail("");
+      try {
+        const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API}/api/subscription/newsletter`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, source: "News" }),
+        });
+
+        if (response.ok) {
+          setShowSuccessPopup(true);
+          setEmail("");
+          setTimeout(() => setShowSuccessPopup(false), 5000);
+        } else {
+          const data = await response.json();
+          alert(data.message || "Subscription failed");
+        }
+      } catch (err) {
+        console.error("Error subscribing:", err);
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -155,23 +98,31 @@ export default function News() {
 
   const getCategoryColor = (category) => {
     const colors = {
-      Health: "bg-primary",
+      Health: "bg-red-600",
       Sport: "bg-blue-600",
-      Politics: "bg-primary",
-      Business: "bg-green-600",
-      World: "bg-orange-600"
+      Politics: "bg-indigo-600",
+      Business: "bg-emerald-600",
+      World: "bg-amber-600",
+      Technology: "bg-cyan-600",
+      Entertainment: "bg-pink-600"
     };
-    return colors[category] || "bg-gray-600";
+    return colors[category] || "bg-slate-600";
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return newsBrain;
+    if (imagePath.startsWith("http")) return imagePath;
+    const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    return `${API}${imagePath}`;
   };
 
   return (
     <div className="bg-[#F9FAFB] min-h-screen">
 
       {/* HEADER - Smart Navbar */}
-      <header 
-        className={`bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm transition-transform duration-300 ${
-          showNavbar ? 'translate-y-0' : '-translate-y-full'
-        }`}
+      <header
+        className={`bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl font-bold tracking-wide">
@@ -183,16 +134,15 @@ export default function News() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`hover:text-blue-600 transition-colors ${
-                  selectedCategory === category ? "text-blue-600 font-bold" : ""
-                }`}
+                className={`hover:text-blue-600 transition-colors ${selectedCategory === category ? "text-blue-600 font-bold" : ""
+                  }`}
               >
                 {category}
               </button>
             ))}
           </nav>
 
-          <button 
+          <button
             onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
             className="bg-black text-white px-4 py-2 text-sm rounded hover:bg-primary transition-colors"
           >
@@ -212,10 +162,10 @@ export default function News() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
-            <svg 
-              className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -234,7 +184,7 @@ export default function News() {
             {/* Big Featured News */}
             <div className="md:col-span-2 relative rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300">
               <img
-                src={featuredNews.image}
+                src={getImageUrl(featuredNews.image)}
                 alt={featuredNews.title}
                 className="w-full h-[350px] object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -256,12 +206,11 @@ export default function News() {
               </div>
             </div>
 
-            {/* Side News */}
             <div className="flex flex-col gap-6">
               {sideNews.length > 0 ? sideNews.map((news) => (
-                <div key={news.id} className="flex gap-4 cursor-pointer group bg-white rounded-lg p-3 shadow hover:shadow-lg transition-shadow">
+                <div key={news._id || news.id} className="flex gap-4 cursor-pointer group bg-white rounded-lg p-3 shadow hover:shadow-lg transition-shadow">
                   <img
-                    src={news.image}
+                    src={getImageUrl(news.image)}
                     className="w-32 h-24 object-cover rounded-lg flex-shrink-0"
                     alt={news.title}
                   />
@@ -308,10 +257,10 @@ export default function News() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {categoryNews.map((news) => (
-                <div key={news.id} className="cursor-pointer group bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div key={news._id || news.id} className="cursor-pointer group bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="relative overflow-hidden">
                     <img
-                      src={news.image}
+                      src={getImageUrl(news.image)}
                       className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       alt={news.title}
                     />
@@ -396,9 +345,9 @@ export default function News() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 rounded text-black focus:ring-2 focus:ring-white/50 focus:outline-none"
+                className="w-full px-4 py-2 rounded text-black border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all"
               />
-              <button 
+              <button
                 type="submit"
                 className="w-full bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-100 transition-colors shadow"
               >
@@ -425,12 +374,12 @@ export default function News() {
       )}
 
       {/* FOOTER */}
-      <footer className="bg-primary text-white mt-16">
+      <footer className="bg-slate-900 text-white mt-16">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h2 className="text-2xl font-bold mb-4">
-                NEXUS <span className="text-primary">NEWS</span>
+                NEXUS <span className="text-blue-500">NEWS</span>
               </h2>
               <p className="text-gray-400 text-sm">
                 Your trusted source for breaking news and in-depth analysis.
@@ -441,7 +390,7 @@ export default function News() {
               <ul className="space-y-2 text-sm text-gray-400">
                 {categories.filter(c => c !== "All").map(category => (
                   <li key={category}>
-                    <button 
+                    <button
                       onClick={() => {
                         setSelectedCategory(category);
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -466,19 +415,19 @@ export default function News() {
             <div>
               <h3 className="font-bold mb-4">Follow Us</h3>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </a>
-                <a href="#" className="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-blue-400 transition-colors">
+                <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-400 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                   </svg>
                 </a>
-                <a href="#" className="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-primary-light transition-colors">
+                <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
+                    <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
                   </svg>
                 </a>
               </div>
@@ -489,7 +438,38 @@ export default function News() {
           </div>
         </div>
       </footer>
-
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all animate-bounce-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
+            <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll receive the latest updates directly in your inbox.</p>
+            <button 
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+            >
+              Great!
+            </button>
+          </div>
+          <style>{`
+            @keyframes bounce-in {
+              0% { opacity: 0; transform: scale(0.3); }
+              50% { opacity: 1; transform: scale(1.05); }
+              70% { transform: scale(0.9); }
+              100% { transform: scale(1); }
+            }
+            .animate-bounce-in {
+              animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

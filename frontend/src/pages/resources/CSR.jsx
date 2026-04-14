@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 // CSR Initiatives Data
 const csrInitiatives = [
@@ -200,6 +201,17 @@ export default function CSR() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [expandedCards, setExpandedCards] = useState(new Set());
+
+  const toggleCard = (id) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedCards(newExpanded);
+  };
 
   const categories = ["All", "Education", "Environment", "Healthcare", "Social", "Infrastructure", "Emergency"];
 
@@ -422,19 +434,38 @@ export default function CSR() {
 
                     <div className="mb-4">
                       <p className="text-xs font-bold text-slate-700 mb-2">UN SDG Goals:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {initiative.sdgGoals.map((goal, index) => (
                           <span key={index} className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-semibold border border-blue-200">
                             {goal}
                           </span>
                         ))}
                       </div>
+                      
+                      {expandedCards.has(initiative.id) && (
+                        <div className="space-y-3 mt-4 animate-fadeIn">
+                          <p className="text-xs font-bold text-emerald-800 border-t border-emerald-100 pt-3">Strategic Objectives:</p>
+                          <ul className="space-y-2">
+                            {initiative.goals.slice(0, 2).map((goal, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-xs text-slate-700">
+                                <svg className="w-4 h-4 text-emerald-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                {goal}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
 
-                    <button className="w-full bg-gradient-to-r from-primary to-primary-light text-white py-3 rounded-lg font-semibold hover:from-primary-dark hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                      <span>Learn More</span>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    <button 
+                      onClick={() => toggleCard(initiative.id)}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-3 rounded-lg font-bold hover:from-emerald-700 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <span>{expandedCards.has(initiative.id) ? "Show Less" : "Learn More"}</span>
+                      <svg className={`w-5 h-5 transition-transform duration-300 ${expandedCards.has(initiative.id) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
                   </div>
@@ -510,14 +541,31 @@ export default function CSR() {
                         ))}
                       </div>
 
+                      {expandedCards.has(initiative.id) && (
+                        <div className="mb-4 mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-100 animate-fadeIn">
+                          <p className="text-xs font-bold text-emerald-800 mb-2">Project Milestones:</p>
+                          <ul className="space-y-2">
+                            {initiative.goals.slice(2, 4).map((goal, idx) => (
+                              <li key={idx} className="flex items-center gap-2 text-xs text-slate-700">
+                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                                {goal}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
                       <div className="flex items-center justify-between border-t border-slate-200 pt-3">
                         <div className="text-xs text-slate-600">
                           <span className="font-semibold">Partners:</span> {initiative.partnerOrganizations.slice(0, 2).join(", ")}
                         </div>
-                        <button className="bg-primary text-white font-semibold text-sm hover:bg-primary-dark flex items-center gap-1 px-4 py-2 rounded">
-                          <span>View Details</span>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <button 
+                          onClick={() => toggleCard(initiative.id)}
+                          className="bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 flex items-center gap-1 px-4 py-2 rounded transition-colors shadow-sm"
+                        >
+                          <span>{expandedCards.has(initiative.id) ? "Close" : "View Details"}</span>
+                          <svg className={`w-4 h-4 transition-transform duration-300 ${expandedCards.has(initiative.id) ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
                       </div>
@@ -580,12 +628,15 @@ export default function CSR() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
                 Get Involved
               </button>
-              <button className="bg-transparent text-white px-8 py-4 rounded-lg font-bold hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 border-2 border-white">
+              <Link to="/resources/csr-report" className="bg-transparent text-white px-8 py-4 rounded-lg font-bold hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 border-2 border-white inline-block text-center whitespace-nowrap">
                 Download CSR Report
-              </button>
+              </Link>
             </div>
           </div>
         </div>

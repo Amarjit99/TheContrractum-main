@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Signal, Radio, Globe2, Wifi, Server, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import telecomImg from '../../assets/tele.jfif';
 
 export default function Telecom() {
+    const [showStart, setShowStart] = useState(false);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -33,11 +35,11 @@ export default function Telecom() {
                             Empowering telecom providers with 5G infrastructure, AI-driven network optimization, and seamless customer experience platforms.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
+                            <Link to="/company/leadership/management" className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
                                 Consult with Us
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/solutions/connectivity" className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg backdrop-blur-sm transition-all border border-white/10">
+                            <Link to="/solutions/connectivity/network-infra" className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-lg backdrop-blur-sm transition-all border border-white/10">
                                 Network Solutions
                             </Link>
                         </div>
@@ -163,13 +165,30 @@ export default function Telecom() {
                             <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                                 Partner with us to navigate the complexities of modern telecommunications.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/quote" className="px-8 py-4 bg-white text-blue-900 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-lg">
-                                    Get Started
-                                </Link>
-                                <Link to="/company/about-us" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors">
-                                    Our Expertise
-                                </Link>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <button
+                                        onClick={() => setShowStart(!showStart)}
+                                        className="px-8 py-4 bg-white text-blue-900 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-lg flex items-center justify-center gap-2"
+                                    >
+                                        Get Started
+                                        <ArrowRight size={20} className={`transition-transform duration-300 ${showStart ? 'rotate-90' : ''}`} />
+                                    </button>
+                                    <Link to="/team/technical-experts" className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center">
+                                        Our Expertise
+                                    </Link>
+                                </div>
+                                {showStart && (
+                                    <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-left w-full max-w-xl mx-auto animate-fade-in-up">
+                                        <h4 className="font-bold text-white mb-3 text-lg">Your Path to Next-Gen Networks:</h4>
+                                        <ol className="space-y-3 text-gray-200 list-decimal list-inside marker:text-blue-400 marker:font-bold">
+                                            <li><span className="font-semibold text-white">Discovery Call:</span> Assess current infrastructure and spectrum assets.</li>
+                                            <li><span className="font-semibold text-white">Topology Design:</span> Architect cloud-native 5G core migration plans.</li>
+                                            <li><span className="font-semibold text-white">Pilot Deployment:</span> Localized greenfield deployment and rigorous testing.</li>
+                                            <li><span className="font-semibold text-white">Global Rollout:</span> Scaled integration with zero-downtime guarantees.</li>
+                                        </ol>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

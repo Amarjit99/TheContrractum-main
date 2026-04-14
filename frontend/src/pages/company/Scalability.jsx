@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Zap, Globe, Shield, TrendingUp, RotateCw, DollarSign, Building2, Package, Database, Eye, FileText, Target, Settings, CheckCircle, BarChart, Layers, Server, ArrowRight, Star, Plus, ArrowLeftRight, Palette, Grid3x3 } from 'lucide-react';
 import ScalabilityBg from '../../assets/success.webp';
 
@@ -7,15 +8,21 @@ const Scalability = () => {
   const [expandedSection, setExpandedSection] = useState(null);
   const [selectedTab, setSelectedTab] = useState('infrastructure');
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [expandedFeature, setExpandedFeature] = useState(null);
+
+  const toggleFeature = (id) => {
+    if (expandedFeature === id) setExpandedFeature(null);
+    else setExpandedFeature(id);
+  };
 
   // Data structures
   const scalabilityFeatures = [
-    { id: 1, icon: 'zap', title: 'Lightning Fast', desc: 'Sub-100ms response times', detail: 'Optimized database queries and distributed caching' },
-    { id: 2, icon: 'globe', title: 'Global Reach', desc: 'Deploy worldwide', detail: 'Multi-region cloud infrastructure' },
-    { id: 3, icon: 'shield', title: 'Enterprise Secure', desc: 'Bank-level security', detail: 'End-to-end encryption and compliance' },
-    { id: 4, icon: 'barChart', title: 'Real-time Analytics', desc: 'Instant insights', detail: 'Live dashboards and predictive analytics' },
-    { id: 5, icon: 'rotateCw', title: 'Auto-Scaling', desc: 'Elastic capacity', detail: 'Automatic resource adjustment based on demand' },
-    { id: 6, icon: 'dollarSign', title: 'Cost Optimized', desc: '70% cost savings', detail: 'Pay-as-you-grow pricing model' }
+    { id: 1, icon: 'zap', title: 'Lightning Fast', desc: 'Sub-100ms response times', detail: 'Optimized database queries and distributed caching', points: ['CDN edge delivery network', 'In-memory data grid integration', 'GraphQL query optimization'] },
+    { id: 2, icon: 'globe', title: 'Global Reach', desc: 'Deploy worldwide', detail: 'Multi-region cloud infrastructure', points: ['Active-active multi-region deployment', 'Geo-based traffic routing', 'Localized data compliance'] },
+    { id: 3, icon: 'shield', title: 'Enterprise Secure', desc: 'Bank-level security', detail: 'End-to-end encryption and compliance', points: ['SOC 2 Type II compliance', 'Automated threat mitigation', 'Zero-trust architecture'] },
+    { id: 4, icon: 'barChart', title: 'Real-time Analytics', desc: 'Instant insights', detail: 'Live dashboards and predictive analytics', points: ['Sub-second data ingestion', 'Customizable reporting views', 'Anomaly detection alerts'] },
+    { id: 5, icon: 'rotateCw', title: 'Auto-Scaling', desc: 'Elastic capacity', detail: 'Automatic resource adjustment based on demand', points: ['Predictive scaling algorithms', 'Container orchestration', 'Zero-downtime provisioning'] },
+    { id: 6, icon: 'dollarSign', title: 'Cost Optimized', desc: '70% cost savings', detail: 'Pay-as-you-grow pricing model', points: ['Spot instance utilization', 'Automated resource sleeping', 'Granular cost allocation tags'] }
   ];
 
   const pillars = [
@@ -74,7 +81,7 @@ const Scalability = () => {
       {/* Hero with Background Image */}
       <section className="relative w-full h-[600px] flex items-center justify-center overflow-hidden" style={{ backgroundImage: `url(${ScalabilityBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-transparent"></div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 text-center">
           {/* <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-bold uppercase tracking-wider mb-4">Scalability</span> */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-tight drop-shadow-2xl">
@@ -83,16 +90,16 @@ const Scalability = () => {
           <p className="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
             Scale from thousands to millions of users with zero downtime. Enterprise-grade infrastructure meets affordability.
           </p>
-          
+
           <div className="flex flex-col md:flex-row gap-6 justify-center mb-12">
-            <button className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 hover:from-green-600 hover:to-emerald-600">
+            <Link to="/company/why-choose-us/scalability/start-scaling" className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 hover:from-green-600 hover:to-emerald-600">
               <span>Start Scaling</span>
               <ArrowRight className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center gap-3 px-10 py-4 bg-transparent border-2 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-xl hover:bg-white hover:text-green-600 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            </Link>
+            <Link to="/company/why-choose-us/scalability/architecture" className="inline-flex items-center gap-3 px-10 py-4 bg-transparent border-2 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-xl hover:bg-white hover:text-green-600 hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>View Architecture</span>
               <Layers className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
 
           {/* Quick Stats */}
@@ -125,25 +132,42 @@ const Scalability = () => {
             {scalabilityFeatures.map((feature) => {
               const IconComponent = feature.icon === 'zap' ? Zap : feature.icon === 'globe' ? Globe : feature.icon === 'shield' ? Shield : feature.icon === 'barChart' ? BarChart : feature.icon === 'rotateCw' ? RotateCw : DollarSign;
               return (
-              <div
-                key={feature.id}
-                onMouseEnter={() => setHoveredCard(feature.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className="group relative"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-cyan-400 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-                <div className="relative bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-green-400 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                  <div className="w-16 h-16 mb-4 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
-                  <p className="text-gray-600 font-semibold mb-3">{feature.desc}</p>
-                  <p className="text-gray-500 text-sm leading-relaxed">{feature.detail}</p>
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="text-green-500 font-bold text-sm hover:text-green-600 transition-colors">Learn More →</button>
+                <div
+                  key={feature.id}
+                  onMouseEnter={() => setHoveredCard(feature.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className="group relative"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-cyan-400 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+                  <div className="relative bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-green-400 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                    <div className="w-16 h-16 mb-4 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-green-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">{feature.title}</h3>
+                    <p className="text-gray-600 font-semibold mb-3">{feature.desc}</p>
+                    <p className="text-gray-500 text-sm leading-relaxed">{feature.detail}</p>
+                    <div className={`mt-4 transition-opacity duration-300 ${expandedFeature === feature.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                      <button
+                        onClick={() => toggleFeature(feature.id)}
+                        className="text-green-500 font-bold text-sm hover:text-green-600 transition-colors"
+                      >
+                        {expandedFeature === feature.id ? 'Show Less ↑' : 'Learn More →'}
+                      </button>
+                    </div>
+                    {expandedFeature === feature.id && (
+                      <div className="mt-4 pt-4 border-t border-gray-100 animate-in slide-in-from-top-2 fade-in duration-300">
+                        <ul className="space-y-2">
+                          {feature.points.map((point, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                              <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -153,7 +177,7 @@ const Scalability = () => {
       {/* Four Pillars */}
       <section className="relative w-full py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-gray-100" />
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-bold uppercase tracking-wider mb-4">Architecture</span>
@@ -165,27 +189,27 @@ const Scalability = () => {
             {pillars.map((pillar) => {
               const IconComponent = pillar.icon === 'building2' ? Building2 : pillar.icon === 'package' ? Package : pillar.icon === 'database' ? Database : Eye;
               return (
-              <div
-                key={pillar.id}
-                onMouseEnter={() => setHoveredCard(pillar.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className="group h-full"
-              >
-                <div className={`bg-gradient-to-br ${pillar.color} rounded-2xl p-8 text-white h-full transform group-hover:scale-105 group-hover:-translate-y-4 transition-all duration-300 shadow-lg group-hover:shadow-2xl`}>
-                  <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-white" />
+                <div
+                  key={pillar.id}
+                  onMouseEnter={() => setHoveredCard(pillar.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className="group h-full"
+                >
+                  <div className={`bg-gradient-to-br ${pillar.color} rounded-2xl p-8 text-white h-full transform group-hover:scale-105 group-hover:-translate-y-4 transition-all duration-300 shadow-lg group-hover:shadow-2xl`}>
+                    <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-6">{pillar.title}</h3>
+                    <ul className="space-y-3">
+                      {pillar.points.map((point, idx) => (
+                        <li key={idx} className="flex items-center gap-3 text-sm opacity-90 group-hover:opacity-100 transition-opacity">
+                          <span className="w-2 h-2 bg-white rounded-full" />
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <h3 className="text-2xl font-bold mb-6">{pillar.title}</h3>
-                  <ul className="space-y-3">
-                    {pillar.points.map((point, idx) => (
-                      <li key={idx} className="flex items-center gap-3 text-sm opacity-90 group-hover:opacity-100 transition-opacity">
-                        <span className="w-2 h-2 bg-white rounded-full" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -205,26 +229,26 @@ const Scalability = () => {
             {implementationSteps.map((step, idx) => {
               const IconComponent = step.icon === 'fileText' ? FileText : step.icon === 'target' ? Target : step.icon === 'settings' ? Settings : step.icon === 'checkCircle' ? CheckCircle : step.icon === 'barChart' ? BarChart : TrendingUp;
               return (
-              <div
-                key={idx}
-                onMouseEnter={() => setHoveredCard(step.step)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className="relative group"
-              >
-                {/* Connection line */}
-                {idx < implementationSteps.length - 1 && (
-                  <div className="hidden lg:block absolute top-24 left-full w-8 h-0.5 bg-gradient-to-r from-green-400 to-transparent opacity-50" />
-                )}
+                <div
+                  key={idx}
+                  onMouseEnter={() => setHoveredCard(step.step)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className="relative group"
+                >
+                  {/* Connection line */}
+                  {idx < implementationSteps.length - 1 && (
+                    <div className="hidden lg:block absolute top-24 left-full w-8 h-0.5 bg-gradient-to-r from-green-400 to-transparent opacity-50" />
+                  )}
 
-                <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-green-500 hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 h-full">
-                  <div className="w-16 h-16 mb-4 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-green-600" />
+                  <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-green-500 hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 h-full">
+                    <div className="w-16 h-16 mb-4 bg-green-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-green-600" />
+                    </div>
+                    <div className="inline-block px-4 py-2 bg-green-100 text-green-700 font-bold rounded-full text-sm mb-4">Step {step.step}</div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3">{step.title}</h3>
+                    <p className="text-gray-600">{step.desc}</p>
                   </div>
-                  <div className="inline-block px-4 py-2 bg-green-100 text-green-700 font-bold rounded-full text-sm mb-4">Step {step.step}</div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.desc}</p>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -235,7 +259,7 @@ const Scalability = () => {
       <section className="relative w-full py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" />
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-bold uppercase tracking-wider mb-4">Metrics</span>
@@ -272,20 +296,20 @@ const Scalability = () => {
             {architectureLayers.map((layer, idx) => {
               const IconComponent = layer.icon === 'palette' ? Palette : layer.icon === 'layers' ? Layers : layer.icon === 'grid3x3' ? Grid3x3 : Server;
               return (
-              <div
-                key={idx}
-                onMouseEnter={() => setHoveredCard(idx)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className={`${layer.color} border-l-8 rounded-xl p-8 hover:shadow-2xl hover:-translate-x-2 transition-all duration-300 group cursor-pointer`}
-              >
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-6 h-6 text-gray-700" />
+                <div
+                  key={idx}
+                  onMouseEnter={() => setHoveredCard(idx)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className={`${layer.color} border-l-8 rounded-xl p-8 hover:shadow-2xl hover:-translate-x-2 transition-all duration-300 group cursor-pointer`}
+                >
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-6 h-6 text-gray-700" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900">{layer.layer}</h3>
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">{layer.layer}</h3>
+                  <p className="text-gray-700 ml-16">{layer.desc}</p>
                 </div>
-                <p className="text-gray-700 ml-16">{layer.desc}</p>
-              </div>
               );
             })}
           </div>
@@ -305,31 +329,31 @@ const Scalability = () => {
             {scalingStrategies.map((strat, idx) => {
               const IconComponent = strat.icon === 'arrowLeftRight' ? ArrowLeftRight : strat.icon === 'trendingUp' ? TrendingUp : BarChart;
               return (
-              <div
-                key={idx}
-                onMouseEnter={() => setHoveredCard(idx)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-4"
-              >
-                <div className="h-48 overflow-hidden bg-gray-300 relative">
-                  <img 
-                    src={strat.image} 
-                    alt={strat.strategy}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity" />
-                </div>
-                <div className="bg-white p-8">
-                  <div className="w-12 h-12 mb-3 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-6 h-6 text-green-600" />
+                <div
+                  key={idx}
+                  onMouseEnter={() => setHoveredCard(idx)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-4"
+                >
+                  <div className="h-48 overflow-hidden bg-gray-300 relative">
+                    <img
+                      src={strat.image}
+                      alt={strat.strategy}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{strat.strategy} Scaling</h3>
-                  <p className="text-gray-600 mb-3">{strat.desc}</p>
-                  <div className="pt-4 border-t border-gray-200">
-                    <p className="text-sm font-semibold text-green-600">✓ {strat.benefit}</p>
+                  <div className="bg-white p-8">
+                    <div className="w-12 h-12 mb-3 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-6 h-6 text-green-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">{strat.strategy} Scaling</h3>
+                    <p className="text-gray-600 mb-3">{strat.desc}</p>
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-green-600">✓ {strat.benefit}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -355,7 +379,7 @@ const Scalability = () => {
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400 group-hover:scale-125 transition-transform" style={{transitionDelay: `${i * 50}ms`}} />
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400 group-hover:scale-125 transition-transform" style={{ transitionDelay: `${i * 50}ms` }} />
                   ))}
                 </div>
                 <p className="text-gray-700 text-lg font-semibold mb-6 italic">"{testimonial.quote}"</p>
@@ -415,14 +439,14 @@ const Scalability = () => {
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto drop-shadow-lg">Transform your infrastructure into an enterprise-grade system</p>
 
           <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <button className="inline-flex items-center justify-center gap-3 px-12 py-5 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-black uppercase tracking-widest rounded-xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg">
+            <Link to="/contact/request-demo" className="inline-flex items-center justify-center gap-3 px-12 py-5 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-black uppercase tracking-widest rounded-xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-lg">
               <span>Schedule Demo</span>
               <ArrowRight className="w-6 h-6" />
-            </button>
-            <button className="inline-flex items-center justify-center gap-3 px-12 py-5 bg-transparent border-2 border-white text-white font-black uppercase tracking-widest rounded-xl hover:bg-white hover:text-green-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
+            </Link>
+            <Link to="/resources/whitepapers" className="inline-flex items-center justify-center gap-3 px-12 py-5 bg-transparent border-2 border-white text-white font-black uppercase tracking-widest rounded-xl hover:bg-white hover:text-green-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
               <span>Get Whitepaper</span>
               <FileText className="w-6 h-6" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

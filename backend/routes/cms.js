@@ -81,6 +81,16 @@ router.post('/applications', async (req, res) => {
   try {
     const app = new JobApplication(req.body);
     await app.save();
+
+    // Create Notification
+    const Notification = require("../models/Notification");
+    await Notification.create({
+      type: 'Job Application',
+      title: 'New Job Application',
+      message: `${req.body.fullName} has applied for the position of "${req.body.jobTitle}".`,
+      link: '/admin/careers'
+    });
+
     res.status(201).json(app);
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -1,137 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Completed Projects Data
-const completedProjectsData = [
-  {
-    id: 1,
-    title: "National Healthcare Management System",
-    client: "Ministry of Health",
-    category: "Healthcare",
-    completedDate: "December 2025",
-    duration: "12 months",
-    teamSize: 18,
-    budget: "$850,000",
-    rating: 5,
-    technologies: ["React", "Node.js", "PostgreSQL", "AWS", "Redis"],
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop",
-    description: "Successfully delivered a comprehensive healthcare management system serving 500+ hospitals nationwide with patient records, appointment scheduling, and emergency response integration.",
-    achievements: ["500+ Hospitals", "2M+ Patients", "99.9% Uptime", "Zero Data Loss"],
-    impact: "Reduced patient wait times by 60% and improved healthcare accessibility across the nation."
-  },
-  {
-    id: 2,
-    title: "Smart Banking Mobile Application",
-    client: "Global Bank Corp.",
-    category: "Finance",
-    completedDate: "January 2026",
-    duration: "10 months",
-    teamSize: 14,
-    budget: "$620,000",
-    rating: 5,
-    technologies: ["React Native", "Java", "Oracle", "Microservices", "Kubernetes"],
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=500&fit=crop",
-    description: "Delivered a feature-rich mobile banking application with biometric authentication, real-time transactions, and AI-powered financial insights for 5 million users.",
-    achievements: ["5M+ Users", "50K Daily Transactions", "4.8★ App Rating", "Bank-Grade Security"],
-    impact: "Increased digital banking adoption by 85% and reduced operational costs by 40%."
-  },
-  {
-    id: 3,
-    title: "E-Commerce Platform for Retail Chain",
-    client: "MegaMart Retail",
-    category: "E-Commerce",
-    completedDate: "November 2025",
-    duration: "8 months",
-    teamSize: 12,
-    budget: "$450,000",
-    rating: 4,
-    technologies: ["React", "Node.js", "MongoDB", "Elasticsearch", "AWS"],
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&h=500&fit=crop",
-    description: "Built a scalable e-commerce platform handling 100K+ products with advanced search, personalized recommendations, and integrated payment processing.",
-    achievements: ["100K+ Products", "250K Orders/Month", "15M Page Views", "35% Conversion Rate"],
-    impact: "Generated $12M in online revenue within first 3 months of launch."
-  },
-  {
-    id: 4,
-    title: "Educational Management System",
-    client: "State Education Board",
-    category: "Education",
-    completedDate: "October 2025",
-    duration: "14 months",
-    teamSize: 16,
-    budget: "$720,000",
-    rating: 5,
-    technologies: ["React", "Python", "MySQL", "WebRTC", "Docker"],
-    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=500&fit=crop",
-    description: "Developed comprehensive education management system serving 2000+ schools with online classes, assessments, attendance tracking, and parent-teacher communication.",
-    achievements: ["2000+ Schools", "500K Students", "25K Teachers", "98% Satisfaction"],
-    impact: "Enabled seamless digital education during pandemic, maintaining 95% student engagement."
-  },
-  {
-    id: 5,
-    title: "Supply Chain Logistics Platform",
-    client: "TransLog International",
-    category: "Logistics",
-    completedDate: "September 2025",
-    duration: "11 months",
-    teamSize: 13,
-    budget: "$580,000",
-    rating: 5,
-    technologies: ["React", "Java", "PostgreSQL", "Kafka", "Kubernetes"],
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=500&fit=crop",
-    description: "Created an intelligent supply chain platform with real-time tracking, route optimization, and predictive analytics for 1000+ delivery vehicles.",
-    achievements: ["1000+ Vehicles", "50K Deliveries/Day", "30% Cost Reduction", "Real-time Tracking"],
-    impact: "Optimized delivery routes saving $2M annually in fuel and operational costs."
-  },
-  {
-    id: 6,
-    title: "Smart City Infrastructure Dashboard",
-    client: "City Municipal Corporation",
-    category: "Government",
-    completedDate: "August 2025",
-    duration: "15 months",
-    teamSize: 20,
-    budget: "$950,000",
-    rating: 5,
-    technologies: ["React", "Python", "PostgreSQL", "IoT", "GIS", "AWS"],
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=500&fit=crop",
-    description: "Implemented smart city dashboard monitoring traffic, utilities, waste management, and emergency services across the metropolitan area.",
-    achievements: ["500+ IoT Sensors", "24/7 Monitoring", "40% Response Time", "Smart Integration"],
-    impact: "Improved city services efficiency by 55% and enhanced citizen satisfaction scores."
-  },
-  {
-    id: 7,
-    title: "Corporate HR Management Suite",
-    client: "MegaCorp Enterprises",
-    category: "Enterprise",
-    completedDate: "July 2025",
-    duration: "9 months",
-    teamSize: 11,
-    budget: "$420,000",
-    rating: 4,
-    technologies: ["React", "Node.js", "MongoDB", "Redis", "Docker"],
-    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=500&fit=crop",
-    description: "Delivered complete HR management solution with recruitment, payroll, performance management, and employee self-service portal for 10,000+ employees.",
-    achievements: ["10K+ Employees", "Automated Payroll", "50% Time Saved", "Cloud-Based"],
-    impact: "Reduced HR administrative workload by 65% and improved employee satisfaction."
-  },
-  {
-    id: 8,
-    title: "Telemedicine Consultation Platform",
-    client: "HealthConnect Inc.",
-    category: "Healthcare",
-    completedDate: "June 2025",
-    duration: "7 months",
-    teamSize: 10,
-    budget: "$380,000",
-    rating: 5,
-    technologies: ["React", "Node.js", "WebRTC", "MongoDB", "AWS"],
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=500&fit=crop",
-    description: "Built secure telemedicine platform enabling video consultations, e-prescriptions, and digital health records for 200+ doctors and 50K+ patients.",
-    achievements: ["200+ Doctors", "50K Patients", "15K Consultations", "HIPAA Compliant"],
-    impact: "Provided healthcare access to rural areas, serving 30K+ patients remotely."
-  }
-];
+// Data driven via CMS
 
 export default function Completed() {
   const navigate = useNavigate();
@@ -140,6 +10,21 @@ export default function Completed() {
   const [selectedRating, setSelectedRating] = useState("All");
   const [sortBy, setSortBy] = useState("date");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [completedProjectsData, setCompletedProjectsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/completed-projects`)
+      .then(res => res.json())
+      .then(data => {
+        setCompletedProjectsData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch completed projects", err);
+        setLoading(false);
+      });
+  }, []);
 
   const categories = ["All", "Healthcare", "Finance", "E-Commerce", "Education", "Logistics", "Government", "Enterprise"];
   const ratings = ["All", "5 Stars", "4 Stars"];
@@ -364,7 +249,12 @@ export default function Completed() {
         </div>
 
         {/* Projects Grid */}
-        {filteredProjects.length > 0 ? (
+        {loading ? (
+             <div className="py-24 text-center">
+                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mx-auto"></div>
+                 <p className="mt-4 text-slate-500 font-medium">Loading completed projects...</p>
+             </div>
+        ) : filteredProjects.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => (
               <div

@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   const texts = [
-    "Professional Business Support Services",
-    "Strategic Business Support Services",
-    "Effective Business Support Services",
-    "Professional Smart Support Services",
+    "Effective Business Services",
+    "Highly Expertism",
+    "Innovative Solutions",
+    "To Boost Your Business",
+    "You can trust",
   ];
 
   const backgroundImages = [
@@ -78,14 +79,14 @@ export default function HeroSection() {
           <div className="mt-6 flex flex-wrap gap-4">
 
             <Link
-              to="/careers"
+              to="/team/core-team"
               className="px-8 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-md hover:opacity-90 transition"
             >
               Join Our Team
             </Link>
 
             <Link
-              to="/partner"
+              to="/join/partner"
               className="px-8 py-3 border border-white text-white font-semibold rounded-md hover:bg-white hover:text-black transition"
             >
               Become a Partner
@@ -102,11 +103,10 @@ export default function HeroSection() {
           <button
             key={idx}
             onClick={() => setBgIndex(idx)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              bgIndex === idx
+            className={`h-1.5 rounded-full transition-all duration-300 ${bgIndex === idx
                 ? "w-8 bg-white"
                 : "w-2 bg-white/40 hover:bg-white/60"
-            }`}
+              }`}
           />
         ))}
       </div>

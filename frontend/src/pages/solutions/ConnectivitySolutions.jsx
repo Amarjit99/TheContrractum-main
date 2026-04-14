@@ -10,6 +10,7 @@ import p13 from "../../assets/p13.webp";
 import p14 from "../../assets/p14.webp";
 import p15 from "../../assets/p15.webp";
 import DynamicServices from "../../components/DynamicServices";
+import { Link } from 'react-router-dom';
 
 export default function ConnectivitySolutions() {
   const features = [
@@ -150,9 +151,9 @@ export default function ConnectivitySolutions() {
                 connectivity solutions designed for modern digital enterprises.
               </p>
 
-              <button className="bg-primary hover:bg-primary text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition">
+              <Link to="/solutions/business/gis" className="bg-primary hover:bg-primary text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition inline-block">
                 Explore Solutions
-              </button>
+              </Link>
             </div>
 
             <img src={p19} alt="Connectivity Solutions" className="w-full rounded-lg shadow-lg" />
@@ -228,9 +229,9 @@ export default function ConnectivitySolutions() {
             that enhance performance, security, and reliability.
           </p>
 
-          <button className="bg-primary text-white font-medium px-8 py-3 rounded-lg hover:bg-primary-dark transition">
+          <Link to="/contact/request-demo" className="bg-primary text-white font-medium px-8 py-3 rounded-lg hover:bg-primary-dark transition inline-block">
             Schedule Consultation
-          </button>
+          </Link>
         </div>
       </div>
 

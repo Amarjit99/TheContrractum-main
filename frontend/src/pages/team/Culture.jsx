@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import { Lightbulb, Users, TrendingUp, Building, Heart, Coffee, Quote, Briefcase, Sparkles } from "lucide-react";
 import cultureHero from "../../assets/culture.webp";
 import workEnv1 from "../../assets/life.webp";
@@ -23,9 +23,9 @@ export default function Culture() {
             <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
               Where innovation, collaboration, and growth create a thriving workplace culture
             </p>
-            <button className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-bold px-10 py-4 rounded-xl hover:from-teal-700 hover:to-cyan-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
+            <Link to="/careers/life" className="inline-block bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-bold px-10 py-4 rounded-xl hover:from-teal-700 hover:to-cyan-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
               Explore Our Culture
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -238,11 +238,11 @@ export default function Culture() {
             Be part of a culture that celebrates innovation and collaboration
           </p>
 
-          <button className="group inline-flex items-center gap-3 bg-white text-teal-700 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 shadow-2xl">
+          <Link to="/careers/jobs" className="group inline-flex items-center gap-3 bg-white text-teal-700 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 hover:scale-105 transform transition-all duration-300 shadow-2xl">
             <Briefcase className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
             Explore Careers
             <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-          </button>
+          </Link>
         </div>
       </section>
 

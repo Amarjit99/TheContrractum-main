@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Target, Sparkles, TrendingUp, Users, Shield, CheckCircle, Lightbulb, Heart, Award, Zap, Globe, Building2, Rocket } from "lucide-react";
 import about1 from "../../assets/about-1.jpg";
 import about2 from "../../assets/about-2.jpg";
@@ -101,7 +102,7 @@ export default function Mission() {
         },
     ];
 
-       const targetMarkets = [
+    const targetMarkets = [
         {
             sector: "Financial Services",
             focus: "Digital banking, wealth management, risk analytics",
@@ -198,7 +199,7 @@ export default function Mission() {
     return (
         <div className="bg-white">
             {/* ===== Hero Section ===== */}
-            <div 
+            <div
                 className="relative h-[600px] flex items-center justify-start overflow-hidden"
                 style={{
                     backgroundImage: `url(${mission})`,
@@ -219,14 +220,14 @@ export default function Mission() {
                         To transform businesses through innovative technology solutions, strategic partnerships, and exceptional service that creates lasting value and positive impact
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
+                        <Link to="/contact/touch" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
                             <Target className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Start Your Journey
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/careers/growth" className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
                             Our Approach
                             <Sparkles className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -330,9 +331,9 @@ export default function Mission() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                    <img 
-                        src={about2} 
-                        alt="Approach Background" 
+                    <img
+                        src={about2}
+                        alt="Approach Background"
                         className="w-full h-full object-cover brightness-90"
                     />
                     <div className="absolute inset-0 bg-white/85"></div>
@@ -391,9 +392,9 @@ export default function Mission() {
                         {targetMarkets.map((market, idx) => (
                             <div key={idx} className="group rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-105 hover:-translate-y-2">
                                 <div className="relative h-40 md:h-48 overflow-hidden">
-                                    <img 
-                                        src={market.image} 
-                                        alt={market.sector} 
+                                    <img
+                                        src={market.image}
+                                        alt={market.sector}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 brightness-90"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -418,9 +419,9 @@ export default function Mission() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                    <img 
-                        src={commitment} 
-                        alt="Values Background" 
+                    <img
+                        src={commitment}
+                        alt="Values Background"
                         className="w-full h-full object-cover brightness-90"
                     />
                     <div className="absolute inset-0 bg-white/80"></div>
@@ -595,14 +596,14 @@ export default function Mission() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-emerald-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
+                        <Link to="/join/partner" className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-emerald-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
                             <Target className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Begin Your Transformation
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/solutions/digital/hrtech" className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
                             Explore Solutions
                             <Sparkles className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-teal-400/30 grid grid-cols-3 gap-4 md:gap-8">

@@ -219,6 +219,9 @@ export default function Whitepapers() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [email, setEmail] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = ["All", "AI & Machine Learning", "Blockchain", "Cloud Computing", "Cybersecurity", "Data Analytics", "Networking", "Emerging Technology", "Sustainability", "Digital Strategy", "Robotics"];
   const years = ["All", "2026", "2025"];
@@ -232,6 +235,35 @@ export default function Whitepapers() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/subscription/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "Whitepapers" }),
+      });
+
+      if (response.ok) {
+        setShowSuccessPopup(true);
+        setEmail("");
+        setTimeout(() => setShowSuccessPopup(false), 5000);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Subscription failed");
+      }
+    } catch (err) {
+      console.error("Error subscribing:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Filter whitepapers
   const filteredWhitepapers = whitepapers.filter(paper => {
@@ -480,11 +512,11 @@ export default function Whitepapers() {
                       </div>
                     </div>
 
-                    <button className="w-full bg-gradient-to-r from-primary to-primary-light text-white py-3 rounded-lg font-semibold hover:from-primary-dark hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <button className="w-full bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-3 rounded-lg font-bold hover:from-blue-800 hover:to-indigo-900 transition-all duration-300 shadow-lg hover:shadow-blue-200/50 flex items-center justify-center gap-2">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
-                      <span>Download PDF</span>
+                      <span>Access Full Report</span>
                     </button>
                   </div>
                 </div>
@@ -600,16 +632,23 @@ export default function Whitepapers() {
               Subscribe to receive our latest research and technical insights directly in your inbox
             </p>
             <div className="max-w-md mx-auto">
-              <div className="flex gap-3">
+              <form onSubmit={handleSubscribe} className="flex gap-3">
                 <input
                   type="email"
                   placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="flex-1 px-6 py-4 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-white/50 font-medium"
                 />
-                <button className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-nowrap">
-                  Subscribe
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-nowrap"
+                >
+                  {isSubmitting ? "Subscribing..." : "Subscribe"}
                 </button>
-              </div>
+              </form>
               <p className="text-gray-100 text-sm mt-4">
                 Join 10,000+ professionals staying updated on technology trends
               </p>
@@ -632,6 +671,38 @@ export default function Whitepapers() {
         </button>
       )}
 
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all animate-bounce-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
+            <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll be the first to know when we publish new research and whitepapers.</p>
+            <button 
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+            >
+              Great!
+            </button>
+          </div>
+          <style>{`
+            @keyframes bounce-in {
+              0% { opacity: 0; transform: scale(0.3); }
+              50% { opacity: 1; transform: scale(1.05); }
+              70% { transform: scale(0.9); }
+              100% { transform: scale(1); }
+            }
+            .animate-bounce-in {
+              animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

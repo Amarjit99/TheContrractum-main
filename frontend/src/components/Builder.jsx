@@ -1,102 +1,112 @@
 "use client";
 
-import { Users, Briefcase, Trophy, BarChart3 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function WhyChooseUs() {
-  const features = [
+export default function OurClients() {
+  const clients = [
     {
-      number: "01",
-      title: "Our Staffs",
-      desc: "We have a skilled and dedicated team, always ready to assist you with professionalism.",
-      icon: <Users size={60} strokeWidth={1.5} />,
-      bgImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=600&fit=crop",
+      name: "Meesho",
+      image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&h=400&fit=crop",
     },
     {
-      number: "02",
-      title: "Our Clients",
-      desc: "We work with valued clients who trust us to deliver excellence every time.",
-      icon: <Briefcase size={60} strokeWidth={1.5} />,
-      bgImage: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=600&fit=crop",
+      name: "HCL Technologies",
+      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=500&h=400&fit=crop",
     },
     {
-      number: "03",
-      title: "Completed Projects",
-      desc: "Delivering successful projects from concept to completion with precision.",
-      icon: <Trophy size={60} strokeWidth={1.5} />,
-      bgImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=600&fit=crop",
+      name: "Amazon Seller Central",
+      image: "https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=500&h=400&fit=crop",
     },
     {
-      number: "04",
-      title: "Running Projects",
-      desc: "Explore our ongoing projects, delivering innovation and progress every day.",
-      icon: <BarChart3 size={60} strokeWidth={1.5} />,
-      bgImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=600&fit=crop",
+      name: "IBM India Private Limited",
+      image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=500&h=400&fit=crop",
+    },
+    {
+      name: "RICOH INNOVATIONS PRIVATE LIMITED",
+      image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=500&h=400&fit=crop",
+    },
+    {
+      name: "Central Warehousing Corporation",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&h=400&fit=crop",
+    },
+    {
+      name: "Food Corporation of India",
+      image: "https://images.unsplash.com/photo-1595246140625-573b715d11dc?w=500&h=400&fit=crop",
+    },
+    {
+      name: "TOMTOM INDIA PRIVATE LIMITED",
+      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=400&fit=crop",
+    },
+    {
+      name: "HERE Technologies",
+      image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=400&fit=crop",
     },
   ];
 
-  return (
-    <section className="bg-gray-100 py-24">
-      <div className="max-w-7xl mx-auto px-6 text-center">
+  const [startIndex, setStartIndex] = useState(0);
 
-        {/* Small Top Tag */}
+  // Auto rotate every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStartIndex((prev) => (prev + 1) % clients.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [clients.length]);
+
+  // Get 3 visible clients
+  const visibleClients = Array.from({ length: 3 }, (_, i) =>
+    clients[(startIndex + i) % clients.length]
+  );
+
+  return (
+    <section className="relative bg-gray-100 py-24 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-fixed opacity-10"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop')" }}
+      ></div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+
+        {/* Top Label */}
         <div className="mb-4">
-          <p className="text-primary uppercase tracking-widest text-sm font-semibold">
-            Our Feature
+          <p className="text-primary uppercase tracking-widest text-sm font-semibold border-b-2 border-primary inline-block pb-1">
+            Our Clients
           </p>
-          <div className="w-6 h-6 border-2 border-primary rounded-full mx-auto mt-2"></div>
         </div>
 
         {/* Heading */}
-        <h2 className="text-5xl font-bold text-gray-900 mb-20">
-          Why Choose Us ?
+        <h2 className="text-5xl font-bold text-gray-900 mb-16">
+          100% <span className="relative">
+            Satisfied Clients
+            <span className="absolute -top-2 -right-4 w-2 h-2 bg-primary rounded-full"></span>
+          </span>
         </h2>
 
-        {/* Feature Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 relative">
+        {/* Client Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 transition-all duration-700">
 
-          {features.map((item, index) => (
-            <div key={index} className="group relative flex flex-col items-center cursor-pointer">
+          {visibleClients.map((client, index) => (
+            <div
+              key={`${client.name}-${index}`}
+              className="relative group overflow-hidden rounded-xl shadow-lg animate-fadeIn"
+            >
+              {/* Background Image */}
+              <img
+                src={client.image}
+                alt={client.name}
+                className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-700"
+              />
 
-              {/* Red Half Circle Background with Hover Image */}
-              <div className="relative w-64 h-64 flex items-center justify-center overflow-hidden rounded-full">
-                
-                {/* Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-40 md:opacity-0 md:group-hover:opacity-60 transition-opacity duration-500 rounded-full"
-                  style={{ backgroundImage: `url(${item.bgImage})` }}
-                ></div>
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-black/50 group-hover:bg-primary-dark/60 transition duration-500"></div>
 
-                <div className="absolute w-64 h-64 bg-primary rounded-full -left-6 group-hover:scale-110 transition-transform duration-500"></div>
-                
-                <div className="relative w-60 h-60 bg-primary group-hover:bg-white rounded-full flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                  
-                  {/* Icon Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center opacity-25 md:opacity-0 md:group-hover:opacity-40 transition-opacity duration-500"
-                    style={{ backgroundImage: `url(${item.bgImage})` }}
-                  ></div>
-
-                  <div className="relative text-blue-900 group-hover:text-primary group-hover:scale-110 transition-all duration-500">
-                    {item.icon}
-                  </div>
-                </div>
-
-                {/* Step Number Circle */}
-                <div className="absolute bottom-4 right-6 w-14 h-14 bg-black group-hover:bg-primary text-white rounded-full flex items-center justify-center text-lg font-semibold shadow-md group-hover:shadow-xl transition-all duration-500 group-hover:scale-110">
-                  {item.number}
-                </div>
-
+              {/* Center Text */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <h3 className="text-white text-3xl font-semibold text-center px-4">
+                  {client.name}
+                </h3>
               </div>
-
-              {/* Text Content */}
-              <h3 className="text-2xl font-bold text-gray-900 group-hover:text-primary mt-8 mb-4 transition-colors duration-300">
-                {item.title}
-              </h3>
-
-              <p className="text-gray-600 group-hover:text-gray-900 max-w-xs leading-relaxed transition-colors duration-300">
-                {item.desc}
-              </p>
-
             </div>
           ))}
 

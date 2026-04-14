@@ -1,32 +1,62 @@
-import { Rocket, GitBranch, Code, Cpu, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Rocket, GitBranch, Code, Cpu, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 import running from "../../assets/running.png"
+
 export default function Projects() {
+    const [openDropdown, setOpenDropdown] = useState(null);
+
     const projects = [
         {
+            id: 1,
             title: "Project Nova",
             category: "R&D - Artificial Intelligence",
             desc: "A next-generation predictive analytics engine designed to optimize supply chain logistics in real-time using reinforcement learning.",
             status: "Active Development",
             tech: ["Python", "PyTorch", "AWS Sagemaker"],
-            icon: <Cpu className="w-8 h-8 text-purple-500" />
+            icon: <Cpu className="w-8 h-8 text-purple-500" />,
+            details: [
+                "Real-time supply chain optimization mapping.",
+                "Advanced reinforcement learning simulation environments.",
+                "Scalable AWS infrastructure for global deployment.",
+                "Interactive predictive analytics performance dashboard."
+            ]
         },
         {
+            id: 2,
             title: "Project Aegis",
             category: "Cybersecurity",
             desc: "An automated threat detection system that uses behavioral analysis to identify zero-day vulnerabilities in enterprise networks.",
             status: "Beta Testing",
             tech: ["Go", "Kafka", "ElasticSearch"],
-            icon: <Code className="w-8 h-8 text-blue-500" />
+            icon: <Code className="w-8 h-8 text-blue-500" />,
+            details: [
+                "Behavioral analysis threat detection engine.",
+                "Zero-day vulnerability identification protocols.",
+                "Kafka-based real-time event streaming architecture.",
+                "Automated network remediation and containment."
+            ]
         },
         {
+            id: 3,
             title: "Project Helios",
             category: "Renewable Energy Tech",
             desc: "IoT-based monitoring platform for solar farms to maximize efficiency and predict maintenance needs.",
             status: "Concept Phase",
             tech: ["IoT", "React Native", "MQTT"],
-            icon: <Rocket className="w-8 h-8 text-orange-500" />
+            icon: <Rocket className="w-8 h-8 text-orange-500" />,
+            details: [
+                "IoT-based remote sensor monitoring network.",
+                "Solar farm efficiency optimization algorithms.",
+                "Predictive maintenance and anomaly alerting.",
+                "Secure MQTT communication protocol for devices."
+            ]
         }
     ];
+
+    const toggleDropdown = (id) => {
+        setOpenDropdown(openDropdown === id ? null : id);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -67,16 +97,15 @@ export default function Projects() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {projects.map((project, index) => (
-                        <div key={index} className="bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-violet-500 flex flex-col group">
+                        <div key={index} className="bg-white rounded-2xl p-8 shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-violet-500 flex flex-col group h-fit">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-4 rounded-xl group-hover:scale-110 transition-transform">
                                     {project.icon}
                                 </div>
-                                <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm ${
-                                    project.status === "Active Development" ? "bg-green-100 text-green-700" :
+                                <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm ${project.status === "Active Development" ? "bg-green-100 text-green-700" :
                                     project.status === "Beta Testing" ? "bg-blue-100 text-blue-700" :
-                                    "bg-yellow-100 text-yellow-700"
-                                }`}>
+                                        "bg-yellow-100 text-yellow-700"
+                                    }`}>
                                     {project.status}
                                 </span>
                             </div>
@@ -95,9 +124,28 @@ export default function Projects() {
                                         </span>
                                     ))}
                                 </div>
-                                <button className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105">
-                                    View Details <ExternalLink size={16} />
-                                </button>
+
+                                <div className="relative">
+                                    <button
+                                        onClick={() => toggleDropdown(project.id)}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                                    >
+                                        View Details {openDropdown === project.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    </button>
+
+                                    {openDropdown === project.id && (
+                                        <div className="mt-4 bg-violet-50 rounded-xl p-4 border border-violet-100 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <ul className="space-y-2">
+                                                {project.details.map((detail, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-sm text-violet-800">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-1.5 flex-shrink-0"></div>
+                                                        {detail}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -124,12 +172,16 @@ export default function Projects() {
                                 Currently open for employee registration.
                             </p>
                             <div className="flex justify-center gap-4 flex-wrap">
-                                <button className="bg-white text-gray-900 hover:bg-gray-100 font-bold py-4 px-10 rounded-xl transition-all transform hover:scale-105 shadow-xl">
-                                    Register Team
-                                </button>
-                                <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-10 rounded-xl transition-all transform hover:scale-105">
-                                    View Themes
-                                </button>
+                                <Link to="/contact/touch">
+                                    <button className="bg-white text-gray-900 hover:bg-gray-100 font-bold py-4 px-10 rounded-xl transition-all transform hover:scale-105 shadow-xl">
+                                        Register Team
+                                    </button>
+                                </Link>
+                                <Link to="/careers/themes">
+                                    <button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-10 rounded-xl transition-all transform hover:scale-105">
+                                        View Themes
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

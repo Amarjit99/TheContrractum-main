@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { adminOnly } = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -13,6 +14,16 @@ const upload = multer({
     if (file.mimetype.startsWith('image/')) cb(null, true);
     else cb(new Error('Only image files are allowed'), false);
   },
+});
+
+// GET /api/users — List users (Admin only)
+router.get('/', protect, adminOnly, async (req, res) => {
+  try {
+    const users = await User.find({ role: 'user' }).select('firstName lastName email');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
 });
 
 // GET /api/users/profile
