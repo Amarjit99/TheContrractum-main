@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -10,9 +10,13 @@ const GENDERS = ['', 'Male', 'Female', 'Non-binary', 'Prefer not to say'];
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const fileInputRef = useRef();
 
-  const [tab, setTab] = useState('overview');
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get('tab') || 'overview';
+
+  const [tab, setTab] = useState(initialTab);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -26,13 +30,50 @@ export default function Profile() {
     skills:[], website:'', linkedin:'', twitter:'', github:'',
   });
 
+  const [contracts, setContracts] = useState([]);
+  const [loadingContracts, setLoadingContracts] = useState(false);
+  const [signingId, setSigningId] = useState(null);
+  const [signatureName, setSignatureName] = useState('');
+
   const [pwForm, setPwForm] = useState({ currentPassword:'', newPassword:'', confirmNew:'' });
   const [pwMsg, setPwMsg] = useState({ text:'', ok:true });
 
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     fetchProfile();
+    fetchContracts();
   }, [user]);
+
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const t = q.get('tab');
+    if (t && t !== tab) setTab(t);
+  }, [location.search]);
+
+  const fetchContracts = async () => {
+    setLoadingContracts(true);
+    try {
+      const res = await fetch(`${API}/api/contracts/my-contracts`, { headers });
+      const data = await res.json();
+      if (Array.isArray(data)) setContracts(data);
+    } finally { setLoadingContracts(false); }
+  };
+
+  const handleSign = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API}/api/contracts/${signingId}/sign`, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signatureName })
+      });
+      if (res.ok) {
+        setSigningId(null);
+        setSignatureName('');
+        fetchContracts();
+      }
+    } catch (err) { console.error(err); }
+  };
 
   const headers = { Authorization: `Bearer ${user?.token}` };
 
@@ -150,6 +191,7 @@ export default function Profile() {
 
   const TABS = [
     { id:'overview', icon:'📋', label:'Overview' },
+    { id:'contracts',icon:'📜', label:'My Contracts' },
     { id:'edit',     icon:'✏️', label:'Edit Profile' },
     { id:'security', icon:'🔒', label:'Security' },
   ];
@@ -286,6 +328,105 @@ export default function Profile() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2">
                 <h3 className="font-bold text-gray-800 mb-3 text-base">📝 About Me</h3>
                 <p className="text-gray-600 leading-relaxed text-sm">{profile.bio}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── CONTRACTS ── */}
+        {tab === 'contracts' && (
+          <div className="space-y-4">
+            <h3 className="font-bold text-gray-800 flex items-center gap-2 text-lg px-2">📜 My Active & Pending Contracts</h3>
+            {loadingContracts ? (
+              <div className="py-12 text-center text-gray-400">Loading your contracts...</div>
+            ) : contracts.length === 0 ? (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div className="text-4xl mb-3">📭</div>
+                <p className="text-gray-500 font-medium">No contracts found for your account.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {contracts.map(c => (
+                  <div key={c._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-red-50 text-red-600 rounded-xl">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-lg uppercase tracking-tight">{c.title}</h4>
+                        <div className="flex flex-wrap gap-3 mt-1 text-xs font-semibold text-gray-400">
+                           <span className="bg-gray-50 px-2 py-0.5 rounded uppercase tracking-wider">{c.type}</span>
+                           <span>Expires: {c.validUntil ? new Date(c.validUntil).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
+                        c.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                      }`}>
+                        {c.status.replace('_', ' ')}
+                      </span>
+                      {c.status === 'Pending_Signature' && (
+                        <button 
+                          onClick={() => setSigningId(c._id)}
+                          className="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-xl transition shadow text-sm flex items-center gap-2"
+                        >
+                          Sign Contract 👋
+                        </button>
+                      )}
+                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Signature Modal */}
+            {signingId && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in duration-300">
+                  <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-black text-gray-900 leading-tight">Digital Contract Signing</h3>
+                      <p className="text-gray-400 text-sm font-medium mt-1 uppercase tracking-wider">Legal Acknowledgment</p>
+                    </div>
+                    <button onClick={() => setSigningId(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+                  </div>
+                  <div className="p-8 space-y-6">
+                     <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3">
+                        <span className="text-xl">⚠️</span>
+                        <p className="text-xs text-amber-700 font-bold leading-relaxed">
+                          By signing this document, you acknowledge that you have read and agree to all terms and conditions stated in the contract. This digital signature is legally binding.
+                        </p>
+                     </div>
+
+                     <div className="py-8">
+                        {/* Contract text preview - simplified */}
+                        <div className="bg-gray-50 p-4 rounded-xl max-h-40 overflow-y-auto text-xs text-gray-500 leading-relaxed font-mono">
+                           {contracts.find(c => c._id === signingId)?.content.replace(/<[^>]*>/g, '')}
+                        </div>
+                     </div>
+
+                     <form onSubmit={handleSign} className="space-y-4">
+                        <div>
+                           <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Type your full name to sign</label>
+                           <input 
+                              required
+                              type="text" 
+                              value={signatureName}
+                              onChange={(e) => setSignatureName(e.target.value)}
+                              placeholder="e.g. John Doe"
+                              className="w-full px-4 py-3 bg-red-50/50 border-2 border-dashed border-red-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 font-bold text-red-900 placeholder-red-200 text-center text-lg"
+                           />
+                        </div>
+                        <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition shadow-xl text-sm uppercase tracking-widest shadow-red-500/20">
+                           Confirm & Sign Contract
+                        </button>
+                     </form>
+                  </div>
+                </div>
               </div>
             )}
           </div>

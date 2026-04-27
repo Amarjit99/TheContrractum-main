@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Target, Rocket, Trophy, Sparkles, Globe, Building2, TrendingUp, Lightbulb, Users, Shield, Heart, Award, Zap, CheckCircle } from "lucide-react";
 import g1 from "../../assets/g1.png";
 import g2 from "../../assets/g2.png";
 import g3 from "../../assets/g3.png";
-import g4 from "../../assets/g4.png";  
+import g4 from "../../assets/g4.png";
 import g5 from "../../assets/g5.png";
 import g6 from "../../assets/g6.png";
 import g7 from "../../assets/g7.png";
@@ -33,7 +34,7 @@ export default function Vision() {
             title: "Strategic Partnerships",
             desc: "Building strong collaborations with industry leaders and technology innovators",
             details: "Creating ecosystem partnerships to deliver integrated, best-in-class solutions",
-             image: g3
+            image: g3
         },
         {
             title: "Sustainable Growth",
@@ -200,7 +201,7 @@ export default function Vision() {
     return (
         <div className="bg-white">
             {/* ===== Hero Section ===== */}
-            <div 
+            <div
                 className="relative h-[600px] flex items-center justify-center overflow-hidden"
                 style={{
                     backgroundImage: `url(${visin})`,
@@ -221,14 +222,20 @@ export default function Vision() {
                         To be the world's most trusted technology partner, transforming businesses and empowering organizations to achieve their boldest aspirations
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
+                        <Link 
+                            to="/company/our-journey"
+                            className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg"
+                        >
                             <Target className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Discover Our Journey
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link 
+                            to="/company/our-impact"
+                            className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg"
+                        >
                             Our Impact
                             <Sparkles className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -270,15 +277,15 @@ export default function Vision() {
                             <div key={idx} className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-2 transition-all duration-500 cursor-pointer">
                                 {/* Background Image - Clear and Visible */}
                                 <div className="absolute inset-0">
-                                    <img 
-                                        src={pillar.image} 
-                                        alt={pillar.title} 
+                                    <img
+                                        src={pillar.image}
+                                        alt={pillar.title}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 brightness-90"
                                     />
                                     {/* Subtle dark overlay only at bottom for text readability */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
                                 </div>
-                                
+
                                 {/* Content */}
                                 <div className="relative bg-transparent rounded-2xl p-6 md:p-8 h-full flex flex-col justify-end">
                                     <div className="relative">
@@ -305,9 +312,9 @@ export default function Vision() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
                 {/* Background Image - Clear and Visible */}
                 <div className="absolute inset-0">
-                    <img 
+                    <img
                         src={g9}
-                        alt="Values Background" 
+                        alt="Values Background"
                         className="w-full h-full object-cover brightness-90"
                     />
                     <div className="absolute inset-0 bg-white/30"></div>
@@ -329,9 +336,9 @@ export default function Vision() {
                             <div key={idx} className="group rounded-xl p-6 md:p-8 hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-2 transition-all duration-500 cursor-pointer relative overflow-hidden">
                                 {/* Background Image for Each Card - Clear and Visible */}
                                 <div className="absolute inset-0">
-                                    <img 
-                                        src={val.image} 
-                                        alt={val.value} 
+                                    <img
+                                        src={val.image}
+                                        alt={val.value}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 brightness-90"
                                     />
                                     {/* Subtle dark overlay only at bottom for text readability */}
@@ -369,9 +376,9 @@ export default function Vision() {
                             <div key={idx} className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2">
                                 {/* Background Image - Clear and Visible */}
                                 <div className="relative h-48 md:h-56 overflow-hidden">
-                                    <img 
-                                        src={focus.image} 
-                                        alt={focus.area} 
+                                    <img
+                                        src={focus.image}
+                                        alt={focus.area}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500 brightness-90"
                                     />
                                     {/* Subtle dark overlay only at bottom for text readability */}
@@ -382,7 +389,7 @@ export default function Vision() {
                                         </h3>
                                     </div>
                                 </div>
-                                
+
                                 {/* Content */}
                                 <div className="bg-white p-6 md:p-8">
                                     <ul className="space-y-3 md:space-y-4">
@@ -419,7 +426,7 @@ export default function Vision() {
                     <div className="hidden lg:block relative">
                         {/* Connecting Line */}
                         <div className="absolute top-24 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-purple-500 via-green-500 to-amber-500 rounded-full shadow-lg"></div>
-                        
+
                         <div className="grid grid-cols-4 gap-6 items-start">
                             {roadmap.map((item, idx) => (
                                 <div key={idx} className="relative group">
@@ -429,34 +436,34 @@ export default function Vision() {
                                             <item.icon className="w-6 h-6 text-white" />
                                         </div>
                                     </div>
-                                    
+
                                     {/* Card */}
                                     <div className="mt-32 bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100 hover:border-purple-400 hover:shadow-2xl hover:-translate-y-3 transition-all duration-500">
                                         {/* Year Badge */}
                                         <div className={`inline-block px-4 py-2 bg-gradient-to-r ${item.color} text-white text-2xl font-bold rounded-xl shadow-lg mb-4`}>
                                             {item.year}
                                         </div>
-                                        
+
                                         {/* Phase Label */}
                                         <div className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">
                                             Phase {idx + 1}
                                         </div>
-                                        
+
                                         {/* Phase Title */}
                                         <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                                             {item.phase}
                                         </h3>
-                                        
+
                                         {/* Milestone */}
                                         <h4 className="text-base font-semibold text-gray-700 mb-3">
                                             {item.milestone}
                                         </h4>
-                                        
+
                                         {/* Description */}
                                         <p className="text-sm text-gray-600 leading-relaxed mb-4 border-l-4 border-purple-300 pl-3">
                                             {item.description}
                                         </p>
-                                        
+
                                         {/* Achievements */}
                                         <div className="space-y-3 mt-4">
                                             {item.achievements.map((achievement, i) => (
@@ -483,7 +490,7 @@ export default function Vision() {
                     <div className="lg:hidden relative">
                         {/* Vertical connecting line */}
                         <div className="absolute left-6 md:left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-purple-500 via-green-500 to-amber-500 rounded-full"></div>
-                        
+
                         <div className="space-y-8 md:space-y-12">
                             {roadmap.map((item, idx) => (
                                 <div key={idx} className="relative pl-16 md:pl-20 group">
@@ -493,7 +500,7 @@ export default function Vision() {
                                             <item.icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
                                         </div>
                                     </div>
-                                    
+
                                     {/* Card */}
                                     <div className="bg-white rounded-2xl shadow-xl p-5 md:p-8 border-2 border-gray-100 hover:border-purple-400 hover:shadow-2xl transition-all duration-500">
                                         {/* Year & Phase */}
@@ -505,22 +512,22 @@ export default function Vision() {
                                                 Phase {idx + 1}
                                             </div>
                                         </div>
-                                        
+
                                         {/* Phase Title */}
                                         <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                                             {item.phase}
                                         </h3>
-                                        
+
                                         {/* Milestone */}
                                         <h4 className="text-base md:text-lg font-semibold text-gray-700 mb-3">
                                             {item.milestone}
                                         </h4>
-                                        
+
                                         {/* Description */}
                                         <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-6 border-l-4 border-purple-300 pl-4">
                                             {item.description}
                                         </p>
-                                        
+
                                         {/* Achievements */}
                                         <div className="grid sm:grid-cols-2 gap-3 md:gap-4">
                                             {item.achievements.map((achievement, i) => (
@@ -551,7 +558,7 @@ export default function Vision() {
                                 <div className="absolute top-10 left-10 w-40 h-40 bg-amber-500 rounded-full blur-3xl"></div>
                                 <div className="absolute bottom-10 right-10 w-60 h-60 bg-purple-500 rounded-full blur-3xl"></div>
                             </div>
-                            
+
                             {/* Premium badge */}
                             <div className="relative inline-block mb-6">
                                 <div className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 text-black text-xs md:text-sm font-black uppercase tracking-widest rounded-full shadow-lg shadow-amber-500/50">
@@ -559,37 +566,37 @@ export default function Vision() {
                                     Exclusive Opportunity
                                 </div>
                             </div>
-                            
+
                             {/* Premium heading */}
                             <h3 className="relative text-3xl md:text-4xl lg:text-5xl font-black mb-6 bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200 bg-clip-text text-transparent leading-tight">
                                 Join Us on This Journey
                             </h3>
-                            
+
                             {/* Premium divider */}
                             <div className="flex items-center justify-center gap-3 mb-6">
                                 <div className="w-12 md:w-16 h-0.5 bg-gradient-to-r from-transparent to-amber-500"></div>
                                 <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                                 <div className="w-12 md:w-16 h-0.5 bg-gradient-to-l from-transparent to-amber-500"></div>
                             </div>
-                            
+
                             {/* Premium description */}
                             <p className="relative text-base md:text-xl lg:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
                                 Be part of our <span className="text-amber-400 font-semibold">transformative journey</span> as we shape the future of <span className="text-purple-400 font-semibold">technology</span> and <span className="text-blue-400 font-semibold">innovation</span>
                             </p>
-                            
+
                             {/* Premium CTA buttons */}
                             <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <button className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 text-black text-base md:text-lg font-black rounded-xl shadow-2xl shadow-amber-500/50 hover:shadow-amber-500/70 hover:scale-105 transition-all duration-300 uppercase tracking-wide">
+                                <Link to="/careers/jobs" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 text-black text-base md:text-lg font-black rounded-xl shadow-2xl shadow-amber-500/50 hover:shadow-amber-500/70 hover:scale-105 transition-all duration-300 uppercase tracking-wide">
                                     <Rocket className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                                     Explore Opportunities
                                     <Zap className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                                </button>
-                                <button className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-amber-400/50 text-amber-400 text-base md:text-lg font-bold rounded-xl hover:bg-amber-400/10 hover:border-amber-400 hover:scale-105 transition-all duration-300 uppercase tracking-wide">
+                                </Link>
+                                <Link to="/company/learn-more" className="inline-flex items-center gap-2 px-10 py-4 bg-transparent border-2 border-amber-400/50 text-amber-400 text-base md:text-lg font-bold rounded-xl hover:bg-amber-400/10 hover:border-amber-400 hover:scale-105 transition-all duration-300 uppercase tracking-wide">
                                     Learn More
                                     <TrendingUp className="w-5 h-5" />
-                                </button>
+                                </Link>
                             </div>
-                            
+
                             {/* Premium stats bar */}
                             <div className="relative mt-12 pt-8 border-t border-amber-500/20">
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
@@ -620,9 +627,9 @@ export default function Vision() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 relative min-h-[700px]">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                    <img 
+                    <img
                         src={g14}
-                        alt="Commitment Background" 
+                        alt="Commitment Background"
                         className="w-full h-full object-cover object-center brightness-75"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/60"></div>
@@ -674,16 +681,16 @@ export default function Vision() {
                 <div className="relative max-w-6xl mx-auto">
                     {/* Top Badge */}
                     <div className="text-center mb-8">
-                        <span className="inline-block px-6 py-2 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 backdrop-blur-sm border border-purple-400/30 rounded-full mb-6 text-purple-300 text-sm font-bold uppercase tracking-wider\">\n                            Join Our Journey\n                        </span>
-                        
-                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-8 leading-tight\">\n                            Be Part of Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-blue-300 to-indigo-300\">Vision</span>\n                        </h2>
-                        
+                        <span className="inline-block px-6 py-2 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 backdrop-blur-sm border border-purple-400/30 rounded-full mb-6 text-purple-300 text-sm font-bold uppercase tracking-wider\">Join Our Journey</span>
+
+                        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-8 leading-tight\">Be Part of Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-blue-300 to-indigo-300\">Vision</span></h2>
+
                         <div className="flex items-center justify-center gap-3 mb-6">
                             <div className="w-16 md:w-24 h-0.5 bg-gradient-to-r from-transparent to-purple-400"></div>
                             <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                             <div className="w-16 md:w-24 h-0.5 bg-gradient-to-l from-transparent to-purple-400"></div>
                         </div>
-                        
+
                         <p className="text-base md:text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                             Join us in shaping the future of <span className="text-purple-300 font-semibold">technology</span> and <span className="text-indigo-300 font-semibold">innovation</span>. Together, we can achieve extraordinary things and create lasting impact.
                         </p>
@@ -691,15 +698,15 @@ export default function Vision() {
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-                        <button className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold rounded-xl shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 hover:scale-105 transition-all duration-300 text-lg">
+                        <Link to="/careers/jobs" className="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold rounded-xl shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 hover:scale-105 transition-all duration-300 text-lg">
                             <Rocket className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Explore Opportunities
                             <Zap className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold rounded-xl hover:bg-white/20 hover:border-white/50 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/company/learn-more" className="inline-flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-bold rounded-xl hover:bg-white/20 hover:border-white/50 hover:scale-105 transition-all duration-300 text-lg">
                             Learn More
                             <TrendingUp className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Stats Grid */}
@@ -747,11 +754,11 @@ export default function Vision() {
                     {/* Bottom Accent */}
                     <div className="mt-12 pt-8 border-t border-white/10 text-center">
                         <p className="text-gray-400 text-base flex items-center justify-center gap-2">
-                            Ready to transform your organization? 
-                            <span className="inline-flex items-center gap-1 text-purple-300 font-semibold cursor-pointer hover:text-purple-200 transition-colors">
-                                Get in touch 
+                            Ready to transform your organization?
+                            <Link to="/contact/touch" className="inline-flex items-center gap-1 text-purple-300 font-semibold cursor-pointer hover:text-purple-200 transition-colors">
+                                Get in touch
                                 <Zap className="w-4 h-4" />
-                            </span>
+                            </Link>
                         </p>
                     </div>
                 </div>

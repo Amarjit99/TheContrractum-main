@@ -17,66 +17,52 @@ export default function ConsultingSection() {
   const services = [
     {
       number: "01",
-      title: "GIS",
-      desc: "Comprehensive geospatial and IT services for businesses.",
-      icon: <Map className="text-primary w-8 h-8" />,
-      bgImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=500&h=400&fit=crop",
-    },
-    {
-      number: "02",
       title: "CS/IT",
-      desc: "IT staffing and technology solutions for modern enterprises.",
+      desc: "TheContractum Technology’s IT Staffing group provides clients with the tools and talent they need...",
       icon: <Cpu className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=400&fit=crop",
     },
     {
-      number: "03",
-      title: "Ecommerce",
-      desc: "Complete ecommerce and payment integration solutions.",
+      number: "02",
+      title: "E-commerce",
+      desc: "TheContractum creates a platform for the Future in the E-commerce services segment of the company..",
       icon: <ShoppingCart className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&h=400&fit=crop",
     },
     {
-      number: "04",
-      title: "Telecommunication",
-      desc: "Advanced telecommunication and connectivity services.",
-      icon: <Phone className="text-primary w-8 h-8" />,
-      bgImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=400&fit=crop",
+      number: "03",
+      title: "GIS",
+      desc: "As a leading business service in the GIS domain, TheContractum offers geospatial and IT services..",
+      icon: <Map className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=500&h=400&fit=crop",
     },
     {
-      number: "05",
-      title: "Human Resource",
-      desc: "Workforce management and HR consulting solutions.",
+      number: "04",
+      title: "Human Resources",
+      desc: "TheContractum staffing services are designed to help your business simplify operations by...",
       icon: <User className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&h=400&fit=crop",
     },
     {
-      number: "06",
-      title: "BPO",
-      desc: "Outsourcing solutions to optimize business operations.",
-      icon: <Globe className="text-primary w-8 h-8" />,
-      bgImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=400&fit=crop",
-    },
-    {
-      number: "07",
-      title: "Market Research",
-      desc: "Data-driven research and market analysis services.",
+      number: "05",
+      title: "Market Research & Analysis and Survey",
+      desc: "The key to gaining competitive advantages lies in having an in-depth...",
       icon: <BarChart3 className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=400&fit=crop",
     },
     {
-      number: "08",
-      title: "Education",
-      desc: "Digital learning and institutional management solutions.",
-      icon: <BookOpen className="text-primary w-8 h-8" />,
-      bgImage: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&h=400&fit=crop",
+      number: "06",
+      title: "Telecommunication",
+      desc: "Telecommunications engineers use their technical expertise to provide a range of services and...",
+      icon: <Phone className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=400&fit=crop",
     },
     {
-      number: "09",
-      title: "Healthcare",
-      desc: "Hospital management and telemedicine platforms.",
-      icon: <HeartPulse className="text-primary w-8 h-8" />,
-      bgImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop",
+      number: "07",
+      title: "Business Process Outsourcing",
+      desc: "TheContractum provides the BPO (Business Process Outsourcing) services to solution the clients...",
+      icon: <Globe className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=400&fit=crop",
     },
   ];
 
@@ -118,7 +104,7 @@ export default function ConsultingSection() {
               className="group bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-500 relative border border-gray-200 overflow-hidden"
             >
               {/* Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
-              <div 
+              <div
                 className="absolute inset-0 bg-cover bg-center opacity-30 md:opacity-0 md:group-hover:opacity-50 transition-opacity duration-500"
                 style={{ backgroundImage: `url(${service.bgImage})` }}
               ></div>

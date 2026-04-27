@@ -6,7 +6,7 @@ import email from "../assets/email.png";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const Registration = () => {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", subject: "", otherSubject: "", message: "" });
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -19,18 +19,23 @@ const Registration = () => {
     setStatus("loading");
     setErrorMsg("");
 
+    const submissionData = {
+      ...form,
+      subject: form.subject === "Others" ? form.otherSubject : form.subject,
+    };
+
     try {
       const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(submissionData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setStatus("success");
-        setForm({ name: "", email: "", subject: "", message: "" });
+        setForm({ name: "", email: "", subject: "", otherSubject: "", message: "" });
       } else {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
@@ -43,10 +48,10 @@ const Registration = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      
+
       {/* LEFT SECTION */}
       <div className="lg:w-1/2 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-12 flex flex-col justify-center relative overflow-hidden">
-        
+
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -93,16 +98,35 @@ const Registration = () => {
             </div>
 
             <div className="relative group">
-              <input
-                type="text"
+              <select
                 name="subject"
                 value={form.subject}
                 onChange={handleChange}
-                placeholder="Subject"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
-              />
+                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none"
+              >
+                <option value="" className="bg-gray-900">Select Subject</option>
+                <option value="Internship" className="bg-gray-900">Internship</option>
+                <option value="Mentorship" className="bg-gray-900">Mentorship</option>
+                <option value="Counseling" className="bg-gray-900">Counseling</option>
+                <option value="Job" className="bg-gray-900">Job</option>
+                <option value="Others" className="bg-gray-900">Others</option>
+              </select>
             </div>
+
+            {form.subject === "Others" && (
+              <div className="relative group animate-fadeIn">
+                <input
+                  type="text"
+                  name="otherSubject"
+                  value={form.otherSubject}
+                  onChange={handleChange}
+                  placeholder="Specify Subject"
+                  required
+                  className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
+                />
+              </div>
+            )}
 
             <div className="relative group">
               <textarea
@@ -150,7 +174,7 @@ const Registration = () => {
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-100 rounded-full -mr-32 -mt-32 opacity-30"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-100 rounded-full -ml-24 -mb-24 opacity-30"></div>
-        
+
         <div className="relative z-10 max-w-md mx-auto w-full">
           <div className="mb-8">
             <span className="inline-block px-4 py-2 bg-red-100 text-primary text-xs font-bold uppercase tracking-widest rounded-full mb-4">

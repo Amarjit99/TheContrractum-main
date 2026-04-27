@@ -5,6 +5,23 @@ const Visitor = require('../models/Visitor');
 const JobApplication = require('../models/JobApplication');
 const Partner = require('../models/Partner');
 const Blog = require('../models/Blog');
+const PartnerApplication = require('../models/PartnerApplication');
+const AdvisorApplication = require('../models/AdvisorApplication');
+const DemoRequest = require('../models/DemoRequest');
+const ExpertConsultation = require('../models/ExpertConsultation');
+const QuoteApplication = require('../models/QuoteApplication');
+const SupportTicket = require('../models/SupportTicket');
+const NewsletterSubscription = require('../models/NewsletterSubscription');
+const Intern = require('../models/Intern');
+const Affiliate = require('../models/Affiliate');
+const Survey = require('../models/Survey');
+const Referral = require('../models/Referral');
+const Notification = require('../models/Notification');
+const AdminRegistration = require('../models/AdminRegistration');
+const MiniEvent = require('../models/MiniEvent');
+const Feedback = require('../models/Feedback');
+const VolunteerApplication = require('../models/VolunteerApplication');
+const AdminDetail = require('../models/Admin');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -17,7 +34,7 @@ router.use(protect, adminOnly);
 router.get('/stats', async (req, res) => {
   try {
     const [
-      totalUsers, totalContacts, totalVisitors, 
+      totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs
     ] = await Promise.all([
       User.countDocuments(),
@@ -27,17 +44,111 @@ router.get('/stats', async (req, res) => {
       Partner.countDocuments(),
       Blog.countDocuments(),
     ]);
-    
+
     const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(10);
     const recentApplications = await JobApplication.find().sort({ createdAt: -1 }).limit(5);
 
-    res.json({ 
-      totalUsers, totalContacts, totalVisitors, 
+    res.json({
+      totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
-      recentContacts, recentApplications 
+      recentContacts, recentApplications
     });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch stats', error: err.message });
+  }
+});
+
+// GET /api/admin/form-stats — Dynamic form stats for dashboard visuals
+router.get('/form-stats', async (req, res) => {
+  try {
+    const [
+      contactCount, jobAppsCount, partnerAppsCount, advisorAppsCount,
+      demoRequestsCount, expertConsultsCount, quoteAppsCount,
+      supportTicketsCount, newsletterCount, internAppsCount,
+      affiliateAppsCount, surveyResponsesCount, referralCount,
+      staffRegistrationsCount, miniEvents, feedbackCount, volunteerAppsCount
+    ] = await Promise.all([
+      Contact.countDocuments(),
+      JobApplication.countDocuments(),
+      PartnerApplication.countDocuments(),
+      AdvisorApplication.countDocuments(),
+      DemoRequest.countDocuments(),
+      ExpertConsultation.countDocuments(),
+      QuoteApplication.countDocuments(),
+      SupportTicket.countDocuments(),
+      NewsletterSubscription.countDocuments(),
+      Intern.countDocuments(),
+      Affiliate.countDocuments(),
+      Survey.countDocuments(),
+      Referral.countDocuments(),
+      AdminRegistration.countDocuments({ status: 'pending' }),
+      MiniEvent.find(),
+      Feedback.countDocuments(),
+      VolunteerApplication.countDocuments()
+    ]);
+
+    const rsvpCount = miniEvents.reduce((acc, curr) => acc + (curr.attendees ? curr.attendees.length : 0), 0);
+
+    const stats = [
+      { name: 'Contact Us', count: contactCount },
+      { name: 'Job Apps', count: jobAppsCount },
+      { name: 'Partner Apps', count: partnerAppsCount },
+      { name: 'Advisor Apps', count: advisorAppsCount },
+      { name: 'Demo Requests', count: demoRequestsCount },
+      { name: 'Expert Consults', count: expertConsultsCount },
+      { name: 'Quote Apps', count: quoteAppsCount },
+      { name: 'Support Tickets', count: supportTicketsCount },
+      { name: 'Newsletters', count: newsletterCount },
+      { name: 'Intern Apps', count: internAppsCount },
+      { name: 'Affiliate Apps', count: affiliateAppsCount },
+      { name: 'User Surveys', count: surveyResponsesCount },
+      { name: 'Referrals', count: referralCount },
+      { name: 'Staff Requests', count: staffRegistrationsCount },
+      { name: 'Event RSVPs', count: rsvpCount },
+      { name: 'User Feedback', count: feedbackCount },
+      { name: 'Volunteer Apps', count: volunteerAppsCount }
+    ];
+
+    const totalResponses = stats.reduce((acc, curr) => acc + curr.count, 0);
+
+    res.json({
+      totalForms: stats.length,
+      totalResponses,
+      stats
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch form stats', error: err.message });
+  }
+});
+
+// GET /api/admin/notifications/unread-count — Number of unread notifications
+router.get('/notifications/unread-count', async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({ isRead: false });
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch unread count' });
+  }
+});
+
+// GET /api/admin/notifications — Recent notifications
+router.get('/notifications', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 20;
+    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(limit);
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch notifications' });
+  }
+});
+
+// PUT /api/admin/notifications/mark-read — Mark all notifications as read
+router.put('/notifications/mark-read', async (req, res) => {
+  try {
+    await Notification.updateMany({ isRead: false }, { isRead: true });
+    res.json({ message: 'All notifications marked as read' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to mark notifications as read' });
   }
 });
 
@@ -47,12 +158,34 @@ router.get('/users', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const search = req.query.search || '';
-    const query = search ? { $or: [{ name: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }] } : {};
-    const [users, total] = await Promise.all([
-      User.find(query).select('-password').sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit),
+    const role = req.query.role || '';
+    const query = {};
+    if (search) query.$or = [{ name: new RegExp(search, 'i') }, { email: new RegExp(search, 'i') }];
+    if (role) query.role = role;
+
+    let [users, total] = await Promise.all([
+      User.find(query).select('-password').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
       User.countDocuments(query),
     ]);
-    res.json({ users, total, page, pages: Math.ceil(total/limit) });
+
+    // If fetching admins, merge with AdminDetail (admindb) data
+    if (role === 'admin') {
+      const adminDetails = await AdminDetail.find({ email: { $in: users.map(u => u.email) } });
+      users = users.map(u => {
+        const detail = adminDetails.find(d => d.email === u.email);
+        if (detail) {
+          return {
+            ...u.toObject(),
+            adminSubRole: detail.adminSubRole,
+            adminPermissions: detail.adminPermissions,
+            joiningDate: detail.joiningDate
+          };
+        }
+        return u;
+      });
+    }
+
+    res.json({ users, total, page, pages: Math.ceil(total / limit) });
   } catch {
     res.status(500).json({ message: 'Failed to fetch users' });
   }
@@ -61,14 +194,40 @@ router.get('/users', async (req, res) => {
 // PUT /api/admin/users/:id/role — Promote / demote
 router.put('/users/:id/role', async (req, res) => {
   try {
-    const { role } = req.body;
-    if (!['user', 'admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
+    const { role, isApproved, joiningDate } = req.body;
+    if (!['user', 'admin', 'super-admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
     if (req.params.id === req.user._id.toString()) return res.status(400).json({ message: 'Cannot change your own role' });
-    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select('-password');
+    
+    const update = { role };
+    if (isApproved !== undefined) update.isApproved = isApproved;
+    if (joiningDate !== undefined) update.joiningDate = joiningDate;
+
+    const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch {
     res.status(500).json({ message: 'Failed to update role' });
+  }
+});
+
+// PUT /api/admin/users/:id/admin-details — Update admin-specific metadata
+router.put('/users/:id/admin-details', async (req, res) => {
+  try {
+    const { adminSubRole, adminPermissions, joiningDate, isApproved } = req.body;
+    
+    const update = {
+      adminSubRole,
+      adminPermissions,
+      joiningDate,
+      isApproved: isApproved !== undefined ? isApproved : true
+    };
+
+    const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update admin details', error: err.message });
   }
 });
 
@@ -90,10 +249,10 @@ router.get('/contacts', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const [contacts, total] = await Promise.all([
-      Contact.find().sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit),
+      Contact.find().sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
       Contact.countDocuments(),
     ]);
-    res.json({ contacts, total, page, pages: Math.ceil(total/limit) });
+    res.json({ contacts, total, page, pages: Math.ceil(total / limit) });
   } catch {
     res.status(500).json({ message: 'Failed to fetch contacts' });
   }
@@ -107,6 +266,63 @@ router.delete('/contacts/:id', async (req, res) => {
     res.json({ message: 'Contact deleted' });
   } catch {
     res.status(500).json({ message: 'Failed to delete contact' });
+  }
+});
+
+// GET /api/admin/pending-registrations — Pending admin requests
+router.get('/pending-registrations', async (req, res) => {
+  try {
+    const list = await AdminRegistration.find({ status: 'pending' }).sort({ createdAt: -1 });
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch pending registrations' });
+  }
+});
+
+// POST /api/admin/approve-registration/:id — Approve an admin registration
+router.post('/approve-registration/:id', async (req, res) => {
+  try {
+    const reg = await AdminRegistration.findById(req.params.id);
+    if (!reg) return res.status(404).json({ message: 'Registration not found' });
+    if (reg.status !== 'pending') return res.status(400).json({ message: 'Already processed' });
+
+    // Derive names and mobile for legacy records or missing fields
+    const firstName = reg.firstName || reg.name?.split(' ')[0] || 'Admin';
+    const lastName = reg.lastName || reg.name?.split(' ').slice(1).join(' ') || 'Staff';
+    const mobile = reg.mobile || '0000000000';
+
+    // 1. Create the User (authentication)
+    const user = await User.create({
+      firstName,
+      lastName,
+      email: reg.email,
+      password: reg.password, // Plain password; will be hashed by User model pre-save
+      role: 'admin',
+      isApproved: true,
+      mobile: mobile,
+      adminSubRole: reg.adminSubRole,
+      joiningDate: reg.joiningDate
+    });
+
+    // 2. Create the Admin Detail (stored in admindb collection)
+    await AdminDetail.create({
+      userId: user._id,
+      name: `${firstName} ${lastName}`,
+      email: reg.email,
+      adminSubRole: reg.adminSubRole,
+      adminPermissions: reg.adminPermissions,
+      joiningDate: reg.joiningDate,
+      registrationId: reg._id
+    });
+
+    // 3. Update status
+    reg.status = 'approved';
+    await reg.save();
+
+    res.json({ message: 'Registration approved successfully!' });
+  } catch (err) {
+    console.error('Approval Error:', err);
+    res.status(500).json({ message: 'Failed to approve registration', error: err.message });
   }
 });
 

@@ -2,15 +2,22 @@ import { useEffect, useState } from "react";
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const DynamicServices = ({ category }) => {
+const DynamicServices = ({ category, subCategory }) => {
   const [services, setServices] = useState([]);
   
   useEffect(() => {
     fetch(`${API}/api/cms/services`)
       .then(r => r.json())
-      .then(data => setServices(data.filter(s => s.category === category && s.status === 'Active')))
+      .then(data => {
+        const filtered = data.filter(s => {
+          const matchCat = s.category === category;
+          const matchSub = subCategory ? s.subCategory === subCategory : true;
+          return matchCat && matchSub && s.status === 'Active';
+        });
+        setServices(filtered);
+      })
       .catch(console.error);
-  }, [category]);
+  }, [category, subCategory]);
 
   if (services.length === 0) return null;
 

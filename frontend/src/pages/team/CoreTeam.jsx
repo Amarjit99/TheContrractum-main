@@ -8,24 +8,28 @@ export default function CoreTeam() {
             role: "Founder & CEO",
             bio: "Visionary leader with 15+ years in tech innovation. Driving Contrractum's mission to reshape digital landscapes.",
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
+            linkedin: "https://www.linkedin.com/in/amit-verma-tech-leader",
         },
         {
             name: "Sarah Jenkins",
             role: "Chief Technology Officer",
             bio: "Expert in AI & Blockchain architectures. Leading our engineering teams to build scalable, future-proof solutions.",
             image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+            linkedin: "https://www.linkedin.com/in/sarah-jenkins-cto-expert",
         },
         {
             name: "David Chen",
             role: "Head of Operations",
             bio: "Operational excellence strategist ensuring seamless delivery and execution across all global projects.",
             image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
+            linkedin: "https://www.linkedin.com/in/david-chen-ops-strategist",
         },
         {
             name: "Priya Sharma",
             role: "Chief Marketing Officer",
             bio: "Brand builder and storyteller connecting our innovations with the communities that need them most.",
             image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
+            linkedin: "https://www.linkedin.com/in/priya-sharma-cmo-branding",
         },
     ];
 
@@ -46,18 +50,18 @@ export default function CoreTeam() {
                             The visionaries and strategists guiding The Contrractum towards a smarter, more connected future.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl">
+                            <Link to="/company/leadership/visionary" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl hover:bg-white/20 transition-all cursor-pointer">
                                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                                     <Target className="w-5 h-5 text-white" />
                                 </div>
                                 <p className="text-sm font-bold text-white">Visionary Leadership</p>
-                            </div>
-                            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl">
+                            </Link>
+                            <Link to="/company/leadership/strategic-excellence" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl hover:bg-white/20 transition-all cursor-pointer">
                                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
                                     <Rocket className="w-5 h-5 text-white" />
                                 </div>
                                 <p className="text-sm font-bold text-white">Strategic Excellence</p>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -98,7 +102,7 @@ export default function CoreTeam() {
                                         {leader.bio}
                                     </p>
                                     <div className="flex justify-center space-x-3">
-                                        <a href="#" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
+                                        <a href={leader.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
                                             <Linkedin size={18} />
                                         </a>
                                         <a href="#" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-400 rounded-full transition transform hover:scale-110">

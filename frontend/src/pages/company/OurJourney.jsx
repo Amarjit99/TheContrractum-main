@@ -1,21 +1,36 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Rocket, Users, Sparkles, Globe, Shield, Target, BookOpen, Star, Award, Heart, ArrowRight, TrendingUp, Eye } from 'lucide-react';
 import journey from '../../assets/team.jpeg';
+import healthcareImg from '../../assets/Healthcare.png';
+import ecommerceImg from '../../assets/eco.jpg';
+import financeImg from '../../assets/bank.webp';
+import edtechImg from '../../assets/educationn.png';
+import foundationImg from '../../assets/foundation.webp';
+import clientImg from '../../assets/Business.jpg';
+import expansionImg from '../../assets/city.jpg';
+import teamGrowthImg from '../../assets/growth.webp';
+import globalReachImg from '../../assets/g11.png';
+import digitalTransImg from '../../assets/it.avif';
+import innovationLabImg from '../../assets/innovation.webp';
+import recognitionImg from '../../assets/success.webp';
+import leaderImg from '../../assets/leadership.webp';
+import sustainabilityImg from '../../assets/commitment.webp';
 const OurJourney = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredMilestone, setHoveredMilestone] = useState(null);
 
   const companyMilestones = [
-    { id: 1, year: '2015', title: 'Foundation Year', description: 'Started with a vision to revolutionize technology. A team of 5 passionate developers began from a small office.' },
-    { id: 2, year: '2016', title: 'First Major Client', description: 'Secured our first enterprise client and delivered a groundbreaking digital platform.' },
-    { id: 3, year: '2017', title: 'Market Expansion', description: 'Expanded services to 5 major industries: healthcare, finance, education, retail, manufacturing.' },
-    { id: 4, year: '2018', title: 'Team Growth', description: 'Grew from 5 to 50+ employees with dedicated departments for design, development, QA.' },
-    { id: 5, year: '2019', title: 'Global Reach', description: 'Opened offices in USA, UK, Australia, Canada, and India with 24/7 operations.' },
-    { id: 6, year: '2020', title: 'Digital Transformation', description: 'Transitioned to remote-first and launched 50+ digital transformation projects.' },
-    { id: 7, year: '2021', title: 'Innovation Lab', description: 'Established innovation lab focusing on AI, ML, IoT, Blockchain, Cloud solutions.' },
-    { id: 8, year: '2022', title: 'Industry Recognition', description: 'Awarded as "Best Digital Solutions Provider" and Forbes 30 Under 40.' },
-    { id: 9, year: '2023', title: 'Industry Leader', description: 'Completed 500+ projects with 200+ team members across 5 continents.' },
-    { id: 10, year: '2024', title: 'Sustainability Focus', description: 'Achieved carbon neutrality and launched sustainability-focused solutions.' }
+    { id: 1, year: '2015', title: 'Foundation Year', description: 'Started with a vision to revolutionize technology. A team of 5 passionate developers began from a small office.', image: foundationImg },
+    { id: 2, year: '2016', title: 'First Major Client', description: 'Secured our first enterprise client and delivered a groundbreaking digital platform.', image: clientImg },
+    { id: 3, year: '2017', title: 'Market Expansion', description: 'Expanded services to 5 major industries: healthcare, finance, education, retail, manufacturing.', image: expansionImg },
+    { id: 4, year: '2018', title: 'Team Growth', description: 'Grew from 5 to 50+ employees with dedicated departments for design, development, QA.', image: teamGrowthImg },
+    { id: 5, year: '2019', title: 'Global Reach', description: 'Opened offices in USA, UK, Australia, Canada, and India with 24/7 operations.', image: globalReachImg },
+    { id: 6, year: '2020', title: 'Digital Transformation', description: 'Transitioned to remote-first and launched 50+ digital transformation projects.', image: digitalTransImg },
+    { id: 7, year: '2021', title: 'Innovation Lab', description: 'Established innovation lab focusing on AI, ML, IoT, Blockchain, Cloud solutions.', image: innovationLabImg },
+    { id: 8, year: '2022', title: 'Industry Recognition', description: 'Awarded as "Best Digital Solutions Provider" and Forbes 30 Under 40.', image: recognitionImg },
+    { id: 9, year: '2023', title: 'Industry Leader', description: 'Completed 500+ projects with 200+ team members across 5 continents.', image: leaderImg },
+    { id: 10, year: '2024', title: 'Sustainability Focus', description: 'Achieved carbon neutrality and launched sustainability-focused solutions.', image: sustainabilityImg }
   ];
 
   const coreValues = [
@@ -37,10 +52,10 @@ const OurJourney = () => {
   ];
 
   const successStories = [
-    { id: 1, title: 'Healthcare Revolution', description: 'Transformed legacy healthcare system into cloud platform for 2M+ users.', impact: '+300% Efficiency', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop' },
-    { id: 2, title: 'E-Commerce Excellence', description: 'Built scalable platform processing $500M+ with 99.99% uptime.', impact: '+250% Revenue', image: 'https://images.unsplash.com/photo-1563461369811-4f56a08ca94f?w=400&h=300&fit=crop' },
-    { id: 3, title: 'Financial Transform', description: 'Modernized banking systems with AI insights and blockchain security.', impact: '+150% Quality', image: 'https://images.unsplash.com/photo-1563206965-74185b417601?w=400&h=300&fit=crop' },
-    { id: 4, title: 'EdTech Innovation', description: 'Connected 1M+ students with AI-powered personalized learning.', impact: '+400% Engagement', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop' }
+    { id: 1, title: 'Healthcare Revolution', description: 'Transformed legacy healthcare system into cloud platform for 2M+ users.', impact: '+300% Efficiency', image: healthcareImg },
+    { id: 2, title: 'E-Commerce Excellence', description: 'Built scalable platform processing $500M+ with 99.99% uptime.', impact: '+250% Revenue', image: ecommerceImg },
+    { id: 3, title: 'Financial Transform', description: 'Modernized banking systems with AI insights and blockchain security.', impact: '+150% Quality', image: financeImg },
+    { id: 4, title: 'EdTech Innovation', description: 'Connected 1M+ students with AI-powered personalized learning.', impact: '+400% Engagement', image: edtechImg }
   ];
 
   const visionPoints = [
@@ -60,14 +75,14 @@ const OurJourney = () => {
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-4 md:mb-6 drop-shadow-2xl tracking-wide">From Vision to Innovation</h1>
           <p className="text-xl md:text-2xl font-light mb-8 drop-shadow-lg tracking-wide">Transformed Over a Decade of Excellence and Growth</p>
           <div className="flex gap-3 md:gap-5 justify-center flex-wrap">
-            <button className="inline-flex items-center gap-3 px-6 md:px-9 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            <Link to="/resources/events" className="inline-flex items-center gap-3 px-6 md:px-9 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>Explore Our Story</span>
               <ArrowRight className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center gap-3 px-6 md:px-9 py-3 bg-transparent border-2 border-white text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+            </Link>
+            <Link to="/projects/case-studies" className="inline-flex items-center gap-3 px-6 md:px-9 py-3 bg-transparent border-2 border-white text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
               <span>View Case Studies</span>
               <Sparkles className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -142,9 +157,12 @@ const OurJourney = () => {
                     : 'hover:border-blue-600 hover:transform hover:-translate-y-3 hover:shadow-2xl'
                 }`}
               >
-                <div className="w-full h-40 rounded-lg overflow-hidden mb-4 bg-gradient-to-br from-blue-100 to-cyan-100 group/img">
-                  <div className="w-full h-full object-cover bg-gradient-to-br from-blue-400 to-cyan-400">
-                  </div>
+                <div className="w-full h-48 rounded-lg overflow-hidden mb-6 bg-gray-100 group/img border border-gray-200 shadow-inner">
+                  <img 
+                    src={milestone.image} 
+                    alt={milestone.title}
+                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+                  />
                 </div>
                 <div className="text-3xl md:text-4xl font-bold text-blue-600 transition-all duration-300 group-hover:text-cyan-500 group-hover:scale-110">{milestone.year}</div>
                 <h3 className="text-xl md:text-2xl font-bold text-gray-800 mt-2 mb-2 transition-colors duration-300 group-hover:text-blue-600">{milestone.title}</h3>
@@ -216,10 +234,10 @@ const OurJourney = () => {
                 <div className="p-6">
                   <h3 className="text-xl md:text-2xl font-bold text-blue-600 mb-2">{story.title}</h3>
                   <p className="text-gray-700 mb-4 text-base leading-relaxed">{story.description}</p>
-                  <a href="#" className="text-blue-600 font-bold hover:text-cyan-500 transition-colors duration-300 inline-flex items-center gap-2">
+                  <Link to="/projects/case-studies" className="text-blue-600 font-bold hover:text-cyan-500 transition-colors duration-300 inline-flex items-center gap-2">
                     <span>Read Case Study</span>
                     <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -309,10 +327,10 @@ const OurJourney = () => {
                   <span className="text-base md:text-lg">Work-life balance and wellness programs</span>
                 </li>
               </ul>
-              <button className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold uppercase tracking-wider rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full md:w-auto">
+              <Link to="/contact/touch" className="inline-flex items-center justify-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold uppercase tracking-wider rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full md:w-auto">
                 <span>Join Our Team</span>
                 <ArrowRight className="w-5 h-5" />
-              </button>
+              </Link>
             </div>
             <div className="relative h-96 md:h-full rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 group">
               <img 
@@ -358,14 +376,14 @@ const OurJourney = () => {
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-wide drop-shadow-lg">Ready to Transform Your Business?</h2>
           <p className="text-lg md:text-xl text-gray-100 mb-10 tracking-wide">Join hundreds of companies already partnered with us for digital transformation</p>
           <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <button className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-white text-blue-900 font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300">
+            <Link to="/contact/touch" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-white text-blue-900 font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300">
               <span>Get Started Today</span>
               <ArrowRight className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-transparent border-3 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-white hover:text-blue-900 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+            </Link>
+            <Link to="/contact/request-demo" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-transparent border-3 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-white hover:text-blue-900 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
               <span>Schedule a Demo</span>
               <Sparkles className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

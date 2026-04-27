@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sprout, Sun, CloudRain, Tractor, BarChart2, Leaf, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import agri from "../../assets/agri.jpg"
 export default function Agriculture() {
+    const [showAgritech, setShowAgritech] = useState(false);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -32,7 +34,7 @@ export default function Agriculture() {
                                 Request Demo
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/solutions/sustainability" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
+                            <Link to="/solutions/business/gis" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
                                 Farming Solutions
                             </Link>
                         </div>
@@ -112,10 +114,33 @@ export default function Agriculture() {
                             </div>
 
                             <div className="mt-10">
-                                <Link to="/solutions/sustainability" className="text-primary font-bold hover:text-green-700 inline-flex items-center gap-2 group">
+                                <button
+                                    onClick={() => setShowAgritech(!showAgritech)}
+                                    className="text-primary font-bold hover:text-green-700 inline-flex items-center gap-2 group cursor-pointer"
+                                >
                                     Explore AgriTech
-                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
+                                    <ArrowRight size={20} className={`transition-transform duration-300 ${showAgritech ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
+                                </button>
+                                {showAgritech && (
+                                    <div className="mt-5 space-y-4 text-gray-800 font-medium animate-fade-in-up">
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-green-500" /></div>
+                                            <span className="text-lg">Predictive Weather Modeling Integration</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-green-500" /></div>
+                                            <span className="text-lg">AI-Supported Crop Rotation Algorithms</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-green-500" /></div>
+                                            <span className="text-lg">Autonomous Harvesting Drone Fleets</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-green-500" /></div>
+                                            <span className="text-lg">Commodity Pricing Oracle Feeds</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="relative">
@@ -170,10 +195,10 @@ export default function Agriculture() {
                                 Join the new era of sustainable, high-tech farming.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/quote" className="px-10 py-4 bg-white text-green-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
+                                <Link to="/contact/touch" className="px-10 py-4 bg-white text-green-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Contact Us
                                 </Link>
-                                <Link to="/company/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
+                                <Link to="/company/leadership/founders" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
                                     About Us
                                 </Link>
                             </div>

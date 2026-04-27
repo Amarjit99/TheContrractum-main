@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ShoppingBag, TrendingUp, Users, RefreshCw, Truck, Smartphone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import eco from "../../assets/eco.jpg"
 import ecommerceImg from "../../assets/ecommerce.jfif"
 export default function Retail() {
+    const [showUpgrade, setShowUpgrade] = useState(false);
+    const [showStart, setShowStart] = useState(false);
+    const [showLearn, setShowLearn] = useState(false);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -16,7 +20,7 @@ export default function Retail() {
 
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                     <div className="max-w-3xl">
-                       {/* <div className="inline-block px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-bold uppercase tracking-wider mb-6 border border-white/30">
+                        {/* <div className="inline-block px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-bold uppercase tracking-wider mb-6 border border-white/30">
                             <span className="flex items-center gap-2"><ShoppingBag size={16} />Retail & Ecommerce</span>
                         </div> */}
                         <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
@@ -29,11 +33,11 @@ export default function Retail() {
                             Unifying physical and digital commerce with omnichannel strategies, AI-driven personalization, and smart supply chain solutions.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/contact/touch" className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Request Strategy
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/solutions/business" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
+                            <Link to="/solutions/business/csit" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
                                 Explore Services
                             </Link>
                         </div>
@@ -122,10 +126,33 @@ export default function Retail() {
                             </div>
 
                             <div className="mt-10">
-                                <Link to="/contact/touch" className="text-primary font-bold hover:text-primary-dark inline-flex items-center gap-2 group">
-                                    Upgrade your store
-                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
+                                <button
+                                    onClick={() => setShowUpgrade(!showUpgrade)}
+                                    className="text-primary font-bold hover:text-primary-dark inline-flex items-center gap-2 group focus:outline-none cursor-pointer"
+                                >
+                                    {showUpgrade ? 'Hide store upgrades' : 'Upgrade your store'}
+                                    <ArrowRight size={20} className={`transition-transform duration-300 ${showUpgrade ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
+                                </button>
+                                {showUpgrade && (
+                                    <div className="mt-5 space-y-4 text-gray-800 font-medium animate-fade-in-up">
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-purple-500" /></div>
+                                            <span className="text-lg">Predictive Inventory Management</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-purple-500" /></div>
+                                            <span className="text-lg">AI-Powered Product Recommendations</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-purple-500" /></div>
+                                            <span className="text-lg">Seamless Omnichannel Checkout</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-purple-500" /></div>
+                                            <span className="text-lg">Automated Loyalty Campaigns</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -170,13 +197,45 @@ export default function Retail() {
                             <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                                 Don't just sell—create experiences. Let's build a retail ecosystem that customers love.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/quote" className="px-10 py-4 bg-white text-purple-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
-                                    Get Started
-                                </Link>
-                                <Link to="/company/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
-                                    Learn More
-                                </Link>
+                            <div className="flex flex-col gap-4 justify-center items-center">
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <button
+                                        onClick={() => setShowStart(!showStart)}
+                                        className="px-10 py-4 bg-white text-purple-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
+                                    >
+                                        Get Started
+                                        <ArrowRight size={20} className={`transition-transform duration-300 ${showStart ? 'rotate-90' : ''}`} />
+                                    </button>
+                                    <button
+                                        onClick={() => setShowLearn(!showLearn)}
+                                        className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                                    >
+                                        Learn More
+                                        <ArrowRight size={20} className={`transition-transform duration-300 ${showLearn ? 'rotate-90' : ''}`} />
+                                    </button>
+                                </div>
+
+                                {showStart && (
+                                    <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-left w-full max-w-xl animate-fade-in-up">
+                                        <h4 className="font-bold text-white mb-3 text-lg">Kickstart Your Digital Transformation:</h4>
+                                        <ul className="space-y-2 text-gray-200 list-disc list-inside">
+                                            <li>Phase 1: Comprehensive System Audit & Strategy Alignment</li>
+                                            <li>Phase 2: Pilot Deployment & API Integration Setup</li>
+                                            <li>Phase 3: Omnichannel Rollout & Team Training</li>
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {showLearn && (
+                                    <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-left w-full max-w-xl animate-fade-in-up">
+                                        <h4 className="font-bold text-white mb-3 text-lg">Deep Dive Into Our Retail Ecosystem:</h4>
+                                        <ul className="space-y-2 text-gray-200 list-disc list-inside">
+                                            <li>Proprietary Data-Lake Architectures for Retail Analytics</li>
+                                            <li>AI-powered Demand Forecasting Models</li>
+                                            <li>Globally Compliant Payment Gateway Engineering</li>
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

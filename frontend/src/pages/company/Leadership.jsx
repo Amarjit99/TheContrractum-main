@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Crown, Target, Lightbulb, Users, TrendingUp, ArrowRight, Sparkles } from "lucide-react";
 import leadership from "../../assets/leadership.webp";
 import management from "../../assets/management.png";
@@ -6,7 +7,7 @@ export default function Leadership() {
     return (
         <div className="bg-white">
             {/* Hero Section with Background Image */}
-            <div 
+            <div
                 className="relative h-[600px] flex items-center justify-start overflow-hidden"
                 style={{
                     backgroundImage: `url(${leadership})`,
@@ -15,7 +16,7 @@ export default function Leadership() {
                 }}
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-transparent"></div>
-                
+
                 {/* Content */}
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
                     {/* <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-6">
@@ -28,14 +29,14 @@ export default function Leadership() {
                         The visionaries and strategists guiding The Contrractum towards a smarter, more connected future
                     </p>
                     <div className="flex flex-wrap gap-4 mb-10">
-                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+                        <Link to="/company/leadership/visionary" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">
                             <Target className="w-5 h-5 text-white" />
                             <p className="text-sm font-semibold text-white">Visionary Leadership</p>
-                        </div>
-                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+                        </Link>
+                        <Link to="/company/leadership/strategic-excellence" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">
                             <Sparkles className="w-5 h-5 text-white" />
                             <p className="text-sm font-semibold text-white">Strategic Excellence</p>
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -68,10 +69,10 @@ export default function Leadership() {
                         <p className="text-gray-700 text-lg leading-relaxed mb-6">
                             Our founders have pioneered innovation and established the core values that drive our organization forward.
                         </p>
-                        <a href="#/company/leadership/founders" className="group inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
+                        <Link to="/company/leadership/founders" className="group inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
                             Meet Our Founders
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Management Team Card */}
@@ -88,10 +89,15 @@ export default function Leadership() {
                         <p className="text-gray-700 text-lg leading-relaxed mb-6">
                             Our executive team brings decades of experience in technology, business operations, and strategic growth.
                         </p>
-                        <a href="#/company/leadership/management" className="group inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
-                            View Management Team
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                        </a>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <Link to="/team/industry-advisors" className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
+                                View Management Team
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                            </Link>
+                            <Link to="/company/referral-dashboard" className="group inline-flex items-center justify-center gap-3 bg-white border-2 border-purple-500 text-purple-600 px-6 py-4 rounded-xl hover:bg-purple-50 hover:scale-105 transition-all duration-300 font-bold shadow-sm">
+                                Refer & Earn Portal
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

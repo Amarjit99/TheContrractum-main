@@ -1,8 +1,42 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Target, Award, Lightbulb, Users, Globe, CheckCircle, Sparkles, Rocket, BookOpen, Heart, TrendingUp } from "lucide-react";
 import founder from "../../assets/founder.avif";
+import { useState, useEffect } from 'react';
+
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function Founder() {
-    const founders = [
+    const [directors, setDirectors] = useState([]);
+    const [founders, setFounders] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const res = await fetch(`${API}/api/founders`);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    const apiFounders = data.filter(f => f.type === 'founder');
+                    const apiDirectors = data.filter(f => f.type === 'director');
+                    
+                    setFounders(apiFounders.length > 0 ? apiFounders : staticFounders);
+                    setDirectors(apiDirectors.length > 0 ? apiDirectors : staticDirectors);
+                } else {
+                    setFounders(staticFounders);
+                    setDirectors(staticDirectors);
+                }
+            } catch (err) {
+                console.error("Failed to fetch founders/directors:", err);
+                setFounders(staticFounders);
+                setDirectors(staticDirectors);
+            }
+            setLoading(false);
+        };
+        fetchAll();
+    }, []);
+
+    const staticFounders = [
         {
             id: 1,
             name: "Rajesh Kumar",
@@ -53,33 +87,33 @@ export default function Founder() {
         },
     ];
 
-    const directors = [
+    const staticDirectors = [
         {
             id: 1,
-            name: "Dr. Vikram Singh",
-            title: "Director of Innovation & R&D",
-            image: "https://images.unsplash.com/photo-1502101872923-d48509bff386?auto=format&fit=crop&w=400&q=80",
-            background: "PhD in Computer Science, MIT",
-            focus: "Leading next-generation innovation and research initiatives",
-            contribution: "40+ research publications, 15+ patents"
+            name: "Jitendra Singh",
+            title: "Chief Executive Officer (CEO)",
+            image: "https://www.theindustryoutlook.com/uploaded_images/company_logos/ez80yjitendra.jpg",
+            background: "Strategic Leadership & Operations",
+            focus: "Leads company strategy, operations, and expansion",
+            contribution: "Visionary leadership and organizational growth"
         },
         {
             id: 2,
-            name: "Neha Gupta",
-            title: "Director of Client Success",
-            image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=400&q=80",
-            background: "MBA from IIM Ahmedabad",
-            focus: "Ensuring exceptional customer experiences and partnerships",
-            contribution: "98% customer satisfaction, 8 industry awards"
+            name: "Yash Rathore",
+            title: "Marketing Manager",
+            image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+            background: "Brand Management & Strategic Marketing",
+            focus: "Handles branding, partnerships, and business growth",
+            contribution: "Brand excellence and strategic partnerships"
         },
         {
             id: 3,
-            name: "Rohan Desai",
-            title: "Director of Global Expansion",
-            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-            background: "Strategic Business Leader with 20+ years",
-            focus: "Expanding presence across new markets and regions",
-            contribution: "Established operations in 25 new countries"
+            name: "Mohit Sen",
+            title: "Relationship / Sales Manager",
+            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80",
+            background: "Client Relations & Business Development",
+            focus: "Works on client relations and business development",
+            contribution: "Building strong client ecosystems and sales success"
         },
         {
             id: 4,
@@ -192,7 +226,7 @@ export default function Founder() {
     return (
         <div className="bg-white">
             {/* ===== Hero Section ===== */}
-            <div 
+            <div
                 className="relative h-[600px] flex items-center justify-start overflow-hidden"
                 style={{
                     backgroundImage: `url(${founder})`,
@@ -213,14 +247,14 @@ export default function Founder() {
                         Visionary leaders with 280+ years of combined experience driving innovation and excellence across the globe
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
+                        <Link to="/team/core-team" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
                             <Users className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Meet the Team
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/company/leadership" className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
                             Our Leadership
                             <Sparkles className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -245,10 +279,10 @@ export default function Founder() {
                             <div key={founder.id} className={`group flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 items-center`}>
                                 <div className="flex-1 relative group/image">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-2xl blur-xl group-hover/image:blur-2xl transition-all duration-500"></div>
-                                    <img 
-                                        src={founder.image} 
+                                    <img
+                                        src={founder.image && founder.image.startsWith('/') ? `${API}${founder.image}` : founder.image}
                                         alt={founder.name}
-                                        className="w-full h-96 object-cover rounded-2xl shadow-2xl group-hover/image:shadow-3xl group-hover/image:scale-105 transition-all duration-500 relative z-10"
+                                        className="w-full h-[600px] object-cover object-top rounded-2xl shadow-2xl group-hover/image:shadow-3xl group-hover/image:scale-105 transition-all duration-500 relative z-10"
                                     />
                                 </div>
                                 <div className="flex-1">
@@ -257,8 +291,8 @@ export default function Founder() {
                                         <h3 className="text-4xl font-bold text-gray-900 mt-2 group-hover:text-blue-600 transition-colors">
                                             {founder.name}
                                         </h3>
-                                        <p className="text-xl text-gray-600 mt-2">{founder.title}</p>
-                                        <p className="text-sm text-blue-500 font-semibold mt-1">{founder.role}</p>
+                                        <p className="text-xl text-gray-600 mt-2">{founder.role || founder.title}</p>
+                                        <p className="text-sm text-blue-500 font-semibold mt-1">{founder.type === 'founder' ? 'Visionary Leader' : founder.role}</p>
                                     </div>
 
                                     <p className="text-gray-700 mb-6 leading-relaxed text-lg">
@@ -268,7 +302,7 @@ export default function Founder() {
                                     <div className="mb-8">
                                         <h4 className="font-bold text-gray-900 mb-4">Core Expertise</h4>
                                         <div className="flex flex-wrap gap-2">
-                                            {founder.expertise.map((exp, i) => (
+                                            {(founder.expertise || []).map((exp, i) => (
                                                 <span key={i} className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                                     {exp}
                                                 </span>
@@ -279,7 +313,7 @@ export default function Founder() {
                                     <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl p-6 border-2 border-gray-200 group-hover:border-blue-400 group-hover:shadow-lg transition-all duration-300">
                                         <h4 className="font-bold text-gray-900 mb-4">Key Achievements</h4>
                                         <ul className="space-y-3">
-                                            {founder.achievements.map((achievement, i) => (
+                                            {(founder.achievements || []).map((achievement, i) => (
                                                 <li key={i} className="flex items-start gap-3">
                                                     <div className="flex-none w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center mt-0.5">
                                                         <CheckCircle className="w-4 h-4 text-white" />
@@ -332,18 +366,19 @@ export default function Founder() {
                         }].map((val, idx) => {
                             const IconComponent = val.icon;
                             return (
-                            <div key={idx} className="group bg-gradient-to-br from-white to-gray-50 rounded-xl p-8 border-2 border-gray-200 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 cursor-pointer transform hover:-translate-y-2">
-                                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
-                                    <IconComponent className="w-8 h-8 text-white" />
+                                <div key={idx} className="group bg-gradient-to-br from-white to-gray-50 rounded-xl p-8 border-2 border-gray-200 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 cursor-pointer transform hover:-translate-y-2">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
+                                        <IconComponent className="w-8 h-8 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                                        {val.title}
+                                    </h3>
+                                    <p className="text-gray-700 group-hover:text-gray-800 transition-colors">
+                                        {val.description}
+                                    </p>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                    {val.title}
-                                </h3>
-                                <p className="text-gray-700 group-hover:text-gray-800 transition-colors">
-                                    {val.description}
-                                </p>
-                            </div>
-                        )})}
+                            )
+                        })}
                     </div>
                 </div>
             </section>
@@ -366,11 +401,11 @@ export default function Founder() {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {directors.map((director) => (
                             <div key={director.id} className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 border-2 border-gray-200 hover:border-blue-400 transition-all duration-500 cursor-pointer transform hover:-translate-y-3">
-                                <div className="relative overflow-hidden h-64">
-                                    <img 
-                                        src={director.image}
+                                <div className="relative overflow-hidden h-[450px]">
+                                    <img
+                                        src={director.image && director.image.startsWith('/') ? `${API}${director.image}` : director.image}
                                         alt={director.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
+                                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-all duration-500"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent group-hover:from-blue-600/70 transition-all duration-500"></div>
                                 </div>
@@ -380,9 +415,9 @@ export default function Founder() {
                                         {director.name}
                                     </h3>
                                     <p className="text-blue-600 font-semibold text-sm mb-3">
-                                        {director.title}
+                                        {director.role || director.title}
                                     </p>
-                                    
+
                                     <div className="space-y-3 text-sm text-gray-700 group-hover:text-gray-800 transition-colors">
                                         <div>
                                             <p className="font-semibold text-gray-900">Background</p>
@@ -390,7 +425,7 @@ export default function Founder() {
                                         </div>
                                         <div>
                                             <p className="font-semibold text-gray-900">Focus Area</p>
-                                            <p>{director.focus}</p>
+                                            <p>{director.focusArea || director.focus}</p>
                                         </div>
                                         <div>
                                             <p className="font-semibold text-gray-900">Contribution</p>
@@ -505,18 +540,19 @@ export default function Founder() {
                         ].map((philosophy, idx) => {
                             const IconComponent = philosophy.icon;
                             return (
-                            <div key={idx} className="group bg-gradient-to-br from-white to-gray-50 rounded-xl p-8 border-2 border-gray-200 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 cursor-pointer text-center transform hover:-translate-y-2">
-                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
-                                    <IconComponent className="w-10 h-10 text-white" />
+                                <div key={idx} className="group bg-gradient-to-br from-white to-gray-50 rounded-xl p-8 border-2 border-gray-200 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 cursor-pointer text-center transform hover:-translate-y-2">
+                                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl mb-4 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
+                                        <IconComponent className="w-10 h-10 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                                        {philosophy.title}
+                                    </h3>
+                                    <p className="text-gray-700 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                        {philosophy.desc}
+                                    </p>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                    {philosophy.title}
-                                </h3>
-                                <p className="text-gray-700 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                    {philosophy.desc}
-                                </p>
-                            </div>
-                        )})}
+                            )
+                        })}
                     </div>
                 </div>
             </section>
@@ -535,14 +571,14 @@ export default function Founder() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
+                        <Link to="/careers/jobs" className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-blue-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
                             <TrendingUp className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Explore Careers
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/company/leadership-journey" className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
                             Learn More
                             <Award className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="mt-12 pt-8 border-t border-blue-400/30 flex flex-col md:flex-row justify-center gap-8">
@@ -551,7 +587,7 @@ export default function Founder() {
                             <p className="text-blue-100 font-semibold group-hover:text-white transition-colors">Founders</p>
                         </div>
                         <div className="text-center group">
-                            <p className="text-4xl font-bold text-white group-hover:scale-110 transition-all duration-300">6</p>
+                            <p className="text-4xl font-bold text-white group-hover:scale-110 transition-all duration-300">4</p>
                             <p className="text-blue-100 font-semibold group-hover:text-white transition-colors">Directors</p>
                         </div>
                         <div className="text-center group">

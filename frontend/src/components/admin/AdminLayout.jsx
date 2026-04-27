@@ -1,21 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar
 } from 'lucide-react';
 
 const MENU_ITEMS = [
   { id: 'dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
   { id: 'services', to: '/admin/services', icon: <FileText size={20} />, label: 'Services' },
   { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={20} />, label: 'Blog Posts' },
+  { id: 'news', to: '/admin/news', icon: <Newspaper size={20} />, label: 'News' },
+  { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={20} />, label: 'Projects' },
   { id: 'careers', to: '/admin/careers', icon: <Briefcase size={20} />, label: 'Careers' },
+  { id: 'founders', to: '/admin/founders', icon: <Users size={20} />, label: 'Founders & Directors' },
   { id: 'partners', to: '/admin/partners', icon: <Handshake size={20} />, label: 'Partners' },
+  { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={20} />, label: 'Affiliate Program' },
+  { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={20} />, label: 'Student Interns' },
   { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={20} />, label: 'Leads' },
   { id: 'users', to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
   { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
+  { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={20} />, label: 'Form Links' },
+  { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={20} />, label: 'Submissions' },
+  { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={20} />, label: 'Surveys' },
+  { id: 'contracts', to: '/admin/contracts', icon: <FileText size={20} />, label: 'Contract Management' },
+  { id: 'certificates', to: '/admin/certificates', icon: <Award size={20} />, label: 'Certificates' },
+  { id: 'events', to: '/admin/events', icon: <Calendar size={20} />, label: 'Events Management' },
+  { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
+  { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
   { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
 
@@ -26,6 +40,41 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState({});
   const [globalSearch, setGlobalSearch] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/unread-count`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      const data = await res.json();
+      setUnreadCount(data.count || 0);
+    } catch (err) {
+      console.error("Failed to fetch unread count:", err);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications?limit=5`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      const data = await res.json();
+      setNotifications(data || []);
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (!admin) return;
+    fetchUnreadCount();
+    // Poll every 60 seconds
+    const interval = setInterval(fetchUnreadCount, 60000);
+    return () => clearInterval(interval);
+  }, [admin]);
 
   useEffect(() => {
     if (!admin) navigate('/admin/login', { replace: true });
@@ -63,16 +112,11 @@ export default function AdminLayout({ children }) {
   const Sidebar = () => (
     <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
       {/* Brand area */}
-      <div className="px-6 py-5 flex items-center gap-3 bg-white/10 relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0">
-          <svg className="w-5 h-5 text-[#1e5cdc]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
-          </svg>
-        </div>
+      <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
+        <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
         <div className="z-10">
-          <h2 className="text-lg font-bold leading-tight">TheContractum</h2>
-          <p className="text-blue-200 text-xs">Admin Panel</p>
+          <p className="text-[#1e5cdc] text-xs font-bold">Admin Panel</p>
         </div>
       </div>
 
@@ -176,10 +220,76 @@ export default function AdminLayout({ children }) {
             </button>
 
             <div className="relative">
-              <button className="text-gray-500 hover:text-[#1e5cdc] transition-colors relative">
+              <button
+                onClick={async () => {
+                  setShowNotifications(!showNotifications);
+                  if (!showNotifications) fetchNotifications();
+
+                  if (unreadCount > 0) {
+                    setUnreadCount(0);
+                    try {
+                      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/mark-read`, {
+                        method: 'PUT',
+                        headers: { Authorization: `Bearer ${admin.token}` }
+                      });
+                    } catch (err) { console.error(err); }
+                  }
+                }}
+                className={`text-gray-500 hover:text-[#1e5cdc] transition-colors relative p-2 rounded-full ${showNotifications ? 'bg-gray-100 text-[#1e5cdc]' : ''}`}
+              >
                 <Bell size={22} />
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#f0f4f8]">3</span>
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#f0f4f8]">
+                    {unreadCount > 10 ? '10+' : unreadCount}
+                  </span>
+                )}
               </button>
+
+              {/* Notifications Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                    <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
+                    <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
+                  </div>
+                  <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                    {notifications.length > 0 ? (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif._id}
+                          onClick={() => {
+                            setShowNotifications(false);
+                            if (notif.link) navigate(notif.link);
+                          }}
+                          className="px-5 py-4 hover:bg-blue-50/50 border-b border-gray-50 last:border-0 cursor-pointer transition-colors group"
+                        >
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">{notif.type}</span>
+                            <span className="text-[9px] font-bold text-gray-400">{new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                          <h4 className="font-bold text-gray-900 text-sm mb-0.5 group-hover:text-[#1e5cdc] transition-colors">{notif.title}</h4>
+                          <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{notif.message}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-12 text-center">
+                        <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                          <Bell size={20} />
+                        </div>
+                        <p className="text-gray-400 text-sm font-medium">No recent notifications</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                    <button
+                      onClick={() => { setShowNotifications(false); navigate('/admin/dashboard'); }}
+                      className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors"
+                    >
+                      View All Activity
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer">

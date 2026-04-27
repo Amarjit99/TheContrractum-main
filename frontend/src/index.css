@@ -79,6 +79,33 @@ body {
   }
 }
 
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+}
+
 @keyframes spinSlow {
   from {
     transform: rotate(0deg);
@@ -119,6 +146,28 @@ body {
 
 .animate-spin-slow {
   animation: spinSlow 20s linear infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate 60s linear infinite;
+}
+
+.animate-rotate-slow-reverse {
+  animation: rotateReverse 60s linear infinite;
+}
+
+.animate-float-reverse-1 {
+  animation: floatReverse 4s ease-in-out infinite;
+}
+
+.animate-float-reverse-2 {
+  animation: floatReverse 4.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-float-reverse-3 {
+  animation: floatReverse 5s ease-in-out infinite;
+  animation-delay: 1s;
 }
 
 .animate-pulse-slow {

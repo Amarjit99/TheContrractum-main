@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import DynamicServices from "../../components/DynamicServices";
+
 
 export default function BusinessSolutions() {
     const features = [
@@ -21,9 +23,10 @@ export default function BusinessSolutions() {
                             <p className="text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed mb-6">
                                 Drive business growth through strategic consulting and innovative solutions designed for modern enterprises.
                             </p>
-                            <button className="bg-primary hover:bg-primary-dark text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition text-sm sm:text-base">
+                            <Link to="/solutions/product-details" className="bg-primary hover:bg-primary-dark text-white font-bold px-6 sm:px-8 py-3 rounded-lg transition text-sm sm:text-base inline-block text-center">
                                 Explore Now
-                            </button>
+                            </Link>
+
                         </div>
                         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600&q=80" alt="Business Solutions" className="w-full h-auto rounded-lg shadow-lg" />
                     </div>
@@ -141,9 +144,9 @@ export default function BusinessSolutions() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Let's Grow Your Business Together</h2>
                     <p className="text-green-100 text-sm sm:text-base mb-6 max-w-2xl mx-auto">Our business solutions are designed to maximize your ROI and accelerate growth.</p>
-                    <button className="bg-primary text-white font-bold px-6 sm:px-8 py-3 rounded-lg hover:bg-primary-dark transition text-sm sm:text-base">
+                    <Link to="/contact/request-demo" className="bg-primary text-white font-bold px-6 sm:px-8 py-3 rounded-lg hover:bg-primary-dark transition text-sm sm:text-base inline-block">
                         Request Demo
-                    </button>
+                    </Link>
                 </div>
             </div>
 

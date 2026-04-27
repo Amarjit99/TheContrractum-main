@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Cloud, Zap, Globe, Database, Shield, Bell, Activity, CheckCircle, TrendingUp, Award, FileCheck, ArrowRight, Sparkles, Users, Server, Lock, AlertCircle } from 'lucide-react';
 import ReliabilityBg from '../../assets/commitment.webp';
 export default function Reliability() {
@@ -384,14 +385,14 @@ export default function Reliability() {
             Built on decades of experience and cutting-edge infrastructure, our systems deliver 99.99% uptime with enterprise-grade security and compliance
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            <Link to="/company/why-choose-us/reliability/sla" className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>View SLA Details</span>
               <FileCheck className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+            </Link>
+            <Link to="/contact/support" className="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
               <span>Contact Support</span>
               <Sparkles className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -409,44 +410,44 @@ export default function Reliability() {
             {uptemeSLA.map((sla) => {
               const IconComponent = sla.icon === 'cloud' ? Cloud : sla.icon === 'zap' ? Zap : sla.icon === 'globe' ? Globe : sla.icon === 'database' ? Database : sla.icon === 'users' ? Users : Shield;
               return (
-              <div
-                key={sla.id}
-                className={`group bg-gradient-to-br ${sla.color} rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2`}
-              >
-                <div className="p-8 text-white">
-                  <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
-
-                  <h3 className="text-2xl font-bold mb-2">{sla.service}</h3>
-                  <p className="text-white text-opacity-90 mb-6">{sla.description}</p>
-
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between items-center">
-                      <span className="text-white text-opacity-80">SLA:</span>
-                      <span className="text-3xl font-bold">{sla.sla}</span>
+                <div
+                  key={sla.id}
+                  className={`group bg-gradient-to-br ${sla.color} rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2`}
+                >
+                  <div className="p-8 text-white">
+                    <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-white text-opacity-80">Response:</span>
-                      <span className="font-semibold">{sla.response}</span>
-                    </div>
-                  </div>
 
-                  {/* Uptime Progress */}
-                  <div className="bg-black bg-opacity-20 rounded-lg p-4">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-xs font-semibold uppercase">Uptime</span>
-                      <span className="font-bold">{sla.uptime}%</span>
+                    <h3 className="text-2xl font-bold mb-2">{sla.service}</h3>
+                    <p className="text-white text-opacity-90 mb-6">{sla.description}</p>
+
+                    <div className="space-y-3 mb-6">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white text-opacity-80">SLA:</span>
+                        <span className="text-3xl font-bold">{sla.sla}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white text-opacity-80">Response:</span>
+                        <span className="font-semibold">{sla.response}</span>
+                      </div>
                     </div>
-                    <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
-                      <div
-                        className="bg-white h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${sla.uptime}%` }}
-                      ></div>
+
+                    {/* Uptime Progress */}
+                    <div className="bg-black bg-opacity-20 rounded-lg p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-xs font-semibold uppercase">Uptime</span>
+                        <span className="font-bold">{sla.uptime}%</span>
+                      </div>
+                      <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
+                        <div
+                          className="bg-white h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${sla.uptime}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -466,32 +467,32 @@ export default function Reliability() {
             {redundancySystems.map((system) => {
               const IconComponent = system.icon === 'globe' ? Globe : system.icon === 'activity' ? Activity : system.icon === 'zap' ? Zap : Database;
               return (
-              <div
-                key={system.id}
-                className="group bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 overflow-hidden border-t-4 border-blue-500"
-              >
-                <div className="p-8">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                      <IconComponent className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">{system.system}</h3>
-                  </div>
-
-                  <p className="text-gray-600 mb-6">{system.description}</p>
-
-                  <div className="space-y-3">
-                    {system.features.map((feature, i) => (
-                      <div key={i} className="flex items-start gap-3 group/item">
-                        <span className="text-blue-500 font-bold mt-1">✓</span>
-                        <span className="text-gray-700 group-hover/item:text-blue-600 transition-colors">
-                          {feature}
-                        </span>
+                <div
+                  key={system.id}
+                  className="group bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 overflow-hidden border-t-4 border-blue-500"
+                >
+                  <div className="p-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                        <IconComponent className="w-8 h-8 text-blue-600" />
                       </div>
-                    ))}
+                      <h3 className="text-2xl font-bold text-gray-900">{system.system}</h3>
+                    </div>
+
+                    <p className="text-gray-600 mb-6">{system.description}</p>
+
+                    <div className="space-y-3">
+                      {system.features.map((feature, i) => (
+                        <div key={i} className="flex items-start gap-3 group/item">
+                          <span className="text-blue-500 font-bold mt-1">✓</span>
+                          <span className="text-gray-700 group-hover/item:text-blue-600 transition-colors">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>  
-              </div>
+                </div>
               );
             })}
           </div>
@@ -511,33 +512,33 @@ export default function Reliability() {
             {monitoringTools.map((tool) => {
               const IconComponent = tool.icon === 'trendingUp' ? TrendingUp : tool.icon === 'fileCheck' ? FileCheck : tool.icon === 'activity' ? Activity : Bell;
               return (
-              <div
-                key={tool.id}
-                className="group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-2 border-transparent hover:border-blue-500"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-blue-600" />
+                <div
+                  key={tool.id}
+                  className="group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-2 border-transparent hover:border-blue-500"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{tool.tool}</h3>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{tool.tool}</h3>
+
+                  <p className="text-gray-700 mb-6">{tool.description}</p>
+
+                  <ul className="space-y-2">
+                    {tool.capabilities.map((capability, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center gap-2 text-gray-700 group/item"
+                      >
+                        <span className="w-2 h-2 bg-blue-500 rounded-full group-hover/item:scale-150 transition-transform"></span>
+                        <span className="group-hover/item:text-blue-600 transition-colors">
+                          {capability}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-
-                <p className="text-gray-700 mb-6">{tool.description}</p>
-
-                <ul className="space-y-2">
-                  {tool.capabilities.map((capability, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center gap-2 text-gray-700 group/item"
-                    >
-                      <span className="w-2 h-2 bg-blue-500 rounded-full group-hover/item:scale-150 transition-transform"></span>
-                      <span className="group-hover/item:text-blue-600 transition-colors">
-                        {capability}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
               );
             })}
           </div>
@@ -557,32 +558,32 @@ export default function Reliability() {
             {certifications.map((cert) => {
               const IconComponent = cert.icon === 'lock' ? Lock : cert.icon === 'checkCircle' ? CheckCircle : cert.icon === 'shield' ? Shield : Users;
               return (
-              <div
-                key={cert.id}
-                className={`group bg-gradient-to-br ${cert.color} rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2`}
-              >
-                <div className="p-8 text-black">
-                  <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-white" />
-                  </div>
+                <div
+                  key={cert.id}
+                  className={`group bg-gradient-to-br ${cert.color} rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2`}
+                >
+                  <div className="p-8 text-black">
+                    <div className="w-16 h-16 mb-4 bg-white bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
 
-                  <h3 className="text-2xl font-bold mb-2">{cert.cert}</h3>
-                  <p className="text-white text-opacity-90 mb-4">{cert.description}</p>
+                    <h3 className="text-2xl font-bold mb-2">{cert.cert}</h3>
+                    <p className="text-white text-opacity-90 mb-4">{cert.description}</p>
 
-                  <div className="bg-white bg-opacity-20 rounded-lg p-4 mb-6">
-                    <p className="text-sm font-semibold">{cert.validTill}</p>
-                  </div>
+                    <div className="bg-white bg-opacity-20 rounded-lg p-4 mb-6">
+                      <p className="text-sm font-semibold">{cert.validTill}</p>
+                    </div>
 
-                  <div className="space-y-2">
-                    {cert.benefits.map((benefit, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <span className="text-lg">→</span>
-                        <span className="text-sm">{benefit}</span>
-                      </div>
-                    ))}
+                    <div className="space-y-2">
+                      {cert.benefits.map((benefit, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <span className="text-lg">→</span>
+                          <span className="text-sm">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -602,33 +603,33 @@ export default function Reliability() {
             {disasterRecoveryPlan.map((phase, index) => {
               const IconComponent = phase.icon === 'alertCircle' ? AlertCircle : phase.icon === 'zap' ? Zap : phase.icon === 'activity' ? Activity : CheckCircle;
               return (
-              <div
-                key={phase.id}
-                className="group bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 overflow-hidden border-t-4 border-blue-500"
-              >
-                <div className="p-8">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                      <IconComponent className="w-8 h-8 text-orange-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{phase.phase}</h3>
-                      <p className="text-blue-600 font-semibold">{phase.time}</p>
-                    </div>
-                  </div>
-
-                  <p className="text-gray-600 mb-6">{phase.description}</p>
-
-                  <div className="space-y-3">
-                    {phase.steps.map((step, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <span className="text-blue-500 font-bold">0{i + 1}</span>
-                        <span className="text-gray-700">{step}</span>
+                <div
+                  key={phase.id}
+                  className="group bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 overflow-hidden border-t-4 border-blue-500"
+                >
+                  <div className="p-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                        <IconComponent className="w-8 h-8 text-orange-600" />
                       </div>
-                    ))}
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900">{phase.phase}</h3>
+                        <p className="text-blue-600 font-semibold">{phase.time}</p>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-600 mb-6">{phase.description}</p>
+
+                    <div className="space-y-3">
+                      {phase.steps.map((step, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <span className="text-blue-500 font-bold">0{i + 1}</span>
+                          <span className="text-gray-700">{step}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -640,13 +641,13 @@ export default function Reliability() {
               {disasterRecoveryPlan.map((phase) => {
                 const IconComponent = phase.icon === 'alertCircle' ? AlertCircle : phase.icon === 'zap' ? Zap : phase.icon === 'activity' ? Activity : CheckCircle;
                 return (
-                <div key={phase.id} className="text-center">
-                  <div className="flex items-center justify-center mb-2">
-                    <IconComponent className="w-8 h-8 text-white" />
+                  <div key={phase.id} className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    <p className="font-semibold mb-1">{phase.phase}</p>
+                    <p className="text-blue-100">{phase.time}</p>
                   </div>
-                  <p className="font-semibold mb-1">{phase.phase}</p>
-                  <p className="text-blue-100">{phase.time}</p>
-                </div>
                 );
               })}
             </div>
@@ -667,37 +668,36 @@ export default function Reliability() {
             {reliabilityMetrics.map((metric) => {
               const IconComponent = metric.icon === 'trendingUp' ? TrendingUp : metric.icon === 'activity' ? Activity : metric.icon === 'checkCircle' ? CheckCircle : Shield;
               return (
-              <div
-                key={metric.id}
-                onClick={() => setSelectedMetric(metric.id)}
-                className={`group bg-gradient-to-br ${metric.color} rounded-lg p-8 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-2 ${
-                  selectedMetric === metric.id
-                    ? "border-blue-600 shadow-xl"
-                    : "border-transparent"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-gray-600 uppercase tracking-wide font-semibold">
-                      {metric.metric}
-                    </p>
-                    <p className="text-4xl font-bold text-gray-900 mt-2">{metric.value}</p>
+                <div
+                  key={metric.id}
+                  onClick={() => setSelectedMetric(metric.id)}
+                  className={`group bg-gradient-to-br ${metric.color} rounded-lg p-8 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-2 ${selectedMetric === metric.id
+                      ? "border-blue-600 shadow-xl"
+                      : "border-transparent"
+                    }`}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-sm text-gray-600 uppercase tracking-wide font-semibold">
+                        {metric.metric}
+                      </p>
+                      <p className="text-4xl font-bold text-gray-900 mt-2">{metric.value}</p>
+                    </div>
+                    <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-8 h-8 text-blue-600" />
+
+                  <p className="text-gray-700 mb-4">{metric.description}</p>
+
+                  <div className="space-y-2 pt-4 border-t-2 border-gray-200">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">{metric.target}</span>
+                      <span className="font-semibold text-green-600">✓ {metric.achieved}</span>
+                    </div>
+                    <div className="text-sm font-semibold text-blue-600">{metric.trend}</div>
                   </div>
                 </div>
-
-                <p className="text-gray-700 mb-4">{metric.description}</p>
-
-                <div className="space-y-2 pt-4 border-t-2 border-gray-200">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">{metric.target}</span>
-                    <span className="font-semibold text-green-600">✓ {metric.achieved}</span>
-                  </div>
-                  <div className="text-sm font-semibold text-blue-600">{metric.trend}</div>
-                </div>
-              </div>
               );
             })}
           </div>
@@ -745,18 +745,18 @@ export default function Reliability() {
             {reliabilityStats.map((stat, index) => {
               const IconComponent = stat.icon === 'trendingUp' ? TrendingUp : stat.icon === 'server' ? Server : stat.icon === 'database' ? Database : stat.icon === 'zap' ? Zap : stat.icon === 'activity' ? Activity : Award;
               return (
-              <div
-                key={index}
-                className="group text-center p-8 rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-t-4 border-blue-500"
-              >
-                <div className="flex items-center justify-center mb-4">
-                  <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                    <IconComponent className="w-10 h-10 text-blue-600" />
+                <div
+                  key={index}
+                  className="group text-center p-8 rounded-lg bg-white shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-2 border-t-4 border-blue-500"
+                >
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
+                      <IconComponent className="w-10 h-10 text-blue-600" />
+                    </div>
                   </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</h3>
+                  <p className="text-gray-600 font-medium">{stat.label}</p>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</h3>
-                <p className="text-gray-600 font-medium">{stat.label}</p>
-              </div>
               );
             })}
           </div>
@@ -773,14 +773,14 @@ export default function Reliability() {
             With 99.99% uptime guarantee, enterprise-grade security, and 24/7 monitoring, your business is always protected
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100 hover:scale-105 transition-all duration-300 hover:shadow-lg">
+            <Link to="/company/why-choose-us/reliability/sla" className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100 hover:scale-105 transition-all duration-300 hover:shadow-lg">
               <FileCheck className="w-5 h-5" />
-              Download SLA
-            </button>
-            <button className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-indigo-600 hover:scale-105 transition-all duration-300">
+              View SLA Details
+            </Link>
+            <Link to="/contact/support" className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-indigo-600 hover:scale-105 transition-all duration-300">
               <ArrowRight className="w-5 h-5" />
               Contact Support
-            </button>
+            </Link>
           </div>
         </div>
       </section>

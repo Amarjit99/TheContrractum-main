@@ -17,7 +17,7 @@ export function AdminAuthProvider({ children }) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Login failed');
-    if (data.role !== 'admin') throw new Error('Access denied. Not an admin account.');
+    if (data.role !== 'admin' && data.role !== 'super-admin') throw new Error('Access denied. Not an admin account.');
     localStorage.setItem('adminUser', JSON.stringify(data));
     setAdmin(data);
     return data;

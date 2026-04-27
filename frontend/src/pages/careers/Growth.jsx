@@ -1,6 +1,8 @@
 import { TrendingUp, BookOpen, Award, Target, Users, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import growth from "../../assets/growth.webp"
+import mentorship_career from "../../assets/mentorship_career.png"
+
 export default function Growth() {
     const learningPaths = [
         {
@@ -100,7 +102,7 @@ export default function Growth() {
                         <div className="order-2 lg:order-1 relative">
                             <div className="absolute -inset-6 bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl opacity-20 blur-2xl animate-pulse"></div>
                             <img
-                                src="https://images.unsplash.com/photo-1515169067759-0f01dac55866?auto=format&fit=crop&q=80&w=800"
+                                src={mentorship_career}
                                 alt="Mentorship session"
                                 className="relative rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-500 border-4 border-white/10 h-[500px] object-cover"
                             />

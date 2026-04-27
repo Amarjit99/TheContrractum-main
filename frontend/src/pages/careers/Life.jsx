@@ -100,10 +100,8 @@ export default function Life() {
                                 <p className="text-gray-400 text-lg mb-8 leading-relaxed">
                                     We don't just work in silos. We engage with our local communities through volunteer days, coding workshops for kids, and environmental initiatives.
                                 </p>
-                                <Link to="/resources/csr">
-                                    <button className="bg-primary hover:bg-primary-dark text-red-600 font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg w-fit">
-                                        See Our CSR Initiatives
-                                    </button>
+                                <Link to="/resources/csr-report" className="bg-primary hover:bg-primary-dark text-red-600 font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg inline-block">
+                                    Download CSR Report
                                 </Link>
                             </div>
                             <div className="relative h-64 lg:h-auto">

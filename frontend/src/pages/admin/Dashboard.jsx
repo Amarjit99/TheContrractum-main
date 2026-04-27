@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronRight, Link as LinkIcon } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -70,9 +70,18 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <div className="mb-6 mt-2">
-        <h1 className="text-2xl font-bold text-gray-800">Welcome, Admin!</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your website efficiently.</p>
+      <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Welcome, Admin!</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage your website efficiently.</p>
+        </div>
+        <button
+          onClick={() => navigate('/admin/form-links')}
+          className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm group"
+        >
+          <LinkIcon size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
+          Form Links
+        </button>
       </div>
 
       {loading ? (
@@ -81,42 +90,42 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="space-y-6">
-          
+
           {/* Top Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCardItem 
-              title="Total Leads" 
-              value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"} 
-              trendColor="text-emerald-500" 
-              trendText="▲ 12%" 
-              trendIcon={<TrendingUp size={16} />} 
+            <StatCardItem
+              title="Total Leads"
+              value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
+              trendColor="text-emerald-500"
+              trendText="▲ 12%"
+              trendIcon={<TrendingUp size={16} />}
             />
-            <StatCardItem 
-              title="Active Partners" 
-              value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"} 
-              trendColor="text-emerald-500" 
-              trendText="1 Pending" 
-              trendIcon={<TrendingUp size={16} />} 
+            <StatCardItem
+              title="Active Partners"
+              value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
+              trendColor="text-emerald-500"
+              trendText="1 Pending"
+              trendIcon={<TrendingUp size={16} />}
             />
-            <StatCardItem 
-              title="Job Applications" 
-              value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"} 
-              trendColor="text-emerald-500" 
-              trendText={`${stats?.totalApplications || 0} New`} 
-              trendIcon={<TrendingUp size={16} />} 
+            <StatCardItem
+              title="Job Applications"
+              value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
+              trendColor="text-emerald-500"
+              trendText={`${stats?.totalApplications || 0} New`}
+              trendIcon={<TrendingUp size={16} />}
             />
-            <StatCardItem 
-              title="Blog Posts" 
-              value={stats?.totalBlogs || "12"} 
-              trendColor="text-emerald-500" 
-              trendText="Live" 
-              trendIcon={<TrendingUp size={16} />} 
+            <StatCardItem
+              title="Blog Posts"
+              value={stats?.totalBlogs || "12"}
+              trendColor="text-emerald-500"
+              trendText="Live"
+              trendIcon={<TrendingUp size={16} />}
             />
           </div>
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
+
             {/* Website Traffic Chart */}
             <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
               <div className="flex justify-between items-center mb-4">
@@ -130,7 +139,7 @@ export default function Dashboard() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="h-64 w-full mt-2 relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -158,7 +167,7 @@ export default function Dashboard() {
                 <div className="absolute top-10 right-[15%] bg-[#1a3b5c] text-white text-sm font-bold px-3 py-1 rounded-md mb-2 shadow-lg z-10 before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-[#1a3b5c]">
                   12.5%
                 </div>
-                
+
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={conversionData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -172,12 +181,12 @@ export default function Dashboard() {
                 <button onClick={() => navigate('/admin/analytics')} className="text-gray-500 hover:text-[#1e5cdc] text-sm font-medium flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md">View All <ChevronRight size={14} /></button>
               </div>
             </div>
-            
+
           </div>
 
           {/* Bottom Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
+
             {/* Recent Leads */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
               <div className="p-5 border-b border-gray-50 flex justify-between items-center">
@@ -187,24 +196,24 @@ export default function Dashboard() {
               <div className="p-2 flex-1 overflow-y-auto max-h-[300px] custom-scrollbar">
                 {/* Applications first then contacts */}
                 {stats?.recentApplications?.map((app, i) => (
-                    <div key={`app-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
-                       <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
-                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{app.fullName}</span>
-                        <span className="text-[10px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
+                  <div key={`app-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
+                    <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{app.fullName}</span>
+                      <span className="text-[10px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
                     </div>
+                    <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
+                  </div>
                 ))}
                 {[...(stats?.recentContacts || []), ...mockContacts].slice(0, 5).map((c, i) => (
-                    <div key={`contact-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-blue-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-[#1e5cdc] truncate max-w-[200px]">{c.name}</span>
-                        <span className="text-xs text-gray-400 shrink-0">{new Date(c.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <span className="text-xs text-gray-500 truncate italic">{c.subject}</span>
+                  <div key={`contact-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-blue-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium text-[#1e5cdc] truncate max-w-[200px]">{c.name}</span>
+                      <span className="text-xs text-gray-400 shrink-0">{new Date(c.createdAt).toLocaleDateString()}</span>
                     </div>
-                  ))}
+                    <span className="text-xs text-gray-500 truncate italic">{c.subject}</span>
+                  </div>
+                ))}
               </div>
             </div>
 

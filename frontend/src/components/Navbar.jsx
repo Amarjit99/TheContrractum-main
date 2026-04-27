@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/main-logo.jpg';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [closeTimeout, setCloseTimeout] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-
-  if (location.pathname.startsWith('/admin')) return null;
 
   const handleLogout = () => {
     logout();
@@ -31,6 +29,7 @@ export default function Navbar() {
         { title: 'Our Mission', path: '/company/about-us/mission', items: [] },
         { title: 'Our Values', path: '/company/about-us/values', items: [] },
 
+
         { title: 'Founders & Directors', path: '/company/leadership/founders', items: [] },
         { title: 'Management Team', path: '/company/leadership/management', items: [] },
 
@@ -39,7 +38,10 @@ export default function Navbar() {
 
         { title: 'Innovation', path: '/company/why-choose-us/innovation', items: [] },
         { title: 'Reliability', path: '/company/why-choose-us/reliability', items: [] },
-        { title: 'Scalability', path: '/company/why-choose-us/scalability', items: [] }
+        { title: 'Scalability', path: '/company/why-choose-us/scalability', items: [] },
+        { title: 'Code Of Conduct', path: '/company/code-of-conduct', items: [] },
+        { title: 'Employee ID Verification', path: '/company/employee-id', items: [] },
+        { title: 'Contracts & Documents', path: '/company/contracts', items: [] },
       ]
 
     },
@@ -61,6 +63,7 @@ export default function Navbar() {
         { title: 'MRAS Services', path: '/solutions/business/Mras', items: [] },
         { title: 'E-Commerce Platforms', path: '/solutions/digital/e-commerce', items: [] },
         { title: 'HR Tech Solutions', path: '/solutions/digital/hrtech', items: [] },
+        { title: 'Digital Marketing', path: '/solutions/digital/digital-marketing', items: [] },
         { title: 'BPO Services', path: '/solutions/digital/bpo', items: [] },
         { title: 'Telecommunication', path: '/solutions/connectivity/telecom', items: [] },
         { title: 'Network Infrastructure', path: '/solutions/connectivity/network-infra', items: [] },
@@ -89,7 +92,8 @@ export default function Navbar() {
         { title: 'Join Running Projects', path: '/careers/projects', items: [] },
         { title: 'Campus Hiring', path: '/careers/campus', items: [] },
         { title: 'Growth & Learning', path: '/careers/growth', items: [] },
-        { title: 'Employee Benefits', path: '/careers/benefits', items: [] }
+        { title: 'Employee Benefits', path: '/careers/benefits', items: [] },
+        { title: 'Employee Certificates', path: '/careers/certificates', items: [] }
       ]
     },
     {
@@ -120,7 +124,8 @@ export default function Navbar() {
         { title: 'Partner With Us', path: '/join/partner', items: [] },
         { title: 'Collaborate on Research', path: '/join/collaborate', items: [] },
         { title: 'Startup & Student Programs', path: '/join/startup', items: [] },
-        { title: 'Volunteer & CSR Programs', path: '/join/volunteer', items: [] }
+        { title: 'Volunteer & CSR Programs', path: '/join/volunteer', items: [] },
+        { title: 'Affiliate Marketing', path: '/join/affiliate', items: [] }
       ]
     },
     {
@@ -169,15 +174,12 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500">
+    <nav className="sticky top-0 z-50 bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500 print:hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Company Name */}
           <Link to="/" className="flex items-center group -ml-24 transform hover:scale-110 transition-all duration-300">
-            <span className="text-3xl lg:text-4xl font-black">
-              <span className="text-blue-600 drop-shadow-md">The</span>{" "}
-              <span className="text-red-600 drop-shadow-md">Contractum</span>
-            </span>
+            <img src={logo} alt="The Contractum Logo" className="h-20 w-auto object-contain rounded-50" />
           </Link>
 
           {/* Desktop Menu */}
@@ -282,8 +284,8 @@ export default function Navbar() {
                     </div>
                     {/* Menu Items */}
                     <div className="py-1">
-                      {user.role === 'admin' && (
-                        <Link to="/admin/dashboard" onClick={() => setProfileOpen(false)}
+                      {(user.role === 'admin' || user.role === 'super-admin') && (
+                        <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                           Admin Dashboard

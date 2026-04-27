@@ -32,7 +32,7 @@ export default function Healthcare() {
                                 Talk to an Expert
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/solutions/digital" className="px-10 py-4 bg-white/10 hover:bg-white hover:text-gray-900 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 transform hover:scale-105">
+                            <Link to="/solutions/business/gis" className="px-10 py-4 bg-white/10 hover:bg-white hover:text-gray-900 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 transform hover:scale-105">
                                 Explore Solutions
                             </Link>
                         </div>
@@ -120,7 +120,7 @@ export default function Healthcare() {
                             </div>
 
                             <div className="mt-10">
-                                <Link to="/contact/touch" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105 group">
+                                <Link to="/contact/request-demo" className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105 group">
                                     Schedule a demo
                                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -174,7 +174,7 @@ export default function Healthcare() {
                                 <Link to="/contact/quote" className="px-10 py-4 bg-white text-teal-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
                                     Get Started
                                 </Link>
-                                <Link to="/company/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-teal-900 transition-all transform hover:scale-105">
+                                <Link to="/industries/why-healthcare" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-teal-900 transition-all transform hover:scale-105">
                                     Why Choose Us
                                 </Link>
                             </div>

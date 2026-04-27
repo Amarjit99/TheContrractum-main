@@ -1,114 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Ongoing Projects Data
-const projectsData = [
-  {
-    id: 1,
-    title: "Smart City GIS Mapping System",
-    client: "Government Infrastructure Department",
-    category: "Government",
-    startDate: "January 2026",
-    expectedCompletion: "June 2026",
-    status: "In Progress",
-    progress: 70,
-    teamSize: 12,
-    budget: "$450,000",
-    technologies: ["React", "Node.js", "PostgreSQL", "GIS", "AWS"],
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=500&fit=crop",
-    description: "Development of an advanced GIS-based smart city monitoring platform to track infrastructure assets, road networks, utilities, and urban planning data in real-time with predictive analytics.",
-    keyFeatures: ["Real-time Tracking", "Predictive Analytics", "3D Mapping", "Mobile Access"],
-    priority: "High"
-  },
-  {
-    id: 2,
-    title: "AI-Based Healthcare Analytics Platform",
-    client: "MedTech Solutions Inc.",
-    category: "Healthcare",
-    startDate: "December 2025",
-    expectedCompletion: "May 2026",
-    status: "In Progress",
-    progress: 55,
-    teamSize: 8,
-    budget: "$320,000",
-    technologies: ["Python", "TensorFlow", "React", "MongoDB", "Docker"],
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop",
-    description: "Building a predictive analytics system to assist doctors in early disease detection using AI models and real-time patient data processing with HIPAA compliance.",
-    keyFeatures: ["AI Diagnostics", "Patient Dashboard", "Secure Data", "Report Generation"],
-    priority: "High"
-  },
-  {
-    id: 3,
-    title: "Enterprise Resource Planning (ERP) System",
-    client: "Global Manufacturing Corp.",
-    category: "Enterprise",
-    startDate: "November 2025",
-    expectedCompletion: "April 2026",
-    status: "In Progress",
-    progress: 80,
-    teamSize: 15,
-    budget: "$580,000",
-    technologies: ["React", "Java", "Oracle", "Spring Boot", "Kubernetes"],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    description: "Designing and implementing a full-scale ERP solution to manage finance, HR, inventory, supply chain, and production operations efficiently across multiple locations.",
-    keyFeatures: ["Multi-Module", "Cloud-Based", "Analytics", "Mobile App"],
-    priority: "Critical"
-  },
-  {
-    id: 4,
-    title: "E-Commerce Marketplace Platform",
-    client: "RetailHub Ventures",
-    category: "E-Commerce",
-    startDate: "January 2026",
-    expectedCompletion: "July 2026",
-    status: "In Progress",
-    progress: 45,
-    teamSize: 10,
-    budget: "$280,000",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe", "Redis"],
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&h=500&fit=crop",
-    description: "Creating a scalable multi-vendor e-commerce platform with advanced search, real-time inventory management, and integrated payment processing.",
-    keyFeatures: ["Multi-Vendor", "Payment Gateway", "Inventory Sync", "Analytics"],
-    priority: "Medium"
-  },
-  {
-    id: 5,
-    title: "Financial Management & Trading Platform",
-    client: "FinTech Innovations Ltd.",
-    category: "Finance",
-    startDate: "October 2025",
-    expectedCompletion: "March 2026",
-    status: "In Progress",
-    progress: 65,
-    teamSize: 9,
-    budget: "$410,000",
-    technologies: ["React", "Python", "PostgreSQL", "WebSocket", "AWS"],
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=500&fit=crop",
-    description: "Building a comprehensive financial management system with real-time trading capabilities, portfolio management, and risk assessment tools.",
-    keyFeatures: ["Real-Time Trading", "Portfolio Analytics", "Risk Management", "Compliance"],
-    priority: "High"
-  },
-  {
-    id: 6,
-    title: "Online Education & Learning Management System",
-    client: "EduTech Global",
-    category: "Education",
-    startDate: "December 2025",
-    expectedCompletion: "June 2026",
-    status: "In Progress",
-    progress: 50,
-    teamSize: 7,
-    budget: "$195,000",
-    technologies: ["React", "Node.js", "MySQL", "WebRTC", "S3"],
-    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=500&fit=crop",
-    description: "Developing a feature-rich LMS with live classes, interactive content, assessments, progress tracking, and certification management.",
-    keyFeatures: ["Live Classes", "Interactive Content", "Progress Tracking", "Certifications"],
-    priority: "Medium"
-  }
-];
-
 export default function OngoingProjects() {
   const navigate = useNavigate();
+  const [projectsData, setProjectsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPriority, setSelectedPriority] = useState("All");
@@ -117,6 +13,22 @@ export default function OngoingProjects() {
 
   const categories = ["All", "Government", "Healthcare", "Enterprise", "E-Commerce", "Finance", "Education"];
   const priorities = ["All", "Critical", "High", "Medium"];
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/projects`);
+        if (res.ok) {
+          const data = await res.json();
+          setProjectsData(data);
+        }
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      }
+      setLoading(false);
+    };
+    fetchProjects();
+  }, []);
 
   // Track scroll position for scroll-to-top button
   useEffect(() => {
@@ -141,7 +53,7 @@ export default function OngoingProjects() {
     .sort((a, b) => {
       if (sortBy === "progress") return b.progress - a.progress;
       if (sortBy === "date") return new Date(b.startDate) - new Date(a.startDate);
-      if (sortBy === "budget") return parseFloat(b.budget.replace(/[$,]/g, '')) - parseFloat(a.budget.replace(/[$,]/g, ''));
+      if (sortBy === "budget") return parseFloat((b.budget||"0").replace(/[$,]/g, '')) - parseFloat((a.budget||"0").replace(/[$,]/g, ''));
       return 0;
     });
 

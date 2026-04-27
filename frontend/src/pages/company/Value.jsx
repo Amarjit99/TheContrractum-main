@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Target, Award, Lightbulb, Users, Heart, Leaf, CheckCircle, Sparkles, Rocket, Shield, TrendingUp } from "lucide-react";
 import value1 from "../../assets/g1.png";
 import value2 from "../../assets/g2.png";
@@ -242,7 +243,7 @@ export default function Values() {
     return (
         <div className="bg-white">
             {/* ===== Hero Section ===== */}
-            <div 
+            <div
                 className="relative h-[600px] flex items-center justify-start overflow-hidden"
                 style={{
                     backgroundImage: `url(${value})`,
@@ -263,14 +264,14 @@ export default function Values() {
                         Six core values guide every decision we make and define who we are as an organization. They shape our culture, drive our actions, and inspire our teams.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
+                        <Link to="/careers/growth" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
                             <Award className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Discover Our Values
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/team/culture" className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
                             Culture & Impact
                             <Sparkles className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -295,14 +296,14 @@ export default function Values() {
                             <div key={val.id} className="group rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 relative min-h-[400px] md:min-h-[450px]">
                                 {/* Background Image */}
                                 <div className="absolute inset-0">
-                                    <img 
-                                        src={val.image} 
-                                        alt={val.title} 
+                                    <img
+                                        src={val.image}
+                                        alt={val.title}
                                         className="w-full h-full object-cover brightness-90 group-hover:scale-110 transition-all duration-500"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70 group-hover:from-black/60 group-hover:via-black/50 group-hover:to-black/60 transition-all duration-500"></div>
                                 </div>
-                                
+
                                 {/* Content */}
                                 <div className="relative z-10 p-6 md:p-8 h-full flex flex-col">
                                     <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4 group-hover:text-purple-300 transition-colors">
@@ -450,9 +451,9 @@ export default function Values() {
             <section className="py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                    <img 
-                        src={leadershipBg} 
-                        alt="Leadership Background" 
+                    <img
+                        src={leadershipBg}
+                        alt="Leadership Background"
                         className="w-full h-full object-cover brightness-90"
                     />
                     <div className="absolute inset-0 bg-white/85"></div>
@@ -565,9 +566,9 @@ export default function Values() {
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div className="relative group">
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                            <img 
-                                src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80" 
-                                alt="Team Members" 
+                            <img
+                                src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80"
+                                alt="Team Members"
                                 className="w-full h-auto rounded-2xl shadow-2xl group-hover:shadow-3xl group-hover:scale-105 transition-all duration-500 relative z-10"
                             />
                         </div>
@@ -596,9 +597,9 @@ export default function Values() {
                                     </div>
                                 ))}
                             </div>
-                            <button className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all duration-300">
+                            <Link to="/join/partner" className="px-8 py-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all duration-300">
                                 Join Our Team
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -618,14 +619,14 @@ export default function Values() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                        <button className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-purple-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
+                        <Link to="/careers/jobs" className="group inline-flex items-center gap-3 px-10 py-4 bg-white text-purple-600 font-bold rounded-xl hover:shadow-2xl hover:shadow-white/50 hover:scale-105 transition-all duration-300 text-lg">
                             <Users className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Explore Careers
-                        </button>
-                        <button className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
+                        </Link>
+                        <Link to="/team/technical-experts" className="inline-flex items-center gap-3 px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300 text-lg">
                             Get to Know Us
                             <Heart className="w-5 h-5" />
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="mt-12 pt-8 border-t border-purple-400/30 flex flex-col md:flex-row justify-center gap-8">

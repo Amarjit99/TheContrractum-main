@@ -1,64 +1,98 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import DynamicServices from "../../../components/DynamicServices";
 import mrass from "../../../assets/mrass.avif";
-import mrImg from "../../../assets/mr.jfif";
-import { Settings, Zap, BarChart3, Wrench } from 'lucide-react';
+import {
+  BarChart4,
+  Search,
+  Target,
+  Lightbulb,
+  Users,
+  TrendingUp,
+  Map,
+  PieChart,
+  Download,
+  Send
+} from 'lucide-react';
 
 export default function MRASservies() {
-  const features = [
-    { icon: Settings, title: "Managed Operations", description: "24/7 operations & monitoring" },
-    { icon: Zap, title: "Automation", description: "RPA and workflow automation for efficiency" },
-    { icon: BarChart3, title: "Analytics", description: "Business insights and reporting pipelines" },
-    { icon: Wrench, title: "Integration & Support", description: "End-to-end integration and SLA-backed support" },
+  const servicesList = [
+    { icon: BarChart4, title: "Market Research & Analysis", id: "A" },
+    { icon: TrendingUp, title: "Industry Trend Monitoring", id: "B" },
+    { icon: Target, title: "Competitor Strategy Analysis", id: "C" },
+    { icon: Lightbulb, title: "Innovation Tracking", id: "D" },
+    { icon: Users, title: "Consumer Behavior Surveys", id: "E" },
+    { icon: PieChart, title: "Data-Driven Marketing Strategy", id: "F" },
+    { icon: Map, title: "Prospective Client Mapping", id: "G" },
+    { icon: Search, title: "Strategic Business Intelligence", id: "H" },
   ];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative h-[600px] flex items-center" style={{ backgroundImage: `url(${mrass})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent"></div>
+      <div className="relative h-[650px] flex items-center" style={{ backgroundImage: `url(${mrass})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent"></div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-left">
-          <div>
-            {/* <span className="inline-block px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-bold uppercase tracking-wider mb-4 drop-shadow-2xl">
-              Managed Resilience
-            </span> */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight text-white drop-shadow-2xl">
-              MRAS — Managed, Reliable & Automated Services
+          <div className="max-w-4xl">
+            <span className="inline-block px-4 py-2 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold uppercase tracking-widest mb-6 border border-amber-500/30 backdrop-blur-md">
+              Market Intelligence Division
+            </span>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 leading-tight text-white drop-shadow-2xl">
+              Market Research <span className="text-amber-500">& Analysis</span> Services
             </h1>
-            <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
-              Reduce operational overhead and increase reliability with managed services, automation and expert support tailored to your environment.
+            <p className="text-gray-200 text-lg sm:text-xl mb-10 leading-relaxed max-w-3xl drop-shadow-2xl font-medium">
+              Gain competitive advantages through in-depth understanding of your target audience, competitors, and market trends. We provide relevant information to help you formulate effective marketing strategies and make informed decisions.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link to="/solutions/digitalsolutions/csi-services" className="bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold px-10 py-4 rounded-xl hover:from-orange-700 hover:to-amber-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                Explore CS/IT Services
+              <Link
+                to="/contact/quote"
+                className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-10 py-4 rounded-xl transition-all shadow-lg hover:shadow-amber-500/25 flex items-center gap-2 transform hover:-translate-y-1 active:scale-[0.98]"
+              >
+                <Send size={20} />
+                Apply Now
               </Link>
-              <Link to="/solutions/gis-solution" className="bg-white text-orange-900 font-bold px-10 py-4 rounded-xl hover:bg-gray-100 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                Explore GIS Solutions
+              <Link
+                to="/solutions/download?service=mras"
+                className="bg-white/10 hover:bg-white/20 text-white font-bold px-10 py-4 rounded-xl transition-all border border-white/20 backdrop-blur-md flex items-center gap-2 transform hover:-translate-y-1 active:scale-[0.98]"
+              >
+                <Download size={20} />
+                Download PDF
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-bold uppercase tracking-wider mb-4">
-              Our Capabilities
+      {/* Services List Section */}
+      <div className="bg-slate-50 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 -skew-x-12 transform translate-x-1/2"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm font-bold uppercase tracking-wider mb-4">
+              Strategic Insights
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-4">Our MRAS Capabilities</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-6">MRAS Services List</h2>
+            <div className="w-24 h-1.5 bg-amber-500 mx-auto rounded-full mb-6"></div>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
+            {servicesList.map((service, index) => {
+              const Icon = service.icon;
               return (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 text-center hover:shadow-2xl transition transform hover:scale-105 hover:-translate-y-2 border border-gray-100">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg flex items-center justify-center mx-auto mb-6">
-                    <Icon className="w-8 h-8 text-white" />
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl p-6 group hover:shadow-2xl transition-all duration-500 border border-slate-100 relative overflow-hidden"
+                >
+                  <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg flex items-center justify-center text-white transform group-hover:rotate-6 transition-transform">
+                      <Icon size={28} />
+                    </div>
+                    <div>
+                      <div className="text-amber-600 font-bold text-xs uppercase mb-1">SERVICE {service.id}</div>
+                      <h3 className="text-xl font-bold text-slate-900 group-hover:text-amber-700 transition-colors">{service.title}</h3>
+                    </div>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3">{feature.title}</h3>
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed">{feature.description}</p>
                 </div>
               );
             })}
@@ -66,62 +100,81 @@ export default function MRASservies() {
         </div>
       </div>
 
-      {/* Benefits Section */}
-      <div className="bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div>
-              <span className="inline-block px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-bold uppercase tracking-wider mb-4">
-                Benefits
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-6">Why Choose MRAS</h2>
-              <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-8">
-                We deliver predictable operations, lower MTTR, and continuous improvement through automation and expert-managed services.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex gap-4 text-base sm:text-lg text-slate-700 items-center">
-                  <span className="text-orange-600 font-bold text-xl">✓</span>
-                  <span className="font-semibold">SLA-backed managed operations</span>
-                </li>
-                <li className="flex gap-4 text-base sm:text-lg text-slate-700 items-center">
-                  <span className="text-orange-600 font-bold text-xl">✓</span>
-                  <span className="font-semibold">Automation-driven efficiency</span>
-                </li>
-                <li className="flex gap-4 text-base sm:text-lg text-slate-700 items-center">
-                  <span className="text-orange-600 font-bold text-xl">✓</span>
-                  <span className="font-semibold">Fast incident response</span>
-                </li>
-                <li className="flex gap-4 text-base sm:text-lg text-slate-700 items-center">
-                  <span className="text-orange-600 font-bold text-xl">✓</span>
-                  <span className="font-semibold">Transparent reporting & analytics</span>
-                </li>
-              </ul>
-            </div>
+      {/* Impact Section */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div className="relative">
-              <img src={mrImg} alt="Managed Services" className="w-full h-auto rounded-2xl shadow-2xl" />
+              <div className="absolute -inset-4 bg-amber-500/10 rounded-3xl -rotate-2"></div>
+              <img
+                src={mrass}
+                alt="Market Research"
+                className="w-full h-[500px] object-cover rounded-2xl shadow-2xl relative z-10 border-8 border-white"
+              />
+            </div>
+
+            <div>
+              <span className="inline-block px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm font-bold uppercase tracking-wider mb-4">
+                Competitive Advantage
+              </span>
+
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-8 leading-tight">
+                Unlock Opportunities with Data-Driven Research
+              </h2>
+
+              <div className="space-y-6">
+                {[
+                  "In-depth audience & competitor mapping",
+                  "Real-time industry trend forecasting",
+                  "Strategic marketing model development",
+                  "Actionable business intelligence reports"
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-5 items-center p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 font-bold shrink-0">
+                      ✓
+                    </div>
+                    <span className="font-bold text-lg text-slate-700">{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="relative bg-gradient-to-br from-orange-900 via-amber-900 to-orange-800 text-white overflow-hidden">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-amber-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-orange-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 text-center">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 text-white drop-shadow-2xl">Let us manage your operations</h2>
-          <p className="text-gray-100 text-lg sm:text-xl mb-10 max-w-3xl mx-auto leading-relaxed">Talk to our MRAS team to design a managed services plan that reduces risk and cost.</p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link to="/solutions/digitalsolutions/csi-services" className="bg-white text-orange-900 font-bold px-10 py-4 rounded-xl hover:bg-gray-100 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-              See CS/IT
+      <div className="bg-slate-900 relative py-20 lg:py-32 overflow-hidden text-white">
+        <div className="absolute top-0 left-0 w-full h-full opacity-25">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600 rounded-full blur-[150px]"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-600 rounded-full blur-[150px]"></div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8">
+            Formulate Your <span className="text-amber-500">Winning Strategy</span>
+          </h2>
+
+          <p className="text-gray-400 text-lg sm:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+            Collaborate with our research specialists to gain the insights needed to reach your prospective clients far and wide.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Link
+              to="/contact/quote"
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-xl hover:shadow-amber-500/40 text-lg"
+            >
+              Start Your Research
             </Link>
-            <Link to="/solutions/gis-solution" className="bg-white/20 border-2 border-white text-white font-bold px-10 py-4 rounded-xl hover:bg-white/30 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-              See GIS
+            <Link
+              to="/solutions/download?service=mras"
+              className="bg-white/5 hover:bg-white/10 text-white font-bold px-12 py-5 rounded-2xl transition-all border border-white/20 backdrop-blur-sm text-lg"
+            >
+              Learn More (PDF)
             </Link>
           </div>
         </div>
       </div>
+      <DynamicServices category="Business Solutions" subCategory="MRAS Services" />
     </div>
   );
 }

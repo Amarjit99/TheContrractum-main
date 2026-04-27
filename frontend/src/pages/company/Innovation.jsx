@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Cpu, Cloud, Link, Wifi, Shield, Rocket, Brain, Package, Database, MessageSquare, Code, ChevronRight, ArrowRight, Sparkles, TrendingUp, Users, Target, FileCode, Anchor } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Cpu, Cloud, Link as LinkIcon, Wifi, Shield, Rocket, Brain, Package, Database, MessageSquare, Code, ChevronRight, ArrowRight, Sparkles, TrendingUp, Users, Target, FileCode, Anchor } from 'lucide-react';
 import invo from '../../assets/invo.jpg';
 const Innovation = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -54,7 +55,7 @@ const Innovation = () => {
   const technologies = [
     { name: 'TensorFlow', category: 'AI/ML', icon: 'brain', color: 'from-orange-400 to-red-500' },
     { name: 'Kubernetes', category: 'Cloud', icon: 'cloud', color: 'from-blue-400 to-blue-600' },
-    { name: 'Ethereum', category: 'Blockchain', icon: 'link', color: 'from-purple-400 to-purple-600' },
+    { name: 'Ethereum', category: 'Blockchain', icon: 'linkIcon', color: 'from-purple-400 to-purple-600' },
     { name: 'Python', category: 'Language', icon: 'code', color: 'from-blue-400 to-yellow-400' },
     { name: 'React', category: 'Frontend', icon: 'cpu', color: 'from-cyan-400 to-blue-500' },
     { name: 'Docker', category: 'DevOps', icon: 'package', color: 'from-blue-400 to-cyan-500' },
@@ -176,14 +177,14 @@ const Innovation = () => {
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-4 md:mb-6 drop-shadow-2xl tracking-wide">Innovation at Our Core</h1>
           <p className="text-xl md:text-2xl font-light mb-8 drop-shadow-lg tracking-wide">Pioneering Tomorrow's Solutions Today</p>
           <div className="flex gap-3 md:gap-5 justify-center flex-wrap">
-            <button className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold uppercase tracking-wider rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            <Link to="/company/innovation/explore" className="inline-flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold uppercase tracking-wider rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>Explore Innovations</span>
               <Rocket className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center gap-3 px-8 py-3 bg-transparent border-2 border-white text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+            </Link>
+            <Link to="/company/innovation/join-lab" className="inline-flex items-center gap-3 px-8 py-3 bg-transparent border-2 border-white text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
               <span>Join Innovation Lab</span>
               <Sparkles className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -196,10 +197,10 @@ const Innovation = () => {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Our Innovation Pillars</h2>
             <p className="text-gray-600 text-lg mt-6">Six core technology areas driving our innovation forward</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {innovationPillars.map((pillar) => {
-              const IconComponent = pillar.icon === 'cpu' ? Cpu : pillar.icon === 'cloud' ? Cloud : pillar.icon === 'link' ? Link : pillar.icon === 'wifi' ? Wifi : pillar.icon === 'shield' ? Shield : Rocket;
+              const IconComponent = pillar.icon === 'cpu' ? Cpu : pillar.icon === 'cloud' ? Cloud : pillar.icon === 'link' ? LinkIcon : pillar.icon === 'wifi' ? Wifi : pillar.icon === 'shield' ? Shield : Rocket;
               return (
                 <div
                   key={pillar.id}
@@ -237,10 +238,10 @@ const Innovation = () => {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Technologies We Use</h2>
             <p className="text-gray-600 text-lg mt-6">Leveraging the best tools and frameworks for innovation</p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {technologies.map((tech, index) => {
-              const IconComponent = tech.icon === 'brain' ? Brain : tech.icon === 'cloud' ? Cloud : tech.icon === 'link' ? Link : tech.icon === 'code' ? Code : tech.icon === 'cpu' ? Cpu : tech.icon === 'package' ? Package : tech.icon === 'database' ? Database : tech.icon === 'messageSquare' ? MessageSquare : tech.icon === 'fileCode' ? FileCode : Anchor;
+              const IconComponent = tech.icon === 'brain' ? Brain : tech.icon === 'cloud' ? Cloud : tech.icon === 'linkIcon' ? LinkIcon : tech.icon === 'code' ? Code : tech.icon === 'cpu' ? Cpu : tech.icon === 'package' ? Package : tech.icon === 'database' ? Database : tech.icon === 'messageSquare' ? MessageSquare : tech.icon === 'fileCode' ? FileCode : Anchor;
               return (
                 <div
                   key={index}
@@ -270,7 +271,7 @@ const Innovation = () => {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Our Innovation Projects</h2>
             <p className="text-gray-600 text-lg mt-6">Real projects transforming industries and solving global challenges</p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {innovationProjects.map((project) => (
               <div
@@ -288,7 +289,7 @@ const Innovation = () => {
                     </span>
                   </div>
                   <p className="text-gray-700 mb-4 leading-relaxed">{project.description}</p>
-                  
+
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.technologies.map((tech, idx) => (
                       <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-600 text-xs font-semibold rounded-full hover:bg-blue-200 transition-colors duration-300 cursor-pointer">
@@ -296,16 +297,16 @@ const Innovation = () => {
                       </span>
                     ))}
                   </div>
-                  
+
                   <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Impact:</p>
                       <p className="text-lg font-bold text-cyan-500">{project.impact}</p>
                     </div>
-                    <button className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
+                    <Link to="/projects/research" className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
                       <span>Learn More</span>
                       <ArrowRight className="w-4 h-4" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -322,7 +323,7 @@ const Innovation = () => {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Our Innovation Process</h2>
             <p className="text-gray-600 text-lg mt-6">A structured approach to bringing innovative ideas to life</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {innovationProcess.map((process, index) => (
               <div
@@ -353,7 +354,7 @@ const Innovation = () => {
       {/* Innovation Stats Section */}
       <section className="relative w-full py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center transition-transform duration-500 hover:scale-108"
             style={{
               backgroundImage: `url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop')`,
@@ -362,7 +363,7 @@ const Innovation = () => {
           />
           <div className="absolute inset-0 bg-blue-900 opacity-75 transition-all duration-400 hover:opacity-85 backdrop-blur-sm" />
         </div>
-        
+
         <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 rounded-full bg-amber-100 text-amber-700 text-sm font-bold uppercase tracking-wider mb-4">Impact Metrics</span>
@@ -390,7 +391,7 @@ const Innovation = () => {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Innovation Team</h2>
             <p className="text-gray-600 text-lg mt-6">World-class leaders driving innovation across different technological domains</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {innovationTeam.map((member, index) => (
               <div
@@ -418,7 +419,7 @@ const Innovation = () => {
             <span className="inline-block px-4 py-2 rounded-full bg-teal-100 text-teal-700 text-sm font-bold uppercase tracking-wider mb-4">Future Vision</span>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-blue-600 mb-4 drop-shadow-lg">Our Vision for Innovation</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="flex gap-4">
@@ -430,7 +431,7 @@ const Innovation = () => {
                   <p className="text-gray-700">Developing quantum algorithms that solve problems currently unsolvable by classical computers.</p>
                 </div>
               </div>
-              
+
               <div className="flex gap-4">
                 <div className="flex-shrink-0">
                   <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 text-white font-bold">2</div>
@@ -463,8 +464,8 @@ const Innovation = () => {
             </div>
 
             <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 group">
-              <img 
-                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&h=500&fit=crop" 
+              <img
+                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&h=500&fit=crop"
                 alt="Future Innovation"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
@@ -477,7 +478,7 @@ const Innovation = () => {
       {/* Call to Action Section */}
       <section className="relative w-full py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center transition-transform duration-500 hover:scale-108"
             style={{
               backgroundImage: `url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop')`,
@@ -486,20 +487,20 @@ const Innovation = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900 via-purple-900 to-blue-900 opacity-75 transition-all duration-400 hover:opacity-85 backdrop-blur-sm" />
         </div>
-        
+
         <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-wide drop-shadow-lg">Join Our Innovation Journey</h2>
           <p className="text-lg md:text-xl text-white text-opacity-95 mb-10 tracking-wide">Be part of a team that's shaping the future of technology and solving global challenges</p>
-          
+
           <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <button className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+            <Link to="/careers/jobs" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>Explore Opportunities</span>
               <TrendingUp className="w-5 h-5" />
-            </button>
-            <button className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-transparent border-3 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+            </Link>
+            <Link to="/company/innovation/contact-lab" className="inline-flex items-center justify-center gap-3 px-10 py-4 bg-transparent border-3 border-white text-white font-bold uppercase tracking-widest rounded-lg shadow-lg hover:bg-white hover:text-blue-600 hover:shadow-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm">
               <span>Contact Innovation Lab</span>
               <Sparkles className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

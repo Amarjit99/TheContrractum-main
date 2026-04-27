@@ -174,7 +174,7 @@ export default function Government() {
                                 <Link to="/contact/touch" className="px-10 py-4 bg-white text-blue-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Get in Touch
                                 </Link>
-                                <Link to="/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
+                                <Link to="/industries/government-details" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
                                     Learn More
                                 </Link>
                             </div>

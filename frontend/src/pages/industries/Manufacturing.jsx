@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Factory, Cog, Cpu, Truck, BarChart3, Settings, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import menn from "../../assets/menn.webp"
 import mrImg from "../../assets/mr.jfif"
 export default function Manufacturing() {
+    const [showModernize, setShowModernize] = useState(false);
+    const [showStart, setShowStart] = useState(false);
+    const [showLearn, setShowLearn] = useState(false);
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -29,11 +33,11 @@ export default function Manufacturing() {
                             Driving the next industrial revolution with IoT connectivity, predictive maintenance, and digital twin technology.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/optimize-production" className="px-10 py-4 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Optimize Production
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/solutions/automation" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
+                            <Link to="/solutions/business/csit" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
                                 See Solutions
                             </Link>
                         </div>
@@ -122,10 +126,29 @@ export default function Manufacturing() {
                             </div>
 
                             <div className="mt-10">
-                                <Link to="/contact/touch" className="text-primary font-bold hover:text-orange-700 inline-flex items-center gap-2 group">
+                                <button
+                                    onClick={() => setShowModernize(!showModernize)}
+                                    className="text-primary font-bold hover:text-orange-700 inline-flex items-center gap-2 group cursor-pointer"
+                                >
                                     Modernize your plant
-                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
+                                    <ArrowRight size={20} className={`transition-transform duration-300 ${showModernize ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
+                                </button>
+                                {showModernize && (
+                                    <div className="mt-5 space-y-4 text-gray-800 font-medium animate-fade-in-up">
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-orange-500" /></div>
+                                            <span className="text-lg">Supply Chain Integration Architecture</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-orange-500" /></div>
+                                            <span className="text-lg">AI-Augmented Safety Protocols</span>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="mt-1"><CheckCircle2 className="w-6 h-6 text-orange-500" /></div>
+                                            <span className="text-lg">Legacy System Interoperability Solutions</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -170,13 +193,44 @@ export default function Manufacturing() {
                             <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                                 Leap forward with manufacturing solutions designed for the digital age.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/quote" className="px-10 py-4 bg-white text-orange-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
-                                    Get Started
-                                </Link>
-                                <Link to="/company/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">
-                                    Learn More
-                                </Link>
+                            <div className="flex flex-col gap-4 justify-center items-center">
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <button
+                                        onClick={() => setShowStart(!showStart)}
+                                        className="px-10 py-4 bg-white text-orange-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
+                                    >
+                                        Get Started
+                                        <ArrowRight size={20} className={`transition-transform duration-300 ${showStart ? 'rotate-90' : ''}`} />
+                                    </button>
+                                    <button
+                                        onClick={() => setShowLearn(!showLearn)}
+                                        className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                                    >
+                                        Learn More
+                                        <ArrowRight size={20} className={`transition-transform duration-300 ${showLearn ? 'rotate-90' : ''}`} />
+                                    </button>
+                                </div>
+
+                                {showStart && (
+                                    <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-left w-full max-w-xl animate-fade-in-up">
+                                        <h4 className="font-bold text-white mb-3 text-lg">Your Autonomous Assembly Roadmap:</h4>
+                                        <ul className="space-y-2 text-gray-200 list-disc list-inside">
+                                            <li>Phase 1: Digital Capabilities & Infrastructure Audit</li>
+                                            <li>Phase 2: Closed-Loop IoT Sensor Deployment</li>
+                                            <li>Phase 3: Machine Learning Model Training (Digital Twin)</li>
+                                            <li>Phase 4: Floor-wide Software & SCADA Integration</li>
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {showLearn && (
+                                    <div className="mt-4 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl text-left w-full max-w-xl animate-fade-in-up">
+                                        <h4 className="font-bold text-white mb-3 text-lg">About Our Smart Manufacturing Hub:</h4>
+                                        <p className="text-gray-200 leading-relaxed text-sm">
+                                            This initiative connects classical mechanical engineering techniques with modern computational algorithms. We specialize in retrofitting older assembly lines with state-of-the-art predictive ML tech, helping your enterprise avoid the colossal Capex involved in buying entirely new factory equipment. Read about our OEE metrics improvements, or speak directly to our IoT specialists.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

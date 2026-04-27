@@ -5,14 +5,23 @@ const Contact = require("../models/Contact");
 // POST /api/contact - submit contact form
 router.post("/", async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, phone, subject, message } = req.body;
 
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    const newContact = new Contact({ name, email, subject, message });
+    const newContact = new Contact({ name, email, phone, subject, message });
     await newContact.save();
+
+    // Create Notification
+    const Notification = require("../models/Notification");
+    await Notification.create({
+      type: 'Contact Form',
+      title: 'New Contact Lead',
+      message: `${name} has sent a message regarding "${subject}"`,
+      link: '/admin/contacts'
+    });
 
     res.status(201).json({ success: true, message: "Message sent successfully!" });
   } catch (err) {

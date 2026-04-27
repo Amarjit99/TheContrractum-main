@@ -479,8 +479,8 @@ export default function Media() {
                       ))}
                     </div>
 
-                    <button className="w-full bg-gradient-to-r from-primary to-primary-light text-white py-2 rounded-lg font-semibold hover:from-primary-dark hover:to-primary transition-all duration-300 shadow-md hover:shadow-lg">
-                      {item.type === 'Video' ? 'Watch Video' : 'View Photo'}
+                    <button className="w-full bg-gradient-to-r from-purple-700 to-indigo-800 text-white py-2 rounded-lg font-bold hover:from-purple-800 hover:to-indigo-900 transition-all duration-300 shadow-lg hover:shadow-purple-200/50">
+                      {item.type === 'Video' ? 'Watch Featured Video' : 'View Featured Gallery'}
                     </button>
                   </div>
                 </div>

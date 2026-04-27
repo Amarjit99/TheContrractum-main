@@ -1,6 +1,70 @@
+import { useState } from "react";
 import { Building2, Cloud, Lock, CheckCircle, Users, FileText, BookOpen, Video } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+// Local Assets Imports
 import technical from "../../assets/technical.jpg";
+import workImg from "../../assets/work.jpg";
+import cityImg from "../../assets/city.jpg";
+import collabImg from "../../assets/collab.webp";
+import m1Img from "../../assets/m1.png";
+import g1Img from "../../assets/g1.png";
+import g2Img from "../../assets/g2.png";
+import g3Img from "../../assets/g3.png";
+import articlesImg from "../../assets/Articles-and-Blogs.jpg";
+import businessImg from "../../assets/Business.jpg";
+import ecoImg from "../../assets/eco.jpg";
+
 export default function TechnicalExperts() {
+    const [openCard, setOpenCard] = useState(null);
+    const [form, setForm] = useState({ name: "", email: "", company: "" });
+    const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
+    const [errorMsg, setErrorMsg] = useState("");
+
+    const toggleCard = (index) => {
+        setOpenCard(openCard === index ? null : index);
+    };
+
+    const handleChange = (e) => {
+        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleReset = () => {
+        setForm({ name: "", email: "", company: "" });
+        setStatus(null);
+        setErrorMsg("");
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus("loading");
+        setErrorMsg("");
+
+        try {
+            const res = await fetch(`${API_URL}/api/expert-consultations`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setStatus("success");
+                setForm({ name: "", email: "", company: "" });
+            } else {
+                setStatus("error");
+                setErrorMsg(data.error || "Something went wrong.");
+            }
+        } catch (err) {
+            console.error("Submission error:", err);
+            setStatus("error");
+            setErrorMsg("Could not reach the server. Please try again later.");
+        }
+    };
+
     return (
         <div className="min-h-screen">
             {/* Hero Section with Background */}
@@ -8,18 +72,17 @@ export default function TechnicalExperts() {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent"></div>
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-left">
                     <div>
-                        {/* <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-4 drop-shadow-2xl">
-                            Industry-Leading Expertise
-                        </span> */}
                         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight text-white drop-shadow-2xl">
                             World-Class Technical Excellence
                         </h1>
                         <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
                             Our team of certified technical experts combines deep industry knowledge with cutting-edge solutions to drive your success
                         </p>
-                        <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                            Connect with Our Experts
-                        </button>
+                        <Link to="/team/connect-experts">
+                            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
+                                Connect with Our Experts
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -73,10 +136,15 @@ export default function TechnicalExperts() {
                                 </div>
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light rounded-2xl transform -skew-y-3 opacity-20"></div>
-                            <div className="relative bg-gradient-to-br from-slate-50 to-white rounded-2xl p-2 shadow-2xl overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=500&fit=crop" alt="Technical Team Meeting" className="rounded-xl w-full object-cover h-96 shadow-lg" />
+                        <div className="relative grid grid-cols-2 gap-4">
+                            <div className="col-span-2 relative bg-gradient-to-br from-slate-50 to-white rounded-2xl p-2 shadow-2xl overflow-hidden border border-slate-100">
+                                <img src={workImg} alt="Technical Team Meeting" className="rounded-xl w-full object-cover h-64 shadow-inner" />
+                            </div>
+                            <div className="relative bg-gradient-to-br from-slate-50 to-white rounded-2xl p-2 shadow-2xl overflow-hidden border border-slate-100 hover:scale-105 transition-transform duration-300">
+                                <img src={cityImg} alt="Team Discussion" className="rounded-xl w-full object-cover h-40 shadow-inner" />
+                            </div>
+                            <div className="relative bg-gradient-to-br from-slate-50 to-white rounded-2xl p-2 shadow-2xl overflow-hidden border border-slate-100 hover:scale-105 transition-transform duration-300">
+                                <img src={collabImg} alt="Technical Planning" className="rounded-xl w-full object-cover h-40 shadow-inner" />
                             </div>
                         </div>
                     </div>
@@ -107,9 +175,15 @@ export default function TechnicalExperts() {
                             <p className="text-blue-100 mb-6 leading-relaxed">
                                 Design and implement scalable enterprise solutions with cloud-native architectures and microservices integration
                             </p>
-                            <a href="#" className="inline-flex items-center text-blue-300 font-bold hover:text-white transition-colors">
-                                Learn More <span className="ml-2">→</span>
-                            </a>
+                            <button onClick={(e) => { e.preventDefault(); toggleCard(1); }} className="inline-flex items-center text-blue-300 font-bold hover:text-white transition-colors cursor-pointer focus:outline-none">
+                                {openCard === 1 ? 'Show Less' : 'Learn More'} <span className={`ml-2 transform transition-transform duration-300 ${openCard === 1 ? '-rotate-90' : ''}`}>→</span>
+                            </button>
+                            {openCard === 1 && (
+                                <ul className="mt-4 space-y-2 text-blue-100 text-sm list-disc list-inside">
+                                    <li>Microservices System Design</li>
+                                    <li>Legacy System Modernization</li>
+                                </ul>
+                            )}
                         </div>
 
                         {/* Card 2 */}
@@ -123,9 +197,15 @@ export default function TechnicalExperts() {
                             <p className="text-cyan-100 mb-6 leading-relaxed">
                                 Seamless transition to cloud platforms with minimal disruption, ensuring security, performance, and cost optimization
                             </p>
-                            <a href="#" className="inline-flex items-center text-cyan-300 font-bold hover:text-white transition-colors">
-                                Learn More <span className="ml-2">→</span>
-                            </a>
+                            <button onClick={(e) => { e.preventDefault(); toggleCard(2); }} className="inline-flex items-center text-cyan-300 font-bold hover:text-white transition-colors cursor-pointer focus:outline-none">
+                                {openCard === 2 ? 'Show Less' : 'Learn More'} <span className={`ml-2 transform transition-transform duration-300 ${openCard === 2 ? '-rotate-90' : ''}`}>→</span>
+                            </button>
+                            {openCard === 2 && (
+                                <ul className="mt-4 space-y-2 text-cyan-100 text-sm list-disc list-inside">
+                                    <li>Multi-Cloud Strategies</li>
+                                    <li>Zero-Downtime Migration Execution</li>
+                                </ul>
+                            )}
                         </div>
 
                         {/* Card 3 */}
@@ -139,9 +219,15 @@ export default function TechnicalExperts() {
                             <p className="text-indigo-100 mb-6 leading-relaxed">
                                 Comprehensive security frameworks and compliance solutions protecting your digital assets and data integrity
                             </p>
-                            <a href="#" className="inline-flex items-center text-indigo-300 font-bold hover:text-white transition-colors">
-                                Learn More <span className="ml-2">→</span>
-                            </a>
+                            <button onClick={(e) => { e.preventDefault(); toggleCard(3); }} className="inline-flex items-center text-indigo-300 font-bold hover:text-white transition-colors cursor-pointer focus:outline-none">
+                                {openCard === 3 ? 'Show Less' : 'Learn More'} <span className={`ml-2 transform transition-transform duration-300 ${openCard === 3 ? '-rotate-90' : ''}`}>→</span>
+                            </button>
+                            {openCard === 3 && (
+                                <ul className="mt-4 space-y-2 text-indigo-100 text-sm list-disc list-inside">
+                                    <li>Zero-Trust Implementations</li>
+                                    <li>ISO & SOC2 Readiness Audits</li>
+                                </ul>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -208,7 +294,7 @@ export default function TechnicalExperts() {
                         {/* Expert Card 1 */}
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-72">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=450&fit=crop" alt="John Mitchell" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={m1Img} alt="John Mitchell" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-6">
@@ -221,7 +307,7 @@ export default function TechnicalExperts() {
                         {/* Expert Card 2 */}
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-72">
-                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=450&fit=crop" alt="Sarah Anderson" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={g1Img} alt="Sarah Anderson" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-6">
@@ -234,7 +320,7 @@ export default function TechnicalExperts() {
                         {/* Expert Card 3 */}
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-72">
-                                <img src="https://images.unsplash.com/photo-1539571696357-5a69c006ad4c?w=400&h=450&fit=crop" alt="David Chen" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={g2Img} alt="David Chen" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-6">
@@ -247,7 +333,7 @@ export default function TechnicalExperts() {
                         {/* Expert Card 4 */}
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-72">
-                                <img src="https://images.unsplash.com/photo-1438746681033-6461ffad8d80?w=400&h=450&fit=crop" alt="Emily Rodriguez" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={g3Img} alt="Emily Rodriguez" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-6">
@@ -278,19 +364,30 @@ export default function TechnicalExperts() {
                             <p className="text-slate-300 mb-10 text-lg leading-relaxed">
                                 Connect with our technical experts to discuss your specific challenges and discover tailored solutions for your business.
                             </p>
-                            <form className="space-y-5">
+                            <form className="space-y-5" onSubmit={handleSubmit}>
                                 <div>
-                                    <input type="text" placeholder="Your Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" />
+                                    <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Your Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
                                 </div>
                                 <div>
-                                    <input type="email" placeholder="Your Email" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" />
+                                    <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Your Email" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
                                 </div>
                                 <div>
-                                    <input type="text" placeholder="Company Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" />
+                                    <input type="text" name="company" value={form.company} onChange={handleChange} placeholder="Company Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
                                 </div>
-                                <button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 rounded-xl transition transform hover:scale-105 shadow-2xl">
-                                    Request Expert Consultation
-                                </button>
+                                {status === "success" && (
+                                    <p className="p-4 bg-green-500/20 text-green-300 rounded-xl font-bold border border-green-500/30">✅ Request sent successfully! We'll get back to you soon.</p>
+                                )}
+                                {status === "error" && (
+                                    <p className="p-4 bg-red-500/20 text-red-300 rounded-xl font-bold border border-red-500/30">❌ {errorMsg}</p>
+                                )}
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <button type="submit" disabled={status === "loading"} className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 rounded-xl transition transform hover:scale-105 shadow-2xl disabled:opacity-50">
+                                        {status === "loading" ? "SENDING..." : "Request Expert Consultation"}
+                                    </button>
+                                    <button type="button" onClick={handleReset} className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all font-black">
+                                        Reset
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
@@ -329,7 +426,7 @@ export default function TechnicalExperts() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-56">
-                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop" alt="Whitepaper" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={articlesImg} alt="Whitepaper" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-8">
@@ -346,7 +443,7 @@ export default function TechnicalExperts() {
 
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-56">
-                                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=300&fit=crop" alt="Case Study" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={businessImg} alt="Case Study" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-8">
@@ -363,7 +460,7 @@ export default function TechnicalExperts() {
 
                         <div className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 border border-slate-100">
                             <div className="relative overflow-hidden h-56">
-                                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&h=300&fit=crop" alt="Webinar" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={ecoImg} alt="Webinar" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <div className="p-8">
@@ -379,13 +476,14 @@ export default function TechnicalExperts() {
                         </div>
                     </div>
                     <div className="text-center mt-12">
-                        <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-2xl">
-                            View All Resources
-                        </button>
+                        <Link to="/resources/blogs">
+                            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-2xl">
+                                View All Resources
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </section>
         </div>
     );
 }
-

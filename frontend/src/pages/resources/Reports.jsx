@@ -229,6 +229,9 @@ export default function Reports() {
   const [selectedType, setSelectedType] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [email, setEmail] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const types = ["All", "Annual Report", "Quarterly Report", "Industry Report", "Technical Report", "Market Report", "Sustainability Report", "Research Report", "HR Report"];
   const years = ["All", "2026", "2025"];
@@ -242,6 +245,35 @@ export default function Reports() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/subscription/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "Reports" }),
+      });
+
+      if (response.ok) {
+        setShowSuccessPopup(true);
+        setEmail("");
+        setTimeout(() => setShowSuccessPopup(false), 5000);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Subscription failed");
+      }
+    } catch (err) {
+      console.error("Error subscribing:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Filter reports
   const filteredReports = reports.filter(report => {
@@ -609,16 +641,23 @@ export default function Reports() {
               Subscribe to receive automatic notifications when new reports are published
             </p>
             <div className="max-w-md mx-auto">
-              <div className="flex gap-3">
+              <form onSubmit={handleSubscribe} className="flex gap-3">
                 <input
                   type="email"
                   placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   className="flex-1 px-6 py-4 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-white/50 font-medium"
                 />
-                <button className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-nowrap">
-                  Subscribe
+                <button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-nowrap"
+                >
+                  {isSubmitting ? "Subscribing..." : "Subscribe"}
                 </button>
-              </div>
+              </form>
               <p className="text-gray-100 text-sm mt-4">
                 Join 5,000+ subscribers staying updated on our latest publications
               </p>
@@ -641,6 +680,38 @@ export default function Reports() {
         </button>
       )}
 
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all animate-bounce-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
+            <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll be notified as soon as new reports and publications are available.</p>
+            <button 
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+            >
+              Great!
+            </button>
+          </div>
+          <style>{`
+            @keyframes bounce-in {
+              0% { opacity: 0; transform: scale(0.3); }
+              50% { opacity: 1; transform: scale(1.05); }
+              70% { transform: scale(0.9); }
+              100% { transform: scale(1); }
+            }
+            .animate-bounce-in {
+              animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

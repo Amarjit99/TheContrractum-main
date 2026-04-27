@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Edit, Trash2, X } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, X, CheckCircle } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -21,9 +21,10 @@ export default function AdminBlogs() {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
 
   // New Post Form State
-  const [newPost, setNewPost] = useState({ title: '', author: '', category: 'Technology', status: 'Draft' });
+  const [newPost, setNewPost] = useState({ title: '', author: '', category: 'Technology', status: 'Draft', excerpt: '', content: '', readTime: '', image: '' });
 
   useEffect(() => { fetchBlogs(); }, []);
 
@@ -65,9 +66,13 @@ export default function AdminBlogs() {
         body: JSON.stringify({ ...newPost })
       });
       if(res.ok) {
+        setSuccess(true);
         fetchBlogs();
-        setIsModalOpen(false);
-        setNewPost({ title: '', author: '', category: 'Technology', status: 'Draft' });
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setSuccess(false);
+          setNewPost({ title: '', author: '', category: 'Technology', status: 'Draft', excerpt: '', content: '', readTime: '', image: '' });
+        }, 1500);
       } else {
         alert("Failed to create post.");
       }
@@ -147,41 +152,68 @@ export default function AdminBlogs() {
       {/* Add New Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="flex justify-between items-center p-5 border-b border-gray-100">
               <h2 className="text-xl font-bold text-gray-800">Add New Blog Post</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleAddSubmit} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Post Title</label>
-                <input required type="text" value={newPost.title} onChange={e => setNewPost({...newPost, title: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Future of Tech" />
+            {success ? (
+              <div className="p-12 flex flex-col items-center justify-center text-center">
+                <CheckCircle size={48} className="text-emerald-500 mb-4" />
+                <h3 className="text-lg font-bold text-gray-800">Post Created Successfully!</h3>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Author Name</label>
-                <input required type="text" value={newPost.author} onChange={e => setNewPost({...newPost, author: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-               <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                  <select value={newPost.category} onChange={e => setNewPost({...newPost, category: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Technology</option><option>Business</option><option>AI & ML</option>
-                  </select>
+            ) : (
+              <form onSubmit={handleAddSubmit} className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Post Title</label>
+                    <input required type="text" value={newPost.title} onChange={e => setNewPost({...newPost, title: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Author Name</label>
+                    <input required type="text" value={newPost.author} onChange={e => setNewPost({...newPost, author: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
-                  <select value={newPost.status} onChange={e => setNewPost({...newPost, status: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Draft</option><option>Published</option>
-                  </select>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Excerpt</label>
+                  <textarea value={newPost.excerpt} onChange={e => setNewPost({...newPost, excerpt: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows={2} />
                 </div>
-              </div>
-              <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm">Save Post</button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Content</label>
+                  <textarea value={newPost.content} onChange={e => setNewPost({...newPost, content: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows={6} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Read Time (e.g. 5 min)</label>
+                    <input type="text" value={newPost.readTime} onChange={e => setNewPost({...newPost, readTime: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Image URL</label>
+                    <input type="text" value={newPost.image} onChange={e => setNewPost({...newPost, image: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                    <select value={newPost.category} onChange={e => setNewPost({...newPost, category: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option>Technology</option><option>Business</option><option>AI & ML</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                    <select value={newPost.status} onChange={e => setNewPost({...newPost, status: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option>Draft</option><option>Published</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="pt-4 flex items-center justify-end gap-3 mt-6">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm">Save Post</button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

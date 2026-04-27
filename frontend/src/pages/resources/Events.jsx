@@ -230,6 +230,9 @@ export default function Events() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [visibleEvents, setVisibleEvents] = useState(6);
+  const [email, setEmail] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = ["All", "Conference", "Workshop", "Training", "Networking", "Bootcamp", "Webinar", "Masterclass"];
 
@@ -237,13 +240,13 @@ export default function Events() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setShowNavbar(false);
       } else {
         setShowNavbar(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -251,12 +254,41 @@ export default function Events() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/subscription/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "Events" }),
+      });
+
+      if (response.ok) {
+        setShowSuccessPopup(true);
+        setEmail("");
+        setTimeout(() => setShowSuccessPopup(false), 5000);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Subscription failed");
+      }
+    } catch (err) {
+      console.error("Error subscribing:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Filter events
   const filteredEvents = eventsData.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
     const matchesType = event.type === selectedType;
     return matchesSearch && matchesCategory && matchesType;
@@ -270,38 +302,11 @@ export default function Events() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-primary-light">
 
-      {/* Smart Navbar */}
-      <div className={`fixed top-0 left-0 right-0 bg-white shadow-md z-40 transition-transform duration-300 ${
-        showNavbar ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="text-xl font-bold text-slate-900">Events & Activities</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-600 hidden md:inline">
-                {upcomingEvents.length} Upcoming · {pastEvents.length} Past
-              </span>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-700 transition-colors">
-                Register Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Spacer for fixed navbar */}
-      <div className="h-20"></div>
-
       {/* Hero Header with Background Image */}
       <div className="relative text-white py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&h=600&fit=crop&q=80" 
+          <img
+            src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&h=600&fit=crop&q=80"
             alt="Events & Activities"
             className="w-full h-full object-cover"
           />
@@ -331,7 +336,7 @@ export default function Events() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
@@ -379,11 +384,10 @@ export default function Events() {
         <div className="flex items-center justify-center gap-4 mb-8">
           <button
             onClick={() => setSelectedType("upcoming")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              selectedType === "upcoming"
-                ? "bg-primary text-white shadow-lg"
-                : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-            }`}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedType === "upcoming"
+              ? "bg-gray-600 text-white shadow-lg scale-105"
+              : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+              }`}
           >
             <span className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,11 +398,10 @@ export default function Events() {
           </button>
           <button
             onClick={() => setSelectedType("past")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              selectedType === "past"
-                ? "bg-primary text-white shadow-lg"
-                : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-            }`}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedType === "past"
+              ? "bg-primary text-white shadow-lg"
+              : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+              }`}
           >
             <span className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,7 +415,7 @@ export default function Events() {
         {/* Search and Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 mb-12">
           <div className="grid md:grid-cols-3 gap-6">
-            
+
             {/* Search */}
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -424,7 +427,7 @@ export default function Events() {
                   placeholder="Search by title, location, or tags..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-slate-50"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-white"
                 />
                 <svg className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -468,13 +471,13 @@ export default function Events() {
                   className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <img 
-                      src={event.image} 
+                    <img
+                      src={event.image}
                       alt={event.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                    
+
                     <span className="absolute top-4 left-4 bg-yellow-400 text-slate-900 px-3 py-1 rounded-full text-xs font-bold border-2 border-yellow-500 shadow-lg">
                       ⭐ Featured
                     </span>
@@ -558,13 +561,13 @@ export default function Events() {
                 className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col group"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={event.image} 
+                  <img
+                    src={event.image}
                     alt={event.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                  
+
                   <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-1 rounded-full text-xs font-semibold">
                     {event.category}
                   </span>
@@ -672,16 +675,23 @@ export default function Events() {
             <p className="text-xl text-gray-100 mb-8 leading-relaxed">
               Subscribe to our newsletter and get notified about upcoming events, exclusive workshops, and early bird discounts.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-1 px-6 py-4 rounded-lg text-slate-900 font-medium focus:ring-4 focus:ring-white/30 outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex-1 px-6 py-4 rounded-lg text-slate-900 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
               />
-              <button className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                Subscribe Now
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                {isSubmitting ? "Subscribing..." : "Subscribe Now"}
               </button>
-            </div>
+            </form>
             <p className="text-gray-100 text-sm mt-4">
               Join 10,000+ professionals already subscribed
             </p>
@@ -703,6 +713,38 @@ export default function Events() {
         </button>
       )}
 
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all animate-bounce-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
+            <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll receive the latest event updates directly in your inbox.</p>
+            <button 
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+            >
+              Great!
+            </button>
+          </div>
+          <style>{`
+            @keyframes bounce-in {
+              0% { opacity: 0; transform: scale(0.3); }
+              50% { opacity: 1; transform: scale(1.05); }
+              70% { transform: scale(0.9); }
+              100% { transform: scale(1); }
+            }
+            .animate-bounce-in {
+              animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }
