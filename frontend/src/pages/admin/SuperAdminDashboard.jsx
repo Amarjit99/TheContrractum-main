@@ -64,8 +64,8 @@ export default function SuperAdminDashboard() {
       const statsData = await statsRes.json();
       const pendingData = await pendingRes.json();
 
-      setStats(statsData);
-      setPendingAdmins(pendingData || []);
+      setStats(statsRes.ok ? statsData : null);
+      setPendingAdmins(Array.isArray(pendingData) ? pendingData : []);
     } catch (err) {
       console.error("Dashboard fetch error:", err);
     } finally {

@@ -15,7 +15,7 @@ export default function AdminAdmins() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [msg, setMsg] = useState('');
-  
+
   // Edit Modal State
   const [editingAdmin, setEditingAdmin] = useState(null);
   const [formData, setFormData] = useState({
@@ -89,11 +89,11 @@ export default function AdminAdmins() {
         </div>
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input 
-            value={search} 
+          <input
+            value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search admins..."
-            className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white" 
+            className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white"
           />
         </div>
       </div>
@@ -146,11 +146,10 @@ export default function AdminAdmins() {
                     {u.joiningDate || 'N/A'}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                      u.adminPermissions === 'view-delete-edit' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
-                      u.adminPermissions === 'view-delete' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
-                      'bg-blue-50 text-blue-600 border border-blue-100'
-                    }`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${u.adminPermissions === 'view-delete-edit' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
+                        u.adminPermissions === 'view-delete' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
+                          'bg-blue-50 text-blue-600 border border-blue-100'
+                      }`}>
                       {u.adminPermissions?.replace(/-/g, ' & ')}
                     </span>
                   </td>
@@ -194,14 +193,14 @@ export default function AdminAdmins() {
                 <X size={20} />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-5">
               {/* Role Dropdown */}
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Assign Role</label>
-                <select 
+                <select
                   value={formData.adminSubRole}
-                  onChange={(e) => setFormData({...formData, adminSubRole: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 >
                   <option value="">Select a Role</option>
@@ -215,10 +214,10 @@ export default function AdminAdmins() {
               {/* Joining Date */}
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Joining Date</label>
-                <input 
+                <input
                   type="date"
                   value={formData.joiningDate}
-                  onChange={(e) => setFormData({...formData, joiningDate: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 />
               </div>
@@ -228,11 +227,11 @@ export default function AdminAdmins() {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Permissions Level</label>
                 <div className="space-y-2">
                   <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
-                    <input 
-                      type="radio" 
-                      name="permissions" 
-                      checked={formData.adminPermissions === 'view'} 
-                      onChange={() => setFormData({...formData, adminPermissions: 'view'})}
+                    <input
+                      type="radio"
+                      name="permissions"
+                      checked={formData.adminPermissions === 'view'}
+                      onChange={() => setFormData({ ...formData, adminPermissions: 'view' })}
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
@@ -240,13 +239,13 @@ export default function AdminAdmins() {
                       <span className="text-[10px] text-gray-400">View-only access to dashboard data</span>
                     </div>
                   </label>
-                  
+
                   <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
-                    <input 
-                      type="radio" 
-                      name="permissions" 
-                      checked={formData.adminPermissions === 'view-delete'} 
-                      onChange={() => setFormData({...formData, adminPermissions: 'view-delete'})}
+                    <input
+                      type="radio"
+                      name="permissions"
+                      checked={formData.adminPermissions === 'view-delete'}
+                      onChange={() => setFormData({ ...formData, adminPermissions: 'view-delete' })}
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
@@ -256,11 +255,11 @@ export default function AdminAdmins() {
                   </label>
 
                   <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
-                    <input 
-                      type="radio" 
-                      name="permissions" 
-                      checked={formData.adminPermissions === 'view-delete-edit'} 
-                      onChange={() => setFormData({...formData, adminPermissions: 'view-delete-edit'})}
+                    <input
+                      type="radio"
+                      name="permissions"
+                      checked={formData.adminPermissions === 'view-delete-edit'}
+                      onChange={() => setFormData({ ...formData, adminPermissions: 'view-delete-edit' })}
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
@@ -273,11 +272,11 @@ export default function AdminAdmins() {
 
               {/* Approval status check */}
               <div className="flex items-center gap-3 pt-2">
-                <input 
+                <input
                   id="approve-check"
                   type="checkbox"
                   checked={formData.isApproved}
-                  onChange={(e) => setFormData({...formData, isApproved: e.target.checked})}
+                  onChange={(e) => setFormData({ ...formData, isApproved: e.target.checked })}
                   className="w-5 h-5 text-emerald-600 rounded-md focus:ring-emerald-500 border-gray-300"
                 />
                 <label htmlFor="approve-check" className="text-sm font-bold text-gray-700 cursor-pointer">
@@ -287,13 +286,13 @@ export default function AdminAdmins() {
             </div>
 
             <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
-              <button 
+              <button
                 onClick={() => setEditingAdmin(null)}
                 className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-white transition-all"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleSave}
                 className="flex-[2] py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
               >

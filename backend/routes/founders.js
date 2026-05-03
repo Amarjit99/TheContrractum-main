@@ -53,12 +53,12 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
 router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) => {
   try {
     const { name, role, background, focusArea, contribution, type, bio, expertise, achievements } = req.body;
-    const updateData = { 
-      name, 
-      role, 
-      type, 
-      background, 
-      focusArea, 
+    const updateData = {
+      name,
+      role,
+      type,
+      background,
+      focusArea,
       contribution,
       bio,
       expertise: expertise ? (Array.isArray(expertise) ? expertise : expertise.split(',').map(e => e.trim())) : [],

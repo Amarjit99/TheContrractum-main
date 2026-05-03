@@ -37,18 +37,31 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
       return res.status(400).json({ message: 'Image is required' });
     }
 
+    let parsedTags = [];
+    if (tags) {
+      try {
+        parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+      } catch (e) {
+        console.error('Error parsing tags:', e);
+        parsedTags = [];
+      }
+    }
+
     const intern = new Intern({
       name,
       role,
       collegeName,
       description,
       image: imagePath,
-      tags: typeof tags === 'string' ? JSON.parse(tags) : tags
+      tags: parsedTags
     });
 
     const savedIntern = await intern.save();
     res.status(201).json(savedIntern);
   } catch (err) {
+    console.error('Create intern error:', err);
+    // Write to a debug file so the agent can see it
+    fs.appendFileSync('intern_debug_log.txt', `[${new Date().toISOString()}] Create error: ${err.message}\n`);
     res.status(400).json({ message: 'Error creating intern', error: err.message });
   }
 });
@@ -58,9 +71,13 @@ router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) 
   try {
     const { name, role, collegeName, description, tags } = req.body;
     const updateData = { name, role, collegeName, description };
-    
+
     if (tags) {
-      updateData.tags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+      try {
+        updateData.tags = typeof tags === 'string' ? JSON.parse(tags) : tags;
+      } catch (e) {
+        console.error('Error parsing tags during update:', e);
+      }
     }
 
     if (req.file) {
@@ -79,6 +96,9 @@ router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) 
     if (!updatedIntern) return res.status(404).json({ message: 'Intern not found' });
     res.json(updatedIntern);
   } catch (err) {
+    console.error('Update intern error:', err);
+    // Write to a debug file so the agent can see it
+    fs.appendFileSync('intern_debug_log.txt', `[${new Date().toISOString()}] Update error: ${err.message}\n`);
     res.status(400).json({ message: 'Error updating intern', error: err.message });
   }
 });

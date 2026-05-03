@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Determine destination based on endpoint or a custom header
     let uploadPath = 'uploads/general';
-    
+
     if (req.originalUrl.includes('interns')) {
       uploadPath = 'uploads/interns';
     } else if (req.originalUrl.includes('founders')) {
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     } else if (req.originalUrl.includes('certificates')) {
       uploadPath = 'uploads/certificates';
     }
-    
+
     // Ensure directory exists
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
@@ -32,10 +32,11 @@ const storage = multer.diskStorage({
 
 // File filter
 const fileFilter = (req, file, cb) => {
+  console.log('Uploading file:', file.originalname, 'MimeType:', file.mimetype);
   if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
     cb(null, true);
   } else {
-    cb(new Error('Only images and PDF files are allowed!'), false);
+    cb(new Error(`Only images and PDF files are allowed! (Detected: ${file.mimetype})`), false);
   }
 };
 

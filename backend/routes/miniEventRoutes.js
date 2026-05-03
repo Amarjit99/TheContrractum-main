@@ -42,7 +42,7 @@ router.post('/', protect, async (req, res) => {
 // @access  Private/Owner
 router.put('/:id', protect, async (req, res) => {
   try {
-    let event = await MiniEvent.findById(req.id || req.params.id);
+    let event = await MiniEvent.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
     
     // Allow creator OR admin to edit
