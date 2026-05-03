@@ -15,12 +15,15 @@ export default function StudentInterns() {
     useEffect(() => {
         const fetchInterns = async () => {
             try {
-                const res = await fetch(`${API}/api/interns`);
+                const res = await fetch(`${API}/api/interns?t=${Date.now()}`);
                 const data = await res.json();
+                console.log('Fetched interns from DB:', data);
                 if (data && data.length > 0) {
-                    setInterns(data);
+                    // Combine DB interns with static ones, avoiding duplicates by name
+                    const dynamicNames = new Set(data.map(i => i.name.toLowerCase()));
+                    const filteredStatic = staticInterns.filter(i => !dynamicNames.has(i.name.toLowerCase()));
+                    setInterns([...data, ...filteredStatic]);
                 } else {
-                    // Fallback to static data if DB is empty
                     setInterns(staticInterns);
                 }
             } catch (err) {
@@ -113,7 +116,7 @@ export default function StudentInterns() {
                                 <div className="md:flex">
                                     <div className="md:w-1/3 h-64 md:h-auto relative overflow-hidden">
                                         <img
-                                            src={intern.image && intern.image.startsWith('/') ? `${API}${intern.image}` : intern.image}
+                                            src={intern.image && intern.image.includes('/uploads/') ? `${API}${intern.image}` : intern.image}
                                             alt={intern.name}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
@@ -125,9 +128,9 @@ export default function StudentInterns() {
                                     </div>
                                     <div className="p-6 md:w-2/3">
                                         <h3 className="text-2xl font-black text-slate-900 mb-1">
-                                            {intern.name}
+                                            {intern.name || "Intern Profile"}
                                         </h3>
-                                        <p className="text-orange-600 font-bold mb-3">{intern.role}</p>
+                                        <p className="text-orange-600 font-bold mb-3">{intern.role || "Project Intern"}</p>
 
                                         <div className="flex items-center gap-2 text-slate-600 text-sm mb-4 bg-slate-100 w-fit px-3 py-1.5 rounded-lg">
                                             <GraduationCap size={16} />

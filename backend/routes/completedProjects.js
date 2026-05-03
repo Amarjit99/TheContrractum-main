@@ -338,17 +338,17 @@ const seedData = [
 router.get('/', async (req, res) => {
   try {
     let projects = await CompletedProject.find();
-    
+
     // Auto-seed or Reseed if data lacks fullDescription
     if (projects.length === 0 || !projects[0].fullDescription) {
       await CompletedProject.deleteMany({});
       await CompletedProject.insertMany(seedData);
       projects = await CompletedProject.find();
     }
-    
+
     const mapped = projects.map(p => ({
-        ...p._doc,
-        id: p._id.toString()
+      ...p._doc,
+      id: p._id.toString()
     }));
 
     res.json(mapped);
@@ -364,8 +364,8 @@ router.get('/:id', async (req, res) => {
     const project = await CompletedProject.findById(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
     res.json({
-        ...project._doc,
-        id: project._id.toString()
+      ...project._doc,
+      id: project._id.toString()
     });
   } catch (error) {
     console.error("Error fetching completed project:", error);

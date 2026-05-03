@@ -26,10 +26,14 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
         const adminExists = await User.findOne({ email: defaultEmail });
         if (!adminExists) {
           await User.create({
+            firstName: "Admin",
+            lastName: "User",
             name: "Admin",
             email: defaultEmail,
             password: "admin12345",
-            role: "admin",
+            mobile: "0000000000",
+            role: "super-admin",
+            isApproved: true,
           });
           console.log("✅ Default admin user created: admin@thecontractum.com");
         }

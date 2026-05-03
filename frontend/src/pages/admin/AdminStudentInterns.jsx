@@ -32,7 +32,7 @@ export default function AdminStudentInterns() {
   const fetchInterns = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/interns`);
+      const res = await fetch(`${API}/api/interns?t=${Date.now()}`);
       const data = await res.json();
       setInterns(data);
     } catch (err) {
@@ -98,6 +98,12 @@ export default function AdminStudentInterns() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!editingIntern && !formData.image) {
+      alert("Please select a profile image.");
+      return;
+    }
+
     const data = new FormData();
     data.append('name', formData.name);
     data.append('role', formData.role);
@@ -134,6 +140,7 @@ export default function AdminStudentInterns() {
       }
     } catch (err) {
       console.error(err);
+      alert("An error occurred while saving. Please check the console.");
     }
   };
 
@@ -264,7 +271,6 @@ export default function AdminStudentInterns() {
                         onChange={handleFileChange}
                         className="hidden" 
                         id="intern-image-upload"
-                        required={!editingIntern}
                       />
                       <label htmlFor="intern-image-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors inline-block">
                         Choose Image
