@@ -62,6 +62,7 @@ import CodeOfConduct from './pages/company/CodeOfConduct';
 import EmployeeId from './pages/company/EmployeeId';
 import CompanyContracts from './pages/company/CompanyContracts';
 import ReferralDashboard from './pages/company/ReferralDashboard';
+import CookiePolicy from './pages/company/CookiePolicy';
 
 // //////////////////Team Pages///////////////////////////////////
 import CoreTeam from './pages/team/CoreTeam';
@@ -237,6 +238,7 @@ export default function App() {
                 <Route path="/company/employee-id" element={<EmployeeId />} />
                 <Route path="/company/contracts" element={<CompanyContracts />} />
                 <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
+                <Route path="/company/cookie-policy" element={<CookiePolicy />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />
