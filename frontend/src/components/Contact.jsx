@@ -50,7 +50,7 @@ const Registration = () => {
     <div className="min-h-screen flex flex-col lg:flex-row">
 
       {/* LEFT SECTION */}
-      <div className="lg:w-1/2 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-12 flex flex-col justify-center relative overflow-hidden">
+      <div className="lg:w-1/2 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6 sm:p-12 flex flex-col justify-center relative overflow-hidden">
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -64,7 +64,7 @@ const Registration = () => {
             <span className="inline-block px-4 py-2 bg-gradient-to-r from-primary-dark to-primary text-white text-xs font-bold uppercase tracking-widest rounded-full mb-4">
               Contact Us
             </span>
-            <h1 className="text-4xl lg:text-5xl font-extrabold mb-4 leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Let's Start a <br /> Conversation
             </h1>
             <p className="text-gray-400 text-sm">
@@ -148,11 +148,11 @@ const Registration = () => {
               <p className="text-red-400 text-sm font-medium">❌ {errorMsg}</p>
             )}
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-red-700 hover:to-pink-700 px-8 py-4 font-bold tracking-wide rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-red-700 hover:to-pink-700 px-6 sm:px-8 py-4 font-bold tracking-wide rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-60 disabled:cursor-not-allowed text-center"
               >
                 {status === "loading" ? "SENDING..." : "SEND MESSAGE"}
               </button>
@@ -160,7 +160,7 @@ const Registration = () => {
               <button
                 type="reset"
                 onClick={() => { setForm({ name: "", email: "", subject: "", message: "" }); setStatus(null); }}
-                className="px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300"
+                className="flex-1 px-6 sm:px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300 text-center"
               >
                 RESET
               </button>
@@ -170,7 +170,7 @@ const Registration = () => {
       </div>
 
       {/* RIGHT SECTION */}
-      <div className="lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100 p-12 flex flex-col justify-center relative overflow-hidden">
+      <div className="lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100 p-6 sm:p-12 flex flex-col justify-center relative overflow-hidden">
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-100 rounded-full -mr-32 -mt-32 opacity-30"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-100 rounded-full -ml-24 -mb-24 opacity-30"></div>
@@ -180,7 +180,7 @@ const Registration = () => {
             <span className="inline-block px-4 py-2 bg-red-100 text-primary text-xs font-bold uppercase tracking-widest rounded-full mb-4">
               Contact Information
             </span>
-            <h2 className="text-3xl lg:text-4xl font-extrabold mb-4 text-gray-900">We're Here to Help</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 text-gray-900">We're Here to Help</h2>
             <p className="text-gray-600">
               Reach out to us through any of these channels. We're available to assist you.
             </p>

@@ -12,10 +12,10 @@ const beliefs = [
 export default function AboutSection() {
   return (
     <section className="bg-gray-100 py-20">
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT IMAGE COLLAGE */}
-        <div className="relative">
+        <div className="relative mb-16 lg:mb-0 mt-8 lg:mt-0">
           {/* Main Big Image */}
           <img
             src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d"
@@ -55,7 +55,7 @@ export default function AboutSection() {
           </div>
 
           {/* Heading */}
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
             End To End <br />
             Business Solution <br />
             And Services.

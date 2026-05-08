@@ -70,7 +70,7 @@ export default function TestimonialsSection() {
 
   return (
     <section className="relative bg-gray-100 py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT CONTENT */}
         <div>
@@ -79,7 +79,7 @@ export default function TestimonialsSection() {
             <span className="absolute -bottom-2 left-0 w-16 h-[2px] bg-primary"></span>
           </p>
 
-          <h2 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6 relative">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-6 relative">
             What They Are <br /> Talking About Us?
             <span className="absolute top-2 right-10 w-3 h-3 bg-primary rounded-full"></span>
           </h2>
@@ -125,7 +125,7 @@ export default function TestimonialsSection() {
         {/* RIGHT TESTIMONIAL CARD */}
         <div className="relative pb-20">
           <div
-            className={`bg-white p-12 rounded-3xl shadow-xl transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"
+            className={`bg-white p-6 md:p-12 rounded-3xl shadow-xl transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"
               }`}
           >
             <div className="flex gap-2 text-indigo-600 mb-6">
@@ -141,7 +141,7 @@ export default function TestimonialsSection() {
 
           {/* Client Info */}
           <div
-            className={`absolute -bottom-2 right-0 flex items-center gap-6 transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"
+            className={`absolute -bottom-2 right-0 flex items-center gap-4 sm:gap-6 transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"
               }`}
           >
             <div className="text-right">
@@ -158,7 +158,7 @@ export default function TestimonialsSection() {
       </div>
 
       {/* LEFT & RIGHT ARROWS — centered below the two-column content */}
-      <div className="max-w-7xl mx-auto px-6 mt-12 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 flex justify-between items-center">
         {/* Left Arrow */}
         <button
           onClick={prev}

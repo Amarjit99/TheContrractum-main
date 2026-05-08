@@ -23,14 +23,14 @@ const DynamicServices = ({ category, subCategory }) => {
 
   return (
     <div className="bg-white py-20 border-t border-gray-100">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
-           <h2 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">Specialized <span className="text-blue-600">Offerings</span></h2>
+           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 tracking-tight">Specialized <span className="text-blue-600">Offerings</span></h2>
            <p className="text-gray-500 max-w-2xl mx-auto">Explore our latest customized solutions designed specifically for your {category.toLowerCase()} needs.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((s, i) => (
-            <div key={i} className="group bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <div key={i} className="group bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                  <span className="text-2xl font-bold">{s.title.charAt(0)}</span>
                </div>

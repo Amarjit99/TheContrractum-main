@@ -34,7 +34,7 @@ const Footer = () => {
         {/* Curved Shape */}
         <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-br from-gray-900 to-black rounded-t-[100%]" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-16 text-center md:text-left">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center md:text-left">
           <h2 className="text-2xl md:text-3xl font-bold mb-2">
             Stay Connected with{" "}
             <span className="text-blue-300">The</span>{" "}
@@ -47,7 +47,7 @@ const Footer = () => {
       </div>
 
       {/* ================= Main Footer ================= */}
-      <div className="bg-gray-800 text-white pt-20 pb-6 px-6 relative overflow-hidden">
+      <div className="bg-gray-800 text-white pt-20 pb-6 px-4 sm:px-6 relative overflow-hidden">
 
         {/* Decorative Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
@@ -70,7 +70,7 @@ const Footer = () => {
               <div className="h-0.5 w-8 bg-gradient-to-r from-red-500 to-transparent" />
             </h4>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               {/* LinkedIn — real URL */}
               <a
                 href="https://www.linkedin.com/company/contractum-integral-solution-pvt-ltd/posts/?feedView=all"
@@ -224,7 +224,7 @@ const Footer = () => {
             <span className="text-red-500 font-semibold">Contractum</span>. All rights reserved.
           </p>
           <VisitorCounter />
-          <div className="flex gap-6 text-sm text-gray-300">
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-300 text-center">
             <a href="#" className="hover:text-red-400 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-red-400 transition-colors">Terms of Service</a>
             <Link to="/company/cookie-policy" className="hover:text-red-400 transition-colors">Cookie Policy</Link>

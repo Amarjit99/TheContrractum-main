@@ -36,7 +36,7 @@ export default function WhyChooseUs() {
 
   return (
     <section className="bg-gray-100 py-24">
-      <div className="max-w-7xl mx-auto px-6 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
 
         {/* Small Top Tag */}
         <div className="mb-4">
@@ -47,7 +47,7 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-5xl font-bold text-gray-900 mb-20">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-20">
           Our Feature
         </h2>
 
@@ -58,7 +58,7 @@ export default function WhyChooseUs() {
             <div key={index} className="group relative flex flex-col items-center cursor-pointer">
 
               {/* Red Half Circle Background with Hover Image */}
-              <div className="relative w-64 h-64 flex items-center justify-center overflow-hidden rounded-full">
+              <div className="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center overflow-hidden rounded-full">
 
                 {/* Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
                 <div
@@ -66,9 +66,9 @@ export default function WhyChooseUs() {
                   style={{ backgroundImage: `url(${item.bgImage})` }}
                 ></div>
 
-                <div className="absolute w-64 h-64 bg-primary rounded-full -left-6 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="absolute w-56 h-56 sm:w-64 sm:h-64 bg-primary rounded-full -left-6 group-hover:scale-110 transition-transform duration-500"></div>
 
-                <div className="relative w-60 h-60 bg-primary group-hover:bg-white rounded-full flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden">
+                <div className="relative w-52 h-52 sm:w-60 sm:h-60 bg-primary group-hover:bg-white rounded-full flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-500 overflow-hidden">
 
                   {/* Icon Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
                   <div
