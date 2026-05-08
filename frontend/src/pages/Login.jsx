@@ -43,10 +43,10 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10">
           {/* Header */}
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
@@ -129,9 +129,9 @@ export default function Login() {
               <X size={24} />
             </button>
 
-            <div className="p-10 pt-14">
+            <div className="p-6 sm:p-10 pt-10 sm:pt-14">
               <div className="text-center mb-10">
-                <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase mb-2">Create Account</h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tighter uppercase mb-2">Create Account</h2>
                 <p className="text-gray-500 font-bold text-sm tracking-tight uppercase">Choose your account type to proceed</p>
               </div>
 

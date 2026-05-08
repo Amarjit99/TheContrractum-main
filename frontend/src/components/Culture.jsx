@@ -50,7 +50,7 @@ export default function OurCulture() {
 
   return (
     <section className="bg-gray-100 py-24">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Top Tag */}
         <div className="text-center mb-8">
@@ -60,15 +60,15 @@ export default function OurCulture() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-4xl lg:text-5xl font-bold text-center mb-20">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-20">
           What Is <span className="text-primary">The Contractum</span> Culture?
         </h2>
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
 
           {/* LEFT SIDE CIRCLES */}
-          <div className="flex justify-center">
-            <div className="relative" style={{ width: 600, height: 520 }}>
+          <div className="flex justify-center overflow-hidden w-full">
+            <div className="relative transform scale-[0.40] min-[360px]:scale-[0.55] sm:scale-75 md:scale-90 lg:scale-100 origin-center" style={{ width: 600, height: 520 }}>
 
               {/* Center Big Circle */}
               <div

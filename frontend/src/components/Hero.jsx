@@ -57,13 +57,13 @@ export default function HeroSection() {
       </div>
 
       {/* Hero Content */}
-      <div className="max-w-7xl mx-auto px-6 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-20">
         <div className="max-w-2xl space-y-6">
 
           {/* Rotating Heading */}
           <h1
             key={index}
-            className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight transition-all duration-500"
+            className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight transition-all duration-500"
           >
             {texts[index]}
           </h1>
@@ -76,18 +76,18 @@ export default function HeroSection() {
           </p>
 
           {/* Action Buttons */}
-          <div className="mt-6 flex flex-wrap gap-4">
+          <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-4">
 
             <Link
               to="/team/core-team"
-              className="px-8 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-md hover:opacity-90 transition"
+              className="px-6 sm:px-8 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-md hover:opacity-90 transition text-center w-full sm:w-auto"
             >
               Join Our Team
             </Link>
 
             <Link
               to="/join/partner"
-              className="px-8 py-3 border border-white text-white font-semibold rounded-md hover:bg-white hover:text-black transition"
+              className="px-6 sm:px-8 py-3 border border-white text-white font-semibold rounded-md hover:bg-white hover:text-black transition text-center w-full sm:w-auto"
             >
               Become a Partner
             </Link>

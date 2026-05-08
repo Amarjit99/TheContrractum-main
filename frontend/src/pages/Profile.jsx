@@ -271,7 +271,7 @@ export default function Profile() {
 
       {/* ── TABS ── */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 flex">
+        <div className="max-w-5xl mx-auto px-4 flex overflow-x-auto no-scrollbar whitespace-nowrap">
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={`px-5 py-4 text-sm font-semibold border-b-2 transition-all ${tab===t.id ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>

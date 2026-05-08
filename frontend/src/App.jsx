@@ -165,7 +165,7 @@ export default function App() {
     <AdminAuthProvider>
       <Router>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen relative">
+        <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
           <CookiesPopup />
           <Navbar />
           <main className="flex-grow">

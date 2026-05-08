@@ -84,14 +84,14 @@ export default function ConsultingSection() {
 
   return (
     <section className="bg-gray-100 py-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Heading */}
         <div className="mb-16 text-center">
           <p className="text-primary uppercase tracking-widest font-semibold mb-3">
             Consulting Services
           </p>
-          <h2 className="text-4xl font-bold text-gray-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
             Our Best Consulting Services
           </h2>
         </div>
@@ -101,7 +101,7 @@ export default function ConsultingSection() {
           {visibleServices.map((service, index) => (
             <div
               key={index}
-              className="group bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-500 relative border border-gray-200 overflow-hidden"
+              className="group bg-white p-6 sm:p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-500 relative border border-gray-200 overflow-hidden"
             >
               {/* Background Image on Hover (Desktop) / Always Visible (Mobile/Tablet) */}
               <div

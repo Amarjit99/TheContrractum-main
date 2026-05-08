@@ -92,11 +92,11 @@ export default function Register() {
       <div className="max-w-4xl w-full bg-white rounded-[40px] shadow-2xl shadow-blue-900/5 overflow-hidden flex flex-col md:flex-row border border-gray-100">
         
         {/* Sidebar Info */}
-        <div className="md:w-1/3 bg-[#1e5cdc] p-10 text-white flex flex-col">
+        <div className="md:w-1/3 bg-[#1e5cdc] p-6 sm:p-10 text-white flex flex-col">
           <div className="bg-white/10 w-12 h-12 rounded-2xl flex items-center justify-center mb-8">
             <Users size={24} />
           </div>
-          <h1 className="text-3xl font-black uppercase tracking-tighter leading-tight mb-4">Join Our Community</h1>
+          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter leading-tight mb-4">Join Our Community</h1>
           <p className="text-blue-100 text-sm font-medium mb-auto">Create your account to access our ERP dashboard and manage your services seamlessly.</p>
           
           <div className="mt-10 space-y-4">
@@ -112,9 +112,9 @@ export default function Register() {
         </div>
 
         {/* Form Content */}
-        <div className="flex-1 p-8 md:p-12">
+        <div className="flex-1 p-6 sm:p-8 md:p-12">
           <div className="mb-8">
-            <h2 className="text-2xl font-black text-gray-800 uppercase tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black text-gray-800 uppercase tracking-tight">
               {step === 1 ? 'Personal Information' : 'Address & Security'}
             </h2>
             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Please fill in the details below</p>
@@ -212,7 +212,7 @@ export default function Register() {
                   </div>
                 </div>
 
-                <div className="flex gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row gap-4 mt-6">
                   <button type="button" onClick={() => setStep(1)} className="flex-1 bg-gray-50 text-gray-500 font-black uppercase tracking-widest py-4 rounded-2xl border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
                     <ArrowLeft size={18} /> Back
                   </button>

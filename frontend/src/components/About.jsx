@@ -13,7 +13,7 @@ export default function About() {
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
               With over a decade of experience and a team of passionate professionals, we've helped thousands of clients achieve their goals and transform their operations.
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="text-center p-4 bg-primary/10 rounded-2xl">
                 <div className="text-3xl font-bold text-primary mb-2">10+</div>
                 <div className="text-gray-600">Years Experience</div>

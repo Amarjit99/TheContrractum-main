@@ -175,10 +175,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500 print:hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Company Name */}
-          <Link to="/" className="flex items-center group -ml-24 transform hover:scale-110 transition-all duration-300">
+          <Link to="/" className="flex items-center group -ml-4 lg:-ml-24 transform hover:scale-110 transition-all duration-300">
             <img src={logo} alt="The Contractum Logo" className="h-20 w-auto object-contain rounded-50" />
           </Link>
 
@@ -359,7 +359,7 @@ export default function Navbar() {
         )}
 
         {/* Enhanced Mobile Menu - Slide from Right */}
-        <div className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`fixed top-0 right-0 h-full w-full max-w-[320px] sm:max-w-none sm:w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
 
           {/* Menu Header */}
           <div className="flex items-center justify-between p-6 border-b-2 border-gray-200 bg-gradient-to-r from-red-600 to-pink-600">

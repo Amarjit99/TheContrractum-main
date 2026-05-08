@@ -18,6 +18,12 @@ const CookiesPopup = () => {
         }
     }, []);
 
+    const handleCancel = () => {
+        if (isLocked) return;
+        setIsVisible(false);
+        localStorage.setItem('cookiesAccepted', 'false');
+    };
+
     const handleManage = () => {
         if (isLocked) return;
 
@@ -66,12 +72,12 @@ const CookiesPopup = () => {
     if (!isVisible && !isLocked) return null;
 
     return (
-        <div className={`fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-700 print:hidden ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`fixed inset-0 z-[9999] pointer-events-none transition-all duration-700 print:hidden ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
             {/* Backdrop */}
-            <div className={`absolute inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity duration-1000 ${isLocked ? 'opacity-100' : 'opacity-0'}`} />
+            <div className={`absolute inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity duration-1000 ${isLocked ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} />
 
             {/* Popup Card */}
-            <div className={`relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-2xl transform transition-all duration-500 ${isVisible ? 'scale-100 translate-y-0' : 'scale-90 translate-y-10'}`}>
+            <div className={`absolute bottom-4 left-4 sm:bottom-6 sm:left-6 w-[calc(100%-2rem)] sm:w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl pointer-events-auto transform transition-all duration-500 ${isVisible ? 'scale-100 translate-y-0' : 'scale-90 translate-y-10'}`}>
                 
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
@@ -95,19 +101,26 @@ const CookiesPopup = () => {
                                 : "We use essential and performance cookies to enhance your journey through the digital frontier. Manage them to your preference or accept to experience the full power of our platform."}
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <button
                                 onClick={handleAcceptClick}
-                                className="flex-1 px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-2xl transition-all shadow-xl shadow-cyan-500/20 uppercase tracking-widest text-sm"
+                                className="flex-[2] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl transition-all shadow-xl shadow-cyan-500/20 uppercase tracking-widest text-xs"
                             >
-                                Accept Cookies
+                                Accept
                             </button>
                             <button
                                 onClick={handleManage}
                                 disabled={isLocked}
-                                className={`flex-1 px-8 py-4 border border-white/10 hover:bg-white/5 text-white font-bold rounded-2xl transition-all uppercase tracking-widest text-sm ${isLocked ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                                className={`flex-[1] px-4 py-3 border border-white/10 hover:bg-white/5 text-white font-bold rounded-xl transition-all uppercase tracking-widest text-xs ${isLocked ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                             >
                                 Manage {manageCount > 0 && `(${manageCount})`}
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                disabled={isLocked}
+                                className={`flex-[1] px-4 py-3 border border-white/10 hover:bg-red-500/10 hover:text-red-400 text-slate-300 font-bold rounded-xl transition-all uppercase tracking-widest text-xs ${isLocked ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                            >
+                                Cancel
                             </button>
                         </div>
                         {manageCount > 0 && !isLocked && (

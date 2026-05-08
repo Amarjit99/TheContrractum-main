@@ -66,7 +66,7 @@ export default function OurClients() {
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop')" }}
       ></div>
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Top Label */}
         <div className="mb-4">
@@ -76,7 +76,7 @@ export default function OurClients() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-5xl font-bold text-gray-900 mb-16">
+        <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-16">
           100% <span className="relative">
             Satisfied Clients
             <span className="absolute -top-2 -right-4 w-2 h-2 bg-primary rounded-full"></span>
@@ -103,7 +103,7 @@ export default function OurClients() {
 
               {/* Center Text */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <h3 className="text-white text-3xl font-semibold text-center px-4">
+                <h3 className="text-white text-2xl sm:text-3xl font-semibold text-center px-4">
                   {client.name}
                 </h3>
               </div>
