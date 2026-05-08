@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Mail, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Shield, Mail, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CookiesPopup = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -40,6 +41,13 @@ const CookiesPopup = () => {
         }, 3000);
     };
 
+    const handleCancel = () => {
+        // Dismiss the popup without accepting — stores a session-only flag
+        // so the popup won't reappear until the next browser session
+        sessionStorage.setItem('cookiesDismissed', 'true');
+        setIsVisible(false);
+    };
+
     const handleAcceptClick = () => {
         setEmailMode(true);
     };
@@ -69,6 +77,14 @@ const CookiesPopup = () => {
         }
     };
 
+    // Also check sessionStorage dismissal
+    useEffect(() => {
+        const dismissed = sessionStorage.getItem('cookiesDismissed');
+        if (dismissed) {
+            setIsVisible(false);
+        }
+    }, []);
+
     if (!isVisible && !isLocked) return null;
 
     return (
@@ -79,6 +95,17 @@ const CookiesPopup = () => {
             {/* Popup Card */}
             <div className={`absolute bottom-4 left-4 sm:bottom-6 sm:left-6 w-[calc(100%-2rem)] sm:w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-4 sm:p-6 shadow-2xl pointer-events-auto transform transition-all duration-500 ${isVisible ? 'scale-100 translate-y-0' : 'scale-90 translate-y-10'}`}>
                 
+                {/* Cancel / Close Button */}
+                {!isLocked && (
+                    <button
+                        onClick={handleCancel}
+                        className="absolute top-4 right-4 p-2 rounded-xl text-slate-500 hover:text-white hover:bg-white/10 transition-all duration-200"
+                        aria-label="Dismiss cookie popup"
+                    >
+                        <X size={20} />
+                    </button>
+                )}
+
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">
                     <div className={`p-3 rounded-2xl ${isLocked ? 'bg-red-500/20 text-red-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
@@ -123,11 +150,30 @@ const CookiesPopup = () => {
                                 Cancel
                             </button>
                         </div>
+
+                        {/* Cancel / Decline text button */}
+                        {!isLocked && (
+                            <button
+                                onClick={handleCancel}
+                                className="w-full mt-4 py-2 text-sm text-slate-500 hover:text-slate-300 font-medium transition-colors uppercase tracking-wider"
+                            >
+                                No thanks, continue without cookies
+                            </button>
+                        )}
+
                         {manageCount > 0 && !isLocked && (
                             <p className="mt-4 text-xs text-red-500 font-black uppercase text-center tracking-widest animate-pulse">
                                 Warning: {3 - manageCount} clicks remaining before access lock.
                             </p>
                         )}
+
+                        {/* Link to full Cookie Policy page */}
+                        <p className="mt-4 text-center text-xs text-slate-500">
+                            Read our full{' '}
+                            <Link to="/company/cookie-policy" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors" onClick={handleCancel}>
+                                Cookie Policy
+                            </Link>
+                        </p>
                     </>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -152,17 +198,27 @@ const CookiesPopup = () => {
                                 <span className="font-bold text-sm uppercase tracking-wide">Access Granted. Welcome back.</span>
                             </div>
                         ) : (
-                            <button
-                                type="submit"
-                                disabled={status === 'loading'}
-                                className="w-full py-4 bg-white text-slate-950 font-black rounded-2xl transition-all shadow-2xl hover:scale-[1.02] active:scale-[0.98] uppercase tracking-widest text-sm flex items-center justify-center gap-2"
-                            >
-                                {status === 'loading' ? (
-                                    <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    "Confirm & Access Website"
-                                )}
-                            </button>
+                            <>
+                                <button
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    className="w-full py-4 bg-white text-slate-950 font-black rounded-2xl transition-all shadow-2xl hover:scale-[1.02] active:scale-[0.98] uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                                >
+                                    {status === 'loading' ? (
+                                        <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        "Confirm & Access Website"
+                                    )}
+                                </button>
+                                {/* Back / Cancel button in email mode */}
+                                <button
+                                    type="button"
+                                    onClick={() => setEmailMode(false)}
+                                    className="w-full py-2 text-sm text-slate-500 hover:text-slate-300 font-medium transition-colors uppercase tracking-wider"
+                                >
+                                    ← Go Back
+                                </button>
+                            </>
                         )}
                     </form>
                 )}
