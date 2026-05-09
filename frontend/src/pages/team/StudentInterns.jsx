@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import intern from "../../assets/intern.webp";
 import venkateshImg from "../../assets/venkatesh.jpeg";
 import ankitImg from "../../assets/ankit.png";
+import amarjitImg from "../../assets/amarjit.jpeg";
 
 import { useState, useEffect } from 'react';
 
@@ -51,6 +52,14 @@ export default function StudentInterns() {
             image: ankitImg,
             quote: "The mentorship here is unmatched. I've learned more in 3 months than a year of college.",
             tags: ["Python", "React", "Web Devolopement", "MongoDB", "Node.js"],
+        },
+        {
+            name: "Amarjeet P",
+            role: "Software Developer & Web Security Analyst Intern",
+            school: "Pondicherry University",
+            image: amarjitImg,
+            quote: "The mentorship here is unmatched. I've learned more in 3 months than a year of college, building secure, scalable web applications.",
+            tags: ["Python", "React", "Web Devolopement", "MongoDB", "Node.js", "Web Security", "Penetration Testing"],
         },
         {
             name: "Rahul Singh",
@@ -111,22 +120,22 @@ export default function StudentInterns() {
                         {interns.map((intern, index) => (
                             <div
                                 key={index}
-                                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 hover:-translate-y-2"
+                                className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 hover:-translate-y-2 flex flex-col h-full"
                             >
-                                <div className="md:flex">
-                                    <div className="md:w-1/3 h-64 md:h-auto relative overflow-hidden">
+                                <div className="flex flex-col md:flex-row flex-1 h-full">
+                                    <div className="w-full md:w-2/5 h-64 md:h-auto relative overflow-hidden flex-shrink-0">
                                         <img
                                             src={intern.image && intern.image.includes('/uploads/') ? `${API}${intern.image}` : intern.image}
                                             alt={intern.name}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 absolute inset-0"
                                         />
-                                        <div className="absolute top-4 right-4">
+                                        <div className="absolute top-4 right-4 z-10">
                                             <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
                                                 <Star className="w-5 h-5 text-white fill-white" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="p-6 md:w-2/3">
+                                    <div className="p-6 w-full md:w-3/5 flex flex-col h-full">
                                         <h3 className="text-2xl font-black text-slate-900 mb-1">
                                             {intern.name || "Intern Profile"}
                                         </h3>
@@ -141,10 +150,10 @@ export default function StudentInterns() {
                                             <div className="absolute top-3 right-3">
                                                 <QuoteIcon className="text-orange-200 w-6 h-6" />
                                             </div>
-                                            <p className="text-slate-700 italic text-sm leading-relaxed">"{intern.description || intern.quote}"</p>
+                                            <p className="text-slate-700 italic text-sm leading-relaxed pr-8">"{intern.description || intern.quote}"</p>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-2 mt-auto pt-4">
                                             {intern.tags.map((tag, idx) => (
                                                 <span
                                                     key={idx}

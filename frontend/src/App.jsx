@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
@@ -63,6 +63,8 @@ import EmployeeId from './pages/company/EmployeeId';
 import CompanyContracts from './pages/company/CompanyContracts';
 import ReferralDashboard from './pages/company/ReferralDashboard';
 import CookiePolicy from './pages/company/CookiePolicy';
+import PrivacyPolicy from './pages/company/PrivacyPolicy';
+import TermsOfService from './pages/company/TermsOfService';
 
 // //////////////////Team Pages///////////////////////////////////
 import CoreTeam from './pages/team/CoreTeam';
@@ -239,6 +241,8 @@ export default function App() {
                 <Route path="/company/contracts" element={<CompanyContracts />} />
                 <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
                 <Route path="/company/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/company/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/company/terms-of-service" element={<TermsOfService />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />
