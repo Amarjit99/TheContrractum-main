@@ -153,20 +153,20 @@ export default function AdminIdCards() {
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">ID Card Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Generate and manage identity cards</p>
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight">ID Card Management</h1>
+          <p className="text-gray-500 text-xs sm:text-sm font-medium">Generate and manage identity cards</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search ID/Name..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white" 
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white transition-all" 
             />
           </div>
-          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
+          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
             <Plus size={16} /> Generate New ID
           </button>
         </div>
@@ -177,11 +177,11 @@ export default function AdminIdCards() {
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Employee ID</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Name</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Category</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Status</th>
-                <th className="text-right text-gray-500 font-semibold px-6 py-4">Actions</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Employee ID</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Name</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm hidden sm:table-cell">Category</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Status</th>
+                <th className="text-right text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -192,22 +192,23 @@ export default function AdminIdCards() {
               ) : (
                 filteredCards.map(c => (
                   <tr key={c._id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-gray-700">{c.employeeId}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <img src={c.photo} alt={c.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
-                        <span className="font-semibold text-gray-800">{c.name}</span>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-gray-700 text-xs sm:text-sm">{c.employeeId}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <img src={c.photo} alt={c.name} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200 shrink-0" />
+                        <span className="font-semibold text-gray-800 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{c.name}</span>
                       </div>
+                      <div className="sm:hidden text-[10px] text-gray-500 mt-1">{c.category}</div>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">{c.category}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 font-medium text-xs sm:text-sm hidden sm:table-cell">{c.category}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[8px] sm:text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 whitespace-nowrap">
                         {c.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16}/></button>
+                        <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} className="sm:w-5 sm:h-5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -225,9 +226,9 @@ export default function AdminIdCards() {
             
             {/* Form Section */}
             {!previewMode ? (
-            <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <h2 className="text-xl font-bold text-gray-800">Generate ID Card</h2>
+            <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
+                <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generate ID Card</h2>
                 <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                     <X size={20} />
                 </button>
@@ -296,8 +297,8 @@ export default function AdminIdCards() {
 
                     <div className="mt-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Photo Upload *</label>
-                        <div className="mt-1 flex items-center gap-4">
-                            <div className="w-24 h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                        <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
                             {imagePreview ? (
                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
@@ -313,7 +314,7 @@ export default function AdminIdCards() {
                                 id="id-photo-upload"
                                 required={!formData.photo}
                             />
-                            <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors inline-block">
+                            <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2.5 sm:py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors block sm:inline-block text-center w-full sm:w-auto">
                                 Upload Face Photo
                             </label>
                             </div>
@@ -329,8 +330,7 @@ export default function AdminIdCards() {
                 </form>
             </div>
             ) : (
-            /* Preview Section */
-            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-8 overflow-y-auto">
+            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)]">
                 {success ? (
                     <div className="flex flex-col items-center justify-center text-center">
                         <CheckCircle size={64} className="text-emerald-500 mb-4" />
@@ -348,7 +348,7 @@ export default function AdminIdCards() {
                             {/* Header / Top Shape */}
                             <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
                                 <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-                                <div className="text-white font-black text-xl tracking-wider uppercase z-10 w-full text-center px-4 leading-tight">
+                                <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
                                     The Contractum
                                 </div>
                                 {/* Wave SVG overlay maybe */}
