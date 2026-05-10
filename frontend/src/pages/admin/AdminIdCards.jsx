@@ -372,70 +372,44 @@ export default function AdminIdCards() {
                     <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
                         <X size={20} />
                     </button>
-                    <div className="flex flex-col items-center w-full max-w-sm mt-4">
-                        {success ? (
-                            <h3 className="text-lg text-emerald-600 font-bold mb-6 flex items-center gap-2">
-                                <CheckCircle size={20} /> Card Generated
-                            </h3>
-                        ) : (
-                            <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
-                                <IdCardIcon /> Card Preview
-                            </h3>
-                        )}
-                        
-                        {/* THE ID CARD DESIGN */}
-                        <div ref={cardRef} className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
-                            {/* Header / Top Shape */}
-                            <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-                                <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
-                                    The Contractum
+
+                    {success ? (
+                        /* ── SUCCESS STATE ── */
+                        <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
+                            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
+                                <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
+                            </div>
+                            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>
+                            <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br/>You can now download or share the ID card.</p>
+
+                            {/* Generated card thumbnail (small) */}
+                            <div ref={cardRef} className="w-[220px] h-[352px] bg-white rounded-xl shadow-xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 opacity-90 scale-95">
+                                <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                                    <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
+                                    <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                                        <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                    </svg>
                                 </div>
-                                {/* Wave SVG overlay maybe */}
-                                <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
-                                    <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                                </svg>
-                            </div>
-
-                            {/* Photo & Category */}
-                            <div className="flex flex-col items-center -mt-16 z-20">
-                                <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                                <span className={`mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full`} style={{ backgroundColor: formData.cardColor }}>
-                                    {formData.category}
-                                </span>
-                            </div>
-
-                            {/* Details */}
-                            <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
-                                <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
-                                <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
-                                <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
-                                
-                                <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <div className="flex justify-between border-b border-gray-200 pb-1">
-                                        <span className="text-gray-500 font-semibold">ID No.</span>
-                                        <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
-                                    </div>
-                                    {formData.bloodGroup && (
-                                    <div className="flex justify-between border-b border-gray-200 py-1">
-                                        <span className="text-gray-500 font-semibold">Blood Group</span>
-                                        <span className="font-bold text-red-600">{formData.bloodGroup}</span>
-                                    </div>
-                                    )}
-                                    <div className="flex justify-between pt-1">
-                                        <span className="text-gray-500 font-semibold">Valid Till</span>
-                                        <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
+                                <div className="flex flex-col items-center -mt-12 z-20">
+                                    <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                                    <span className="mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
+                                </div>
+                                <div className="flex-1 flex flex-col items-center pt-1 px-4 text-center">
+                                    <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                                    <p className="font-semibold text-[10px] mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                    <p className="text-gray-500 text-[9px] font-medium">{formData.department}</p>
+                                    <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                        <div className="flex justify-between border-b border-gray-200 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span></div>
+                                        {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
+                                        <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
                                     </div>
                                 </div>
+                                <div className="h-4 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
                             </div>
-                            
-                            {/* Footer Bar */}
-                            <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
-                        </div>
 
-                        {success ? (
-                            <div className="flex flex-col gap-3 mt-8 mb-4 w-full print:hidden">
-                                <div className="flex gap-4 w-full">
+                            <div className="flex flex-col gap-3 w-full print:hidden">
+                                <div className="flex gap-3 w-full">
                                     <button onClick={handleDownload} className="flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2">
                                         <Download size={18} /> Download
                                     </button>
@@ -443,24 +417,79 @@ export default function AdminIdCards() {
                                         <Share2 size={18} /> Share
                                     </button>
                                 </div>
-                                <button onClick={() => setIsModalOpen(false)} className="w-full py-3 text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
-                                    Cancel / Close
+                                <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="w-full py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                                    <X size={16} /> Cancel / Close
                                 </button>
                             </div>
-                        ) : (
+                        </div>
+                    ) : (
+                        /* ── PREVIEW STATE ── */
+                        <div className="flex flex-col items-center w-full max-w-sm mt-4">
+                            <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
+                                <IdCardIcon /> Card Preview
+                            </h3>
+                            
+                            {/* THE ID CARD DESIGN */}
+                            <div ref={cardRef} className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
+                                {/* Header / Top Shape */}
+                                <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                                    <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
+                                        The Contractum
+                                    </div>
+                                {/* Wave SVG overlay maybe */}
+                                    <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                                        <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                    </svg>
+                                </div>
+
+                                {/* Photo & Category */}
+                                <div className="flex flex-col items-center -mt-16 z-20">
+                                    <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                                    <span className="mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>
+                                        {formData.category}
+                                    </span>
+                                </div>
+
+                                {/* Details */}
+                                <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
+                                    <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                                    <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                    <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
+                                    <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <div className="flex justify-between border-b border-gray-200 pb-1">
+                                            <span className="text-gray-500 font-semibold">ID No.</span>
+                                            <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                                        </div>
+                                        {formData.bloodGroup && (
+                                        <div className="flex justify-between border-b border-gray-200 py-1">
+                                            <span className="text-gray-500 font-semibold">Blood Group</span>
+                                            <span className="font-bold text-red-600">{formData.bloodGroup}</span>
+                                        </div>
+                                        )}
+                                        <div className="flex justify-between pt-1">
+                                            <span className="text-gray-500 font-semibold">Valid Till</span>
+                                            <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Footer Bar */}
+                                <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
+                            </div>
+
                             <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
                                 <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
                                     Edit Details
                                 </button>
-                                <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30">
-                                    Confirm & Generate
+                                <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+                                    <CheckCircle size={18} /> Confirm & Generate
                                 </button>
                             </div>
-                        )}
-                    </div>
-            </div>
+                        </div>
+                    )}
+                </div>
             )}
-            
           </div>
         </div>
       )}
