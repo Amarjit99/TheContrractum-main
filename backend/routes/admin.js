@@ -134,11 +134,21 @@ router.get('/notifications/unread-count', async (req, res) => {
 // GET /api/admin/notifications — Recent notifications
 router.get('/notifications', async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 20;
+    const limit = parseInt(req.query.limit) || 50; // increased limit for the full page
     const notifications = await Notification.find().sort({ createdAt: -1 }).limit(limit);
     res.json(notifications);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch notifications' });
+  }
+});
+
+// DELETE /api/admin/notifications/:id — Delete a notification
+router.delete('/notifications/:id', async (req, res) => {
+  try {
+    await Notification.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Notification deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete notification' });
   }
 });
 
@@ -191,22 +201,56 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// PUT /api/admin/users/:id/role — Promote / demote
+// PUT /api/admin/users/:id/role — Promote / demote & change password & update details
 router.put('/users/:id/role', async (req, res) => {
   try {
-    const { role, isApproved, joiningDate } = req.body;
-    if (!['user', 'admin', 'super-admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
-    if (req.params.id === req.user._id.toString()) return res.status(400).json({ message: 'Cannot change your own role' });
+    const { role, isApproved, joiningDate, password, name, email, mobile } = req.body;
     
-    const update = { role };
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+
+    if (targetUser.role === 'super-admin' && role && role !== 'super-admin') {
+      return res.status(403).json({ message: 'Cannot downgrade a super admin' });
+    }
+
+    if (role && !['user', 'admin', 'super-admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
+    if (req.params.id === req.user._id.toString() && role && role !== req.user.role) return res.status(400).json({ message: 'Cannot change your own role' });
+    
+    const update = {};
+    if (role) update.role = role;
     if (isApproved !== undefined) update.isApproved = isApproved;
     if (joiningDate !== undefined) update.joiningDate = joiningDate;
 
+    if (name) {
+      update.name = name;
+      update.firstName = name.split(' ')[0] || '';
+      update.lastName = name.split(' ').slice(1).join(' ') || ' ';
+    }
+    if (email) update.email = email;
+    if (mobile) update.mobile = mobile;
+
+    if (password && password.trim().length > 0) {
+      const bcrypt = require('bcryptjs');
+      update.password = await bcrypt.hash(password, 12);
+    }
+
     const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Sync changes to AdminDetail if this user is an admin
+    if (name || email) {
+      const adminUpdate = {};
+      if (name) adminUpdate.name = name;
+      if (email) adminUpdate.email = email;
+      await AdminDetail.findOneAndUpdate(
+        { $or: [{ userId: targetUser._id }, { email: targetUser.email }] },
+        adminUpdate
+      );
+    }
+
     res.json(user);
-  } catch {
-    res.status(500).json({ message: 'Failed to update role' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update user', error: err.message });
   }
 });
 
@@ -225,6 +269,24 @@ router.put('/users/:id/admin-details', async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     
+    // Sync or create AdminDetail
+    const adminDetail = await AdminDetail.findOne({ $or: [{ userId: user._id }, { email: user.email }] });
+    if (adminDetail) {
+      if (adminSubRole !== undefined) adminDetail.adminSubRole = adminSubRole;
+      if (adminPermissions !== undefined) adminDetail.adminPermissions = adminPermissions;
+      if (joiningDate !== undefined) adminDetail.joiningDate = joiningDate;
+      await adminDetail.save();
+    } else if (user.role === 'admin') {
+      await AdminDetail.create({
+        userId: user._id,
+        name: user.name || 'Admin',
+        email: user.email,
+        adminSubRole: adminSubRole || 'HR', // Provide default
+        adminPermissions: adminPermissions || 'view',
+        joiningDate: joiningDate || new Date().toISOString()
+      });
+    }
+    
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update admin details', error: err.message });
@@ -235,8 +297,16 @@ router.put('/users/:id/admin-details', async (req, res) => {
 router.delete('/users/:id', async (req, res) => {
   try {
     if (req.params.id === req.user._id.toString()) return res.status(400).json({ message: 'Cannot delete your own account' });
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findOneAndDelete({ _id: req.params.id, role: { $ne: 'super-admin' } });
+    if (!user) {
+      const existing = await User.findById(req.params.id);
+      if (existing && existing.role === 'super-admin') return res.status(403).json({ message: 'Super admin accounts cannot be deleted' });
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Clean up orphaned AdminDetail if user was an admin
+    await AdminDetail.findOneAndDelete({ $or: [{ userId: user._id }, { email: user.email }] });
+
     res.json({ message: 'User deleted' });
   } catch {
     res.status(500).json({ message: 'Failed to delete user' });

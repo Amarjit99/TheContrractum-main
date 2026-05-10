@@ -35,6 +35,7 @@ import VerifyCertificate from './pages/VerifyCertificate';
 import ContractEditor from './pages/admin/ContractEditor';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
+import AdminNotifications from './pages/admin/AdminNotifications';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 
 /////////////////////// Company Pages//////////////////////////////////
@@ -197,6 +198,7 @@ export default function App() {
                 <Route path="/admin/student-interns" element={<AdminStudentInterns />} />
                 <Route path="/admin/founders" element={<AdminFounders />} />
                 <Route path="/admin/form-links" element={<AdminFormLinks />} />
+                <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/submissions" element={<AdminSubmissions />} />
                 <Route path="/admin/surveys" element={<AdminSurveys />} />
                 <Route path="/admin/news" element={<AdminNews />} />
