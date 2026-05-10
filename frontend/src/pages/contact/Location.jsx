@@ -111,7 +111,7 @@ export default function LocationSection() {
         <div className="lg:sticky lg:top-32 w-full h-[500px] lg:h-[700px] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white bg-white relative group">
           <div className="absolute inset-0 bg-blue-600/5 pointer-events-none group-hover:bg-transparent transition-colors duration-500"></div>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3611.456637318728!2d75.8362629!3d25.1557022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f9bf3688cd36b%3A0x7d07997a48dbe48e!2s169%2C%20Ganesh%20Nagar%2C%20Kota%2C%20Rajasthan%20324005!5e0!3m2!1sen!2sin!4v1711640000000!5m2!1sen!2sin"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3578.4512345678901!2d75.83500000000001!3d25.180000000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f850e8ae2985d%3A0x1234567890abcdef!2sRangbari%20Rd%2C%20Kota%2C%20Rajasthan%20324005!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
             width="100%"
             height="100%"
             style={{ border: 0 }}
@@ -119,6 +119,7 @@ export default function LocationSection() {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="rounded-[3rem]"
+            title="The Contractum Office Location - Kota, Rajasthan"
           ></iframe>
         </div>
 

@@ -20,13 +20,8 @@ export default function Founder() {
                     const apiFounders = data.filter(f => f.type === 'founder');
                     const apiDirectors = data.filter(f => f.type === 'director');
                     
-                    const dynamicFounderNames = new Set(apiFounders.map(f => f.name.toLowerCase()));
-                    const filteredStaticFounders = staticFounders.filter(f => !dynamicFounderNames.has(f.name.toLowerCase()));
-                    setFounders([...apiFounders, ...filteredStaticFounders]);
-
-                    const dynamicDirectorNames = new Set(apiDirectors.map(d => d.name.toLowerCase()));
-                    const filteredStaticDirectors = staticDirectors.filter(d => !dynamicDirectorNames.has(d.name.toLowerCase()));
-                    setDirectors([...apiDirectors, ...filteredStaticDirectors]);
+                    setFounders(apiFounders.length > 0 ? apiFounders : staticFounders);
+                    setDirectors(apiDirectors.length > 0 ? apiDirectors : staticDirectors);
                 } else {
                     setFounders(staticFounders);
                     setDirectors(staticDirectors);

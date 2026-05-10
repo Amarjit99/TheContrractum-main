@@ -14,38 +14,50 @@ import {
 } from "lucide-react";
 
 export default function ConsultingSection() {
-  const services = [
+  const [dbServices, setDbServices] = useState([]);
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    fetch(`${API}/api/cms/services`)
+      .then(res => res.json())
+      .then(data => {
+        if(Array.isArray(data)) setDbServices(data.filter(s => s.status !== 'Inactive'));
+      })
+      .catch(console.error);
+  }, []);
+
+  const staticServices = [
     {
       number: "01",
-      title: "CS/IT",
+      title: "CS & IT Services",
       desc: "TheContractum Technology’s IT Staffing group provides clients with the tools and talent they need...",
       icon: <Cpu className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=400&fit=crop",
     },
     {
       number: "02",
-      title: "E-commerce",
+      title: "E-Commerce Platforms",
       desc: "TheContractum creates a platform for the Future in the E-commerce services segment of the company..",
       icon: <ShoppingCart className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&h=400&fit=crop",
     },
     {
       number: "03",
-      title: "GIS",
+      title: "GIS Solutions",
       desc: "As a leading business service in the GIS domain, TheContractum offers geospatial and IT services..",
       icon: <Map className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=500&h=400&fit=crop",
     },
     {
       number: "04",
-      title: "Human Resources",
+      title: "HR Tech Solutions",
       desc: "TheContractum staffing services are designed to help your business simplify operations by...",
       icon: <User className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&h=400&fit=crop",
     },
     {
       number: "05",
-      title: "Market Research & Analysis and Survey",
+      title: "MRAS Services",
       desc: "The key to gaining competitive advantages lies in having an in-depth...",
       icon: <BarChart3 className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=400&fit=crop",
@@ -59,27 +71,62 @@ export default function ConsultingSection() {
     },
     {
       number: "07",
-      title: "Business Process Outsourcing",
+      title: "BPO Services",
       desc: "TheContractum provides the BPO (Business Process Outsourcing) services to solution the clients...",
       icon: <Globe className="text-primary w-8 h-8" />,
       bgImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=400&fit=crop",
     },
+    {
+      number: "08",
+      title: "Digital Marketing",
+      desc: "Full-funnel digital marketing strategies to accelerate growth and lead generation.",
+      icon: <Globe className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=400&fit=crop",
+    },
+    {
+      number: "09",
+      title: "Network Infrastructure",
+      desc: "Robust and secure managed network infrastructure solutions for modern connectivity.",
+      icon: <Globe className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=500&h=400&fit=crop",
+    },
+    {
+      number: "10",
+      title: "Cloud Integration",
+      desc: "Seamless cloud migration, hybrid cloud setup, and integration strategies.",
+      icon: <Globe className="text-primary w-8 h-8" />,
+      bgImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=400&fit=crop",
+    }
   ];
+
+  const staticNames = new Set(staticServices.map(s => s.title.toLowerCase()));
+  const filteredDb = dbServices.filter(s => !staticNames.has(s.title.toLowerCase()));
+
+  const mappedDbServices = filteredDb.map((s, idx) => ({
+    number: (staticServices.length + idx + 1).toString().padStart(2, "0"),
+    title: s.title,
+    desc: s.description || "Learn more about this customized solution offered by TheContractum...",
+    icon: <Globe className="text-primary w-8 h-8" />,
+    bgImage: s.image && s.image.startsWith('/') ? `${API}${s.image}` : (s.image || "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=400&fit=crop"),
+  }));
+
+  const allServices = [...staticServices, ...mappedDbServices];
 
   const [startIndex, setStartIndex] = useState(0);
 
   // Auto rotate every 4 seconds
   useEffect(() => {
+    if(allServices.length === 0) return;
     const interval = setInterval(() => {
-      setStartIndex((prev) => (prev + 1) % services.length);
+      setStartIndex((prev) => (prev + 1) % allServices.length);
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [allServices.length]);
 
   // Get 4 visible services
-  const visibleServices = Array.from({ length: 4 }, (_, i) =>
-    services[(startIndex + i) % services.length]
+  const visibleServices = Array.from({ length: Math.min(4, allServices.length) }, (_, i) =>
+    allServices[(startIndex + i) % allServices.length]
   );
 
   return (

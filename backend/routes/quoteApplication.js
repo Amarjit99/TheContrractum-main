@@ -9,13 +9,22 @@ router.post('/', async (req, res) => {
   try {
     const newQuote = new QuoteApplication(req.body);
     const savedQuote = await newQuote.save();
+    
+    // Increment Inquiries for the selected service
+    const Service = require('../models/Service');
+    if (req.body.service) {
+      await Service.findOneAndUpdate(
+        { title: req.body.service },
+        { $inc: { inquiries: 1 } }
+      ).catch(err => console.error("Failed to increment service inquiries:", err));
+    }
 
     // Create Notification
     const Notification = require("../models/Notification");
     await Notification.create({
       type: 'Quote Request',
       title: 'New Quote Requested',
-      message: `${req.body.name || 'A new lead'} has requested a quote for ${req.body.service || 'a service'}.`,
+      message: `${req.body.fullName || 'A new lead'} has requested a quote for ${req.body.service || 'a service'}.`,
       link: '/admin/dashboard'
     });
 

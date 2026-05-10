@@ -158,13 +158,16 @@ const RequestQuote = () => {
                 required
               >
                 <option value="">Choose a service</option>
+                <option value="CS & IT Services">CS & IT Services</option>
                 <option value="GIS Solutions">GIS Solutions</option>
-                <option value="IT Consulting">IT Consulting</option>
-                <option value="E-commerce Development">E-commerce Development</option>
-                <option value="Telecom Services">Telecom Services</option>
-                <option value="HR Solutions">HR Solutions</option>
+                <option value="MRAS Services">MRAS Services</option>
+                <option value="E-Commerce Platforms">E-Commerce Platforms</option>
+                <option value="HR Tech Solutions">HR Tech Solutions</option>
+                <option value="Digital Marketing">Digital Marketing</option>
                 <option value="BPO Services">BPO Services</option>
-                <option value="Market Research">Market Research</option>
+                <option value="Telecommunication">Telecommunication</option>
+                <option value="Network Infrastructure">Network Infrastructure</option>
+                <option value="Cloud Integration">Cloud Integration</option>
                 <option value="Custom Development">Custom Development</option>
               </select>
             </div>

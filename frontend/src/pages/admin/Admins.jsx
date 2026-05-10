@@ -81,11 +81,11 @@ export default function AdminAdmins() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <ShieldCheck className="text-[#1e5cdc]" size={28} />
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <ShieldCheck className="text-[#1e5cdc]" size={24} />
             Administrator Management
           </h1>
-          <p className="text-gray-500 text-sm mt-1">{data.total} total administrators</p>
+          <p className="text-gray-500 text-xs sm:text-sm mt-1">{data.total} total administrators</p>
         </div>
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -109,43 +109,43 @@ export default function AdminAdmins() {
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Admin</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Role / Dept</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Joining Date</th>
-                <th className="text-center text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Permissions</th>
-                <th className="text-center text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Status</th>
-                <th className="text-right text-gray-500 font-semibold px-6 py-4 uppercase tracking-wider text-xs">Actions</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs">Admin</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs hidden sm:table-cell">Role / Dept</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs hidden lg:table-cell">Joining Date</th>
+                <th className="text-center text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs hidden md:table-cell">Permissions</th>
+                <th className="text-center text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs">Status</th>
+                <th className="text-right text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
                 <tr><td colSpan={6} className="py-12 text-center text-gray-400 font-medium">Loading admin data...</td></tr>
-              ) : data.users?.length === 0 ? (
-                <tr><td colSpan={6} className="py-12 text-center text-gray-400 font-medium">No administrators found.</td></tr>
+              ) : !data.users || data.users.length === 0 ? (
+                <tr><td colSpan={6} className="py-12 text-center text-gray-400 font-medium">{data.message || 'No administrators found.'}</td></tr>
               ) : data.users.map(u => (
                 <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-sm shrink-0 border border-blue-200">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-blue-200">
                         {u.avatar
                           ? <img src={u.avatar} className="w-full h-full object-cover rounded-full" alt="" />
                           : u.name?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-gray-800 font-semibold">{u.name}</p>
-                        <p className="text-gray-500 text-[11px] mt-0.5">{u.email}</p>
+                        <p className="text-gray-800 font-semibold text-xs sm:text-sm">{u.name}</p>
+                        <p className="text-gray-500 text-[10px] sm:text-[11px] mt-0.5 truncate max-w-[100px] sm:max-w-none">{u.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-gray-700 font-medium text-xs bg-gray-100 px-2 py-1 rounded">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
+                    <span className="text-gray-700 font-medium text-[10px] sm:text-xs bg-gray-100 px-2 py-1 rounded">
                       {u.adminSubRole || 'Not Assigned'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500 text-sm whitespace-nowrap">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm whitespace-nowrap hidden lg:table-cell">
                     {u.joiningDate || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 text-center whitespace-nowrap">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-center whitespace-nowrap hidden md:table-cell">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${u.adminPermissions === 'view-delete-edit' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
                         u.adminPermissions === 'view-delete' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
                           'bg-blue-50 text-blue-600 border border-blue-100'
@@ -153,7 +153,7 @@ export default function AdminAdmins() {
                       {u.adminPermissions?.replace(/-/g, ' & ')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center whitespace-nowrap">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-center whitespace-nowrap">
                     {u.isApproved ? (
                       <span className="flex items-center justify-center gap-1 text-emerald-600 font-bold text-[11px]">
                         <CheckCircle size={14} /> VERIFIED
@@ -164,8 +164,8 @@ export default function AdminAdmins() {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">
+                    <div className="flex items-center justify-end gap-1 sm:gap-2">
                       <button onClick={() => handleEdit(u)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Admin">
                         <Edit3 size={18} />
@@ -185,16 +185,16 @@ export default function AdminAdmins() {
 
       {/* Edit Modal */}
       {editingAdmin && (
-        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h2 className="text-xl font-bold text-gray-800">Admin Setup</h2>
+        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">Admin Setup</h2>
               <button onClick={() => setEditingAdmin(null)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X size={20} />
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
               {/* Role Dropdown */}
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Assign Role</label>
@@ -285,7 +285,7 @@ export default function AdminAdmins() {
               </div>
             </div>
 
-            <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-2 sm:gap-3">
               <button
                 onClick={() => setEditingAdmin(null)}
                 className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-white transition-all"

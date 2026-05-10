@@ -93,11 +93,11 @@ export default function AdminSubmissions() {
     <AdminLayout>
       <div className="mb-8 mt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-1">
+            <span className="p-2 bg-purple-100 text-purple-600 rounded-lg hidden sm:block">
                 <ClipboardList size={20} />
             </span>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Form Submissions</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Form Submissions</h1>
           </div>
           <p className="text-gray-500 text-sm font-medium">Overview of all active forms and their response counts across the platform.</p>
         </div>
@@ -108,7 +108,7 @@ export default function AdminSubmissions() {
                 placeholder="Filter forms..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full md:w-64 shadow-sm transition-all"
+                className="pl-10 pr-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
             />
         </div>
       </div>
@@ -129,9 +129,9 @@ export default function AdminSubmissions() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-12">
             {filteredStats.map(form => (
-                <div key={form.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4 hover:border-purple-200 transition-all group hover:shadow-md">
+                <div key={form.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-3 sm:space-y-4 hover:border-purple-200 transition-all group hover:shadow-md">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-purple-50 text-purple-600 rounded-lg group-hover:scale-110 transition-transform">
@@ -140,8 +140,8 @@ export default function AdminSubmissions() {
                             <div>
                                 <h4 className="font-bold text-gray-900">{form.name}</h4>
                                 <div className="flex items-center gap-2 mt-1">
-                                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">Active</span>
-                                    <span className="text-[9px] font-black text-purple-500 uppercase tracking-widest bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">{form.category}</span>
+                                    <span className="text-[8px] sm:text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100">Active</span>
+                                    <span className="text-[8px] sm:text-[9px] font-black text-purple-500 uppercase tracking-widest bg-purple-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-purple-100">{form.category}</span>
                                 </div>
                             </div>
                         </div>
@@ -157,7 +157,7 @@ export default function AdminSubmissions() {
                     </div>
 
                     <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
-                        <code className="text-[10px] text-gray-500 truncate max-w-[250px]">
+                        <code className="text-[9px] sm:text-[10px] text-gray-500 truncate max-w-[200px] sm:max-w-[250px]">
                             {`${window.location.origin}/#${form.path}`}
                         </code>
                         <button 
@@ -169,14 +169,14 @@ export default function AdminSubmissions() {
                     </div>
 
                     <div className="flex items-center gap-3 pt-2">
-                        <a href={`/#${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition border border-gray-100">
-                            <ExternalLink size={14} /> Preview
+                        <a href={`/#${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition border border-gray-100 text-center leading-tight">
+                            <ExternalLink size={14} className="hidden sm:block" /> Preview
                         </a>
                         <button 
                             onClick={() => window.location.href = `/#${form.adminPath}`}
-                            className="flex-1 flex items-center justify-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition shadow-lg shadow-blue-100"
+                            className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition shadow-lg shadow-blue-100 text-center leading-tight"
                         >
-                            <Eye size={14} /> View Responses
+                            <Eye size={14} className="hidden sm:block" /> View Data
                         </button>
                     </div>
                 </div>

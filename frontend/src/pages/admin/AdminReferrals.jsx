@@ -74,11 +74,11 @@ export default function AdminReferrals() {
         {/* Header styling consistent with other admin pages */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-              <Users className="text-indigo-600" size={32} />
+            <h1 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2 sm:gap-3">
+              <Users className="text-indigo-600 w-6 h-6 sm:w-8 sm:h-8" />
               Referral Management
             </h1>
-            <p className="text-gray-500 mt-2">Approve candidates and manage employee referral payouts.</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-2">Approve candidates and manage employee referral payouts.</p>
           </div>
           
           <div className="flex gap-4 items-center">
@@ -89,7 +89,7 @@ export default function AdminReferrals() {
                 placeholder="Search candidates/referrers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-600 outline-none shadow-sm transition-all w-64 md:w-80"
+                className="pl-10 pr-4 py-2 sm:py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-600 outline-none shadow-sm transition-all w-full sm:w-64 md:w-80 text-sm"
               />
             </div>
             <button 
@@ -97,49 +97,49 @@ export default function AdminReferrals() {
               className="p-3 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:text-indigo-600 transition-colors shadow-sm"
               title="Refresh Data"
             >
-              <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
+              <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
             </button>
           </div>
         </div>
 
         {/* Overview Stats (Optional visual enhancement) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                    <Users size={24} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <Users size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Referrals</p>
-                    <p className="text-2xl font-black text-gray-900">{referrals.length}</p>
+                    <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Total Referrals</p>
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">{referrals.length}</p>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <CheckCircle size={24} />
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckCircle size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Candidates Hired</p>
-                    <p className="text-2xl font-black text-gray-900">{referrals.filter(r => r.status === 'Hired').length}</p>
+                    <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Candidates Hired</p>
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">{referrals.filter(r => r.status === 'Hired').length}</p>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <Clock size={24} />
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Clock size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Pending Payouts</p>
-                    <p className="text-2xl font-black text-gray-900">
+                    <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Pending Payouts</p>
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">
                         ${referrals.filter(r => r.status === 'Hired' && r.rewardStatus === 'Pending').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
                     </p>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
-                    <Award size={24} />
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                    <Award size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                    <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Paid Rewards</p>
-                    <p className="text-2xl font-black text-gray-900">
+                    <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Paid Rewards</p>
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">
                         ${referrals.filter(r => r.rewardStatus === 'Rewarded').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
                     </p>
                 </div>
@@ -151,11 +151,11 @@ export default function AdminReferrals() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-200">
-                  <th className="py-4 px-6 font-bold text-xs text-gray-500 uppercase tracking-wider">Candidate / Role</th>
-                  <th className="py-4 px-6 font-bold text-xs text-gray-500 uppercase tracking-wider">Referred By</th>
-                  <th className="py-4 px-6 font-bold text-xs text-gray-500 uppercase tracking-wider">Contact</th>
-                  <th className="py-4 px-6 font-bold text-xs text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="py-4 px-6 font-bold text-xs text-gray-500 uppercase tracking-wider">Reward Status</th>
+                  <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">Candidate / Role</th>
+                  <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider hidden sm:table-cell">Referred By</th>
+                  <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider hidden md:table-cell">Contact</th>
+                  <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">Reward Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -174,24 +174,24 @@ export default function AdminReferrals() {
                     </tr>
                 ) : filteredReferrals.map((ref) => (
                   <tr key={ref._id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-6">
-                      <div className="font-bold text-gray-900">{ref.candidateName}</div>
-                      <div className="text-sm text-gray-500">{ref.jobRole}</div>
+                    <td className="py-3 sm:py-4 px-3 sm:px-6">
+                      <div className="font-bold text-gray-900 text-xs sm:text-sm">{ref.candidateName}</div>
+                      <div className="text-[10px] sm:text-sm text-gray-500">{ref.jobRole}</div>
                     </td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold">
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell">
+                      <span className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs sm:text-sm font-semibold">
                         {ref.referrerName}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-sm">
-                      <div className="text-gray-900">{ref.candidateEmail}</div>
+                    <td className="py-3 sm:py-4 px-3 sm:px-6 text-xs sm:text-sm hidden md:table-cell">
+                      <div className="text-gray-900 truncate max-w-[150px]">{ref.candidateEmail}</div>
                       <div className="text-gray-500">{ref.candidatePhone}</div>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-3 sm:py-4 px-3 sm:px-6">
                       <select 
                         value={ref.status}
                         onChange={(e) => handleStatusChange(ref._id, e.target.value)}
-                        className={`text-sm font-bold px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-colors ${
+                        className={`text-xs sm:text-sm font-bold px-2 sm:px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-colors ${
                             ref.status === 'Applied' ? 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300' :
                             ref.status === 'Interview' ? 'bg-blue-50 text-blue-700 border-blue-200 hover:border-blue-300' :
                             ref.status === 'Hired' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:border-emerald-300' :
@@ -204,22 +204,22 @@ export default function AdminReferrals() {
                         <option value="Declined">Declined</option>
                       </select>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-3 sm:py-4 px-3 sm:px-6">
                       {ref.status === 'Hired' ? (
                         ref.rewardStatus === 'Pending' ? (
                             <button
                                 onClick={() => handleApproveReward(ref._id)}
-                                className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+                                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                             >
                                 Approve ${ref.rewardAmount}
                             </button>
                         ) : (
-                            <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-sm bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
-                                <CheckCircle size={16} /> Paid (${ref.rewardAmount})
+                            <span className="inline-flex items-center gap-1 sm:gap-1.5 text-emerald-600 font-bold text-[10px] sm:text-sm bg-emerald-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-emerald-100">
+                                <CheckCircle size={14} className="sm:w-4 sm:h-4" /> Paid (${ref.rewardAmount})
                             </span>
                         )
                       ) : (
-                        <span className="text-gray-400 text-sm font-medium">
+                        <span className="text-gray-400 text-[10px] sm:text-sm font-medium">
                             {ref.status === 'Declined' ? 'Not Eligible' : 'Awaiting Hire'}
                         </span>
                       )}

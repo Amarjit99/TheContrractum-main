@@ -12,10 +12,14 @@ const storage = multer.diskStorage({
       uploadPath = 'uploads/interns';
     } else if (req.originalUrl.includes('founders')) {
       uploadPath = 'uploads/founders';
+    } else if (req.originalUrl.includes('blogs')) {
+      uploadPath = 'uploads/blogs';
     } else if (req.originalUrl.includes('news')) {
       uploadPath = 'uploads/news';
     } else if (req.originalUrl.includes('certificates')) {
       uploadPath = 'uploads/certificates';
+    } else if (req.originalUrl.includes('applications')) {
+      uploadPath = 'uploads/resumes';
     }
 
     // Ensure directory exists
@@ -33,10 +37,16 @@ const storage = multer.diskStorage({
 // File filter
 const fileFilter = (req, file, cb) => {
   console.log('Uploading file:', file.originalname, 'MimeType:', file.mimetype);
-  if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+  const allowedMimes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+
+  if (file.mimetype.startsWith('image/') || allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error(`Only images and PDF files are allowed! (Detected: ${file.mimetype})`), false);
+    cb(new Error(`Only images, PDF, and Word files are allowed! (Detected: ${file.mimetype})`), false);
   }
 };
 

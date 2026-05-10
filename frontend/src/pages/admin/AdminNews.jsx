@@ -145,11 +145,11 @@ export default function AdminNews() {
         <AdminLayout>
             <div className="mb-6 mt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <Newspaper size={28} className="text-[#1e5cdc]" />
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <Newspaper size={24} className="text-[#1e5cdc] sm:w-7 sm:h-7" />
                         News Management
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">{news.length} total articles</p>
+                    <p className="text-gray-500 text-xs sm:text-sm mt-1">{news.length} total articles</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -168,9 +168,9 @@ export default function AdminNews() {
             {msg && <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-bold animate-fade-in">{msg}</div>}
 
             {isEditing && (
-                <div className="bg-white border-2 border-[#1e5cdc] rounded-2xl p-6 mb-8 shadow-xl animate-in fade-in zoom-in-95 duration-300 relative">
+                <div className="bg-white border-2 border-[#1e5cdc] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 shadow-xl animate-in fade-in zoom-in-95 duration-300 relative">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-black text-slate-900 italic">{currentId ? 'Edit Article' : 'Create New Article'}</h2>
+                        <h2 className="text-lg sm:text-xl font-black text-slate-900 italic">{currentId ? 'Edit Article' : 'Create New Article'}</h2>
                         <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-red-500 transition"><X size={24} /></button>
                     </div>
                     
@@ -232,7 +232,7 @@ export default function AdminNews() {
             )}
 
             {!isEditing && (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                     {loading ? (
                         <div className="col-span-full flex justify-center py-20"><div className="w-10 h-10 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin"></div></div>
                     ) : filteredNews.length === 0 ? (
@@ -244,16 +244,16 @@ export default function AdminNews() {
                     ) : (
                         filteredNews.map(n => (
                             <div key={n._id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group flex flex-col h-full">
-                                <div className="h-48 relative overflow-hidden bg-slate-100 shrink-0">
+                                <div className="h-40 sm:h-48 relative overflow-hidden bg-slate-100 shrink-0">
                                     <img src={n.image.startsWith('http') ? n.image : `${API}${n.image}`} alt={n.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                                     <div className="absolute top-3 left-3 flex gap-2">
                                         <span className="bg-white/90 backdrop-blur text-[#1e5cdc] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">{n.category}</span>
                                         {n.featured && <span className="bg-yellow-400/90 text-yellow-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">Featured</span>}
                                     </div>
                                 </div>
-                                <div className="p-5 flex flex-col flex-grow">
+                                <div className="p-3 sm:p-5 flex flex-col flex-grow">
                                     <p className="text-[10px] uppercase font-bold text-gray-400 flex items-center gap-1 mb-2"><Calendar size={12} /> {new Date(n.date).toLocaleDateString()}</p>
-                                    <h3 className="font-black text-slate-800 text-lg leading-tight mb-2 line-clamp-2">{n.title}</h3>
+                                    <h3 className="font-black text-slate-800 text-base sm:text-lg leading-tight mb-2 line-clamp-2">{n.title}</h3>
                                     <p className="text-gray-500 text-sm line-clamp-3 mb-4">{n.description}</p>
                                     <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                                         <button onClick={() => handleEdit(n)} className="text-[#1e5cdc] text-sm font-bold flex items-center gap-1 hover:underline"><Edit2 size={14} /> Edit</button>

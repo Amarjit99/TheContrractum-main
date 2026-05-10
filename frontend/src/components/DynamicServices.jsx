@@ -9,10 +9,16 @@ const DynamicServices = ({ category, subCategory }) => {
     fetch(`${API}/api/cms/services`)
       .then(r => r.json())
       .then(data => {
+        const coreServices = [
+          'CS & IT Services', 'GIS Solutions', 'MRAS Services',
+          'E-Commerce Platforms', 'HR Tech Solutions', 'Digital Marketing', 'BPO Services',
+          'Telecommunication', 'Network Infrastructure', 'Cloud Integration'
+        ];
         const filtered = data.filter(s => {
           const matchCat = s.category === category;
           const matchSub = subCategory ? s.subCategory === subCategory : true;
-          return matchCat && matchSub && s.status === 'Active';
+          const notCore = !coreServices.includes(s.title);
+          return matchCat && matchSub && s.status === 'Active' && notCore;
         });
         setServices(filtered);
       })

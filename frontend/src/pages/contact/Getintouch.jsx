@@ -256,8 +256,17 @@ const Getintouch = () => {
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 italic">Global Presence</h3>
               </div>
-              <div className="rounded-2xl overflow-hidden border-4 border-slate-50">
-                <img src="https://www.thecontractum.com/img/wordmap.gif" alt="World Map" className="w-full h-auto" />
+            <div className="rounded-2xl overflow-hidden border-4 border-slate-50">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3578.4512345678901!2d75.83500000000001!3d25.180000000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f850e8ae2985d%3A0x1234567890abcdef!2sRangbari%20Rd%2C%20Kota%2C%20Rajasthan%20324005!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="350"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="The Contractum Office - Rangbari Road, Kota"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -309,7 +318,16 @@ const Getintouch = () => {
                 <h3 className="text-2xl font-black text-slate-900 italic">Our Service Region</h3>
               </div>
               <div className="rounded-2xl overflow-hidden border-4 border-slate-50 flex justify-center">
-                <img src="https://www.thecontractum.com/img/india_map.gif" alt="India Map" className="max-w-full h-auto" />
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462434.09734697745!2d75.47023000000001!3d25.181399999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f8be3ce927997%3A0x21703948f5d7c5a7!2sKota%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Kota, Rajasthan, India - Service Region"
+                ></iframe>
               </div>
             </div>
 

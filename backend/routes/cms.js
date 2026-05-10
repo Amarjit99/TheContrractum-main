@@ -6,6 +6,7 @@ const Service = require('../models/Service');
 const JobApplication = require('../models/JobApplication');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 
@@ -77,9 +78,13 @@ router.get('/applications', protect, adminOnly, async (req, res) => {
   res.json(apps);
 });
 
-router.post('/applications', async (req, res) => {
+router.post('/applications', upload.single('resume'), async (req, res) => {
   try {
-    const app = new JobApplication(req.body);
+    console.log("RECEIVED APPLICATION!");
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
+    const resumeUrl = req.file ? `/uploads/resumes/${req.file.filename}` : '';
+    const app = new JobApplication({ ...req.body, resume: resumeUrl });
     await app.save();
 
     // Create Notification
@@ -95,6 +100,13 @@ router.post('/applications', async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// Blog Image Upload
+router.post('/blogs/upload-image', protect, adminOnly, upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No image file provided' });
+  const imageUrl = `/uploads/blogs/${req.file.filename}`;
+  res.json({ imageUrl });
 });
 
 module.exports = router;
