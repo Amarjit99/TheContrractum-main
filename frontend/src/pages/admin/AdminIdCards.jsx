@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon } from 'lucide-react';
+import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon, Download, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -126,11 +126,6 @@ export default function AdminIdCards() {
       if (res.ok) {
         setSuccess(true);
         fetchIdCards();
-        setTimeout(() => {
-          setIsModalOpen(false);
-          setSuccess(false);
-          resetForm();
-        }, 1500);
       } else {
         const errData = await res.json();
         alert(errData.message || "Failed to generate ID Card.");
@@ -142,12 +137,54 @@ export default function AdminIdCards() {
 
   const handleDownload = async () => {
     if (cardRef.current) {
-      const canvas = await html2canvas(cardRef.current, { scale: 3 });
+      const canvas = await html2canvas(cardRef.current, { scale: 3, useCORS: true });
       const link = document.createElement('a');
       link.download = `${formData.employeeId}-IDCard.png`;
-      link.href = canvas.toDataURL();
+      link.href = canvas.toDataURL('image/png');
       link.click();
     }
+  };
+
+  const handleShare = async () => {
+    if (cardRef.current) {
+      try {
+        const canvas = await html2canvas(cardRef.current, { scale: 3, useCORS: true });
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], `${formData.employeeId}-IDCard.png`, { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: `${formData.name} ID Card`,
+              text: 'Check out this generated ID Card!',
+              files: [file]
+            });
+          } else {
+            alert("Your browser doesn't support sharing files directly. Please download the card instead.");
+          }
+        }, 'image/png');
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    }
+  };
+
+  const handleView = (card) => {
+    setFormData({
+      employeeId: card.employeeId || '',
+      name: card.name || '',
+      category: card.category || 'Employee',
+      department: card.department || '',
+      designation: card.designation || '',
+      bloodGroup: card.bloodGroup || '',
+      contactNumber: card.contactNumber || '',
+      email: card.email || '',
+      photo: card.photo || '',
+      validUntil: card.validUntil ? new Date(card.validUntil).toISOString().split('T')[0] : '',
+      cardColor: card.cardColor || '#1e5cdc'
+    });
+    setPreviewMode(true);
+    setSuccess(true); // Already generated
+    setIsModalOpen(true);
   };
 
   return (
@@ -208,6 +245,7 @@ export default function AdminIdCards() {
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleView(c)} className="p-1.5 text-[#1e5cdc] hover:bg-blue-50 rounded-md transition-colors" title="View & Download Card"><Eye size={16} className="sm:w-5 sm:h-5" /></button>
                         <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} className="sm:w-5 sm:h-5" /></button>
                       </div>
                     </td>
@@ -331,17 +369,16 @@ export default function AdminIdCards() {
             </div>
             ) : (
             <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)]">
-                {success ? (
-                    <div className="flex flex-col items-center justify-center text-center">
-                        <CheckCircle size={64} className="text-emerald-500 mb-4" />
-                        <h3 className="text-2xl font-bold text-gray-800">ID Card Generated!</h3>
-                        <p className="text-gray-500 mt-2">The record has been stored successfully.</p>
-                    </div>
-                ) : (
                     <div className="flex flex-col items-center w-full max-w-sm">
-                        <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
-                            <IdCardIcon /> Card Preview
-                        </h3>
+                        {success ? (
+                            <h3 className="text-lg text-emerald-600 font-bold mb-6 flex items-center gap-2">
+                                <CheckCircle size={20} /> Card Generated
+                            </h3>
+                        ) : (
+                            <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
+                                <IdCardIcon /> Card Preview
+                            </h3>
+                        )}
                         
                         {/* THE ID CARD DESIGN */}
                         <div ref={cardRef} className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
@@ -384,7 +421,7 @@ export default function AdminIdCards() {
                                     )}
                                     <div className="flex justify-between pt-1">
                                         <span className="text-gray-500 font-semibold">Valid Till</span>
-                                        <span className="font-bold text-gray-800">{new Date(formData.validUntil).toLocaleDateString()}</span>
+                                        <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
                                     </div>
                                 </div>
                             </div>
@@ -393,16 +430,26 @@ export default function AdminIdCards() {
                             <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
                         </div>
 
-                        <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
-                            <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                                Edit Details
-                            </button>
-                            <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30">
-                                Confirm & Generate
-                            </button>
-                        </div>
+                        {success ? (
+                            <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
+                                <button onClick={handleDownload} className="flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2">
+                                    <Download size={18} /> Download
+                                </button>
+                                <button onClick={handleShare} className="flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
+                                    <Share2 size={18} /> Share
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
+                                <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                                    Edit Details
+                                </button>
+                                <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30">
+                                    Confirm & Generate
+                                </button>
+                            </div>
+                        )}
                     </div>
-                )}
             </div>
             )}
             
