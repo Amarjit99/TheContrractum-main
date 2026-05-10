@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon, Download, Share2 } from 'lucide-react';
+import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon, Download, Share2, Edit2, Mail, Linkedin, MessageCircle, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -21,6 +21,7 @@ export default function AdminIdCards() {
   const [success, setSuccess] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const cardRef = useRef(null);
 
   // Form State
@@ -89,6 +90,7 @@ export default function AdminIdCards() {
     });
     setImagePreview(null);
     setPreviewMode(false);
+    setEditingId(null);
   };
 
   const handleDelete = async (id) => {
@@ -114,8 +116,11 @@ export default function AdminIdCards() {
     try {
       const payload = { ...formData, status: 'Generated' };
       
-      const res = await fetch(`${API}/api/id-cards`, {
-        method: 'POST',
+      const url = editingId ? `${API}/api/id-cards/${editingId}` : `${API}/api/id-cards`;
+      const method = editingId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         headers: { 
             'Content-Type': 'application/json',
             Authorization: `Bearer ${admin?.token}` 
@@ -128,44 +133,98 @@ export default function AdminIdCards() {
         fetchIdCards();
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to generate ID Card.");
+        alert(errData.message || "Failed to process ID Card.");
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
-    if (cardRef.current) {
-      const canvas = await html2canvas(cardRef.current, { scale: 3, useCORS: true });
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      // Small timeout to ensure DOM is ready
+      await new Promise(r => setTimeout(r, 100));
+      
+      const canvas = await html2canvas(cardRef.current, { 
+        scale: 2, // Stable scale
+        useCORS: true,
+        allowTaint: false,
+        logging: true,
+        backgroundColor: "#ffffff",
+        imageTimeout: 15000,
+        removeContainer: true
+      });
+
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
-      link.download = `${formData.employeeId}-IDCard.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.download = `ID_Card_${formData.employeeId || 'card'}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      
+      setDownloading(false);
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert("Failed to generate download. Please try again or take a screenshot.");
+      setDownloading(false);
     }
   };
 
+  const [sharing, setSharing] = useState(false);
   const handleShare = async () => {
-    if (cardRef.current) {
-      try {
-        const canvas = await html2canvas(cardRef.current, { scale: 3, useCORS: true });
-        canvas.toBlob(async (blob) => {
-          if (!blob) return;
-          const file = new File([blob], `${formData.employeeId}-IDCard.png`, { type: 'image/png' });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (!cardRef.current) return;
+    setSharing(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, { 
+        scale: 2, 
+        useCORS: true, 
+        allowTaint: false,
+        backgroundColor: "#ffffff",
+        imageTimeout: 15000
+      });
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+            setSharing(false);
+            return;
+        }
+        const file = new File([blob], `${formData.employeeId}-IDCard.png`, { type: 'image/png' });
+        
+        // Try native share
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
             await navigator.share({
               title: `${formData.name} ID Card`,
-              text: 'Check out this generated ID Card!',
+              text: `ID Card for ${formData.name} (${formData.employeeId})`,
               files: [file]
             });
-          } else {
-            alert("Your browser doesn't support sharing files directly. Please download the card instead.");
+            setSharing(false);
+          } catch (shareErr) {
+            console.warn('Native share failed, falling back...', shareErr);
+            fallbackShare();
           }
-        }, 'image/png');
-      } catch (err) {
-        console.error('Error sharing:', err);
-      }
+        } else {
+          fallbackShare();
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error('Error in handleShare:', err);
+      setSharing(false);
     }
+  };
+
+  const fallbackShare = () => {
+    const shareText = `ID Card Details:\nName: ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDepartment: ${formData.department}`;
+    navigator.clipboard.writeText(shareText).then(() => {
+        alert("Native image sharing is not supported on this browser. Card details have been copied to your clipboard, and the image is being downloaded so you can share it manually.");
+        handleDownload();
+    }).catch(err => {
+        console.error('Clipboard failed', err);
+        handleDownload();
+    }).finally(() => setSharing(false));
   };
 
   const handleView = (card) => {
@@ -182,6 +241,7 @@ export default function AdminIdCards() {
       validUntil: card.validUntil ? new Date(card.validUntil).toISOString().split('T')[0] : '',
       cardColor: card.cardColor || '#1e5cdc'
     });
+    setEditingId(card._id);
     setPreviewMode(true);
     setSuccess(true); // Already generated
     setIsModalOpen(true);
@@ -361,8 +421,8 @@ export default function AdminIdCards() {
 
                     <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
                         <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                        <button type="submit" className={`px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2`}>
-                            <Eye size={16} /> Preview Card
+                        <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2">
+                            <IdCardIcon size={16} /> Preview Card
                         </button>
                     </div>
                 </form>
@@ -376,6 +436,59 @@ export default function AdminIdCards() {
                     {success ? (
                         /* ── SUCCESS STATE ── */
                         <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
+                            {/* Hidden full-scale card for capture */}
+                            <div className="fixed -left-[9999px] top-0 pointer-events-none">
+                                <div ref={cardRef} className="w-[350px] h-[560px] bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
+                                    <div className="h-40 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                        <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                                        <div className="absolute top-8 text-white font-black text-[1.2rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
+                                            The Contractum
+                                        </div>
+                                        <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320">
+                                            <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                        </svg>
+                                    </div>
+                                    
+                                    <div className="absolute top-[80px] left-1/2 -translate-x-1/2 z-20">
+                                        <div className="w-[120px] h-[120px] rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                                            {formData.photo ? (
+                                                <img src={formData.photo} alt="Profile" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-gray-300"><IdCardIcon size={40} /></div>
+                                            )}
+                                        </div>
+                                        <div className="mt-2 text-center">
+                                            <span className="bg-[#1e5cdc] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 flex flex-col items-center pt-14 px-8 text-center mt-6">
+                                        <h1 className="text-2xl font-bold text-gray-900 leading-tight uppercase mb-1">{formData.name}</h1>
+                                        <p className="font-bold text-base uppercase tracking-wide mb-1" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                        <p className="text-gray-500 text-sm font-medium">{formData.department}</p>
+                                        
+                                        <div className="w-full mt-6 flex flex-col gap-2 text-sm text-left bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                            <div className="flex justify-between border-b border-gray-200 pb-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Employee ID</span>
+                                                <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                                            </div>
+                                            {formData.bloodGroup && (
+                                            <div className="flex justify-between border-b border-gray-200 py-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Blood Group</span>
+                                                <span className="font-bold text-red-600">{formData.bloodGroup}</span>
+                                            </div>
+                                            )}
+                                            <div className="flex justify-between pt-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Valid Until</span>
+                                                <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="h-8 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
+                                </div>
+                            </div>
+
                             <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
                                 <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
                             </div>
@@ -383,9 +496,9 @@ export default function AdminIdCards() {
                             <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br/>You can now download or share the ID card.</p>
 
                             {/* Generated card thumbnail (small) */}
-                            <div ref={cardRef} className="w-[220px] h-[352px] bg-white rounded-xl shadow-xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 opacity-90 scale-95">
+                            <div className="w-[220px] h-[352px] bg-white rounded-xl shadow-xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 opacity-90 scale-95">
                                 <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                                    <div className="absolute inset-0 opacity-10 bg-white/10"></div>
                                     <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
                                     <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
                                         <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
@@ -410,16 +523,51 @@ export default function AdminIdCards() {
 
                             <div className="flex flex-col gap-3 w-full print:hidden">
                                 <div className="flex gap-3 w-full">
-                                    <button onClick={handleDownload} className="flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2">
-                                        <Download size={18} /> Download
+                                    <button onClick={handleDownload} disabled={downloading} className={`flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 ${downloading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                                        {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
                                     </button>
-                                    <button onClick={handleShare} className="flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
-                                        <Share2 size={18} /> Share
+                                    <button onClick={handleShare} disabled={sharing} className={`flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2 ${sharing ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                                        {sharing ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} Share
                                     </button>
                                 </div>
-                                <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="w-full py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
-                                    <X size={16} /> Cancel / Close
-                                </button>
+                                
+                                <div className="flex gap-3 w-full">
+                                    <button onClick={() => { setSuccess(false); setPreviewMode(false); }} className="flex-1 py-3 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100">
+                                        <Edit2 size={18} /> Edit Details
+                                    </button>
+                                    <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                                        <X size={16} /> Close
+                                    </button>
+                                </div>
+
+                                <div className="mt-4 pt-4 border-t border-gray-100 w-full">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Quick Share</p>
+                                    <div className="flex justify-center gap-4">
+                                        <a 
+                                            href={`https://wa.me/?text=${encodeURIComponent(`ID Card for ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDownload it here: ${window.location.origin}`)}`} 
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share on WhatsApp"
+                                        >
+                                            <MessageCircle size={20} />
+                                        </a>
+                                        <a 
+                                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(`Generated ID Card for ${formData.name}`)}`} 
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-10 h-10 rounded-full bg-[#0077B5] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share on LinkedIn"
+                                        >
+                                            <Linkedin size={20} />
+                                        </a>
+                                        <a 
+                                            href={`mailto:?subject=ID Card Generated - ${formData.name}&body=The ID card for ${formData.name} (${formData.employeeId}) has been generated.`}
+                                            className="w-10 h-10 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share via Email"
+                                        >
+                                            <Mail size={20} />
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -430,10 +578,10 @@ export default function AdminIdCards() {
                             </h3>
                             
                             {/* THE ID CARD DESIGN */}
-                            <div ref={cardRef} className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
+                            <div className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
                                 {/* Header / Top Shape */}
                                 <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+                                    <div className="absolute inset-0 opacity-10 bg-white/10"></div>
                                     <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
                                         The Contractum
                                     </div>
