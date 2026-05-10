@@ -368,8 +368,11 @@ export default function AdminIdCards() {
                 </form>
             </div>
             ) : (
-            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)]">
-                    <div className="flex flex-col items-center w-full max-w-sm">
+            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
+                    <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
+                        <X size={20} />
+                    </button>
+                    <div className="flex flex-col items-center w-full max-w-sm mt-4">
                         {success ? (
                             <h3 className="text-lg text-emerald-600 font-bold mb-6 flex items-center gap-2">
                                 <CheckCircle size={20} /> Card Generated
@@ -431,12 +434,17 @@ export default function AdminIdCards() {
                         </div>
 
                         {success ? (
-                            <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
-                                <button onClick={handleDownload} className="flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2">
-                                    <Download size={18} /> Download
-                                </button>
-                                <button onClick={handleShare} className="flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
-                                    <Share2 size={18} /> Share
+                            <div className="flex flex-col gap-3 mt-8 mb-4 w-full print:hidden">
+                                <div className="flex gap-4 w-full">
+                                    <button onClick={handleDownload} className="flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2">
+                                        <Download size={18} /> Download
+                                    </button>
+                                    <button onClick={handleShare} className="flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2">
+                                        <Share2 size={18} /> Share
+                                    </button>
+                                </div>
+                                <button onClick={() => setIsModalOpen(false)} className="w-full py-3 text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
+                                    Cancel / Close
                                 </button>
                             </div>
                         ) : (
