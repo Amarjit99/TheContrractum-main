@@ -5,12 +5,6 @@ import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-r
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const mockContacts = [
-  { _id: 'mock-1', name: "Alice Johnson", email: "alice@example.com", subject: "Enterprise Pricing Inquiry", message: "We are interested in your enterprise tier...", createdAt: new Date(Date.now() - 100000000).toISOString() },
-  { _id: 'mock-2', name: "Bob Smith", email: "bob@startup.io", subject: "API Integration Help", message: "How do we integrate the Partner API?", createdAt: new Date(Date.now() - 500000000).toISOString() },
-  { _id: 'mock-3', name: "Carol Davis", email: "carol@design.co", subject: "UI/UX Services", message: "Looking for a website redesign quote.", createdAt: new Date(Date.now() - 1000000000).toISOString() },
-  { _id: 'mock-4', name: "David Wilson", email: "david@marketing.org", subject: "Partnership Opportunity", message: "We would love to discuss a potential partnership.", createdAt: new Date(Date.now() - 2000000000).toISOString() }
-];
 
 export default function AdminContacts() {
   const { admin } = useAdminAuth();
@@ -33,8 +27,8 @@ export default function AdminContacts() {
     setLoading(false);
   };
 
-  const allContacts = [...(data.contacts || []), ...mockContacts];
-  const totalCount = (data.total || 0) + 1245;
+  const allContacts = data.contacts || [];
+  const totalCount = data.total || 0;
 
   const filteredContacts = allContacts.filter(c => 
     c.name.toLowerCase().includes(search.toLowerCase()) || 

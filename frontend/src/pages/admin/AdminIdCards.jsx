@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon, Download, Share2, Edit2, Mail, Linkedin, MessageCircle, Loader2 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+// No html2canvas import needed — we draw via Canvas 2D API
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const COLORS = [
@@ -11,6 +11,208 @@ const COLORS = [
   '#ef4444', '#f43f5e', '#ec4899', '#d946ef', '#a855f7', 
   '#8b5cf6', '#6366f1', '#475569', '#334155', '#18181b'
 ];
+
+// ── Helper: load an image from a src (base64 or URL) ──
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+// ── Helper: draw a rounded rect ──
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// ── Core: Generate the ID card image on a Canvas ──
+async function generateCardCanvas(data) {
+  const W = 700, H = 1120; // 2x for hi-res
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const color = data.cardColor || '#1e5cdc';
+
+  // Background
+  ctx.fillStyle = '#ffffff';
+  roundRect(ctx, 0, 0, W, H, 28);
+  ctx.fill();
+  ctx.save();
+  roundRect(ctx, 0, 0, W, H, 28);
+  ctx.clip();
+
+  // ── Header gradient ──
+  const hdrH = 320;
+  const grad = ctx.createLinearGradient(0, 0, W, hdrH);
+  grad.addColorStop(0, color);
+  grad.addColorStop(1, color + 'dd');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, hdrH);
+
+  // ── Wave curve ──
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(0, hdrH - 60);
+  ctx.bezierCurveTo(W * 0.25, hdrH - 20, W * 0.5, hdrH + 10, W * 0.75, hdrH - 30);
+  ctx.bezierCurveTo(W * 0.9, hdrH - 50, W, hdrH - 10, W, hdrH - 40);
+  ctx.lineTo(W, hdrH);
+  ctx.lineTo(0, hdrH);
+  ctx.closePath();
+  ctx.fill();
+
+  // ── Company name ──
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 36px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('THE CONTRACTUM', W / 2, 80);
+
+  // ── Profile photo (circular) ──
+  const photoR = 110;
+  const photoCX = W / 2;
+  const photoCY = hdrH - 60;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(photoCX, photoCY, photoR + 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(photoCX, photoCY, photoR, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  if (data.photo) {
+    try {
+      const img = await loadImage(data.photo);
+      ctx.drawImage(img, photoCX - photoR, photoCY - photoR, photoR * 2, photoR * 2);
+    } catch {
+      ctx.fillStyle = '#e5e7eb';
+      ctx.fillRect(photoCX - photoR, photoCY - photoR, photoR * 2, photoR * 2);
+    }
+  } else {
+    ctx.fillStyle = '#e5e7eb';
+    ctx.fillRect(photoCX - photoR, photoCY - photoR, photoR * 2, photoR * 2);
+  }
+  ctx.restore();
+
+  // ── Category badge ──
+  const badgeY = photoCY + photoR + 30;
+  const badgeText = (data.category || 'Employee').toUpperCase();
+  ctx.font = 'bold 20px Arial, sans-serif';
+  const badgeW = ctx.measureText(badgeText).width + 36;
+  roundRect(ctx, W / 2 - badgeW / 2, badgeY - 14, badgeW, 32, 16);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.fillText(badgeText, W / 2, badgeY + 8);
+
+  // ── Name ──
+  let curY = badgeY + 60;
+  ctx.fillStyle = '#111827';
+  ctx.font = 'bold 42px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText((data.name || '').toUpperCase(), W / 2, curY);
+
+  // ── Designation ──
+  curY += 44;
+  ctx.fillStyle = color;
+  ctx.font = 'bold 26px Arial, sans-serif';
+  ctx.fillText((data.designation || '').toUpperCase(), W / 2, curY);
+
+  // ── Department ──
+  curY += 34;
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '22px Arial, sans-serif';
+  ctx.fillText(data.department || '', W / 2, curY);
+
+  // ── Details table ──
+  curY += 50;
+  const tableX = 60, tableW = W - 120;
+  roundRect(ctx, tableX, curY, tableW, data.bloodGroup ? 180 : 130, 16);
+  ctx.fillStyle = '#f9fafb';
+  ctx.fill();
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  const rowH = data.bloodGroup ? 55 : 60;
+  let rowY = curY + 38;
+
+  // ID row
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = 'bold 18px Arial, sans-serif';
+  ctx.fillText('ID No.', tableX + 20, rowY);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#1f2937';
+  ctx.font = 'bold 22px Arial, sans-serif';
+  ctx.fillText((data.employeeId || '').toUpperCase(), tableX + tableW - 20, rowY);
+
+  // Divider
+  rowY += 12;
+  ctx.strokeStyle = '#e5e7eb';
+  ctx.beginPath();
+  ctx.moveTo(tableX + 16, rowY);
+  ctx.lineTo(tableX + tableW - 16, rowY);
+  ctx.stroke();
+
+  // Blood group row
+  if (data.bloodGroup) {
+    rowY += rowH - 12;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = 'bold 18px Arial, sans-serif';
+    ctx.fillText('Blood Group', tableX + 20, rowY);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 22px Arial, sans-serif';
+    ctx.fillText(data.bloodGroup, tableX + tableW - 20, rowY);
+    rowY += 12;
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.beginPath();
+    ctx.moveTo(tableX + 16, rowY);
+    ctx.lineTo(tableX + tableW - 16, rowY);
+    ctx.stroke();
+  }
+
+  // Valid till row
+  rowY += rowH - 12;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = 'bold 18px Arial, sans-serif';
+  ctx.fillText('Valid Till', tableX + 20, rowY);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#1f2937';
+  ctx.font = 'bold 22px Arial, sans-serif';
+  const validStr = data.validUntil ? new Date(data.validUntil).toLocaleDateString() : 'N/A';
+  ctx.fillText(validStr, tableX + tableW - 20, rowY);
+
+  // ── Footer bar ──
+  const footH = 40;
+  const footGrad = ctx.createLinearGradient(0, H - footH, W, H - footH);
+  footGrad.addColorStop(0, color);
+  footGrad.addColorStop(1, color + 'aa');
+  ctx.fillStyle = footGrad;
+  ctx.fillRect(0, H - footH, W, footH);
+
+  ctx.restore();
+  return canvas;
+}
 
 export default function AdminIdCards() {
   const { admin } = useAdminAuth();
@@ -22,6 +224,8 @@ export default function AdminIdCards() {
   const [imagePreview, setImagePreview] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const cardRef = useRef(null);
 
   // Form State
@@ -140,24 +344,11 @@ export default function AdminIdCards() {
     }
   };
 
-  const [downloading, setDownloading] = useState(false);
+  // ── Download: uses pure Canvas 2D ──
   const handleDownload = async () => {
-    if (!cardRef.current) return;
     setDownloading(true);
     try {
-      // Small timeout to ensure DOM is ready
-      await new Promise(r => setTimeout(r, 100));
-      
-      const canvas = await html2canvas(cardRef.current, { 
-        scale: 2, // Stable scale
-        useCORS: true,
-        allowTaint: false,
-        logging: true,
-        backgroundColor: "#ffffff",
-        imageTimeout: 15000,
-        removeContainer: true
-      });
-
+      const canvas = await generateCardCanvas(formData);
       const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
       link.download = `ID_Card_${formData.employeeId || 'card'}.png`;
@@ -165,35 +356,22 @@ export default function AdminIdCards() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      setDownloading(false);
     } catch (err) {
       console.error('Download failed:', err);
-      alert("Failed to generate download. Please try again or take a screenshot.");
-      setDownloading(false);
+      alert('Download failed. Please try again.');
     }
+    setDownloading(false);
   };
 
-  const [sharing, setSharing] = useState(false);
+  // ── Share: uses pure Canvas 2D ──
   const handleShare = async () => {
-    if (!cardRef.current) return;
     setSharing(true);
     try {
-      const canvas = await html2canvas(cardRef.current, { 
-        scale: 2, 
-        useCORS: true, 
-        allowTaint: false,
-        backgroundColor: "#ffffff",
-        imageTimeout: 15000
-      });
+      const canvas = await generateCardCanvas(formData);
       canvas.toBlob(async (blob) => {
-        if (!blob) {
-            setSharing(false);
-            return;
-        }
+        if (!blob) { setSharing(false); return; }
         const file = new File([blob], `${formData.employeeId}-IDCard.png`, { type: 'image/png' });
-        
-        // Try native share
+
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
@@ -201,30 +379,34 @@ export default function AdminIdCards() {
               text: `ID Card for ${formData.name} (${formData.employeeId})`,
               files: [file]
             });
-            setSharing(false);
-          } catch (shareErr) {
-            console.warn('Native share failed, falling back...', shareErr);
-            fallbackShare();
+          } catch (e) {
+            console.warn('Native share cancelled or failed', e);
+            fallbackShare(canvas);
           }
         } else {
-          fallbackShare();
+          fallbackShare(canvas);
         }
+        setSharing(false);
       }, 'image/png');
     } catch (err) {
-      console.error('Error in handleShare:', err);
+      console.error('Share failed:', err);
       setSharing(false);
     }
   };
 
-  const fallbackShare = () => {
+  const fallbackShare = (canvas) => {
+    // Download the image + copy text
+    const dataUrl = canvas.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.download = `ID_Card_${formData.employeeId || 'card'}.png`;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     const shareText = `ID Card Details:\nName: ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDepartment: ${formData.department}`;
-    navigator.clipboard.writeText(shareText).then(() => {
-        alert("Native image sharing is not supported on this browser. Card details have been copied to your clipboard, and the image is being downloaded so you can share it manually.");
-        handleDownload();
-    }).catch(err => {
-        console.error('Clipboard failed', err);
-        handleDownload();
-    }).finally(() => setSharing(false));
+    navigator.clipboard.writeText(shareText).catch(() => {});
+    alert('The ID Card image has been downloaded. Card details copied to clipboard — paste them in your message!');
   };
 
   const handleView = (card) => {
@@ -436,60 +618,7 @@ export default function AdminIdCards() {
                     {success ? (
                         /* ── SUCCESS STATE ── */
                         <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
-                            {/* Hidden full-scale card for capture */}
-                            <div className="fixed -left-[9999px] top-0 pointer-events-none">
-                                <div ref={cardRef} className="w-[350px] h-[560px] bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
-                                    <div className="h-40 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                        <div className="absolute inset-0 opacity-10 bg-white/10"></div>
-                                        <div className="absolute top-8 text-white font-black text-[1.2rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
-                                            The Contractum
-                                        </div>
-                                        <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320">
-                                            <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                                        </svg>
-                                    </div>
-                                    
-                                    <div className="absolute top-[80px] left-1/2 -translate-x-1/2 z-20">
-                                        <div className="w-[120px] h-[120px] rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-                                            {formData.photo ? (
-                                                <img src={formData.photo} alt="Profile" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="text-gray-300"><IdCardIcon size={40} /></div>
-                                            )}
-                                        </div>
-                                        <div className="mt-2 text-center">
-                                            <span className="bg-[#1e5cdc] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex-1 flex flex-col items-center pt-14 px-8 text-center mt-6">
-                                        <h1 className="text-2xl font-bold text-gray-900 leading-tight uppercase mb-1">{formData.name}</h1>
-                                        <p className="font-bold text-base uppercase tracking-wide mb-1" style={{ color: formData.cardColor }}>{formData.designation}</p>
-                                        <p className="text-gray-500 text-sm font-medium">{formData.department}</p>
-                                        
-                                        <div className="w-full mt-6 flex flex-col gap-2 text-sm text-left bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                            <div className="flex justify-between border-b border-gray-200 pb-1.5">
-                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Employee ID</span>
-                                                <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
-                                            </div>
-                                            {formData.bloodGroup && (
-                                            <div className="flex justify-between border-b border-gray-200 py-1.5">
-                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Blood Group</span>
-                                                <span className="font-bold text-red-600">{formData.bloodGroup}</span>
-                                            </div>
-                                            )}
-                                            <div className="flex justify-between pt-1.5">
-                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Valid Until</span>
-                                                <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : 'N/A'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="h-8 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
-                                </div>
-                            </div>
-
-                            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
+                                                        <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
                                 <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
                             </div>
                             <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>

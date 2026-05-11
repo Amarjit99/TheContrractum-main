@@ -239,7 +239,7 @@ export default function JobApplication() {
 
     const [job, setJob] = useState(null);
     const [jobLoading, setJobLoading] = useState(true);
-    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: "", coverLetter: "" });
+    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: null, coverLetter: "" });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
     useEffect(() => {
@@ -278,19 +278,29 @@ export default function JobApplication() {
     };
 
     const handleFileChange = (e) => {
-        setFormData(prev => ({ ...prev, resume: e.target.files[0]?.name || '' }));
+        setFormData(prev => ({ ...prev, resume: e.target.files[0] || null }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, success: false, error: null });
+
         const phoneWithCode = `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`;
-        const submissionData = { ...formData, phone: phoneWithCode };
+        
+        const data = new FormData();
+        data.append('fullName', formData.fullName);
+        data.append('email', formData.email);
+        data.append('phone', phoneWithCode);
+        data.append('jobTitle', job?.title);
+        data.append('coverLetter', formData.coverLetter);
+        if (formData.resume) {
+            data.append('resume', formData.resume);
+        }
+
         try {
             const res = await fetch(`${API}/api/cms/applications`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...submissionData, jobTitle: job?.title })
+                body: data
             });
             if (!res.ok) throw new Error('Submission failed');
             setStatus({ loading: false, success: true, error: null });
