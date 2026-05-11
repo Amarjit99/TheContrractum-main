@@ -21,8 +21,11 @@ const CookiesPopup = () => {
 
     const handleCancel = () => {
         if (isLocked) return;
-        setIsVisible(false);
+        // Dismiss the popup without accepting — stores a session-only flag
+        // so the popup won't reappear until the next browser session
+        sessionStorage.setItem('cookiesDismissed', 'true');
         localStorage.setItem('cookiesAccepted', 'false');
+        setIsVisible(false);
     };
 
     const handleManage = () => {
@@ -41,12 +44,7 @@ const CookiesPopup = () => {
         }, 3000);
     };
 
-    const handleCancel = () => {
-        // Dismiss the popup without accepting — stores a session-only flag
-        // so the popup won't reappear until the next browser session
-        sessionStorage.setItem('cookiesDismissed', 'true');
-        setIsVisible(false);
-    };
+
 
     const handleAcceptClick = () => {
         setEmailMode(true);

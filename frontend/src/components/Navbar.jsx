@@ -264,7 +264,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 group focus:outline-none"
               >
                 <span className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-transparent group-hover:ring-red-300 transition-all duration-200">
-                  {user.name?.charAt(0).toUpperCase()}
+                  {user.role === 'super-admin' ? 'SA' : user.name?.charAt(0).toUpperCase()}
                 </span>
                 <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

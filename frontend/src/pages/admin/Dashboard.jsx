@@ -72,7 +72,7 @@ export default function Dashboard() {
     <AdminLayout>
       <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Welcome, Admin!</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Welcome, Admin</h1>
           <p className="text-gray-500 text-sm mt-1">Manage your website efficiently.</p>
         </div>
         <button

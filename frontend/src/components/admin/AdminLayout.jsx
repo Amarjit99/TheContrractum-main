@@ -49,6 +49,11 @@ export default function AdminLayout({ children }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/unread-count`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
+      if (res.status === 401) {
+        logout();
+        navigate('/admin/login');
+        return;
+      }
       const data = await res.json();
       setUnreadCount(data.count || 0);
     } catch (err) {
@@ -61,6 +66,11 @@ export default function AdminLayout({ children }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications?limit=5`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
+      if (res.status === 401) {
+        logout();
+        navigate('/admin/login');
+        return;
+      }
       const data = await res.json();
       setNotifications(data || []);
     } catch (err) {
