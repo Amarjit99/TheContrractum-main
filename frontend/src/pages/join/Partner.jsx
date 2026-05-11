@@ -17,7 +17,7 @@ export default function Partner() {
       try {
         const res = await fetch(`${API}/api/cms/partners`);
         const data = await res.json();
-        setLivePartners(Array.isArray(data) ? data : []);
+        setLivePartners(Array.isArray(data) ? data.filter(p => p.status === 'Active') : []);
       } catch (err) {
         console.error('Failed to fetch partners:', err);
       } finally {

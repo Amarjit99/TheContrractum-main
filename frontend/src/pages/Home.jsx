@@ -1,6 +1,6 @@
 import Hero from '../components/Hero';
 import Features from '../components/Features';
-import Serives from '../components/Serives';
+import Services from '../components/Services';
 import Builder from '../components/Builder';
 import Culture from '../components/Culture';
 import Client from '../components/Client';
@@ -14,7 +14,7 @@ export default function Home() {
     <div>
       <Hero />
       <Features />
-      <Serives />
+      <Services />
       <Builder />
       <Culture />
       <Client />

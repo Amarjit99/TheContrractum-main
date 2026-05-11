@@ -53,8 +53,8 @@ export default function AdminContacts() {
     <AdminLayout>
       <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Leads & Contacts</h1>
-          <p className="text-gray-500 text-sm mt-1">{totalCount.toLocaleString()} total submissions received</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Leads & Contacts</h1>
+          <p className="text-gray-500 text-xs sm:text-sm mt-1">{totalCount.toLocaleString()} total submissions received</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -85,15 +85,14 @@ export default function AdminContacts() {
           </div>
         ) : filteredContacts.map(c => (
           <div key={c._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div
-              className="flex items-center justify-between px-6 py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
+              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === c._id ? null : c._id)}>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-gray-800 font-bold text-base">{c.name}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-wrap">
+                  <span className="text-gray-800 font-bold text-sm sm:text-base">{c.name}</span>
                   <span className="text-gray-400 text-sm hidden sm:inline-block">•</span>
-                  <span className="flex items-center gap-1.5 text-gray-500 text-sm"><Mail size={14}/> {c.email}</span>
-                  <span className="ml-auto sm:ml-4 text-xs font-semibold bg-blue-50 text-[#1e5cdc] px-2.5 py-1 rounded-md border border-blue-100">
+                  <span className="flex items-center gap-1.5 text-gray-500 text-xs sm:text-sm truncate"><Mail size={14}/> {c.email}</span>
+                  <span className="sm:ml-auto text-[10px] sm:text-xs font-semibold bg-blue-50 text-[#1e5cdc] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md border border-blue-100 self-start sm:self-auto mt-1 sm:mt-0">
                     {c.subject}
                   </span>
                 </div>
@@ -102,7 +101,7 @@ export default function AdminContacts() {
                   {new Date(c.createdAt).toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' })}
                 </p>
               </div>
-              <div className="flex items-center gap-4 shrink-0 ml-4">
+              <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-2 sm:ml-4">
                 <button onClick={e => { e.stopPropagation(); deleteContact(c._id); }}
                   className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   title="Delete Lead">
@@ -114,7 +113,7 @@ export default function AdminContacts() {
               </div>
             </div>
             {expanded === c._id && (
-              <div className="border-t border-gray-100 px-6 py-5 bg-gray-50/50">
+              <div className="border-t border-gray-100 px-3 sm:px-6 py-3 sm:py-5 bg-gray-50/50">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Message Content</h4>
                 <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                   <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>

@@ -46,11 +46,11 @@ const mockContacts = [
 ];
 
 const StatCardItem = ({ title, value, trendParams, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-    <p className="text-sm font-semibold text-gray-700">{title}</p>
-    <div className="flex items-end justify-between mt-3">
-      <h3 className="text-3xl font-bold text-gray-900">{value}</h3>
-      <div className={`flex items-center gap-1 text-sm font-medium ${trendColor}`}>
+  <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
+    <p className="text-xs sm:text-sm font-semibold text-gray-700">{title}</p>
+    <div className="flex items-end justify-between mt-2 sm:mt-3">
+      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">{value}</h3>
+      <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${trendColor}`}>
         {trendText} {trendIcon}
       </div>
     </div>
@@ -71,13 +71,13 @@ export default function Dashboard() {
   return (
     <AdminLayout>
       <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Welcome, Admin</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your website efficiently.</p>
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome, Admin</h1>
+          <p className="text-gray-500 text-xs sm:text-sm">Manage your website efficiently.</p>
         </div>
         <button
           onClick={() => navigate('/admin/form-links')}
-          className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm group"
+          className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm group w-full sm:w-auto"
         >
           <LinkIcon size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
           Form Links
@@ -92,7 +92,7 @@ export default function Dashboard() {
         <div className="space-y-6">
 
           {/* Top Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <StatCardItem
               title="Total Leads"
               value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
@@ -127,10 +127,10 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {/* Website Traffic Chart */}
-            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-gray-800">Website Traffic</h3>
-                <div className="flex items-center gap-3">
+            <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Website Traffic</h3>
+                <div className="flex items-center gap-2 sm:gap-3">
                   <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-blue-50 px-3 py-1.5 rounded-full font-medium">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
                   </span>
@@ -140,7 +140,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="h-64 w-full mt-2 relative">
+              <div className="h-48 sm:h-64 w-full mt-2 relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -158,11 +158,11 @@ export default function Dashboard() {
             </div>
 
             {/* Lead Conversion Rate Bar Chart */}
-            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col relative">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-semibold text-gray-800">Lead Conversion Rate</h3>
+            <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 flex flex-col relative">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Lead Conversion Rate</h3>
               </div>
-              <div className="h-52 w-full mt-auto">
+              <div className="h-40 sm:h-52 w-full mt-auto">
                 {/* Custom tooltip-like label for the highest bar */}
                 <div className="absolute top-10 right-[15%] bg-[#1a3b5c] text-white text-sm font-bold px-3 py-1 rounded-md mb-2 shadow-lg z-10 before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-[#1a3b5c]">
                   12.5%

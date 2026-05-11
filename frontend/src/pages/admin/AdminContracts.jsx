@@ -92,15 +92,15 @@ export default function AdminContracts() {
   return (
     <AdminLayout>
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Contract Management</h1>
-          <p className="text-gray-500 font-medium">Lifecycle tracking, approvals, and digital signatures.</p>
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Contract Management</h1>
+          <p className="text-gray-500 text-xs sm:text-sm font-medium">Lifecycle tracking, approvals, and digital signatures.</p>
         </div>
         <button 
           onClick={() => navigate('/admin/contracts/create')}
-          className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
+          className="flex items-center justify-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-bold transition-all shadow-lg shadow-blue-500/20 w-full sm:w-auto"
         >
-          <Plus size={20} /> Create New Contract
+          <Plus size={18} className="sm:w-5 sm:h-5" /> Create New Contract
         </button>
       </div>
 
@@ -138,7 +138,7 @@ export default function AdminContracts() {
               placeholder="Search contracts or employees..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white transition-all text-sm font-medium"
+              className="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white transition-all text-xs sm:text-sm font-medium"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
@@ -159,11 +159,11 @@ export default function AdminContracts() {
           <table className="w-full">
             <thead className="bg-gray-50/50">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Contract Info</th>
-                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Employee</th>
-                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-widest">Duration</th>
-                <th className="px-6 py-4 text-right text-xs font-black text-gray-400 uppercase tracking-widest">Actions</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Contract Info</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:table-cell">Employee</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Duration</th>
+                <th className="px-3 sm:px-6 py-3 sm:py-4 text-right text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -174,46 +174,51 @@ export default function AdminContracts() {
               ) : (
                 filteredContracts.map(c => (
                   <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
-                    <td className="px-6 py-5">
-                      <div className="flex items-start gap-4">
-                        <div className="p-3 bg-blue-50 text-[#1e5cdc] rounded-xl group-hover:bg-[#1e5cdc] group-hover:text-white transition-colors">
-                          <FileText size={20} />
+                    <td className="px-3 sm:px-6 py-3 sm:py-5">
+                      <div className="flex items-start gap-2 sm:gap-4">
+                        <div className="p-2 sm:p-3 bg-blue-50 text-[#1e5cdc] rounded-lg sm:rounded-xl group-hover:bg-[#1e5cdc] group-hover:text-white transition-colors shrink-0">
+                          <FileText size={16} className="sm:w-5 sm:h-5" />
                         </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 group-hover:text-[#1e5cdc] transition-colors">{c.title}</h4>
-                          <p className="text-xs text-gray-400 font-medium mt-0.5">{c.type}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs uppercase">
-                          {c.employeeId?.firstName[0]}{c.employeeId?.lastName[0]}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">{c.employeeId?.firstName} {c.employeeId?.lastName}</p>
-                          <p className="text-xs text-gray-400 font-medium">{c.employeeId?.email}</p>
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-gray-900 group-hover:text-[#1e5cdc] transition-colors text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">{c.title}</h4>
+                          <p className="text-[10px] sm:text-xs text-gray-400 font-medium mt-0.5">{c.type}</p>
+                          {/* Mobile-only Employee Info */}
+                          <div className="sm:hidden flex items-center gap-1.5 mt-2 text-gray-500">
+                             <UserIcon size={10} />
+                             <span className="text-[10px] font-medium truncate max-w-[100px]">{c.employeeId?.firstName} {c.employeeId?.lastName}</span>
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(c.status)}`}>
+                    <td className="px-3 sm:px-6 py-3 sm:py-5 hidden sm:table-cell">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-[10px] sm:text-xs uppercase shrink-0">
+                          {c.employeeId?.firstName?.[0]}{c.employeeId?.lastName?.[0]}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">{c.employeeId?.firstName} {c.employeeId?.lastName}</p>
+                          <p className="text-[10px] sm:text-xs text-gray-400 font-medium truncate max-w-[100px] lg:max-w-none">{c.employeeId?.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-5">
+                      <span className={`px-2 sm:px-3 py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(c.status)}`}>
                         {c.status.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-2 text-gray-500">
-                        <Calendar size={14} />
-                        <span className="text-xs font-bold">
+                    <td className="px-3 sm:px-6 py-3 sm:py-5 hidden md:table-cell">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500">
+                        <Calendar size={12} className="sm:w-3.5 sm:h-3.5" />
+                        <span className="text-[10px] sm:text-xs font-bold">
                           {c.validFrom ? new Date(c.validFrom).toLocaleDateString() : 'N/A'}
                         </span>
-                        <ArrowRight size={12} className="text-gray-300" />
-                        <span className="text-xs font-bold">
+                        <ArrowRight size={10} className="text-gray-300 sm:w-3 sm:h-3" />
+                        <span className="text-[10px] sm:text-xs font-bold">
                           {c.validUntil ? new Date(c.validUntil).toLocaleDateString() : 'N/A'}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-3 sm:px-6 py-3 sm:py-5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {/* Contextual actions based on status and user role */}
                         {((c.status === 'Pending_Manager' && admin.adminSubRole === 'Manager') ||

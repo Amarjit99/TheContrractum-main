@@ -73,18 +73,18 @@ export default function AdminRegistrationPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 gap-5">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div className="relative group">
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="First Name" value={formData.firstName}
                     onChange={e => setFormData({...formData, firstName: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
                 <div className="relative group">
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="Last Name" value={formData.lastName}
                     onChange={e => setFormData({...formData, lastName: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
 
@@ -92,30 +92,30 @@ export default function AdminRegistrationPage() {
                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                 <input required type="email" placeholder="Official Email Address" value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div className="relative group">
                   <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="password" placeholder="Secure Password" value={formData.password}
                     onChange={e => setFormData({...formData, password: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
                 <div className="relative group">
                   <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="Mobile Number" value={formData.mobile}
                     onChange={e => setFormData({...formData, mobile: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div className="relative group">
                   <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <select required value={formData.adminSubRole}
                     onChange={e => setFormData({...formData, adminSubRole: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none appearance-none transition-all">
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none appearance-none transition-all">
                     <option value="">Assign Role</option>
                     <option value="HR">HR</option>
                     <option value="Finance">Finance</option>
@@ -127,13 +127,13 @@ export default function AdminRegistrationPage() {
                   <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="date" value={formData.joiningDate}
                     onChange={e => setFormData({...formData, joiningDate: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
             </div>
 
             <button disabled={loading} type="submit" 
-              className="w-full bg-[#1e5cdc] text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:bg-blue-300 pointer-events-auto"
+              className="w-full bg-[#1e5cdc] text-white font-black uppercase tracking-widest py-4 sm:py-5 rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:bg-blue-300 pointer-events-auto text-sm sm:text-base"
             >
               {loading ? 'Submitting...' : 'Apply for Access'}
             </button>

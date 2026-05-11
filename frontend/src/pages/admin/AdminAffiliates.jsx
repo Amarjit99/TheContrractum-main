@@ -83,13 +83,13 @@ export default function AdminAffiliates() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 mt-2">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                        <span className="p-2 bg-purple-100 text-purple-600 rounded-lg">
-                            <Layout size={24} />
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2 sm:gap-3">
+                        <span className="p-1.5 sm:p-2 bg-purple-100 text-purple-600 rounded-lg">
+                            <Layout size={20} className="sm:w-6 sm:h-6" />
                         </span>
                         Affiliate Program Applications
                     </h1>
-                    <p className="text-gray-500 text-sm font-medium mt-1">Review and manage marketers applying for your affiliate program.</p>
+                    <p className="text-gray-500 text-xs sm:text-sm font-medium mt-1">Review and manage marketers applying for your affiliate program.</p>
                 </div>
                 
                 <div className="relative">
@@ -99,7 +99,7 @@ export default function AdminAffiliates() {
                         placeholder="Search by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
+                        className="pl-10 pr-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
                     />
                 </div>
             </div>
@@ -109,11 +109,11 @@ export default function AdminAffiliates() {
                     <table className="w-full text-sm text-left">
                         <thead className="bg-[#f8fafc] border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-[10px]">
                             <tr>
-                                <th className="px-6 py-4">Applicant Info</th>
-                                <th className="px-6 py-4">Website / Platform</th>
-                                <th className="px-6 py-4">Promo Methods</th>
-                                <th className="px-6 py-4 text-center">Submitted At</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-3 sm:px-6 py-3 sm:py-4">Applicant Info</th>
+                                <th className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">Website / Platform</th>
+                                <th className="px-3 sm:px-6 py-3 sm:py-4 hidden md:table-cell">Promo Methods</th>
+                                <th className="px-3 sm:px-6 py-3 sm:py-4 text-center">Submitted At</th>
+                                <th className="px-3 sm:px-6 py-3 sm:py-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -133,17 +133,26 @@ export default function AdminAffiliates() {
                             ) : (
                                 filteredApplications.map((app) => (
                                     <tr key={app._id} className="hover:bg-purple-50/30 transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-3 sm:px-6 py-3 sm:py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-black text-gray-900 text-base">{app.name}</span>
-                                                <div className="flex items-center gap-2 text-gray-500 mt-0.5">
-                                                    <Mail size={12} className="text-purple-400" />
-                                                    <span className="text-xs font-semibold">{app.email}</span>
+                                                <span className="font-black text-gray-900 text-sm sm:text-base">{app.name}</span>
+                                                <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 mt-0.5">
+                                                    <Mail size={12} className="text-purple-400 shrink-0" />
+                                                    <span className="text-[10px] sm:text-xs font-semibold truncate max-w-[120px] sm:max-w-none">{app.email}</span>
                                                 </div>
-                                                <span className="text-xs text-slate-400 font-bold mt-1">{app.contact}</span>
+                                                <span className="text-[10px] sm:text-xs text-slate-400 font-bold mt-1">{app.contact}</span>
+                                                <a 
+                                                    href={app.website.startsWith('http') ? app.website : `https://${app.website}`} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    className="text-blue-500 font-bold hover:underline flex items-center gap-1 sm:hidden mt-2 text-[10px]"
+                                                >
+                                                    <Globe size={10} className="text-blue-400" />
+                                                    <span className="truncate max-w-[100px]">{app.website}</span>
+                                                </a>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
                                             <div className="flex items-center gap-2">
                                                 <Globe size={14} className="text-blue-400" />
                                                 <a 
@@ -157,18 +166,18 @@ export default function AdminAffiliates() {
                                                 </a>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 max-w-xs">
-                                            <p className="text-xs text-gray-600 font-medium line-clamp-2 italic">
+                                        <td className="px-3 sm:px-6 py-3 sm:py-4 max-w-xs hidden md:table-cell">
+                                            <p className="text-[10px] sm:text-xs text-gray-600 font-medium line-clamp-2 italic">
                                                 "{app.promotionalMethods}"
                                             </p>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <span className="text-xs font-black text-gray-400 uppercase tracking-tighter">
+                                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-center">
+                                            <span className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-tighter">
                                                 {new Date(app.createdAt).toLocaleDateString()}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
+                                            <div className="flex justify-end gap-1.5 sm:gap-2 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <a 
                                                     href={`mailto:${app.email}`}
                                                     className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"

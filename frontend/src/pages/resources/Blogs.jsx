@@ -21,19 +21,19 @@ export default function Blogs() {
         fetch(`${API}/api/cms/blogs`)
             .then(res => res.json())
             .then(data => {
-                // Formatting DB posts to match the static UI schema perfectly
-                const formatted = data.map(b => ({
-                    id: b._id,
-                    title: b.title,
-                    excerpt: b.excerpt || b.content || '...',
-                    author: b.author,
-                    date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    readTime: b.readTime || '5 min read',
-                    category: b.category,
-                    image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800'
-                }));
-                // Only show Published posts on public site
-                setDbBlogs(formatted.filter(b => data.find(raw => raw._id === b.id)?.status === 'Published'));
+                const formatted = data
+                    .filter(b => b.status === 'Published')
+                    .map(b => ({
+                        id: b._id,
+                        title: b.title,
+                        excerpt: b.excerpt || b.content?.substring(0, 120) + '...' || '...',
+                        author: b.author,
+                        date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        readTime: b.readTime || '5 min read',
+                        category: b.category,
+                        image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800'
+                    }));
+                setDbBlogs(formatted);
             })
             .catch(err => console.error("Error fetching blogs:", err));
     }, []);
@@ -81,131 +81,8 @@ export default function Blogs() {
         }
     };
 
-    const blogPosts = [
-        {
-            id: 1,
-            title: "Artificial Intelligence: Transforming Business Operations",
-            excerpt: "Discover how AI is revolutionizing the way companies operate and make decisions in the modern era.",
-            author: "Rahul Sharma",
-            date: "Feb 15, 2026",
-            readTime: "6 min read",
-            category: "AI & ML",
-            image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800"
-        },
-        {
-            id: 2,
-            title: "Cloud Computing: The Backbone of Modern Infrastructure",
-            excerpt: "Understanding the critical role of cloud technologies in enabling scalable and flexible business solutions.",
-            author: "Priya Patel",
-            date: "Feb 12, 2026",
-            readTime: "5 min read",
-            category: "Technology",
-            image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800"
-        },
-        {
-            id: 3,
-            title: "Strategic Innovation: Staying Ahead in a Competitive Market",
-            excerpt: "Learn the key strategies that successful companies use to maintain their competitive edge through innovation.",
-            author: "Amit Kumar",
-            date: "Feb 10, 2026",
-            readTime: "7 min read",
-            category: "Business",
-            image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800"
-        },
-        {
-            id: 4,
-            title: "Cybersecurity Best Practices for 2026",
-            excerpt: "Essential security measures every organization should implement to protect their digital assets.",
-            author: "Neha Singh",
-            date: "Feb 8, 2026",
-            readTime: "6 min read",
-            category: "Technology",
-            image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800"
-        },
-        {
-            id: 5,
-            title: "The Rise of Remote Work: Building Digital-First Teams",
-            excerpt: "How companies are adapting to the new normal of distributed teams and hybrid work models.",
-            author: "Vikram Malhotra",
-            date: "Feb 5, 2026",
-            readTime: "5 min read",
-            category: "Business",
-            image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800"
-        },
-        {
-            id: 6,
-            title: "Machine Learning Applications in Real-World Scenarios",
-            excerpt: "Practical examples of how ML is being deployed across various industries to solve complex problems.",
-            author: "Anjali Desai",
-            date: "Feb 3, 2026",
-            readTime: "8 min read",
-            category: "AI & ML",
-            image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=800"
-        },
-        {
-            id: 7,
-            title: "The Future of Blockchain Technology in Enterprise",
-            excerpt: "How blockchain is transforming supply chain management and digital contracts in large organizations.",
-            author: "Sanjay Mehta",
-            date: "Jan 30, 2026",
-            readTime: "7 min read",
-            category: "Technology",
-            image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800"
-        },
-        {
-            id: 8,
-            title: "Digital Transformation: A Complete Roadmap",
-            excerpt: "Step-by-step guide to successfully implementing digital transformation in your organization.",
-            author: "Meera Kapoor",
-            date: "Jan 28, 2026",
-            readTime: "10 min read",
-            category: "Digital Transformation",
-            image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800"
-        },
-        {
-            id: 9,
-            title: "Advanced Cybersecurity Threat Detection",
-            excerpt: "Modern techniques for identifying and mitigating cyber threats before they impact your business.",
-            author: "Rohan Verma",
-            date: "Jan 25, 2026",
-            readTime: "6 min read",
-            category: "Cybersecurity",
-            image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800"
-        },
-        {
-            id: 10,
-            title: "Innovation Management: From Idea to Implementation",
-            excerpt: "Best practices for fostering a culture of innovation and bringing new ideas to market.",
-            author: "Kavita Reddy",
-            date: "Jan 22, 2026",
-            readTime: "9 min read",
-            category: "Innovation",
-            image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800"
-        },
-        {
-            id: 11,
-            title: "Building Scalable Software Architecture",
-            excerpt: "Design patterns and principles for creating applications that grow with your business needs.",
-            author: "Arun Sharma",
-            date: "Jan 20, 2026",
-            readTime: "8 min read",
-            category: "Technology",
-            image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800"
-        },
-        {
-            id: 12,
-            title: "Leadership in the Digital Age",
-            excerpt: "Essential skills and strategies for leading teams through technological change and innovation.",
-            author: "Priya Patel",
-            date: "Jan 18, 2026",
-            readTime: "7 min read",
-            category: "Business",
-            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800"
-        }
-    ];
-
-    // Combine database posts with legacy static posts
-    const allPosts = [...dbBlogs, ...blogPosts];
+    // Only DB posts — no more hardcoded duplicates
+    const allPosts = dbBlogs;
 
     // Filter by category and search
     const filteredPosts = allPosts.filter(post => {

@@ -101,13 +101,13 @@ export default function SuperAdminDashboard() {
   return (
     <SuperAdminLayout>
       <div className="mb-8 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Welcome, SuperAdmin</h1>
-          <p className="text-gray-500 text-sm mt-1 font-medium">Manage your website efficiently.</p>
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Welcome, SuperAdmin</h1>
+          <p className="text-gray-500 text-xs sm:text-sm font-medium">Manage your website efficiently.</p>
         </div>
         <button
           onClick={() => navigate('/admin/form-links')}
-          className="flex items-center gap-2 bg-white border border-gray-200/60 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md group"
+          className="flex items-center justify-center gap-2 bg-white border border-gray-200/60 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md w-full sm:w-auto mt-2 sm:mt-0 group"
         >
           <LinkIcon size={18} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
           Form Links
@@ -138,8 +138,8 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50 lg:col-span-2 flex flex-col">
-              <div className="flex justify-between items-center mb-6">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 lg:col-span-2 flex flex-col">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
                 <h3 className="font-bold text-gray-800">Website Traffic</h3>
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-blue-50/50 px-3 py-1.5 rounded-full font-bold">
@@ -168,8 +168,8 @@ export default function SuperAdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50 flex flex-col relative overflow-visible">
-              <div className="flex justify-between items-center mb-10">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 flex flex-col relative overflow-visible">
+              <div className="flex justify-between items-center mb-6 sm:mb-10">
                 <h3 className="font-bold text-gray-800">Lead Conversion Rate</h3>
               </div>
               <div className="h-56 w-full mt-auto relative overflow-visible">
@@ -190,17 +190,17 @@ export default function SuperAdminDashboard() {
           </div>
 
           {/* System Overview Section */}
-          <div className="bg-white rounded-[32px] p-8 shadow-xl shadow-blue-900/5 border border-blue-50 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none"></div>
+          <div className="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-blue-900/5 border border-blue-50 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-blue-50/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl sm:blur-3xl pointer-events-none"></div>
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 relative z-10">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                  <UserPlus size={24} />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 relative z-10">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200 shrink-0">
+                  <UserPlus size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-gray-800 uppercase tracking-tight">New Admin Registrations</h3>
-                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-0.5">Verification Queue</p>
+                  <h3 className="text-lg sm:text-xl font-black text-gray-800 uppercase tracking-tight">New Admin Registrations</h3>
+                  <p className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">Verification Queue</p>
                 </div>
               </div>
               <div className="flex items-center bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
@@ -217,23 +217,23 @@ export default function SuperAdminDashboard() {
                 </div>
               ) : (
                 pendingAdmins.map((reg) => (
-                  <div key={reg._id} className="group bg-white border border-gray-100 rounded-3xl p-6 hover:shadow-2xl hover:shadow-blue-900/10 hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-100">
+                  <div key={reg._id} className="group bg-white border border-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-6 hover:shadow-2xl hover:shadow-blue-900/10 hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-lg shadow-blue-100 shrink-0">
                         {(reg.firstName || reg.name || '?').charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-black text-gray-800 text-base truncate leading-none mb-1">
+                        <h4 className="font-black text-gray-800 text-sm sm:text-base truncate leading-none mb-1">
                           {reg.firstName ? `${reg.firstName} ${reg.lastName}` : (reg.name || 'Admin User')}
                         </h4>
                         <div className="flex items-center gap-1.5 text-gray-400">
-                          <Mail size={12} />
-                          <span className="text-[11px] font-bold truncate tracking-tight">{reg.email}</span>
+                          <Mail size={12} className="shrink-0" />
+                          <span className="text-[10px] sm:text-[11px] font-bold truncate tracking-tight">{reg.email}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-3 mb-8 flex-1">
+                    <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Target Role</span>
                         <span className="text-[11px] font-black text-blue-700 bg-blue-100/50 px-2.5 py-1 rounded-lg uppercase">{reg.adminSubRole}</span>
@@ -247,7 +247,7 @@ export default function SuperAdminDashboard() {
                     <button 
                       onClick={() => handleApprove(reg._id)}
                       disabled={isApproving === reg._id}
-                      className="w-full bg-[#1e5cdc] text-white font-black uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 disabled:bg-blue-200 pointer-events-auto"
+                      className="w-full bg-[#1e5cdc] text-white font-black uppercase tracking-widest py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 disabled:bg-blue-200 pointer-events-auto text-xs sm:text-sm"
                     >
                       {isApproving === reg._id ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

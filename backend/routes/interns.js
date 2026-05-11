@@ -9,7 +9,7 @@ const fs = require('fs');
 // GET all interns (public)
 router.get('/', async (req, res) => {
   try {
-    const interns = await Intern.find().sort({ createdAt: -1 });
+    const interns = await Intern.find().sort({ createdAt: 1 });
     res.json(interns);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching interns' });

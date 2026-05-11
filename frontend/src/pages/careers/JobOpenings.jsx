@@ -111,9 +111,11 @@ export default function JobOpenings() {
     ];
 
     // Merge live (admin-posted) jobs first, then static
+    const dynamicJobTitles = new Set(liveJobs.map(j => (j.title || '').toLowerCase()));
+    const filteredStaticJobs = staticJobs.filter(j => !dynamicJobTitles.has((j.title || '').toLowerCase()));
     const allJobs = [
         ...liveJobs.map(j => ({ ...j, id: j._id, isLive: true })),
-        ...staticJobs
+        ...filteredStaticJobs
     ];
 
     // Dynamic filter options (include values from live jobs)

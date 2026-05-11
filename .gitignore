@@ -16,8 +16,11 @@ npm-debug.log*
 
 # Environment variables
 .env
+.env.*
 frontend/.env
+frontend/.env.*
 backend/.env
+backend/.env.*
 
 # Local
 .DS_Store
@@ -25,3 +28,8 @@ backend/.env
 
 # GitHub pages deploy artifacts
 frontend/dist
+
+# Archives and Backups
+*.zip
+*.backup
+test.json

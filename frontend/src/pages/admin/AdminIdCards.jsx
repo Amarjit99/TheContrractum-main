@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon } from 'lucide-react';
+import { Search, Plus, Trash2, X, CheckCircle, Upload, Eye, IdCard as IdCardIcon, Download, Share2, Edit2, Mail, Linkedin, MessageCircle, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -21,6 +21,7 @@ export default function AdminIdCards() {
   const [success, setSuccess] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const cardRef = useRef(null);
 
   // Form State
@@ -89,6 +90,7 @@ export default function AdminIdCards() {
     });
     setImagePreview(null);
     setPreviewMode(false);
+    setEditingId(null);
   };
 
   const handleDelete = async (id) => {
@@ -114,8 +116,11 @@ export default function AdminIdCards() {
     try {
       const payload = { ...formData, status: 'Generated' };
       
-      const res = await fetch(`${API}/api/id-cards`, {
-        method: 'POST',
+      const url = editingId ? `${API}/api/id-cards/${editingId}` : `${API}/api/id-cards`;
+      const method = editingId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         headers: { 
             'Content-Type': 'application/json',
             Authorization: `Bearer ${admin?.token}` 
@@ -126,47 +131,139 @@ export default function AdminIdCards() {
       if (res.ok) {
         setSuccess(true);
         fetchIdCards();
-        setTimeout(() => {
-          setIsModalOpen(false);
-          setSuccess(false);
-          resetForm();
-        }, 1500);
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to generate ID Card.");
+        alert(errData.message || "Failed to process ID Card.");
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  const [downloading, setDownloading] = useState(false);
   const handleDownload = async () => {
-    if (cardRef.current) {
-      const canvas = await html2canvas(cardRef.current, { scale: 3 });
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      // Small timeout to ensure DOM is ready
+      await new Promise(r => setTimeout(r, 100));
+      
+      const canvas = await html2canvas(cardRef.current, { 
+        scale: 2, // Stable scale
+        useCORS: true,
+        allowTaint: false,
+        logging: true,
+        backgroundColor: "#ffffff",
+        imageTimeout: 15000,
+        removeContainer: true
+      });
+
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
-      link.download = `${formData.employeeId}-IDCard.png`;
-      link.href = canvas.toDataURL();
+      link.download = `ID_Card_${formData.employeeId || 'card'}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      
+      setDownloading(false);
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert("Failed to generate download. Please try again or take a screenshot.");
+      setDownloading(false);
     }
+  };
+
+  const [sharing, setSharing] = useState(false);
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    setSharing(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, { 
+        scale: 2, 
+        useCORS: true, 
+        allowTaint: false,
+        backgroundColor: "#ffffff",
+        imageTimeout: 15000
+      });
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+            setSharing(false);
+            return;
+        }
+        const file = new File([blob], `${formData.employeeId}-IDCard.png`, { type: 'image/png' });
+        
+        // Try native share
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: `${formData.name} ID Card`,
+              text: `ID Card for ${formData.name} (${formData.employeeId})`,
+              files: [file]
+            });
+            setSharing(false);
+          } catch (shareErr) {
+            console.warn('Native share failed, falling back...', shareErr);
+            fallbackShare();
+          }
+        } else {
+          fallbackShare();
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error('Error in handleShare:', err);
+      setSharing(false);
+    }
+  };
+
+  const fallbackShare = () => {
+    const shareText = `ID Card Details:\nName: ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDepartment: ${formData.department}`;
+    navigator.clipboard.writeText(shareText).then(() => {
+        alert("Native image sharing is not supported on this browser. Card details have been copied to your clipboard, and the image is being downloaded so you can share it manually.");
+        handleDownload();
+    }).catch(err => {
+        console.error('Clipboard failed', err);
+        handleDownload();
+    }).finally(() => setSharing(false));
+  };
+
+  const handleView = (card) => {
+    setFormData({
+      employeeId: card.employeeId || '',
+      name: card.name || '',
+      category: card.category || 'Employee',
+      department: card.department || '',
+      designation: card.designation || '',
+      bloodGroup: card.bloodGroup || '',
+      contactNumber: card.contactNumber || '',
+      email: card.email || '',
+      photo: card.photo || '',
+      validUntil: card.validUntil ? new Date(card.validUntil).toISOString().split('T')[0] : '',
+      cardColor: card.cardColor || '#1e5cdc'
+    });
+    setEditingId(card._id);
+    setPreviewMode(true);
+    setSuccess(true); // Already generated
+    setIsModalOpen(true);
   };
 
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">ID Card Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Generate and manage identity cards</p>
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight">ID Card Management</h1>
+          <p className="text-gray-500 text-xs sm:text-sm font-medium">Generate and manage identity cards</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search ID/Name..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white" 
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white transition-all" 
             />
           </div>
-          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
+          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
             <Plus size={16} /> Generate New ID
           </button>
         </div>
@@ -177,11 +274,11 @@ export default function AdminIdCards() {
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Employee ID</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Name</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Category</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Status</th>
-                <th className="text-right text-gray-500 font-semibold px-6 py-4">Actions</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Employee ID</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Name</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm hidden sm:table-cell">Category</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Status</th>
+                <th className="text-right text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -192,22 +289,24 @@ export default function AdminIdCards() {
               ) : (
                 filteredCards.map(c => (
                   <tr key={c._id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-gray-700">{c.employeeId}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <img src={c.photo} alt={c.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
-                        <span className="font-semibold text-gray-800">{c.name}</span>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-gray-700 text-xs sm:text-sm">{c.employeeId}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <img src={c.photo} alt={c.name} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200 shrink-0" />
+                        <span className="font-semibold text-gray-800 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{c.name}</span>
                       </div>
+                      <div className="sm:hidden text-[10px] text-gray-500 mt-1">{c.category}</div>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">{c.category}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 font-medium text-xs sm:text-sm hidden sm:table-cell">{c.category}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                      <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[8px] sm:text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 whitespace-nowrap">
                         {c.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16}/></button>
+                        <button onClick={() => handleView(c)} className="p-1.5 text-[#1e5cdc] hover:bg-blue-50 rounded-md transition-colors" title="View & Download Card"><Eye size={16} className="sm:w-5 sm:h-5" /></button>
+                        <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} className="sm:w-5 sm:h-5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -225,9 +324,9 @@ export default function AdminIdCards() {
             
             {/* Form Section */}
             {!previewMode ? (
-            <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <h2 className="text-xl font-bold text-gray-800">Generate ID Card</h2>
+            <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
+                <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generate ID Card</h2>
                 <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                     <X size={20} />
                 </button>
@@ -296,8 +395,8 @@ export default function AdminIdCards() {
 
                     <div className="mt-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Photo Upload *</label>
-                        <div className="mt-1 flex items-center gap-4">
-                            <div className="w-24 h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                        <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
                             {imagePreview ? (
                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
@@ -313,7 +412,7 @@ export default function AdminIdCards() {
                                 id="id-photo-upload"
                                 required={!formData.photo}
                             />
-                            <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors inline-block">
+                            <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2.5 sm:py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors block sm:inline-block text-center w-full sm:w-auto">
                                 Upload Face Photo
                             </label>
                             </div>
@@ -322,90 +421,223 @@ export default function AdminIdCards() {
 
                     <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
                         <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                        <button type="submit" className={`px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2`}>
-                            <Eye size={16} /> Preview Card
+                        <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2">
+                            <IdCardIcon size={16} /> Preview Card
                         </button>
                     </div>
                 </form>
             </div>
             ) : (
-            /* Preview Section */
-            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-8 overflow-y-auto">
-                {success ? (
-                    <div className="flex flex-col items-center justify-center text-center">
-                        <CheckCircle size={64} className="text-emerald-500 mb-4" />
-                        <h3 className="text-2xl font-bold text-gray-800">ID Card Generated!</h3>
-                        <p className="text-gray-500 mt-2">The record has been stored successfully.</p>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center w-full max-w-sm">
-                        <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
-                            <IdCardIcon /> Card Preview
-                        </h3>
-                        
-                        {/* THE ID CARD DESIGN */}
-                        <div ref={cardRef} className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
-                            {/* Header / Top Shape */}
-                            <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-                                <div className="text-white font-black text-xl tracking-wider uppercase z-10 w-full text-center px-4 leading-tight">
-                                    The Contractum
+            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
+                    <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
+                        <X size={20} />
+                    </button>
+
+                    {success ? (
+                        /* ── SUCCESS STATE ── */
+                        <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
+                            {/* Hidden full-scale card for capture */}
+                            <div className="fixed -left-[9999px] top-0 pointer-events-none">
+                                <div ref={cardRef} className="w-[350px] h-[560px] bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
+                                    <div className="h-40 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                        <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                                        <div className="absolute top-8 text-white font-black text-[1.2rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
+                                            The Contractum
+                                        </div>
+                                        <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320">
+                                            <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                        </svg>
+                                    </div>
+                                    
+                                    <div className="absolute top-[80px] left-1/2 -translate-x-1/2 z-20">
+                                        <div className="w-[120px] h-[120px] rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                                            {formData.photo ? (
+                                                <img src={formData.photo} alt="Profile" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-gray-300"><IdCardIcon size={40} /></div>
+                                            )}
+                                        </div>
+                                        <div className="mt-2 text-center">
+                                            <span className="bg-[#1e5cdc] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 flex flex-col items-center pt-14 px-8 text-center mt-6">
+                                        <h1 className="text-2xl font-bold text-gray-900 leading-tight uppercase mb-1">{formData.name}</h1>
+                                        <p className="font-bold text-base uppercase tracking-wide mb-1" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                        <p className="text-gray-500 text-sm font-medium">{formData.department}</p>
+                                        
+                                        <div className="w-full mt-6 flex flex-col gap-2 text-sm text-left bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                            <div className="flex justify-between border-b border-gray-200 pb-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Employee ID</span>
+                                                <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                                            </div>
+                                            {formData.bloodGroup && (
+                                            <div className="flex justify-between border-b border-gray-200 py-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Blood Group</span>
+                                                <span className="font-bold text-red-600">{formData.bloodGroup}</span>
+                                            </div>
+                                            )}
+                                            <div className="flex justify-between pt-1.5">
+                                                <span className="text-gray-400 font-semibold uppercase text-[10px]">Valid Until</span>
+                                                <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : 'N/A'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="h-8 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
                                 </div>
-                                {/* Wave SVG overlay maybe */}
-                                <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
-                                    <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                                </svg>
                             </div>
 
-                            {/* Photo & Category */}
-                            <div className="flex flex-col items-center -mt-16 z-20">
-                                <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                                <span className={`mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full`} style={{ backgroundColor: formData.cardColor }}>
-                                    {formData.category}
-                                </span>
+                            <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
+                                <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
+                            </div>
+                            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>
+                            <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br/>You can now download or share the ID card.</p>
+
+                            {/* Generated card thumbnail (small) */}
+                            <div className="w-[220px] h-[352px] bg-white rounded-xl shadow-xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 opacity-90 scale-95">
+                                <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                    <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                                    <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
+                                    <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                                        <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                    </svg>
+                                </div>
+                                <div className="flex flex-col items-center -mt-12 z-20">
+                                    <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                                    <span className="mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
+                                </div>
+                                <div className="flex-1 flex flex-col items-center pt-1 px-4 text-center">
+                                    <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                                    <p className="font-semibold text-[10px] mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                    <p className="text-gray-500 text-[9px] font-medium">{formData.department}</p>
+                                    <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                        <div className="flex justify-between border-b border-gray-200 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span></div>
+                                        {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
+                                        <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
+                                    </div>
+                                </div>
+                                <div className="h-4 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
                             </div>
 
-                            {/* Details */}
-                            <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
-                                <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
-                                <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
-                                <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
+                            <div className="flex flex-col gap-3 w-full print:hidden">
+                                <div className="flex gap-3 w-full">
+                                    <button onClick={handleDownload} disabled={downloading} className={`flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 ${downloading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                                        {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
+                                    </button>
+                                    <button onClick={handleShare} disabled={sharing} className={`flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2 ${sharing ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                                        {sharing ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} Share
+                                    </button>
+                                </div>
                                 
-                                <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <div className="flex justify-between border-b border-gray-200 pb-1">
-                                        <span className="text-gray-500 font-semibold">ID No.</span>
-                                        <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
-                                    </div>
-                                    {formData.bloodGroup && (
-                                    <div className="flex justify-between border-b border-gray-200 py-1">
-                                        <span className="text-gray-500 font-semibold">Blood Group</span>
-                                        <span className="font-bold text-red-600">{formData.bloodGroup}</span>
-                                    </div>
-                                    )}
-                                    <div className="flex justify-between pt-1">
-                                        <span className="text-gray-500 font-semibold">Valid Till</span>
-                                        <span className="font-bold text-gray-800">{new Date(formData.validUntil).toLocaleDateString()}</span>
+                                <div className="flex gap-3 w-full">
+                                    <button onClick={() => { setSuccess(false); setPreviewMode(false); }} className="flex-1 py-3 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100">
+                                        <Edit2 size={18} /> Edit Details
+                                    </button>
+                                    <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                                        <X size={16} /> Close
+                                    </button>
+                                </div>
+
+                                <div className="mt-4 pt-4 border-t border-gray-100 w-full">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Quick Share</p>
+                                    <div className="flex justify-center gap-4">
+                                        <a 
+                                            href={`https://wa.me/?text=${encodeURIComponent(`ID Card for ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDownload it here: ${window.location.origin}`)}`} 
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share on WhatsApp"
+                                        >
+                                            <MessageCircle size={20} />
+                                        </a>
+                                        <a 
+                                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(`Generated ID Card for ${formData.name}`)}`} 
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="w-10 h-10 rounded-full bg-[#0077B5] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share on LinkedIn"
+                                        >
+                                            <Linkedin size={20} />
+                                        </a>
+                                        <a 
+                                            href={`mailto:?subject=ID Card Generated - ${formData.name}&body=The ID card for ${formData.name} (${formData.employeeId}) has been generated.`}
+                                            className="w-10 h-10 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                                            title="Share via Email"
+                                        >
+                                            <Mail size={20} />
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    ) : (
+                        /* ── PREVIEW STATE ── */
+                        <div className="flex flex-col items-center w-full max-w-sm mt-4">
+                            <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
+                                <IdCardIcon /> Card Preview
+                            </h3>
                             
-                            {/* Footer Bar */}
-                            <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
-                        </div>
+                            {/* THE ID CARD DESIGN */}
+                            <div className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200">
+                                {/* Header / Top Shape */}
+                                <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                                    <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                                    <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
+                                        The Contractum
+                                    </div>
+                                {/* Wave SVG overlay maybe */}
+                                    <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                                        <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                                    </svg>
+                                </div>
 
-                        <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
-                            <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                                Edit Details
-                            </button>
-                            <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30">
-                                Confirm & Generate
-                            </button>
+                                {/* Photo & Category */}
+                                <div className="flex flex-col items-center -mt-16 z-20">
+                                    <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                                    <span className="mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>
+                                        {formData.category}
+                                    </span>
+                                </div>
+
+                                {/* Details */}
+                                <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
+                                    <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                                    <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                                    <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
+                                    <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <div className="flex justify-between border-b border-gray-200 pb-1">
+                                            <span className="text-gray-500 font-semibold">ID No.</span>
+                                            <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                                        </div>
+                                        {formData.bloodGroup && (
+                                        <div className="flex justify-between border-b border-gray-200 py-1">
+                                            <span className="text-gray-500 font-semibold">Blood Group</span>
+                                            <span className="font-bold text-red-600">{formData.bloodGroup}</span>
+                                        </div>
+                                        )}
+                                        <div className="flex justify-between pt-1">
+                                            <span className="text-gray-500 font-semibold">Valid Till</span>
+                                            <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Footer Bar */}
+                                <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
+                            </div>
+
+                            <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
+                                <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                                    Edit Details
+                                </button>
+                                <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+                                    <CheckCircle size={18} /> Confirm & Generate
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
             )}
-            
           </div>
         </div>
       )}

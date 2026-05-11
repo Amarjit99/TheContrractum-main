@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/main-logo.jpg';
+import logo from '../assets/main-logo1.png';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -175,15 +175,17 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500 print:hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+      <div className="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-11 xl:px-14">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Company Name */}
-          <Link to="/" className="flex items-center group -ml-4 lg:-ml-24 transform hover:scale-110 transition-all duration-300">
-            <img src={logo} alt="The Contractum Logo" className="h-20 w-auto object-contain rounded-50" />
-          </Link>
+          <div className="shrink-0 flex items-center mr-6 lg:mr-12 xl:mr-16">
+            <Link to="/" className="flex items-center group transform hover:scale-[1.15] transition-all duration-500 shrink-0">
+              <img src={logo} alt="The Contractum Logo" className="h-[52px] sm:h-[64px] lg:h-[76px] xl:h-[88px] w-auto object-contain transform scale-[1.45] origin-left" />
+            </Link>
+          </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex flex-1 justify-center items-center gap-0.5 lg:gap-1 xl:gap-2 mx-2 xl:mx-4">
             {menuItems.map((item, index) => (
               <div
                 key={index}
@@ -194,15 +196,15 @@ export default function Navbar() {
                 {item.path ? (
                   <Link
                     to={item.path}
-                    className="text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 via-pink-600 to-red-600 transition-all duration-300 font-bold text-sm px-5 py-2.5 rounded-lg group transform hover:-translate-y-1 hover:shadow-xl whitespace-nowrap"
+                    className="text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 via-pink-600 to-red-600 transition-all duration-300 font-bold text-[13px] lg:text-[14px] xl:text-[16px] px-2 lg:px-3 xl:px-4 py-2 lg:py-2.5 rounded-lg group transform hover:-translate-y-1 hover:shadow-xl whitespace-nowrap"
                   >
                     {item.name}
                   </Link>
                 ) : (
-                  <button className="text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 via-pink-600 to-red-600 transition-all duration-300 font-bold text-sm px-5 py-2.5 rounded-lg flex items-center space-x-1 group transform hover:-translate-y-1 hover:shadow-xl whitespace-nowrap">
+                  <button className="text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 via-pink-600 to-red-600 transition-all duration-300 font-bold text-[13px] lg:text-[14px] xl:text-[16px] px-2 lg:px-3 xl:px-4 py-2 lg:py-2.5 rounded-lg flex items-center space-x-1.5 group transform hover:-translate-y-1 hover:shadow-xl whitespace-nowrap">
                     <span>{item.name}</span>
                     {item.submenu && (
-                      <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 xl:w-4 xl:h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                       </svg>
                     )}
@@ -257,73 +259,77 @@ export default function Navbar() {
 
           {/* Auth Button - Desktop */}
           {user ? (
-            <div className="hidden lg:block relative shrink-0 ml-2">
-              {/* Avatar Button */}
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2 group focus:outline-none"
-              >
-                <span className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm ring-2 ring-transparent group-hover:ring-red-300 transition-all duration-200">
-                  {user.role === 'super-admin' ? 'SA' : user.name?.charAt(0).toUpperCase()}
-                </span>
-                <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+            <div className="hidden lg:flex flex-shrink-0 justify-end items-center">
+              <div className="relative">
+                {/* Avatar Button */}
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-2 group focus:outline-none"
+                >
+                  <span className="w-10 h-10 xl:w-12 xl:h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-base xl:text-lg ring-2 ring-transparent group-hover:ring-red-300 transition-all duration-200 shadow-md">
+                    {user.role === 'super-admin' ? 'SA' : user.name?.charAt(0).toUpperCase()}
+                  </span>
+                  <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-              {/* Dropdown Panel */}
-              {profileOpen && (
-                <>
-                  {/* Backdrop to close */}
-                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fade-in">
-                    {/* User Info Header */}
-                    <div className="px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white">
-                      <p className="font-bold text-sm truncate">{user.name}</p>
-                      <p className="text-red-200 text-xs truncate">{user.email}</p>
-                    </div>
-                    {/* Menu Items */}
-                    <div className="py-1">
-                      {(user.role === 'admin' || user.role === 'super-admin') && (
-                        <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-                          Admin Dashboard
+                {/* Dropdown Panel */}
+                {profileOpen && (
+                  <>
+                    {/* Backdrop to close */}
+                    <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fade-in">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white">
+                        <p className="font-bold text-sm truncate">{user.name}</p>
+                        <p className="text-red-200 text-xs truncate">{user.email}</p>
+                      </div>
+                      {/* Menu Items */}
+                      <div className="py-1">
+                        {(user.role === 'admin' || user.role === 'super-admin') && (
+                          <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            Admin Dashboard
+                          </Link>
+                        )}
+
+                        <Link to="/profile" onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                          My Profile
                         </Link>
-                      )}
-
-                      <Link to="/profile" onClick={() => setProfileOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                        My Profile
-                      </Link>
-                      <div className="border-t border-gray-100 my-1" />
-                      <button onClick={() => { setProfileOpen(false); handleLogout(); }}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 w-full text-left transition-colors">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                        Logout
-                      </button>
+                        <div className="border-t border-gray-100 my-1" />
+                        <button onClick={() => { setProfileOpen(false); handleLogout(); }}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 w-full text-left transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                          Logout
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
           ) : (
-            <Link
-              to="/login"
-              className="hidden lg:flex items-center gap-1.5 shrink-0 ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow transition-all duration-200 whitespace-nowrap"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-              </svg>
-              Login
-            </Link>
+            <div className="hidden lg:flex flex-shrink-0 justify-end items-center">
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-4 lg:px-5 py-2 lg:py-2.5 xl:py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-[13px] xl:text-[15px] rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 whitespace-nowrap"
+              >
+                <svg className="w-4 h-4 xl:w-5 xl:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login</span>
+              </Link>
+            </div>
           )}
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-gradient-to-br from-red-600 via-pink-600 to-red-600 text-white hover:shadow-2xl hover:scale-110 transition-all duration-300 border-2 border-white shadow-lg"
+            className="lg:hidden w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-red-600 via-pink-600 to-red-600 text-white hover:shadow-2xl hover:scale-110 transition-all duration-300 border-2 border-white shadow-lg"
           >
             <svg
               className="h-6 w-6"
@@ -349,110 +355,147 @@ export default function Navbar() {
             </svg>
           </button>
         </div>
+      </div>
 
-        {/* Mobile Menu Overlay */}
-        {isOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setIsOpen(false)}
-          />
-        )}
+      {/* Mobile Menu Overlay - outside max-w container */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
 
-        {/* Enhanced Mobile Menu - Slide from Right */}
-        <div className={`fixed top-0 right-0 h-full w-full max-w-[320px] sm:max-w-none sm:w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* Enhanced Mobile Menu - Slide from Right - outside max-w container */}
+      <div className={`fixed top-0 right-0 h-full w-[85vw] max-w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
 
-          {/* Menu Header */}
-          <div className="flex items-center justify-between p-6 border-b-2 border-gray-200 bg-gradient-to-r from-red-600 to-pink-600">
-            <div className="text-white">
-              <h3 className="text-xl font-bold">Menu</h3>
-              <p className="text-sm text-red-100">Explore our services</p>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all duration-300"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        {/* Menu Header */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b-2 border-gray-200 bg-gradient-to-r from-red-600 to-pink-600">
+          <div className="text-white">
+            <h3 className="text-lg sm:text-xl font-bold">Menu</h3>
+            <p className="text-xs sm:text-sm text-red-100">Explore our services</p>
           </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all duration-300"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-          {/* Menu Content */}
-          <div className="overflow-y-auto h-[calc(100%-88px)] p-4">
-            {menuItems.map((item, index) => (
-              <div key={index} className="py-1">
-                {item.path ? (
-                  <Link
-                    to={item.path}
-                    className="block py-3.5 px-5 text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 to-pink-600 rounded-xl transition-all duration-300 font-bold shadow-sm hover:shadow-lg transform hover:translate-x-1"
-                    onClick={() => setIsOpen(false)}
+        {/* Menu Content */}
+        <div className="overflow-y-auto h-[calc(100%-88px)] p-4">
+          {menuItems.map((item, index) => (
+            <div key={index} className="py-1">
+              {item.path ? (
+                <Link
+                  to={item.path}
+                  className="block py-3.5 px-5 text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 to-pink-600 rounded-xl transition-all duration-300 font-bold shadow-sm hover:shadow-lg transform hover:translate-x-1"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <div>
+                  <button
+                    onClick={() => setActiveDropdown(activeDropdown === index ? null : index)}
+                    className="w-full flex justify-between items-center py-3.5 px-5 text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 to-pink-600 rounded-xl transition-all duration-300 font-bold shadow-sm hover:shadow-lg"
                   >
-                    {item.name}
-                  </Link>
-                ) : (
-                  <div>
-                    <button
-                      onClick={() => setActiveDropdown(activeDropdown === index ? null : index)}
-                      className="w-full flex justify-between items-center py-3.5 px-5 text-gray-800 hover:text-white hover:bg-gradient-to-r from-red-600 to-pink-600 rounded-xl transition-all duration-300 font-bold shadow-sm hover:shadow-lg"
+                    <span>{item.name}</span>
+                    <svg
+                      className={`w-5 h-5 transition-transform duration-300 ${activeDropdown === index ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <span>{item.name}</span>
-                      <svg
-                        className={`w-5 h-5 transition-transform duration-300 ${activeDropdown === index ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {activeDropdown === index && item.submenu && (
-                      <div className="ml-4 mt-2 space-y-1 bg-gray-50 backdrop-blur-sm rounded-xl p-2">
-                        {item.submenu.map((section, idx) => (
-                          <div key={idx} className="py-1">
-                            <Link
-                              to={section.path}
-                              state={{ title: section.title }}
-                              onClick={() => setIsOpen(false)}
-                              className="block py-2 px-3 text-sm font-bold text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                            >
-                              {section.title}
-                            </Link>
-                            {section.items.length > 0 && (
-                              <div className="ml-10 mt-1 space-y-1">
-                                {section.items.map((subItem, subIdx) => (
-                                  <a
-                                    key={subIdx}
-                                    href="#"
-                                    className="flex items-center space-x-2 py-1.5 px-3 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                  >
-                                    <span className="text-red-400">▸</span>
-                                    <span>{subItem}</span>
-                                  </a>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {activeDropdown === index && item.submenu && (
+                    <div className="ml-4 mt-2 space-y-1 bg-gray-50 backdrop-blur-sm rounded-xl p-2">
+                      {item.submenu.map((section, idx) => (
+                        <div key={idx} className="py-1">
+                          <Link
+                            to={section.path}
+                            state={{ title: section.title }}
+                            onClick={() => setIsOpen(false)}
+                            className="block py-2 px-3 text-sm font-bold text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          >
+                            {section.title}
+                          </Link>
+                          {section.items.length > 0 && (
+                            <div className="ml-10 mt-1 space-y-1">
+                              {section.items.map((subItem, subIdx) => (
+                                <a
+                                  key={subIdx}
+                                  href="#"
+                                  className="flex items-center space-x-2 py-1.5 px-3 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                >
+                                  <span className="text-red-400">▸</span>
+                                  <span>{subItem}</span>
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
 
-            {/* Login Button - Mobile */}
-            <div className="mt-4 pt-4 border-t border-gray-200">
+          {/* Auth Section - Mobile */}
+          <div className="mt-4 pt-4 border-t border-gray-200 pb-8">
+            {user ? (
+              <div className="space-y-2">
+                <div className="px-5 py-3 bg-red-50 rounded-xl mb-3 border border-red-100">
+                  <p className="font-bold text-gray-900">{user.name}</p>
+                  <p className="text-sm text-gray-500">{user.email}</p>
+                </div>
+
+                {(user.role === 'admin' || user.role === 'super-admin') && (
+                  <Link
+                    to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 w-full py-3 px-5 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all duration-300"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                    Admin Dashboard
+                  </Link>
+                )}
+
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 w-full py-3 px-5 text-gray-700 hover:bg-gray-50 font-bold rounded-xl transition-all duration-300"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  My Profile
+                </Link>
+
+                <button
+                  onClick={() => { setIsOpen(false); handleLogout(); }}
+                  className="flex items-center gap-3 w-full py-3 px-5 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all duration-300 text-left"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  Logout
+                </button>
+              </div>
+            ) : (
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 w-full py-3 px-5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full py-3 px-5 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold rounded-xl shadow-md transition-all duration-300"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
                 Login
               </Link>
-            </div>
+            )}
           </div>
         </div>
       </div>

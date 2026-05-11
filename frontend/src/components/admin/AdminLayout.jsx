@@ -292,7 +292,7 @@ export default function AdminLayout({ children }) {
                   </div>
                   <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
                     <button
-                      onClick={() => { setShowNotifications(false); navigate('/admin/dashboard'); }}
+                      onClick={() => { setShowNotifications(false); navigate('/admin/notifications'); }}
                       className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors"
                     >
                       View All Activity
