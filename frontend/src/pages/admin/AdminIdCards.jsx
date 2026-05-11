@@ -12,6 +12,30 @@ const COLORS = [
   '#8b5cf6', '#6366f1', '#475569', '#334155', '#18181b'
 ];
 
+const CATEGORIES = ['Employee', 'Intern', 'Vendor', 'Visitor', 'Contractor', 'Consultant', 'Others'];
+
+const DEPARTMENTS_BY_CATEGORY = {
+  Employee: ['IT', 'HR', 'Finance', 'Marketing', 'Sales', 'Operations', 'Legal', 'Admin', 'Engineering', 'Product', 'Design', 'Customer Support', 'R&D', 'Quality Assurance', 'Procurement', 'Logistics', 'Business Development'],
+  Intern: ['IT', 'HR', 'Finance', 'Marketing', 'Sales', 'Operations', 'Engineering', 'Design', 'R&D', 'Content', 'Data Analytics', 'Business Development'],
+  Vendor: ['IT Services', 'Facility Management', 'Catering', 'Security', 'Transport', 'Maintenance', 'Supply Chain', 'Printing & Stationery', 'Cleaning Services', 'Electrical'],
+  Visitor: ['General', 'Client Visit', 'Government', 'Audit', 'Interview', 'Meeting', 'Event', 'Delivery'],
+  Contractor: ['IT', 'Civil', 'Electrical', 'Mechanical', 'Construction', 'Plumbing', 'HVAC', 'Interior Design', 'Landscaping', 'Security Systems'],
+  Consultant: ['IT Consulting', 'Management Consulting', 'Legal Advisory', 'Financial Advisory', 'HR Consulting', 'Strategy', 'Tax Advisory', 'Compliance', 'Training & Development'],
+  Others: ['General', 'Temporary Staff', 'Freelancer', 'Partner', 'Board Member', 'Advisor', 'Volunteer']
+};
+
+const DESIGNATIONS_BY_CATEGORY = {
+  Employee: ['Software Engineer', 'Senior Software Engineer', 'Lead Engineer', 'Tech Lead', 'Manager', 'Senior Manager', 'Director', 'VP', 'Analyst', 'Senior Analyst', 'Executive', 'Coordinator', 'Specialist', 'Administrator', 'Architect', 'Team Lead', 'Project Manager', 'Product Manager', 'Business Analyst', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'UI/UX Designer', 'Content Writer', 'HR Executive', 'Accountant', 'Marketing Executive', 'Sales Executive'],
+  Intern: ['Software Intern', 'Marketing Intern', 'HR Intern', 'Finance Intern', 'Design Intern', 'Data Intern', 'Content Intern', 'Business Intern', 'Research Intern', 'Engineering Intern', 'Operations Intern'],
+  Vendor: ['Service Provider', 'Supplier', 'Contractor', 'Delivery Agent', 'Maintenance Staff', 'Security Guard', 'Cleaning Staff', 'Caterer', 'Driver', 'Technician'],
+  Visitor: ['Guest', 'Client Representative', 'Government Official', 'Auditor', 'Interviewee', 'Attendee', 'Delivery Person', 'Media Representative'],
+  Contractor: ['Site Engineer', 'Project Supervisor', 'Electrician', 'Plumber', 'Mason', 'Carpenter', 'Welder', 'Painter', 'Foreman', 'Safety Officer'],
+  Consultant: ['Senior Consultant', 'Principal Consultant', 'Associate Consultant', 'Management Consultant', 'IT Consultant', 'Legal Consultant', 'Financial Consultant', 'Strategy Consultant', 'Tax Consultant'],
+  Others: ['Temporary Staff', 'Freelancer', 'Partner', 'Board Member', 'Advisor', 'Volunteer', 'Trainee', 'Fellow']
+};
+
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+
 // ── Helper: load an image from a src (base64 or URL) ──
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -526,24 +550,30 @@ export default function AdminIdCards() {
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
-                            <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
-                                <option>Employee</option>
-                                <option>Student</option>
-                                <option>Intern</option>
-                                <option>Visitor</option>
+                            <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value, department: '', designation: ''})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Department *</label>
-                            <input required type="text" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="IT, HR, Engineering..." />
+                            <select required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                                <option value="">Select Department</option>
+                                {(DEPARTMENTS_BY_CATEGORY[formData.category] || []).map(dept => <option key={dept} value={dept}>{dept}</option>)}
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Designation *</label>
-                            <input required type="text" value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="Software Engineer" />
+                            <select required value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                                <option value="">Select Designation</option>
+                                {(DESIGNATIONS_BY_CATEGORY[formData.category] || []).map(des => <option key={des} value={des}>{des}</option>)}
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Blood Group</label>
-                            <input type="text" value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="O+" />
+                            <select value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                                <option value="">Select Blood Group</option>
+                                {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Number *</label>
