@@ -1113,9 +1113,9 @@ export default function AdminCertificates() {
 
             {/* Form Section */}
             {!previewMode ? (
-              <div className="flex-1 flex flex-col overflow-y-auto">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                  <h2 className="text-xl font-bold text-gray-800">{editingId ? 'Edit Certificate' : 'Add New Certificate'}</h2>
+              <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
+                <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingId ? 'Edit Certificate' : 'Add New Certificate'}</h2>
                   <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                     <X size={20} />
                   </button>
@@ -1225,13 +1225,19 @@ export default function AdminCertificates() {
                     </div>
                   </div>
 
-                  <div className="pt-6 mt-4 border-t border-gray-100 flex justify-end pb-8">
+                  <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
                     <button
                       type="submit"
-                      className="w-full bg-[#1e5cdc] hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 group"
+                      className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2"
                     >
-                      <Eye size={20} className="group-hover:scale-110 transition-transform" /> 
-                      <span className="tracking-wide">PREVIEW HIGH-FIDELITY CERTIFICATE</span>
+                      <Eye size={16} /> Preview Certificate
                     </button>
                   </div>
                 </form>
