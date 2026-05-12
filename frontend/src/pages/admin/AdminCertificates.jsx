@@ -780,16 +780,16 @@ export default function AdminCertificates() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Certificate Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Certificate Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage, Preview and Track Certificates</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[160px]">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name or ID..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full bg-white"
             />
           </div>
           <button onClick={exportToExcel} className="p-2.5 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-100" title="Export to Excel">
@@ -798,17 +798,17 @@ export default function AdminCertificates() {
           <button onClick={() => fetchCertificates()} className="p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100" title="Refresh">
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
-          <button onClick={() => setIsBulkModalOpen(true)} className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0 shadow-sm">
-            <FileSpreadsheet size={16} /> Bulk Onboarding
+          <button onClick={() => setIsBulkModalOpen(true)} className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors shrink-0 shadow-sm">
+            <FileSpreadsheet size={15} /> <span className="hidden xs:inline">Bulk Onboarding</span><span className="xs:hidden">Bulk</span>
           </button>
-          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0 shadow-sm">
-            <Plus size={16} /> Add Certificate
+          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors shrink-0 shadow-sm">
+            <Plus size={15} /> Add Certificate
           </button>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-6">
         <select
           className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={filterYear}
@@ -877,7 +877,7 @@ export default function AdminCertificates() {
         ))}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-1 sm:col-span-2 lg:col-span-4 flex flex-col justify-between">
           <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Export Tools</div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button onClick={exportToExcel} className="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100" title="Export Excel Report">
               <FileSpreadsheet size={18} />
             </button>
@@ -955,26 +955,26 @@ export default function AdminCertificates() {
 
       {/* Bulk Actions Toolbar */}
       {selectedIds.length > 0 && (
-        <div className="flex items-center justify-between bg-blue-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-lg shadow-blue-500/20 animate-in slide-in-from-top-4 duration-300">
-          <div className="flex items-center gap-4">
-            <div className="bg-white/20 p-2 rounded-lg">
-              <CheckCircle2 size={20} />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-blue-600 text-white px-4 sm:px-6 py-4 rounded-2xl mb-6 shadow-lg shadow-blue-500/20 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-lg shrink-0">
+              <CheckCircle2 size={18} />
             </div>
-            <span className="font-bold">{selectedIds.length} Certificates Selected</span>
+            <span className="font-bold text-sm">{selectedIds.length} Certificates Selected</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => exportCertificatesAsPDF(certificates.filter(c => selectedIds.includes(c._id)))}
               disabled={downloading}
-              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-xs sm:text-sm font-bold transition-colors disabled:opacity-50"
             >
-              {downloading ? <RefreshCw size={16} className="animate-spin" /> : <Download size={16} />} Export Selected (PDF)
+              {downloading ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />} Export PDF
             </button>
             <button
               onClick={handleBulkDelete}
-              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl text-sm font-bold transition-colors shadow-sm"
+              className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm"
             >
-              <Trash2 size={16} /> Delete Selected
+              <Trash2 size={14} /> Delete Selected
             </button>
           </div>
         </div>
