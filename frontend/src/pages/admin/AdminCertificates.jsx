@@ -440,6 +440,7 @@ export default function AdminCertificates() {
       const data = await res.json();
       setCertificates(Array.isArray(data) ? data : []);
 
+      // Fetch Verification Logs (assuming same backend pattern as ID cards)
       const logsRes = await fetch(`${API}/api/certificates/logs`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
@@ -659,24 +660,48 @@ export default function AdminCertificates() {
     setIsProcessing(false);
   };
   const handleBulkGenerate = async (e) => {
-
     const file = e.target.files[0];
-
     if (!file) return;
+
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
+        if (results.data.length === 0) return alert('CSV is empty or invalid.');
+
+        setIsProcessing(true);
         try {
+          // Map CSV column names (capitalized) to backend field names (lowercase)
+          const mapped = results.data
+            .filter(row => row.Name && row.Designation) // skip invalid rows
+            .map(row => ({
+              name: row.Name,
+              type: row.Type || 'Intern',
+              issueDate: row.Date || new Date().toISOString().split('T')[0],
+              certificateId: row.ID || `TC-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+              designation: row.Designation,
+              details: row.Details || '',
+              recipientEmail: row.Email || '',
+              themeId: row.Theme || 'modern',
+              department: row.Department || 'General',
+            }));
+
+          if (mapped.length === 0) return alert('No valid rows found. Ensure Name and Designation columns are filled.');
+
           const res = await fetch(`${API}/api/certificates/bulk`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin?.token}` },
-            body: JSON.stringify(results.data)
+            body: JSON.stringify(mapped)
           });
           const result = await res.json();
           alert(result.message);
           fetchCertificates();
-        } catch (err) { console.error(err); }
+          setIsBulkModalOpen(false);
+        } catch (err) {
+          console.error(err);
+          alert('Bulk upload failed. Please check your file and try again.');
+        }
+        setIsProcessing(false);
       }
     });
   };
