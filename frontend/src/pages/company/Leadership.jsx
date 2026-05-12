@@ -26,7 +26,7 @@ export default function Leadership() {
                         Meet Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">Leadership</span>
                     </h1>
                     <p className="text-xl sm:text-2xl text-white/90 mb-10 max-w-3xl leading-relaxed drop-shadow-lg">
-                        The visionaries and strategists guiding The Contrractum towards a smarter, more connected future
+                        The visionaries and strategists guiding The Contractum towards a smarter, more connected future
                     </p>
                     <div className="flex flex-wrap gap-4 mb-10">
                         <Link to="/company/leadership/visionary" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">

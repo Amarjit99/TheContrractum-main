@@ -10,31 +10,58 @@ export default function BlogArticle() {
     const [dbArticle, setDbArticle] = useState(null);
     const [dbLoading, setDbLoading] = useState(false);
 
+    const [allDbBlogs, setAllDbBlogs] = useState([]);
+
     // Fetch from DB if id is not a simple integer (i.e., it's a MongoDB ObjectId)
     useEffect(() => {
         const isStaticId = /^\d+$/.test(id);
-        if (!isStaticId) {
-            setDbLoading(true);
-            fetch(`${API}/api/cms/blogs/${id}`)
-                .then(res => res.ok ? res.json() : null)
-                .then(data => {
-                    if (data) {
-                        setDbArticle({
-                            id: data._id,
-                            title: data.title,
-                            excerpt: data.excerpt || '',
-                            author: data.author,
-                            date: new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                            readTime: data.readTime || '5 min read',
-                            category: data.category,
-                            image: data.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
-                            content: data.content || data.excerpt || 'No content available for this post.',
-                        });
+        
+        // Fetch all blogs to populate related articles
+        fetch(`${API}/api/cms/blogs`)
+            .then(res => res.json())
+            .then(data => {
+                const formatted = data
+                    .filter(b => b.status === 'Published')
+                    .map(b => ({
+                        id: b._id,
+                        title: b.title,
+                        excerpt: b.excerpt || b.content?.substring(0, 120) + '...' || '...',
+                        author: b.author,
+                        date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        readTime: b.readTime || '5 min read',
+                        category: b.category,
+                        image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
+                        content: b.content
+                    }));
+                setAllDbBlogs(formatted);
+
+                if (!isStaticId) {
+                    const current = formatted.find(b => b.id === id);
+                    if (current) {
+                        setDbArticle(current);
+                    } else {
+                        // Fallback fetch single if not in list
+                        fetch(`${API}/api/cms/blogs/${id}`)
+                            .then(res => res.ok ? res.json() : null)
+                            .then(data => {
+                                if (data) {
+                                    setDbArticle({
+                                        id: data._id,
+                                        title: data.title,
+                                        excerpt: data.excerpt || '',
+                                        author: data.author,
+                                        date: new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                                        readTime: data.readTime || '5 min read',
+                                        category: data.category,
+                                        image: data.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
+                                        content: data.content || data.excerpt || 'No content available for this post.',
+                                    });
+                                }
+                            });
                     }
-                    setDbLoading(false);
-                })
-                .catch(() => setDbLoading(false));
-        }
+                }
+            })
+            .catch(err => console.error("Error fetching related blogs:", err));
     }, [id]);
 
     // Handle scroll for scroll-to-top button
@@ -588,8 +615,12 @@ export default function BlogArticle() {
         );
     }
 
-    const relatedArticles = blogPosts
-        .filter(post => post.id !== article.id && post.category === article.category)
+    // Combine static and dynamic articles for related section
+    const currentArticle = article || dbArticle;
+    const allAvailableArticles = [...blogPosts, ...allDbBlogs];
+    
+    const relatedArticles = allAvailableArticles
+        .filter(post => post.id !== (currentArticle?.id) && post.category === currentArticle?.category)
         .slice(0, 3);
 
     return (
@@ -761,10 +792,12 @@ export default function BlogArticle() {
             {showScrollTop && (
                 <button
                     onClick={scrollToTop}
-                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-50 p-3 sm:p-4 bg-red-600 text-white rounded-full shadow-2xl hover:bg-red-700 hover:shadow-red-500/50 transition-all duration-300 hover:scale-110 group"
+                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-50 p-3 sm:p-4 bg-primary text-white rounded-full shadow-2xl hover:bg-primary-dark hover:shadow-primary/50 transition-all duration-300 hover:scale-110 group"
                     aria-label="Scroll to top"
                 >
-                    
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
                 </button>
             )}
         </div>

@@ -12,6 +12,7 @@ export default function Blogs() {
     const [dbBlogs, setDbBlogs] = useState([]);
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [isSubscribing, setIsSubscribing] = useState(false);
+    const [email, setEmail] = useState('');
 
     const categories = ['All', 'Technology', 'Business', 'Innovation', 'Digital Transformation', 'AI & ML', 'Cybersecurity'];
 
@@ -57,25 +58,31 @@ export default function Blogs() {
 
     const handleSubscribe = async (e) => {
         e.preventDefault();
-        if (isSubscribed || isSubscribing) return;
+        if (isSubscribed || isSubscribing || !email) return;
 
         setIsSubscribing(true);
         try {
             const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${API}/api/subscription/subscribe`, {
+            const response = await fetch(`${API}/api/subscription/newsletter`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ email, source: 'Blogs Hero' })
             });
 
             if (response.ok) {
                 setIsSubscribed(true);
+                setEmail('');
+                // Also increment the global counter for good measure
+                fetch(`${API}/api/subscription/subscribe`, { method: 'POST' });
             } else {
-                console.error("Subscription failed");
+                const data = await response.json();
+                alert(data.message || "Subscription failed");
             }
         } catch (err) {
             console.error("Error subscribing:", err);
+            alert("An error occurred. Please try again.");
         } finally {
             setIsSubscribing(false);
         }
@@ -120,25 +127,39 @@ export default function Blogs() {
                             Explore expert insights, industry trends, and innovative ideas that drive digital transformation and business success.
                         </p>
 
-                        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
+                        <form onSubmit={handleSubscribe} className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-lg">
+                            <div className="relative flex-grow">
+                                <input 
+                                    type="email" 
+                                    placeholder="Enter your email..." 
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-6 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:border-primary transition-all"
+                                />
+                            </div>
                             <button 
-                                onClick={scrollToBlogs}
-                                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-primary-light text-white text-sm sm:text-base font-bold rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                            >
-                                Explore Articles
-                            </button>
-                            <button 
-                                onClick={handleSubscribe}
+                                type="submit"
                                 disabled={isSubscribed || isSubscribing}
-                                className={`px-6 sm:px-8 py-3 sm:py-4 border-2 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-semibold ${
+                                className={`px-6 sm:px-8 py-3.5 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 whitespace-nowrap ${
                                     isSubscribed 
-                                    ? "bg-green-500/20 border-green-500/50 text-green-400 cursor-default" 
-                                    : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 active:scale-95"
+                                    ? "bg-green-500 text-white cursor-default" 
+                                    : "bg-gradient-to-r from-primary to-primary-light text-white hover:shadow-2xl hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
                                 }`}
                             >
-                                {isSubscribing ? "Subscribing..." : isSubscribed ? "Subscribed" : "Subscribe"}
+                                {isSubscribing ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <span>Subscribing...</span>
+                                    </>
+                                ) : isSubscribed ? (
+                                    <>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                                        <span>Subscribed</span>
+                                    </>
+                                ) : "Join Newsletter"}
                             </button>
-                        </div>
+                        </form>
                     </div>
 
                     <div className="hidden md:flex justify-center md:justify-end">
@@ -308,7 +329,7 @@ export default function Blogs() {
                     {/* Category Filter */}
                     <div>
                         <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Filter by Category:</h3>
-                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide max-w-full">
                             {categories.map((category) => (
                                 <button
                                     key={category}
@@ -316,10 +337,10 @@ export default function Blogs() {
                                         setSelectedCategory(category);
                                         setVisiblePosts(6);
                                     }}
-                                    className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold transition-all duration-300 ${
+                                    className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
                                         selectedCategory === category
                                             ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg scale-105'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-primary border-2 border-transparent hover:border-purple-200'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-primary hover:text-white border-2 border-transparent'
                                     }`}
                                 >
                                     {category}

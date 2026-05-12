@@ -89,7 +89,7 @@ export default function CareersCSR() {
                     <Globe className="w-16 h-16 text-blue-600 mx-auto" strokeWidth={1.5} />
                     <h2 className="text-4xl font-bold text-slate-900">Making a Global Difference</h2>
                     <p className="text-lg text-slate-600 leading-relaxed">
-                        At Contrractum, we believe our responsibility extends beyond business. We are deeply committed to empowering communities, protecting the environment, and utilizing technology as a force for good. Through targeted corporate social responsibility initiatives, we are driving systemic change and addressing some of the most pressing challenges of our time.
+                        At Contractum, we believe our responsibility extends beyond business. We are deeply committed to empowering communities, protecting the environment, and utilizing technology as a force for good. Through targeted corporate social responsibility initiatives, we are driving systemic change and addressing some of the most pressing challenges of our time.
                     </p>
                 </div>
             </div>

@@ -104,7 +104,7 @@ export default function Benefits() {
                 <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full flex flex-col justify-center">
                     <div>
                         {/* <span className="inline-block px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold uppercase tracking-wider mb-6">
-                            Careers at The Contrractum
+                            Careers at The Contractum
                         </span> */}
                         <h1 className="text-5xl md:text-7xl font-black mb-6 drop-shadow-2xl leading-tight">
                             Employee Benefits & Perks
@@ -201,7 +201,7 @@ export default function Benefits() {
                                 Ready to Join Our Team?
                             </h2>
                             <p className="text-gray-200 text-lg mb-8 leading-relaxed">
-                                Explore our current job openings and start your journey with The Contrractum today.
+                                Explore our current job openings and start your journey with The Contractum today.
                             </p>
                             <div className="flex flex-wrap gap-5">
                                 <a

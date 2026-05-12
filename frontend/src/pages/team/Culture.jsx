@@ -18,7 +18,7 @@ export default function Culture() {
               Our Culture & Values
             </span> */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight text-white drop-shadow-2xl">
-              Life at The Contrractum
+              Life at The Contractum
             </h1>
             <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
               Where innovation, collaboration, and growth create a thriving workplace culture

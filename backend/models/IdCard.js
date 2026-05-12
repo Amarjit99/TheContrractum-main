@@ -15,7 +15,12 @@ const idCardSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["Student", "Employee", "Intern", "Visitor"],
+    enum: [
+      "Student", "Employee", "Intern", "Consultant", "Trainer", 
+      "Volunteer", "Research Associate", "Project Associate", "HR", 
+      "Management", "Guest", "Vendor", "Visitor", "Contractor", 
+      "Others", "Venders", "Vissitors"
+    ],
     default: "Employee",
   },
   department: {

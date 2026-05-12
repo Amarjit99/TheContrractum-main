@@ -4,7 +4,7 @@ const certificateSchema = new mongoose.Schema({
   name: { type: String, required: true },
   type: {
     type: String,
-    enum: ['internship', 'hackathon', 'other'],
+    enum: ['Employee', 'Student', 'Intern', 'Consultant', 'Trainer', 'Volunteer', 'Research Associate', 'Project Associate', 'HR', 'Management', 'Guest', 'Vendor', 'Visitor', 'Contractor', 'Others'],
     required: true
   },
   issueDate: { type: Date, required: true },
@@ -12,6 +12,7 @@ const certificateSchema = new mongoose.Schema({
   fileUrl: { type: String, required: true },
   themeId: { type: String, default: 'classic' },
   designation: { type: String },
+  department: { type: String },
   details: { type: String },
   recipientEmail: { type: String }
 }, { timestamps: true });

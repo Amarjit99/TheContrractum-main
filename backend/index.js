@@ -50,7 +50,7 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
 
 // Health check
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "TheContrractum backend is running" });
+  res.json({ status: "ok", message: "TheContractum backend is running" });
 });
 
 // Feature routes

@@ -91,7 +91,7 @@ export default function Internships() {
             <div className="bg-gradient-to-br from-gray-50 to-white py-20">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row gap-12 items-start">
-                        <div className="md:w-1/3 md:sticky md:top-8">
+                        <div className="md:w-1/3 md:sticky md:top-24">
                             <div className="inline-block bg-blue-50 text-primary text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider">
                                 Opportunities
                             </div>

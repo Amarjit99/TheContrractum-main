@@ -5,195 +5,112 @@ import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award,
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import QRCode from 'qrcode';
+import { QRCodeSVG } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { Link } from 'react-router-dom';
+import { CATEGORIES, DEPARTMENTS_BY_CATEGORY, DESIGNATIONS_MAPPING, THEME_COLORS } from '../../constants/certificateConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const CATEGORIES = ['Employee', 'Student', 'Intern', 'Consultant', 'Trainer', 'Volunteer', 'Research Associate', 'Project Associate', 'HR', 'Management', 'Guest', 'Vendor', 'Visitor', 'Contractor', 'Others'];
 
-const DEPARTMENTS_BY_CATEGORY = {
-  Employee: ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Sales', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration', 'Engineering', 'Product', 'Design', 'Customer Support', 'Legal', 'Procurement', 'Logistics', 'R&D'],
-  Student: ['General', 'Computer Science', 'Business', 'Engineering', 'Arts', 'Science'],
-  Intern: ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  Consultant: ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  Trainer: ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  Volunteer: ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  'Research Associate': ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  'Project Associate': ['General', 'IT', 'Software Development', 'GIS & Remote Sensing', 'Human Resources', 'Finance', 'Marketing', 'Business Development', 'Artificial Intelligence', 'Cyber Security', 'UI/UX Design', 'Operations', 'Administration'],
-  HR: ['General', 'Human Resources'],
-  Management: ['General', 'Operations', 'Administration', 'Business Development'],
-  Guest: ['General', 'Client Visit', 'Meeting'],
-  Vendor: ['General', 'IT Services', 'Facility Management', 'Catering', 'Security', 'Transport', 'Maintenance', 'Supply Chain', 'Printing & Stationery', 'Cleaning Services', 'Electrical'],
-  Visitor: ['General', 'Client Visit', 'Government', 'Audit', 'Interview', 'Meeting', 'Event', 'Delivery'],
-  Contractor: ['General', 'IT', 'Civil', 'Electrical', 'Mechanical', 'Construction', 'Plumbing', 'HVAC', 'Interior Design', 'Landscaping', 'Security Systems'],
-  Others: ['General', 'Temporary Staff', 'Freelancer', 'Partner', 'Board Member', 'Advisor', 'Volunteer']
-};
+// ── SHARED TEMPLATE COMPONENT FOR DRY ──
+function CertificateTemplate({ formData, selectedTheme, id }) {
+  return (
+    <div
+      id={id}
+      className="w-[800px] h-[580px] bg-white relative flex flex-col items-center p-12 overflow-hidden border-[16px]"
+      style={{ borderColor: selectedTheme.primary, backgroundColor: selectedTheme.bg }}
+    >
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-32 h-32 opacity-10" style={{ backgroundColor: selectedTheme.primary, borderRadius: '0 0 100% 0' }} />
+      <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10" style={{ backgroundColor: selectedTheme.primary, borderRadius: '100% 0 0 0' }} />
+      <div className="absolute inset-0 border-[1px] border-dashed m-4 pointer-events-none" style={{ borderColor: selectedTheme.primary + '33' }} />
 
-const DESIGNATIONS_MAPPING = {
-  Employee: {
-    IT: ['Software Engineer', 'Senior Software Engineer', 'Lead Engineer', 'Tech Lead', 'System Admin', 'DevOps Engineer', 'Database Administrator', 'IT Support Specialist', 'Network Engineer', 'Security Analyst', 'Architect'],
-    'Human Resources': ['HR Manager', 'HR Executive', 'Recruiter', 'Talent Acquisition Specialist', 'HR Operations', 'Senior HR Manager', 'Compensation & Benefits'],
-    General: ['Employee', 'Staff Member', 'Office Assistant', 'Support Staff', 'Security Guard', 'Driver', 'Office Boy', 'Peon'],
-    'Software Development': ['Full Stack Developer', 'Frontend Developer', 'Backend Developer', 'Lead Developer', 'Technical Architect', 'Software Engineer', 'QA Engineer', 'DevOps Engineer'],
-    'GIS & Remote Sensing': ['GIS Analyst', 'GIS Developer', 'Remote Sensing Specialist', 'GIS Specialist', 'Photogrammetrist', 'Surveyor'],
-    Finance: ['Accountant', 'Financial Analyst', 'Finance Manager', 'Billing Executive', 'Internal Auditor', 'Tax Consultant'],
-    Marketing: ['Marketing Manager', 'Digital Marketing Executive', 'Content Strategist', 'SEO Specialist', 'Social Media Manager', 'Marketing Coordinator', 'Brand Manager'],
-    Sales: ['Sales Manager', 'Business Development Executive', 'Account Manager', 'Sales Coordinator', 'Area Sales Manager', 'Sales Executive'],
-    'Business Development': ['BD Manager', 'Strategic Partnership Manager', 'Market Researcher', 'Lead Generation Specialist'],
-    'Artificial Intelligence': ['AI Engineer', 'Machine Learning Engineer', 'Data Scientist', 'AI Researcher', 'AI Analyst'],
-    'Cyber Security': ['Cyber Security Analyst', 'Ethical Hacker', 'Security Engineer', 'Security Consultant', 'Compliance Officer'],
-    'UI/UX Design': ['UI/UX Designer', 'Product Designer', 'Interaction Designer', 'Visual Designer', 'UX Researcher'],
-    Operations: ['Operations Manager', 'Operations Coordinator', 'Logistics Coordinator', 'Supply Chain Analyst', 'Manager', 'Senior Manager', 'VP', 'Director'],
-    Administration: ['Admin Manager', 'Admin Executive', 'Facility Manager', 'Office Coordinator', 'Executive', 'Administrator'],
-    Engineering: ['Mechanical Engineer', 'Electrical Engineer', 'Civil Engineer', 'Project Engineer', 'Draftsman', 'Safety Engineer'],
-    Product: ['Product Manager', 'Associate Product Manager', 'Product Analyst', 'Product Designer', 'Technical Product Manager'],
-    Design: ['Graphic Designer', 'UI/UX Designer', 'Visual Designer', 'Art Director'],
-    'Customer Support': ['Support Lead', 'Customer Success Manager', 'Support Executive', 'Help Desk Technician'],
-    Legal: ['Legal Counsel', 'Legal Advisor', 'Legal Assistant', 'Compliance Officer', 'Company Secretary'],
-    Procurement: ['Procurement Manager', 'Purchase Executive', 'Vendor Manager'],
-    Logistics: ['Logistics Manager', 'Warehouse Supervisor', 'Fleet Manager'],
-    'R&D': ['Research Scientist', 'Research Associate', 'R&D Manager', 'Lab Technician']
-  },
-  Student: {
-    General: ['Student', 'Scholar', 'Candidate'],
-    'Computer Science': ['CS Student', 'B.Tech Student', 'M.Tech Student', 'BCA Student', 'MCA Student'],
-    Business: ['BBA Student', 'MBA Student', 'Management Student'],
-    Engineering: ['Engineering Student', 'B.E. Student', 'Diploma Student'],
-    Arts: ['Arts Student', 'B.A. Student', 'M.A. Student'],
-    Science: ['Science Student', 'B.Sc Student', 'M.Sc Student']
-  },
-  Intern: {
-    General: ['Intern', 'Summer Intern', 'Graduate Intern'],
-    IT: ['Software Intern', 'IT Support Intern', 'Web Development Intern'],
-    'Software Development': ['Software Development Intern', 'Frontend Development Intern', 'Backend Development Intern'],
-    'GIS & Remote Sensing': ['GIS Intern', 'Remote Sensing Intern'],
-    'Human Resources': ['HR Intern', 'Recruiting Intern'],
-    Finance: ['Finance Intern', 'Accounting Intern'],
-    Marketing: ['Marketing Intern', 'Digital Marketing Intern'],
-    'Business Development': ['BD Intern', 'Sales Strategy Intern'],
-    'Artificial Intelligence': ['AI Intern', 'Machine Learning Intern', 'Data Science Intern'],
-    'Cyber Security': ['Cyber Security Intern', 'Security Analysis Intern'],
-    'UI/UX Design': ['UI/UX Design Intern', 'Graphic Design Intern'],
-    Operations: ['Operations Intern', 'Logistics Intern'],
-    Administration: ['Admin Intern', 'Office Management Intern']
-  },
-  Consultant: {
-    General: ['Consultant', 'Senior Consultant', 'External Advisor'],
-    IT: ['Senior IT Consultant', 'Solutions Architect'],
-    'Software Development': ['Technical Consultant', 'Architecture Consultant'],
-    'GIS & Remote Sensing': ['GIS Consultant', 'Geospatial Advisor'],
-    'Human Resources': ['HR Strategy Consultant', 'Change Management Expert'],
-    Finance: ['Financial Advisor', 'Tax Consultant'],
-    Marketing: ['Marketing Strategist', 'Brand Consultant'],
-    'Business Development': ['Strategy Consultant', 'Business Consultant'],
-    'Artificial Intelligence': ['AI Consultant', 'ML Advisor'],
-    'Cyber Security': ['Security Consultant', 'Security Auditor'],
-    'UI/UX Design': ['Design Consultant', 'Experience Advisor'],
-    Operations: ['Operations Consultant', 'Management Consultant'],
-    Administration: ['Admin Consultant', 'Compliance Advisor']
-  },
-  Trainer: {
-    General: ['Trainer', 'Instructor', 'Coach'],
-    IT: ['Technical Trainer', 'Software Instructor'],
-    'Software Development': ['Coding Instructor', 'Web Development Trainer'],
-    'GIS & Remote Sensing': ['GIS Trainer', 'RS Instructor'],
-    'Human Resources': ['Soft Skills Trainer', 'HR Trainer'],
-    'Artificial Intelligence': ['AI Trainer', 'Data Science Instructor'],
-    'Cyber Security': ['Security Trainer', 'Ethical Hacking Instructor']
-  },
-  Volunteer: {
-    General: ['Volunteer', 'Event Volunteer', 'Social Worker']
-  },
-  'Research Associate': {
-    General: ['Research Associate', 'Researcher', 'Junior Scientist'],
-    'Artificial Intelligence': ['Senior Research Associate', 'AI Researcher'],
-    'GIS & Remote Sensing': ['Geospatial Researcher', 'Remote Sensing Associate']
-  },
-  'Project Associate': {
-    General: ['Project Associate', 'Project Assistant'],
-    'Software Development': ['Project Associate', 'Technical Coordinator'],
-    Operations: ['Project Associate', 'Project Coordinator']
-  },
-  HR: {
-    General: ['HR Specialist', 'HR Support'],
-    'Human Resources': ['HR Lead', 'HR Partner', 'HR Advisor']
-  },
-  Management: {
-    General: ['Management Staff', 'Office Manager'],
-    Operations: ['Operations Manager', 'Project Manager', 'Team Lead'],
-    Administration: ['Admin Manager', 'Management Partner'],
-    'Business Development': ['BD Manager', 'Strategic Partner']
-  },
-  Guest: {
-    General: ['Guest', 'Personal Visit'],
-    'Client Visit': ['Client Representative', 'Potential Partner'],
-    Meeting: ['Meeting Participant', 'Vendor Representative']
-  },
-  Vendor: {
-    General: ['Vendor', 'Service Provider', 'External Partner', 'Supplier'],
-    'IT Services': ['System Consultant', 'Network Technician', 'Software Vendor'],
-    'Facility Management': ['Facility Supervisor', 'Maintenance Staff'],
-    Catering: ['Catering Manager', 'Head Chef', 'Service Staff'],
-    Security: ['Security Head', 'Security Guard', 'CCTV Operator'],
-    Transport: ['Fleet Supervisor', 'Driver', 'Transport Coordinator'],
-    Maintenance: ['Electrician', 'Plumber', 'HVAC Technician', 'Technician'],
-    'Supply Chain': ['Supplier Representative', 'Logistics Agent'],
-    'Printing & Stationery': ['Printing In-charge', 'Delivery Agent'],
-    'Cleaning Services': ['Cleaning Supervisor', 'Housekeeping Staff'],
-    Electrical: ['Electrical Contractor', 'Senior Electrician']
-  },
-  Visitor: {
-    General: ['Guest', 'Personal Visit'],
-    'Client Visit': ['Client Representative', 'Potential Partner'],
-    Government: ['Govt Official', 'Inspector', 'Regulatory Officer'],
-    Audit: ['External Auditor', 'Financial Auditor', 'Compliance Auditor'],
-    Interview: ['Candidate', 'Interviewee'],
-    Meeting: ['Meeting Participant', 'Vendor Representative'],
-    Event: ['Guest Speaker', 'Attendee', 'Organizer'],
-    Delivery: ['Delivery Person', 'Courier Agent']
-  },
-  Contractor: {
-    General: ['Contractor', 'Sub-Contractor', 'Supervisor'],
-    IT: ['IT Contractor', 'Software Consultant'],
-    Civil: ['Civil Contractor', 'Site Supervisor', 'Mason'],
-    Electrical: ['Electrical Contractor', 'Wireman', 'Electrician'],
-    Mechanical: ['Mechanical Contractor', 'Fitter'],
-    Construction: ['Site In-charge', 'Contractor'],
-    Plumbing: ['Plumbing Contractor', 'Plumber'],
-    HVAC: ['AC Technician', 'HVAC Specialist'],
-    'Interior Design': ['Interior Designer', 'Decorator'],
-    Landscaping: ['Landscape Artist', 'Gardening Lead'],
-    'Security Systems': ['CCTV Technician', 'Security Consultant']
-  },
-  Others: {
-    General: ['Temporary Staff', 'Helper', 'Specialist'],
-    'Temporary Staff': ['Temporary Executive', 'Assistant'],
-    Freelancer: ['Freelance Designer', 'Freelance Developer', 'Freelance Writer'],
-    Partner: ['Business Partner', 'Strategic Associate'],
-    'Board Member': ['Director', 'Board Representative'],
-    Advisor: ['Technical Advisor', 'Legal Advisor', 'Consultant'],
-    Volunteer: ['Event Volunteer', 'Social Worker']
-  }
-};
+      {/* Premium Watermark Pattern */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none flex flex-wrap gap-12 rotate-[-35deg] scale-150 justify-center items-center content-center">
+        {Array.from({ length: 40 }).map((_, i) => (
+          <span key={i} className="text-[14px] font-black uppercase whitespace-nowrap tracking-widest">
+            The Contractum Official • Secure Registry •
+          </span>
+        ))}
+      </div>
 
-const THEME_COLORS = [
-  { id: 'classic', name: 'Classical Gold', primary: '#bb9539', bg: '#fffdf5', accent: '#8c6d1f' },
-  { id: 'modern', name: 'Modern Tech', primary: '#1e5cdc', bg: '#f0f7ff', accent: '#1648b0' },
-  { id: 'minimal', name: 'Minimalist Sleek', primary: '#18181b', bg: '#fafafa', accent: '#3f3f46' },
-  { id: 'emerald', name: 'Emerald Success', primary: '#059669', bg: '#f0fdf4', accent: '#047857' },
-  { id: 'navy', name: 'Deep Ocean', primary: '#1e3a8a', bg: '#f8fafc', accent: '#1d4ed8' },
-  { id: 'sunset', name: 'Sunset Horizon', primary: '#f97316', bg: '#fff7ed', accent: '#c2410c' },
-  { id: 'lavender', name: 'Lavender Mist', primary: '#8b5cf6', bg: '#f5f3ff', accent: '#6d28d9' },
-  { id: 'forest', name: 'Forest Peak', primary: '#15803d', bg: '#f0fdf4', accent: '#166534' },
-  { id: 'slate', name: 'Midnight Slate', primary: '#334155', bg: '#f8fafc', accent: '#1e293b' },
-  { id: 'rose', name: 'Rose Quartz', primary: '#db2777', bg: '#fdf2f8', accent: '#be185d' },
-  { id: 'royal', name: 'Royal Purple', primary: '#7c3aed', bg: '#f5f3ff', accent: '#5b21b6' },
-  { id: 'crimson', name: 'Crimson Elite', primary: '#dc2626', bg: '#fef2f2', accent: '#991b1b' },
-  { id: 'charcoal', name: 'Charcoal Grey', primary: '#4b5563', bg: '#f9fafb', accent: '#1f2937' },
-  { id: 'earth', name: 'Earth Tone', primary: '#92400e', bg: '#fffbeb', accent: '#78350f' }
-];
+      {/* Official Digital Seal */}
+      <div className="absolute top-12 right-12 z-20 w-28 h-28 border-4 border-red-600/30 rounded-full flex items-center justify-center">
+        <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40">
+          <span className="text-[8px] font-black uppercase tracking-tighter">Contractum</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
+          <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
+        </div>
+      </div>
+
+      {/* Top Logo / Branding */}
+      <div className="text-center z-10 mb-6">
+        <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
+        <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+          The Contractum
+        </div>
+      </div>
+
+      {/* Main Title Area */}
+      <div className="text-center z-10 flex flex-col items-center w-full mt-2">
+        <h1 className="text-4xl font-serif font-bold italic mb-1" style={{ color: selectedTheme.accent }}>Certificate</h1>
+        <h2 className="text-base font-bold tracking-[0.3em] uppercase mb-8" style={{ color: selectedTheme.primary }}>Of Achievement</h2>
+
+        <p className="text-xs font-medium mb-1" style={{ color: '#6b7280' }}>THIS CERTIFICATE IS PROUDLY PRESENTED TO</p>
+        <div className="w-1/2 h-[1px] mb-3" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
+        <h2 className="text-3xl font-serif font-bold uppercase mb-3" style={{ color: selectedTheme.primary }}>{formData.name || 'Recipient Name'}</h2>
+        <div className="w-1/2 h-[1px] mb-8" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
+
+        <p className="text-xs max-w-lg leading-relaxed px-8 text-center" style={{ color: '#4b5563' }}>
+          This certificate is awarded for the successful completion of the <span className="font-bold underline">{formData.designation || 'Program'}</span> track
+          {formData.details && (
+            <span className="block mt-2 italic font-medium">Project: {formData.details}</span>
+          )}
+          <br/>
+          This recognition honors exceptional dedication and professional excellence.
+        </p>
+      </div>
+
+      {/* Unified Bottom Layout */}
+      <div className="absolute bottom-10 left-12 right-12 flex items-end justify-between z-10 border-t pt-6" style={{ borderColor: selectedTheme.primary + '33' }}>
+        {/* QR Code Section */}
+        <div className="flex items-center gap-3 p-2 rounded-lg bg-white/40 border border-white/60 backdrop-blur-[2px]">
+          <QRCodeSVG
+            value={`${window.location.origin}/verify/${formData.certificateId}`}
+            size={52}
+            fgColor={selectedTheme.primary}
+            level="H"
+            includeMargin={false}
+          />
+          <div className="flex flex-col">
+            <span className="text-[7px] font-black text-gray-400 uppercase tracking-widest">Verify Record</span>
+            <span className="text-[10px] font-mono font-bold" style={{ color: selectedTheme.primary }}>{formData.certificateId || 'TC-CERT-000'}</span>
+          </div>
+        </div>
+
+        {/* Date Section */}
+        <div className="flex flex-col items-center">
+          <span className="text-[14px] font-bold text-gray-800">
+            {new Date(formData.issueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </span>
+          <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
+          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Date of Issue</span>
+        </div>
+
+        {/* Signature Section */}
+        <div className="flex flex-col items-center">
+          <span className="text-[18px] font-serif font-bold italic text-gray-800">Amit Verma</span>
+          <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
+          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Authorized Signature</span>
+          <span className="text-[7px] font-bold text-gray-400 uppercase">Director • The Contractum</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 // ── PURE CANVAS 2D GENERATOR (Pixel-Perfect Clone of HTML Template) ──
 async function generateCertificateCanvas(data, theme) {
@@ -414,7 +331,6 @@ export default function AdminCertificates() {
   const [filterMonth, setFilterMonth] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [scanLogs, setScanLogs] = useState([]);
-  const [filterCategory, setFilterCategory] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('');
   const [previewImageUrl, setPreviewImageUrl] = useState('');
 
@@ -460,7 +376,6 @@ export default function AdminCertificates() {
   const filteredCerts = (certificates || []).filter(c => {
     if (!c) return false;
     const matchesTab = activeTab === 'All' || c.type === activeTab;
-    const matchesCategory = !filterCategory || c.type === filterCategory;
     const matchesDept = !filterDepartment || c.department === filterDepartment;
 
     let matchesYear = true;
@@ -480,7 +395,7 @@ export default function AdminCertificates() {
     const matchesSearch = (c.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (c.certificateId || '').toLowerCase().includes(search.toLowerCase());
 
-    return matchesTab && matchesCategory && matchesDept && matchesYear && matchesMonth && matchesSearch;
+    return matchesTab && matchesDept && matchesYear && matchesMonth && matchesSearch;
   });
 
   const resetForm = () => {
@@ -741,10 +656,12 @@ export default function AdminCertificates() {
     const data = certificates.map(c => ({
       'Recipient Name': c.name,
       'Certificate ID': c.certificateId,
-      'Type': c.type,
+      'Category': c.type,
+      'Department': c.department || 'General',
       'Designation': c.designation,
       'Issue Date': new Date(c.issueDate).toLocaleDateString(),
-      'Recipient Email': c.recipientEmail || 'N/A'
+      'Recipient Email': c.recipientEmail || 'N/A',
+      'Project/Details': c.details || 'N/A'
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -784,7 +701,6 @@ export default function AdminCertificates() {
   const resetFilters = () => {
     setFilterYear('');
     setFilterMonth('');
-    setFilterCategory('');
     setFilterDepartment('');
     setSearch('');
     setActiveTab('All');
@@ -856,10 +772,10 @@ export default function AdminCertificates() {
         </select>
         <select
           className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
         >
-          <option value="">All Categories</option>
+          <option value="All">All Categories</option>
           {CATEGORIES.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
@@ -874,7 +790,7 @@ export default function AdminCertificates() {
             <option key={dept} value={dept}>{dept}</option>
           ))}
         </select>
-        {(filterYear || filterMonth || filterCategory || filterDepartment || search) && (
+        {(filterYear || filterMonth || activeTab !== 'All' || filterDepartment || search) && (
           <button
             onClick={resetFilters}
             className="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-widest flex items-center gap-1 px-2"
@@ -901,24 +817,18 @@ export default function AdminCertificates() {
           </div>
         ))}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-1 sm:col-span-2 lg:col-span-4 flex flex-col justify-between">
-          <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Export Tools</div>
+          <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Advanced Exports</div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={exportToExcel} className="p-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100" title="Export Excel Report">
-              <FileSpreadsheet size={18} />
-            </button>
-            <button onClick={() => alert('CSV Export coming soon!')} className="p-2.5 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors border border-blue-100" title="Export CSV Report">
-              <Filter size={18} />
-            </button>
-            <button onClick={() => alert('PDF Table Export coming soon!')} className="p-2.5 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors border border-red-100" title="Download Data Table PDF">
-              <FileText size={18} />
+            <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100 text-xs font-bold" title="Export Excel Report">
+              <FileSpreadsheet size={16} /> Excel Spreadsheet
             </button>
             <button
               onClick={() => exportCertificatesAsPDF(filteredCerts)}
               disabled={downloading}
-              className={`ml-auto px-4 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-black transition-all flex items-center gap-2 text-xs font-bold shadow-lg shadow-black/10 ${downloading ? 'opacity-50 pointer-events-none' : 'hover:scale-105 active:scale-95'}`}
+              className={`ml-auto px-6 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-black transition-all flex items-center gap-2 text-xs font-bold shadow-lg shadow-black/10 ${downloading ? 'opacity-50 pointer-events-none' : 'hover:scale-105 active:scale-95'}`}
             >
               {downloading ? <RefreshCw size={16} className="animate-spin" /> : <Award size={16} />}
-              Export All Visible (PDF)
+              Generate Batch PDF Portfolio
             </button>
           </div>
         </div>
@@ -1245,61 +1155,23 @@ export default function AdminCertificates() {
               </div>
 
               {/* Live CSS Mini-Preview Panel (right side, visible only on md+) */}
-              <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 border-l border-gray-100 p-8 w-[340px] shrink-0">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-5">Live Preview</p>
-                {/* A4 Landscape mini-mockup */}
-                <div
-                  className="w-full aspect-[297/210] rounded-xl shadow-2xl overflow-hidden relative flex flex-col border border-gray-200"
-                  style={{ background: selectedTheme.bg }}
-                >
-                  {/* Top accent bar */}
-                  <div className="h-2 w-full" style={{ backgroundColor: selectedTheme.primary }} />
-
-                  {/* Header band */}
-                  <div className="px-4 pt-3 pb-2 flex items-center justify-between" style={{ backgroundColor: selectedTheme.primary + '18' }}>
-                    <div>
-                      <p className="text-[6px] font-black uppercase tracking-widest" style={{ color: selectedTheme.primary }}>The Contractum</p>
-                      <p className="text-[8px] font-black text-gray-700 uppercase tracking-wider mt-0.5">Certificate of {formData.type || 'Excellence'}</p>
-                    </div>
-                    <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center" style={{ borderColor: selectedTheme.primary }}>
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedTheme.primary }} />
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="flex-1 flex flex-col items-center justify-center px-4 py-2">
-                    <p className="text-[5px] text-gray-400 uppercase tracking-widest mb-1">This certificate is awarded to</p>
-                    <p className="text-[11px] font-black text-gray-900 text-center leading-tight mb-1 truncate w-full text-center px-2" style={{ color: selectedTheme.accent }}>
-                      {formData.name || 'Recipient Name'}
-                    </p>
-                    <p className="text-[6px] text-gray-500 text-center mb-2">
-                      {formData.designation || 'Designation'} {formData.department && formData.department !== 'General' ? `· ${formData.department}` : ''}
-                    </p>
-                    {formData.details && (
-                      <p className="text-[5px] text-gray-400 text-center italic line-clamp-2 px-4">{formData.details}</p>
-                    )}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="px-4 pb-2 flex items-end justify-between">
-                    <div>
-                      <div className="w-10 border-t" style={{ borderColor: selectedTheme.primary }} />
-                      <p className="text-[5px] text-gray-400 mt-0.5">Authorised Signatory</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[5px] font-mono font-bold" style={{ color: selectedTheme.primary }}>{formData.certificateId || 'TC-XXXXXX'}</p>
-                      <p className="text-[4px] text-gray-400">{formData.issueDate ? new Date(formData.issueDate).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : 'Issue Date'}</p>
-                    </div>
-                  </div>
-
-                  {/* Bottom accent */}
-                  <div className="h-1.5 w-full" style={{ backgroundColor: selectedTheme.accent }} />
+              <div className="hidden lg:flex flex-col items-center bg-gray-50 border-l border-gray-100 p-6 w-[380px] shrink-0 overflow-hidden">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Live Preview</p>
+                
+                {/* Scaled-down version of the actual component for perfect visual parity */}
+                <div className="relative shadow-2xl rounded-lg overflow-hidden" style={{ width: '800px', height: '580px', transform: 'scale(0.42)', transformOrigin: 'top center', marginBottom: '-336px' }}>
+                   <CertificateTemplate formData={formData} selectedTheme={selectedTheme} id="live-preview-main" />
                 </div>
 
                 <p className="text-[9px] text-gray-400 mt-4 text-center font-medium">
                   Theme: <span className="font-bold" style={{ color: selectedTheme.primary }}>{selectedTheme.name}</span>
                 </p>
                 <p className="text-[8px] text-gray-300 mt-1 text-center">Updates live as you type ✦</p>
+              </div>
+
+              {/* Hidden capture template (user preference) */}
+              <div id="certificate-template-hidden" style={{ display: 'none', position: 'fixed', top: 0, left: 0, zIndex: -100 }}>
+                  <CertificateTemplate formData={formData} selectedTheme={selectedTheme} id="cert-hidden-el" />
               </div>
 
             </>

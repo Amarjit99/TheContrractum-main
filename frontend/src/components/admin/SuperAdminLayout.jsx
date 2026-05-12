@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -21,6 +21,7 @@ const MENU_ITEMS = [
   { id: 'contracts', to: '/admin/contracts', icon: <FileText size={20} />, label: 'Contracts' },
   { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
   { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
+  { id: 'certificates', to: '/admin/certificates', icon: <Award size={20} />, label: 'Certificates' },
   { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
 

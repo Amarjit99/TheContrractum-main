@@ -41,7 +41,7 @@ export default function WhyChooseBanking() {
                         The digitalization of banking is far past its infancy. Today, the challenge isn't merely offering a mobile app; it's about deeply integrating decentralized ledgers with legacy mainframes, orchestrating real-time AI fraud detection on petabytes of transaction data, and achieving zero-downtime microservice architectures during massive market fluctuations.
                     </p>
                     <p className="text-lg text-slate-700 leading-loose mb-12">
-                        At The Contrractum, our FinTech division operates under a strict "Security-First, Scalability-Always" doctrine. We do not bolt security onto our applications post-development. Every API, every database schema, and every user interface is cryptographically hardened from the first line of code.
+                        At The Contractum, our FinTech division operates under a strict "Security-First, Scalability-Always" doctrine. We do not bolt security onto our applications post-development. Every API, every database schema, and every user interface is cryptographically hardened from the first line of code.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">

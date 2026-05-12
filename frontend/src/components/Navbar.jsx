@@ -174,13 +174,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500 print:hidden">
+    <nav className="sticky top-0 z-[100] bg-white shadow-2xl border-b-2 border-gradient-to-r from-red-500 to-pink-500 print:hidden">
       <div className="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-11 xl:px-14">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Company Name */}
           <div className="shrink-0 flex items-center mr-6 lg:mr-12 xl:mr-16">
             <Link to="/" className="flex items-center group transform hover:scale-[1.15] transition-all duration-500 shrink-0">
-              <img src={logo} alt="The Contractum Logo" className="h-[52px] sm:h-[64px] lg:h-[76px] xl:h-[88px] w-auto object-contain transform scale-[1.45] origin-left" />
+              <img src={logo} alt="The Contractum Logo" className="h-[48px] sm:h-[64px] lg:h-[76px] xl:h-[88px] w-auto object-contain transform scale-[1.2] sm:scale-[1.45] origin-left" />
             </Link>
           </div>
 
@@ -213,8 +213,8 @@ export default function Navbar() {
 
                 {/* Enhanced Mega Menu Dropdown */}
                 {item.submenu && activeDropdown === index && (
-                  <div
-                    className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn"
+                    <div
+                      className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn z-[110]"
                     onMouseEnter={handleDropdownEnter}
                     onMouseLeave={handleDropdownLeave}
                   >
@@ -278,8 +278,8 @@ export default function Navbar() {
                 {profileOpen && (
                   <>
                     {/* Backdrop to close */}
-                    <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fade-in">
+                    <div className="fixed inset-0 z-[105]" onClick={() => setProfileOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-[110] overflow-hidden animate-fade-in">
                       {/* User Info Header */}
                       <div className="px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white">
                         <p className="font-bold text-sm truncate">{user.name}</p>

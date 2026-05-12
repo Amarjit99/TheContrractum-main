@@ -38,7 +38,7 @@ export default function EducationResults() {
                     <h2 className="text-4xl lg:text-5xl font-black text-slate-900 mb-10 border-b-4 border-indigo-200 inline-block pb-4">Real Outcomes, Real Numbers</h2>
 
                     <p className="text-lg text-slate-700 leading-loose mb-8">
-                        The true measure of any EdTech deployment isn't how sleek the user interface is, but rather how effectively it improves student retention, accelerates comprehension, and unburdens administrative staff. At The Contrractum, our implementations are rigorously audited against baseline historical performance data.
+                        The true measure of any EdTech deployment isn't how sleek the user interface is, but rather how effectively it improves student retention, accelerates comprehension, and unburdens administrative staff. At The Contractum, our implementations are rigorously audited against baseline historical performance data.
                     </p>
                     <p className="text-lg text-slate-700 leading-loose mb-12">
                         Over a standard 36-month tracking period post-deployment, partner universities have seen an average 18% reduction in first-year drop-out rates. This is achieved by utilizing predictive modeling that identifies struggling students weeks before midterm examinations, allowing early intervention teams to proactively engage.
