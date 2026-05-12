@@ -1113,6 +1113,7 @@ export default function AdminCertificates() {
 
             {/* Form Section */}
             {!previewMode ? (
+              <>
               <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
                 <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
                   <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingId ? 'Edit Certificate' : 'Add New Certificate'}</h2>
@@ -1242,6 +1243,66 @@ export default function AdminCertificates() {
                   </div>
                 </form>
               </div>
+
+              {/* Live CSS Mini-Preview Panel (right side, visible only on md+) */}
+              <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 border-l border-gray-100 p-8 w-[340px] shrink-0">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-5">Live Preview</p>
+                {/* A4 Landscape mini-mockup */}
+                <div
+                  className="w-full aspect-[297/210] rounded-xl shadow-2xl overflow-hidden relative flex flex-col border border-gray-200"
+                  style={{ background: selectedTheme.bg }}
+                >
+                  {/* Top accent bar */}
+                  <div className="h-2 w-full" style={{ backgroundColor: selectedTheme.primary }} />
+
+                  {/* Header band */}
+                  <div className="px-4 pt-3 pb-2 flex items-center justify-between" style={{ backgroundColor: selectedTheme.primary + '18' }}>
+                    <div>
+                      <p className="text-[6px] font-black uppercase tracking-widest" style={{ color: selectedTheme.primary }}>The Contractum</p>
+                      <p className="text-[8px] font-black text-gray-700 uppercase tracking-wider mt-0.5">Certificate of {formData.type || 'Excellence'}</p>
+                    </div>
+                    <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center" style={{ borderColor: selectedTheme.primary }}>
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedTheme.primary }} />
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="flex-1 flex flex-col items-center justify-center px-4 py-2">
+                    <p className="text-[5px] text-gray-400 uppercase tracking-widest mb-1">This certificate is awarded to</p>
+                    <p className="text-[11px] font-black text-gray-900 text-center leading-tight mb-1 truncate w-full text-center px-2" style={{ color: selectedTheme.accent }}>
+                      {formData.name || 'Recipient Name'}
+                    </p>
+                    <p className="text-[6px] text-gray-500 text-center mb-2">
+                      {formData.designation || 'Designation'} {formData.department && formData.department !== 'General' ? `· ${formData.department}` : ''}
+                    </p>
+                    {formData.details && (
+                      <p className="text-[5px] text-gray-400 text-center italic line-clamp-2 px-4">{formData.details}</p>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-4 pb-2 flex items-end justify-between">
+                    <div>
+                      <div className="w-10 border-t" style={{ borderColor: selectedTheme.primary }} />
+                      <p className="text-[5px] text-gray-400 mt-0.5">Authorised Signatory</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[5px] font-mono font-bold" style={{ color: selectedTheme.primary }}>{formData.certificateId || 'TC-XXXXXX'}</p>
+                      <p className="text-[4px] text-gray-400">{formData.issueDate ? new Date(formData.issueDate).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : 'Issue Date'}</p>
+                    </div>
+                  </div>
+
+                  {/* Bottom accent */}
+                  <div className="h-1.5 w-full" style={{ backgroundColor: selectedTheme.accent }} />
+                </div>
+
+                <p className="text-[9px] text-gray-400 mt-4 text-center font-medium">
+                  Theme: <span className="font-bold" style={{ color: selectedTheme.primary }}>{selectedTheme.name}</span>
+                </p>
+                <p className="text-[8px] text-gray-300 mt-1 text-center">Updates live as you type ✦</p>
+              </div>
+
+            </>
             ) : (
               /* Preview & Template Generation Section */
               <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 overflow-y-auto relative min-h-0">
