@@ -15,7 +15,7 @@ import {
   Send
 } from 'lucide-react';
 
-export default function MRASservies() {
+export default function MRASservices() {
   const servicesList = [
     { icon: BarChart4, title: "Market Research & Analysis", id: "A" },
     { icon: TrendingUp, title: "Industry Trend Monitoring", id: "B" },

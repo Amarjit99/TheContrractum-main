@@ -14,7 +14,8 @@ const certificateSchema = new mongoose.Schema({
   designation: { type: String },
   department: { type: String },
   details: { type: String },
-  recipientEmail: { type: String }
+  recipientEmail: { type: String },
+  issuedBy: { type: String, default: 'The Contractum' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Certificate', certificateSchema);

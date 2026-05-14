@@ -10,9 +10,9 @@ import 'jspdf-autotable';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const COLORS = [
-  '#1e5cdc', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', 
-  '#22c55e', '#84cc16', '#eab308', '#f59e0b', '#f97316', 
-  '#ef4444', '#f43f5e', '#ec4899', '#d946ef', '#a855f7', 
+  '#1e5cdc', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981',
+  '#22c55e', '#84cc16', '#eab308', '#f59e0b', '#f97316',
+  '#ef4444', '#f43f5e', '#ec4899', '#d946ef', '#a855f7',
   '#8b5cf6', '#6366f1', '#475569', '#334155', '#18181b'
 ];
 
@@ -31,9 +31,7 @@ const DEPARTMENTS_BY_CATEGORY = {
   Management: ['General', 'Operations', 'Administration', 'Business Development'],
   Guest: ['General', 'Client Visit', 'Meeting'],
   Vendor: ['General', 'IT Services', 'Facility Management', 'Catering', 'Security', 'Transport', 'Maintenance', 'Supply Chain', 'Printing & Stationery', 'Cleaning Services', 'Electrical'],
-  Venders: ['General', 'IT Services', 'Facility Management', 'Catering', 'Security', 'Transport', 'Maintenance', 'Supply Chain', 'Printing & Stationery', 'Cleaning Services', 'Electrical'],
   Visitor: ['General', 'Client Visit', 'Government', 'Audit', 'Interview', 'Meeting', 'Event', 'Delivery'],
-  Vissitors: ['General', 'Client Visit', 'Government', 'Audit', 'Interview', 'Meeting', 'Event', 'Delivery'],
   Contractor: ['General', 'IT', 'Civil', 'Electrical', 'Mechanical', 'Construction', 'Plumbing', 'HVAC', 'Interior Design', 'Landscaping', 'Security Systems'],
   Others: ['General', 'Temporary Staff', 'Freelancer', 'Partner', 'Board Member', 'Advisor', 'Volunteer']
 };
@@ -151,30 +149,7 @@ const DESIGNATIONS_MAPPING = {
     'Cleaning Services': ['Cleaning Supervisor', 'Housekeeping Staff'],
     Electrical: ['Electrical Contractor', 'Senior Electrician']
   },
-  Venders: {
-    General: ['Vendor', 'Service Provider', 'External Partner', 'Supplier'],
-    'IT Services': ['System Consultant', 'Network Technician', 'Software Vendor'],
-    'Facility Management': ['Facility Supervisor', 'Maintenance Staff'],
-    Catering: ['Catering Manager', 'Head Chef', 'Service Staff'],
-    Security: ['Security Head', 'Security Guard', 'CCTV Operator'],
-    Transport: ['Fleet Supervisor', 'Driver', 'Transport Coordinator'],
-    Maintenance: ['Electrician', 'Plumber', 'HVAC Technician', 'Technician'],
-    'Supply Chain': ['Supplier Representative', 'Logistics Agent'],
-    'Printing & Stationery': ['Printing In-charge', 'Delivery Agent'],
-    'Cleaning Services': ['Cleaning Supervisor', 'Housekeeping Staff'],
-    Electrical: ['Electrical Contractor', 'Senior Electrician']
-  },
   Visitor: {
-    General: ['Guest', 'Personal Visit'],
-    'Client Visit': ['Client Representative', 'Potential Partner'],
-    Government: ['Govt Official', 'Inspector', 'Regulatory Officer'],
-    Audit: ['External Auditor', 'Financial Auditor', 'Compliance Auditor'],
-    Interview: ['Candidate', 'Interviewee'],
-    Meeting: ['Meeting Participant', 'Vendor Representative'],
-    Event: ['Guest Speaker', 'Attendee', 'Organizer'],
-    Delivery: ['Delivery Person', 'Courier Agent']
-  },
-  Vissitors: {
     General: ['Guest', 'Personal Visit'],
     'Client Visit': ['Client Representative', 'Potential Partner'],
     Government: ['Govt Official', 'Inspector', 'Regulatory Officer'],
@@ -262,9 +237,7 @@ const VALIDITY_MAP = {
   Management: 36,
   Guest: 1,
   Vendor: 12,
-  Venders: 12,
   Visitor: 1,
-  Vissitors: 1,
   Contractor: 6,
   Others: 12
 };
@@ -283,9 +256,7 @@ const PREFIX_MAP = {
   Management: 'MGT',
   Guest: 'GST',
   Vendor: 'VEN',
-  Venders: 'VEN',
   Visitor: 'VIS',
-  Vissitors: 'VIS',
   Contractor: 'CON',
   Others: 'OTH'
 };
@@ -332,9 +303,9 @@ async function generateCardCanvas(data) {
   ctx.fillStyle = '#ffffff';
   roundRect(ctx, 0, 0, W, H, 28);
   ctx.fill();
-  
+
   // (Watermark removed from here to be drawn at the end for better clarity)
-  
+
   ctx.save();
   roundRect(ctx, 0, 0, W, H, 28);
   ctx.clip();
@@ -514,7 +485,7 @@ async function generateCardCanvas(data) {
   const sigY = H - 180;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#1f2937';
-  
+
   // HR Signature
   ctx.font = 'italic 20px Times, serif';
   ctx.fillText('Authorized HR', 120, sigY);
@@ -578,6 +549,14 @@ export default function AdminIdCards() {
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
   const cardRef = useRef(null);
 
+  // Helper to get the admin's display name for "Issued By"
+  const getAdminDisplayName = () => {
+    if (!admin) return 'The Contractum';
+    const name = admin.name || admin.email || 'Admin';
+    const role = admin.role === 'super-admin' ? 'Super Admin' : admin.role === 'admin' ? 'Admin' : admin.role || '';
+    return role ? `${name} (${role})` : name;
+  };
+
   // Form State
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -590,12 +569,21 @@ export default function AdminIdCards() {
     email: '',
     photo: '', // base64
     validUntil: '',
-    cardColor: '#1e5cdc'
+    cardColor: '#1e5cdc',
+    issuedBy: ''
   });
 
   useEffect(() => {
     fetchIdCards();
   }, []);
+
+  // Auto-set "Issued By" with the logged-in admin's name
+  useEffect(() => {
+    if (admin && !formData.issuedBy) {
+      setFormData(prev => ({ ...prev, issuedBy: getAdminDisplayName() }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin]);
 
   const fetchIdCards = async () => {
     setLoading(true);
@@ -604,7 +592,7 @@ export default function AdminIdCards() {
         fetch(`${API}/api/id-cards`, { headers: { Authorization: `Bearer ${admin?.token}` } }),
         fetch(`${API}/api/id-cards/logs/all`, { headers: { Authorization: `Bearer ${admin?.token}` } })
       ]);
-      
+
       if (cardsRes.ok) {
         const data = await cardsRes.json();
         setIdCards(Array.isArray(data) ? data : []);
@@ -668,15 +656,15 @@ export default function AdminIdCards() {
         // Tracker to avoid ID collisions during batch
         const tracker = {};
         CATEGORIES.forEach(cat => {
-            const prefix = PREFIX_MAP[cat] || 'OTH';
-            const year = new Date().getFullYear();
-            const existingSeqs = idCards
-              .filter(c => c.category === cat && c.employeeId.startsWith(`${prefix}${year}`))
-              .map(c => {
-                const seqPart = c.employeeId.slice(-3);
-                return parseInt(seqPart) || 0;
-              });
-            tracker[cat] = existingSeqs.length > 0 ? Math.max(...existingSeqs) + 1 : 1;
+          const prefix = PREFIX_MAP[cat] || 'OTH';
+          const year = new Date().getFullYear();
+          const existingSeqs = idCards
+            .filter(c => c.category === cat && c.employeeId.startsWith(`${prefix}${year}`))
+            .map(c => {
+              const seqPart = c.employeeId.slice(-3);
+              return parseInt(seqPart) || 0;
+            });
+          tracker[cat] = existingSeqs.length > 0 ? Math.max(...existingSeqs) + 1 : 1;
         });
 
         const onboardingData = rows.map(row => {
@@ -687,7 +675,7 @@ export default function AdminIdCards() {
           const deptCode = dept.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 3);
           const idPrefix = `${prefix}${year}${deptCode}`;
           const employeeId = `${idPrefix}${String(tracker[cat]++).padStart(3, '0')}`;
-          
+
           return {
             employeeId,
             name: row.Name || row.full_name,
@@ -706,7 +694,7 @@ export default function AdminIdCards() {
 
         const res = await fetch(`${API}/api/id-cards/bulk`, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${admin?.token}`
           },
@@ -747,9 +735,9 @@ export default function AdminIdCards() {
   }, [formData.category]);
 
   const filteredCards = idCards.filter(c => {
-    const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) || 
-                         c.employeeId.toLowerCase().includes(search.toLowerCase());
-    
+    const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.employeeId.toLowerCase().includes(search.toLowerCase());
+
     const issueDate = new Date(c.issueDate || c.createdAt);
     const matchesYear = filterYear ? issueDate.getFullYear().toString() === filterYear : true;
     const matchesMonth = filterMonth ? (issueDate.getMonth() + 1).toString() === filterMonth : true;
@@ -809,11 +797,11 @@ export default function AdminIdCards() {
   const exportToCSV = () => {
     const headers = ['Employee ID', 'Name', 'Category', 'Department', 'Designation', 'Status', 'Valid Until', 'Generated At'];
     const rows = filteredCards.map(c => [
-      c.employeeId, c.name, c.category, c.department, c.designation, c.status, 
-      new Date(c.validUntil).toLocaleDateString(), 
+      c.employeeId, c.name, c.category, c.department, c.designation, c.status,
+      new Date(c.validUntil).toLocaleDateString(),
       new Date(c.issueDate || c.createdAt).toLocaleString()
     ]);
-    
+
     let csvContent = headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
@@ -827,7 +815,7 @@ export default function AdminIdCards() {
     doc.text("ID Cards Generation Report", 14, 15);
     doc.setFontSize(10);
     doc.text(`Total Records: ${filteredCards.length} | Generated: ${new Date().toLocaleString()}`, 14, 22);
-    
+
     const tableData = filteredCards.map(c => [
       c.employeeId, c.name, c.category, c.department, c.status, new Date(c.validUntil).toLocaleDateString()
     ]);
@@ -843,7 +831,7 @@ export default function AdminIdCards() {
   const exportCardsAsPDF = async (specificCards = null) => {
     setDownloading(true);
     const cardsToExport = Array.isArray(specificCards) ? specificCards : filteredCards;
-    
+
     if (cardsToExport.length === 0) {
       alert('No cards available to export.');
       setDownloading(false);
@@ -852,16 +840,16 @@ export default function AdminIdCards() {
 
     try {
       const doc = new jsPDF('p', 'mm', [54, 85.6]); // Standard CR80 ID Card size (Portrait)
-      
+
       for (let i = 0; i < cardsToExport.length; i++) {
         const card = cardsToExport[i];
         if (i > 0) doc.addPage([54, 85.6], 'p');
-        
+
         const canvas = await generateCardCanvas(card);
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
         doc.addImage(imgData, 'JPEG', 0, 0, 54, 85.6);
       }
-      
+
       doc.save(`Generated_ID_Cards_${new Date().getTime()}.pdf`);
     } catch (err) {
       console.error('Bulk PDF failed:', err);
@@ -949,7 +937,7 @@ export default function AdminIdCards() {
     if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected records?`)) return;
     try {
       setLoading(true);
-      const deletePromises = selectedIds.map(id => 
+      const deletePromises = selectedIds.map(id =>
         fetch(`${API}/api/id-cards/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${admin?.token}` }
@@ -978,7 +966,7 @@ export default function AdminIdCards() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin?.token}` },
         body: JSON.stringify({ validUntil: newValidDate.toISOString().split('T')[0] })
       });
-      
+
       if (res.ok) {
         alert(`${card.name}'s ID has been renewed successfully!`);
         fetchIdCards();
@@ -1012,15 +1000,15 @@ export default function AdminIdCards() {
   const handleSubmit = async () => {
     try {
       const payload = { ...formData, status: 'Generated' };
-      
+
       const url = editingId ? `${API}/api/id-cards/${editingId}` : `${API}/api/id-cards`;
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
         method: method,
-        headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${admin?.token}` 
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`
         },
         body: JSON.stringify(payload)
       });
@@ -1099,7 +1087,7 @@ export default function AdminIdCards() {
 
     const verifyUrl = `${window.location.origin}/company/employee-id/${formData.employeeId}`;
     const shareText = `Official ID Card for ${formData.name}\nID: ${formData.employeeId}\nRole: ${formData.designation}\nVerify at: ${verifyUrl}`;
-    navigator.clipboard.writeText(shareText).catch(() => {});
+    navigator.clipboard.writeText(shareText).catch(() => { });
     alert('The ID Card image has been downloaded. Official verification link and details copied to clipboard — paste them in your message!');
   };
 
@@ -1138,7 +1126,7 @@ export default function AdminIdCards() {
             const year = new Date().getFullYear();
             const deptCode = department.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 3);
             const idPrefix = `${prefix}${year}${deptCode}`;
-            
+
             // Track sequence for this specific prefix
             if (!prefixCounters[idPrefix]) {
               const samePrefixIds = idCards.map(c => c.employeeId).filter(id => id.startsWith(idPrefix));
@@ -1155,8 +1143,8 @@ export default function AdminIdCards() {
             vDate.setMonth(vDate.getMonth() + months);
 
             const payload = {
-              employeeId, name, category, department, designation, email, 
-              contactNumber, bloodGroup, 
+              employeeId, name, category, department, designation, email,
+              contactNumber, bloodGroup,
               validUntil: vDate.toISOString().split('T')[0],
               cardColor: DEPARTMENT_COLORS[department] || '#1e5cdc',
               status: 'Generated',
@@ -1199,7 +1187,7 @@ export default function AdminIdCards() {
       cardColor: card.cardColor || '#1e5cdc'
     });
     setEditingId(card._id);
-    
+
     // Generate preview image for existing card
     setLoading(true);
     try {
@@ -1230,10 +1218,10 @@ export default function AdminIdCards() {
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
+            <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search ID/Name..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white transition-all shadow-sm" 
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white transition-all shadow-sm"
             />
           </div>
           <input type="file" id="bulk-upload" className="hidden" accept=".xlsx, .xls, .csv" onChange={handleBulkUpload} />
@@ -1330,27 +1318,27 @@ export default function AdminIdCards() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
-          <select 
+          <select
             className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
           >
             <option value="">All Years</option>
-            {[...new Set(idCards.map(c => new Date(c.issueDate || c.createdAt).getFullYear()))].sort((a,b) => b-a).map(y => (
+            {[...new Set(idCards.map(c => new Date(c.issueDate || c.createdAt).getFullYear()))].sort((a, b) => b - a).map(y => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
-          <select 
+          <select
             className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
             value={filterMonth}
             onChange={(e) => setFilterMonth(e.target.value)}
           >
             <option value="">All Months</option>
-            {Array.from({length: 12}, (_, i) => i + 1).map(m => (
-              <option key={m} value={m}>{new Date(2000, m-1).toLocaleString('default', { month: 'long' })}</option>
+            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+              <option key={m} value={m}>{new Date(2000, m - 1).toLocaleString('default', { month: 'long' })}</option>
             ))}
           </select>
-          <select 
+          <select
             className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -1358,7 +1346,7 @@ export default function AdminIdCards() {
             <option value="">All Categories</option>
             {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
-          <select 
+          <select
             className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
             value={filterDepartment}
             onChange={(e) => setFilterDepartment(e.target.value)}
@@ -1386,19 +1374,19 @@ export default function AdminIdCards() {
             <span className="font-bold">{selectedIds.length} Records Selected</span>
           </div>
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => exportCardsAsPDF(idCards.filter(c => selectedIds.includes(c._id)))}
               className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
             >
               <Download size={16} /> Export Selected
             </button>
-            <button 
+            <button
               onClick={handleBulkDelete}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
             >
               <Trash2 size={16} /> Delete Selected
             </button>
-            <button 
+            <button
               onClick={() => setSelectedIds([])}
               className="px-3 py-2 text-white/70 hover:text-white transition-colors"
             >
@@ -1414,8 +1402,8 @@ export default function AdminIdCards() {
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
                 <th className="px-3 sm:px-6 py-3 sm:py-4">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={selectedIds.length === filteredCards.length && filteredCards.length > 0}
                     onChange={() => toggleSelectAll(filteredCards)}
                     className="w-4 h-4 rounded border-gray-300 text-[#1e5cdc] focus:ring-[#1e5cdc]"
@@ -1427,20 +1415,21 @@ export default function AdminIdCards() {
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm hidden sm:table-cell">Issue Date</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Valid Till</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm hidden sm:table-cell">Status</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm hidden lg:table-cell">Issued By</th>
                 <th className="text-right text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                 <tr><td colSpan="5" className="text-center py-8 text-gray-500">Loading data...</td></tr>
+                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading data...</td></tr>
               ) : filteredCards.length === 0 ? (
-                <tr><td colSpan="5" className="text-center py-8 text-gray-500">No ID Cards generated yet.</td></tr>
+                <tr><td colSpan="9" className="text-center py-8 text-gray-500">No ID Cards generated yet.</td></tr>
               ) : (
                 filteredCards.map(c => (
                   <tr key={c._id} className={`hover:bg-gray-50/80 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={selectedIds.includes(c._id)}
                         onChange={() => toggleSelect(c._id)}
                         className="w-4 h-4 rounded border-gray-300 text-[#1e5cdc] focus:ring-[#1e5cdc]"
@@ -1472,6 +1461,9 @@ export default function AdminIdCards() {
                         {c.status}
                       </span>
                     </td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 hidden lg:table-cell">
+                      <span className="text-xs font-bold text-gray-600">{c.issuedBy || 'The Contractum'}</span>
+                    </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5 sm:gap-2">
                         <button onClick={() => handleRenew(c)} className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-md transition-colors" title="Renew Validity"><RefreshCw size={16} className="sm:w-5 sm:h-5" /></button>
@@ -1493,305 +1485,309 @@ export default function AdminIdCards() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-[80vh] animate-in fade-in zoom-in duration-200">
-            
+
             {/* Form Section */}
             {!previewMode ? (
-            <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
+              <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
                 <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generate ID Card</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generate ID Card</h2>
+                  <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                     <X size={20} />
-                </button>
+                  </button>
                 </div>
-                
+
                 <form onSubmit={handlePreview} className="p-6 space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Employee ID *</label>
-                            <input readOnly type="text" value={formData.employeeId} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none bg-gray-50 uppercase font-mono text-gray-500 cursor-not-allowed" placeholder="Generating..." />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name *</label>
-                            <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="John Doe" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
-                            <select required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value, department: '', designation: ''})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
-                                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Department *</label>
-                            <select required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value, designation: ''})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
-                                <option value="">Select Department</option>
-                                {(DEPARTMENTS_BY_CATEGORY[formData.category] || []).map(dept => <option key={dept} value={dept}>{dept}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Designation *</label>
-                            <select 
-                                required 
-                                value={formData.designation} 
-                                onChange={e => setFormData({...formData, designation: e.target.value})} 
-                                className={`w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white ${!formData.department ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                disabled={!formData.department}
-                            >
-                                <option value="">{formData.department ? 'Select Designation' : 'Select Department First'}</option>
-                                {(DESIGNATIONS_MAPPING[formData.category]?.[formData.department] || []).map(des => (
-                                    <option key={des} value={des}>{des}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Blood Group</label>
-                            <select value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
-                                <option value="">Select Blood Group</option>
-                                {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Number *</label>
-                            <input required type="text" value={formData.contactNumber} onChange={e => setFormData({...formData, contactNumber: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+1 234 567 890" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Email *</label>
-                            <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="john@company.com" />
-                        </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Valid Until *</label>
-                            <input required type="date" value={formData.validUntil} onChange={e => setFormData({...formData, validUntil: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Employee ID *</label>
+                      <input readOnly type="text" value={formData.employeeId} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none bg-gray-50 uppercase font-mono text-gray-500 cursor-not-allowed" placeholder="Generating..." />
                     </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name *</label>
+                      <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="John Doe" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
+                      <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value, department: '', designation: '' })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                        {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Department *</label>
+                      <select required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value, designation: '' })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                        <option value="">Select Department</option>
+                        {(DEPARTMENTS_BY_CATEGORY[formData.category] || []).map(dept => <option key={dept} value={dept}>{dept}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Designation *</label>
+                      <select
+                        required
+                        value={formData.designation}
+                        onChange={e => setFormData({ ...formData, designation: e.target.value })}
+                        className={`w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white ${!formData.department ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={!formData.department}
+                      >
+                        <option value="">{formData.department ? 'Select Designation' : 'Select Department First'}</option>
+                        {(DESIGNATIONS_MAPPING[formData.category]?.[formData.department] || []).map(des => (
+                          <option key={des} value={des}>{des}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Blood Group</label>
+                      <select value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                        <option value="">Select Blood Group</option>
+                        {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Number *</label>
+                      <input required type="text" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+1 234 567 890" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Email *</label>
+                      <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="john@company.com" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Valid Until *</label>
+                      <input required type="date" value={formData.validUntil} onChange={e => setFormData({ ...formData, validUntil: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By</label>
+                      <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
+                    </div>
+                  </div>
 
-                    <div className="mt-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">ID Card Theme Color</label>
-                        <div className="flex flex-wrap gap-2 p-1">
-                            {COLORS.map(color => (
-                                <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => setFormData({...formData, cardColor: color})}
-                                    className={`w-8 h-8 rounded-full border-2 transition-all ${formData.cardColor === color ? 'border-gray-900 scale-110 shadow-md' : 'border-transparent hover:scale-105'}`}
-                                    style={{ backgroundColor: color }}
-                                    title={color}
-                                />
-                            ))}
-                        </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">ID Card Theme Color</label>
+                    <div className="flex flex-wrap gap-2 p-1">
+                      {COLORS.map(color => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, cardColor: color })}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${formData.cardColor === color ? 'border-gray-900 scale-110 shadow-md' : 'border-transparent hover:scale-105'}`}
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      ))}
                     </div>
+                  </div>
 
-                    <div className="mt-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Photo Upload *</label>
-                        <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
-                            {imagePreview ? (
-                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <Upload size={24} className="text-gray-400" />
-                            )}
-                            </div>
-                            <div className="flex-1">
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                onChange={handleFileChange}
-                                className="hidden" 
-                                id="id-photo-upload"
-                                required={!formData.photo}
-                            />
-                            <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2.5 sm:py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors block sm:inline-block text-center w-full sm:w-auto">
-                                Upload Face Photo
-                            </label>
-                            </div>
-                        </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Photo Upload *</label>
+                    <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <Upload size={24} className="text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                          id="id-photo-upload"
+                          required={!formData.photo}
+                        />
+                        <label htmlFor="id-photo-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2.5 sm:py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors block sm:inline-block text-center w-full sm:w-auto">
+                          Upload Face Photo
+                        </label>
+                      </div>
                     </div>
+                  </div>
 
-                    <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
-                        <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                        <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2">
-                            <IdCardIcon size={16} /> Preview Card
-                        </button>
-                    </div>
-                </form>
-            </div>
-            ) : (
-            <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
-                    <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
-                        <X size={20} />
+                  <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                    <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2">
+                      <IdCardIcon size={16} /> Preview Card
                     </button>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
+                <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
+                  <X size={20} />
+                </button>
 
-                    {success ? (
-                        /* ── SUCCESS STATE ── */
-                        <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
-                                                        <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
-                                <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
+                {success ? (
+                  /* ── SUCCESS STATE ── */
+                  <div className="flex flex-col items-center justify-center text-center w-full max-w-sm animate-in fade-in zoom-in-95 duration-300">
+                    <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
+                      <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
+                    </div>
+                    <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>
+                    <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br />You can now download or share the ID card.</p>
+
+                    {/* Generated card thumbnail (Hybrid Preview) */}
+                    <div className="w-[280px] h-[448px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 transition-all duration-500">
+                      {previewImageUrl ? (
+                        <img src={previewImageUrl} alt="ID Card Final" className="w-full h-full object-contain animate-in fade-in duration-500" />
+                      ) : (
+                        /* Classic Fallback Mockup */
+                        <div className="w-full h-full flex flex-col justify-between opacity-90 scale-95 transition-all duration-300">
+                          <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                            <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
+                            <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                              <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                            </svg>
+                          </div>
+                          <div className="flex flex-col items-center -mt-12 z-20">
+                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                            <span className="mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
+                          </div>
+                          <div className="flex-1 flex flex-col items-center pt-1 px-4 text-center">
+                            <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                            <p className="font-semibold text-[10px] mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                            <p className="text-gray-500 text-[9px] font-medium">{formData.department}</p>
+                            <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 p-2 rounded-lg border border-gray-100">
+                              <div className="flex justify-between border-b border-gray-200 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span></div>
+                              {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
+                              <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
                             </div>
-                            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>
-                            <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br/>You can now download or share the ID card.</p>
-
-                            {/* Generated card thumbnail (Hybrid Preview) */}
-                            <div className="w-[280px] h-[448px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 transition-all duration-500">
-                                {previewImageUrl ? (
-                                    <img src={previewImageUrl} alt="ID Card Final" className="w-full h-full object-contain animate-in fade-in duration-500" />
-                                ) : (
-                                    /* Classic Fallback Mockup */
-                                    <div className="w-full h-full flex flex-col justify-between opacity-90 scale-95 transition-all duration-300">
-                                        <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
-                                            <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
-                                            <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
-                                                <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                                            </svg>
-                                        </div>
-                                        <div className="flex flex-col items-center -mt-12 z-20">
-                                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                                            <span className="mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
-                                        </div>
-                                        <div className="flex-1 flex flex-col items-center pt-1 px-4 text-center">
-                                            <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
-                                            <p className="font-semibold text-[10px] mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
-                                            <p className="text-gray-500 text-[9px] font-medium">{formData.department}</p>
-                                            <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 p-2 rounded-lg border border-gray-100">
-                                                <div className="flex justify-between border-b border-gray-200 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span></div>
-                                                {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
-                                                <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
-                                            </div>
-                                        </div>
-                                        <div className="h-4 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="flex flex-col gap-3 w-full print:hidden">
-                                <div className="flex gap-3 w-full">
-                                    <button onClick={handleDownload} disabled={downloading} className={`flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 ${downloading ? 'opacity-70 cursor-not-allowed' : ''}`}>
-                                        {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
-                                    </button>
-                                    <button onClick={() => handlePrintCard(formData)} className="flex-1 py-3 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2">
-                                        <FileText size={18} /> Print
-                                    </button>
-                                </div>
-                                
-                                <div className="flex gap-3 w-full">
-                                    <button onClick={handleShare} disabled={sharing} className={`flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2 ${sharing ? 'opacity-70 cursor-not-allowed' : ''}`}>
-                                        {sharing ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} Share
-                                    </button>
-                                    <button onClick={() => window.open(`/company/employee-id/${formData.employeeId}`, '_blank')} className="flex-1 py-3 text-sm font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition-colors shadow-sm flex items-center justify-center gap-2">
-                                        <Eye size={18} /> Verify Link
-                                    </button>
-                                </div>
-                                
-                                <div className="flex gap-3 w-full">
-                                    <button onClick={() => { setSuccess(false); setPreviewMode(false); }} className="flex-1 py-3 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100">
-                                        <Edit2 size={18} /> Edit Details
-                                    </button>
-                                    <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
-                                        <X size={16} /> Close
-                                    </button>
-                                </div>
-
-                                <div className="mt-4 pt-4 border-t border-gray-100 w-full">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Quick Share</p>
-                                    <div className="flex justify-center gap-4">
-                                        <a 
-                                            href={`https://wa.me/?text=${encodeURIComponent(`ID Card for ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDownload it here: ${window.location.origin}`)}`} 
-                                            target="_blank" rel="noopener noreferrer"
-                                            className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
-                                            title="Share on WhatsApp"
-                                        >
-                                            <MessageCircle size={20} />
-                                        </a>
-                                        <a 
-                                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(`Generated ID Card for ${formData.name}`)}`} 
-                                            target="_blank" rel="noopener noreferrer"
-                                            className="w-10 h-10 rounded-full bg-[#0077B5] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
-                                            title="Share on LinkedIn"
-                                        >
-                                            <Linkedin size={20} />
-                                        </a>
-                                        <a 
-                                            href={`mailto:?subject=ID Card Generated - ${formData.name}&body=The ID card for ${formData.name} (${formData.employeeId}) has been generated.`}
-                                            className="w-10 h-10 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
-                                            title="Share via Email"
-                                        >
-                                            <Mail size={20} />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                          </div>
+                          <div className="h-4 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
                         </div>
-                    ) : (
-                        /* ── PREVIEW STATE ── */
-                        <div className="flex flex-col items-center w-full max-w-sm mt-4">
-                            <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
-                                <IdCardIcon /> Card Preview
-                            </h3>
-                            
-                            {/* THE ID CARD DESIGN (Hybrid Preview) */}
-                            <div className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-2 transition-all duration-500">
-                                {previewImageUrl ? (
-                                    <img src={previewImageUrl} alt="ID Card Preview" className="w-full h-full object-contain animate-in fade-in duration-500" />
-                                ) : (
-                                    /* Classic Fallback Mockup */
-                                    <div className="w-full h-full flex flex-col justify-between transition-all duration-300">
-                                        <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
-                                            <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
-                                                The Contractum
-                                            </div>
-                                {/* Wave SVG overlay maybe */}
-                                            <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
-                                                <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-                                            </svg>
-                                        </div>
+                      )}
+                    </div>
 
-                                {/* Photo & Category */}
-                                        <div className="flex flex-col items-center -mt-16 z-20">
-                                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
-                                            <span className="mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>
-                                                {formData.category}
-                                            </span>
-                                        </div>
+                    <div className="flex flex-col gap-3 w-full print:hidden">
+                      <div className="flex gap-3 w-full">
+                        <button onClick={handleDownload} disabled={downloading} className={`flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 ${downloading ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                          {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
+                        </button>
+                        <button onClick={() => handlePrintCard(formData)} className="flex-1 py-3 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2">
+                          <FileText size={18} /> Print
+                        </button>
+                      </div>
 
-                                {/* Details */}
-                                        <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
-                                            <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
-                                            <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
-                                            <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
-                                            <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                                <div className="flex justify-between border-b border-gray-200 pb-1">
-                                                    <span className="text-gray-500 font-semibold">ID No.</span>
-                                                    <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
-                                                </div>
-                                                {formData.bloodGroup && (
-                                                <div className="flex justify-between border-b border-gray-200 py-1">
-                                                    <span className="text-gray-500 font-semibold">Blood Group</span>
-                                                    <span className="font-bold text-red-600">{formData.bloodGroup}</span>
-                                                </div>
-                                                )}
-                                                <div className="flex justify-between pt-1">
-                                                    <span className="text-gray-500 font-semibold">Valid Till</span>
-                                                    <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                
-                                {/* Footer Bar */}
-                                        <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
-                                    </div>
-                                )}
-                            </div>
+                      <div className="flex gap-3 w-full">
+                        <button onClick={handleShare} disabled={sharing} className={`flex-1 py-3 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-lg flex items-center justify-center gap-2 ${sharing ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                          {sharing ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />} Share
+                        </button>
+                        <button onClick={() => window.open(`/company/employee-id/${formData.employeeId}`, '_blank')} className="flex-1 py-3 text-sm font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition-colors shadow-sm flex items-center justify-center gap-2">
+                          <Eye size={18} /> Verify Link
+                        </button>
+                      </div>
 
-                            <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
-                                <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                                    Edit Details
-                                </button>
-                                <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
-                                    <CheckCircle size={18} /> Confirm & Generate
-                                </button>
-                            </div>
+                      <div className="flex gap-3 w-full">
+                        <button onClick={() => { setSuccess(false); setPreviewMode(false); }} className="flex-1 py-3 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100">
+                          <Edit2 size={18} /> Edit Details
+                        </button>
+                        <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                          <X size={16} /> Close
+                        </button>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-gray-100 w-full">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Quick Share</p>
+                        <div className="flex justify-center gap-4">
+                          <a
+                            href={`https://wa.me/?text=${encodeURIComponent(`ID Card for ${formData.name}\nID: ${formData.employeeId}\nDesignation: ${formData.designation}\nDownload it here: ${window.location.origin}`)}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                            title="Share on WhatsApp"
+                          >
+                            <MessageCircle size={20} />
+                          </a>
+                          <a
+                            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin)}&summary=${encodeURIComponent(`Generated ID Card for ${formData.name}`)}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="w-10 h-10 rounded-full bg-[#0077B5] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                            title="Share on LinkedIn"
+                          >
+                            <Linkedin size={20} />
+                          </a>
+                          <a
+                            href={`mailto:?subject=ID Card Generated - ${formData.name}&body=The ID card for ${formData.name} (${formData.employeeId}) has been generated.`}
+                            className="w-10 h-10 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+                            title="Share via Email"
+                          >
+                            <Mail size={20} />
+                          </a>
                         </div>
-                    )}
-                </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── PREVIEW STATE ── */
+                  <div className="flex flex-col items-center w-full max-w-sm mt-4">
+                    <h3 className="text-lg text-gray-500 font-medium mb-6 uppercase tracking-widest flex items-center gap-2">
+                      <IdCardIcon /> Card Preview
+                    </h3>
+
+                    {/* THE ID CARD DESIGN (Hybrid Preview) */}
+                    <div className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-2 transition-all duration-500">
+                      {previewImageUrl ? (
+                        <img src={previewImageUrl} alt="ID Card Preview" className="w-full h-full object-contain animate-in fade-in duration-500" />
+                      ) : (
+                        /* Classic Fallback Mockup */
+                        <div className="w-full h-full flex flex-col justify-between transition-all duration-300">
+                          <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
+                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                            <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
+                              The Contractum
+                            </div>
+                            {/* Wave SVG overlay maybe */}
+                            <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
+                              <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                            </svg>
+                          </div>
+
+                          {/* Photo & Category */}
+                          <div className="flex flex-col items-center -mt-16 z-20">
+                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                            <span className="mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>
+                              {formData.category}
+                            </span>
+                          </div>
+
+                          {/* Details */}
+                          <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
+                            <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                            <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
+                            <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
+                            <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
+                              <div className="flex justify-between border-b border-gray-200 pb-1">
+                                <span className="text-gray-500 font-semibold">ID No.</span>
+                                <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                              </div>
+                              {formData.bloodGroup && (
+                                <div className="flex justify-between border-b border-gray-200 py-1">
+                                  <span className="text-gray-500 font-semibold">Blood Group</span>
+                                  <span className="font-bold text-red-600">{formData.bloodGroup}</span>
+                                </div>
+                              )}
+                              <div className="flex justify-between pt-1">
+                                <span className="text-gray-500 font-semibold">Valid Till</span>
+                                <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Footer Bar */}
+                          <div className="h-6 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
+                      <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                        Edit Details
+                      </button>
+                      <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">
+                        <CheckCircle size={18} /> Confirm & Generate
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

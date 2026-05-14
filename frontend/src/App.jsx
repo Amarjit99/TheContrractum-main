@@ -32,6 +32,7 @@ import AdminContracts from './pages/admin/AdminContracts';
 import AdminCertificates from './pages/admin/AdminCertificates';
 import AdminEvents from './pages/admin/AdminEvents';
 import VerifyCertificate from './pages/VerifyCertificate';
+import CertificateView from './pages/CertificateView';
 import ContractEditor from './pages/admin/ContractEditor';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
@@ -81,7 +82,7 @@ import BecomeAdvisor from './pages/team/BecomeAdvisor';
 import Csit from './pages/solutions/business/Csit';
 import Gissolution from './pages/solutions/business/Gis';
 import SolutionDownload from './pages/solutions/SolutionDownload';
-import MRASservies from './pages/solutions/business/Mras';
+import MRASservices from './pages/solutions/business/Mras';
 import ECommerceSolutions from './pages/solutions/digital/ECommerce';
 import HrTech from './pages/solutions/digital/HrTech';
 import BPO from './pages/solutions/digital/Bpo';
@@ -177,6 +178,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/verify/:id" element={<VerifyCertificate />} />
+                <Route path="/certificates/:id" element={<CertificateView />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
@@ -264,7 +266,7 @@ export default function App() {
                 <Route path="/solutions/business/gis" element={<Gissolution />} />
                 <Route path="/solutions/download" element={<SolutionDownload />} />
                 <Route path="/solutions/download/" element={<SolutionDownload />} />
-                <Route path="/solutions/business/Mras" element={<MRASservies />} />
+                <Route path="/solutions/business/Mras" element={<MRASservices />} />
                 <Route path="/solutions/digital/digital-marketing" element={<DigitalMarketing />} />
                 <Route path="/solutions/digital/e-commerce" element={<ECommerceSolutions />} />
                 <Route path="/solutions/digital/hrtech" element={<HrTech />} />
@@ -319,7 +321,7 @@ export default function App() {
                 <Route path="/projects/schedule-consultation" element={<ScheduleConsultation />} />
 
 
-                {/* ///////////////////////// Cresources Routes///////////////////////// */}
+                {/* ///////////////////////// Resources Routes///////////////////////// */}
                 <Route path="/resources/blogs" element={<Blogs />} />
                 <Route path="/resources/blogs/:id" element={<BlogArticle />} />
                 <Route path="/resources/news" element={<News />} />
@@ -331,7 +333,7 @@ export default function App() {
                 <Route path="/resources/media" element={<Media />} />
 
 
-                {/* ///////////////////////// joins Routes///////////////////////// */}
+                {/* ///////////////////////// Join Us Routes///////////////////////// */}
                 <Route path="/join/partner" element={<Partner />} />
                 <Route path="/join/become-partner" element={<BecomePartner />} />
                 <Route path="/join/collaborate" element={<Collaborate />} />

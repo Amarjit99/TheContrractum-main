@@ -19,7 +19,7 @@ const idCardSchema = new mongoose.Schema({
       "Student", "Employee", "Intern", "Consultant", "Trainer", 
       "Volunteer", "Research Associate", "Project Associate", "HR", 
       "Management", "Guest", "Vendor", "Visitor", "Contractor", 
-      "Others", "Venders", "Vissitors"
+      "Others"
     ],
     default: "Employee",
   },
@@ -65,6 +65,10 @@ const idCardSchema = new mongoose.Schema({
   issueDate: {
     type: Date,
     default: Date.now,
+  },
+  issuedBy: {
+    type: String,
+    default: 'The Contractum',
   },
 });
 
