@@ -5,8 +5,9 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const MENU_ITEMS = [
   { id: 'dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -41,6 +42,7 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState({});
   const [globalSearch, setGlobalSearch] = useState('');
+  const { theme, toggleTheme } = useTheme();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -174,7 +176,7 @@ export default function AdminLayout({ children }) {
   );
 
   return (
-    <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#f0f4f8] dark:bg-[#0f172a] overflow-hidden font-sans transition-colors">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 shrink-0 h-full shadow-xl z-20">
         <Sidebar />
@@ -193,15 +195,15 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header Row */}
-        <div className="h-16 bg-[#f0f4f8] shrink-0 flex items-center justify-between px-4 lg:px-8 z-10">
+        <div className="h-16 bg-[#f0f4f8] dark:bg-[#0f172a] shrink-0 flex items-center justify-between px-4 lg:px-8 z-10 transition-colors">
 
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 bg-white rounded-lg shadow-sm">
               <Menu size={20} />
             </button>
 
-            {/* Search Bar - hidden on very small screens, shown as icon, but let's do standard */}
-            <div className="hidden md:flex items-center bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 min-w-[350px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 transition-all">
+            {/* Search Bar */}
+            <div className="hidden md:flex items-center bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-sm border border-gray-100 dark:border-gray-700 min-w-[350px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 transition-all">
               <Search size={18} className="text-gray-400 mr-2" />
               <input
                 value={globalSearch}
@@ -209,7 +211,7 @@ export default function AdminLayout({ children }) {
                 onKeyDown={handleGlobalSearch}
                 type="text"
                 placeholder="Search menu or data (press Enter)..."
-                className="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder-gray-400 font-medium"
+                className="bg-transparent border-none outline-none text-sm w-full text-gray-700 dark:text-gray-200 placeholder-gray-400 font-medium"
               />
             </div>
           </div>
@@ -218,6 +220,14 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center gap-4 md:gap-6">
             <button className="text-gray-400 hover:text-gray-600">
               <Search size={20} className="md:hidden" />
+            </button>
+
+            <button 
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 hover:text-[#1e5cdc] rounded-full hover:bg-gray-100 transition-colors"
+              title="Toggle Dark Mode"
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
             <div className="relative">
@@ -236,7 +246,7 @@ export default function AdminLayout({ children }) {
                     } catch (err) { console.error(err); }
                   }
                 }}
-                className={`text-gray-500 hover:text-[#1e5cdc] transition-colors relative p-2 rounded-full ${showNotifications ? 'bg-gray-100 text-[#1e5cdc]' : ''}`}
+                className={`text-gray-500 hover:text-[#1e5cdc] dark:text-gray-400 dark:hover:text-white transition-colors relative p-2 rounded-full ${showNotifications ? 'bg-gray-100 dark:bg-gray-800 text-[#1e5cdc]' : ''}`}
               >
                 <Bell size={22} />
                 {unreadCount > 0 && (

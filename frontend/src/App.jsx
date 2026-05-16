@@ -39,6 +39,7 @@ import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import { AdminAuthProvider } from './context/AdminAuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 /////////////////////// Company Pages//////////////////////////////////
 import AboutUs from './pages/company/AboutUs';
@@ -169,6 +170,7 @@ import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AdminAuthProvider>
       <Router>
         <ScrollToTop />
@@ -364,5 +366,6 @@ export default function App() {
         </div>
       </Router>
     </AdminAuthProvider>
+    </ThemeProvider>
   );
 }
