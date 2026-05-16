@@ -167,17 +167,20 @@ import CookiesPopup from './components/CookiesPopup';
 import GoogleForm from './pages/contact/GoogleForm';
 import { Toaster } from 'react-hot-toast';
 
-export default function App() {
+import { useLocation } from 'react-router-dom';
+
+const AppContent = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
-    <AdminAuthProvider>
-      <Router>
-        <ScrollToTop />
-        <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
-          <Toaster position="top-right" />
-          <CookiesPopup />
-          <Navbar />
-          <main className="flex-grow">
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
+    <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
+      <Toaster position="top-right" />
+      <CookiesPopup />
+      {!isAdminRoute && <Navbar />}
+      <main className="flex-grow">
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
+
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/verify/:id" element={<VerifyCertificate />} />
@@ -360,9 +363,18 @@ export default function App() {
               </Routes>
             </Suspense>
           </main>
-          <Footer />
+          {!isAdminRoute && <Footer />}
         </div>
+  );
+};
+
+export default function App() {
+  return (
+    <AdminAuthProvider>
+      <Router>
+        <ScrollToTop />
+        <AppContent />
       </Router>
     </AdminAuthProvider>
   );
-}
+}

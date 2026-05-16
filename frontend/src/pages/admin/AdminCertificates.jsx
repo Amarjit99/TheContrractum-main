@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck, Settings as SettingsIcon } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck, Settings as SettingsIcon, Mail } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import QRCode from 'qrcode';
@@ -798,8 +798,8 @@ export default function AdminCertificates() {
     setLoading(true);
     try {
       const theme = THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0];
-      const canvas = await generateCertificateCanvas(cert, theme);
-      setPreviewImageUrl(canvas.toDataURL('image/png', 1.0));
+      const canvas = await generateCertificateCanvas(cert, theme, globalSettings);
+      setGeneratedPreview(canvas.toDataURL('image/png', 1.0));
       setPreviewMode(true);
       setSuccess(false);
       setIsModalOpen(true);
@@ -1324,7 +1324,8 @@ export default function AdminCertificates() {
                         {/* Standard Actions */}
                         <button onClick={() => handleView(c)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="View Certificate"><Award size={16} /></button>
                         <Link to={`/verify/${c.certificateId}`} target="_blank" className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="View Verification Page"><Eye size={16} /></Link>
-                        <button onClick={() => handleDownload(c)} disabled={downloading} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-100" title="Download PNG"><Download size={16} /></button>
+                        <button onClick={() => handleDownload(c)} disabled={downloading} className={`p-1.5 rounded-lg transition-colors border border-transparent ${downloading ? 'text-gray-400 cursor-not-allowed' : 'text-emerald-600 hover:bg-emerald-50 hover:border-emerald-100'}`} title="Download PNG">{downloading ? <RefreshCw size={16} className="animate-spin" /> : <Download size={16} />}</button>
+                        <a href={`mailto:${c.recipientEmail || ''}?subject=Your Certificate from The Contractum&body=Hello ${c.name},%0D%0A%0D%0AYou can view your verified certificate at: ${window.location.origin}/verify/${c.certificateId}`} className="p-1.5 text-teal-500 hover:bg-teal-50 rounded-lg transition-colors border border-transparent hover:border-teal-100" title="Send Email"><Mail size={16} /></a>
                         <button onClick={() => copyShareLink(c.certificateId)} className="p-1.5 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors border border-transparent hover:border-orange-100" title="Copy Share Link"><ExternalLink size={16} /></button>
                         <button onClick={() => {
                           setEditingId(c._id);

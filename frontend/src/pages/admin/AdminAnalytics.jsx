@@ -254,11 +254,16 @@ export default function AdminAnalytics() {
                           log.action === 'Create' ? 'bg-emerald-50 text-emerald-600' :
                           log.action === 'Update' ? 'bg-blue-50 text-blue-600' :
                           log.action === 'Delete' ? 'bg-red-50 text-red-600' :
+                          log.action === 'Login' ? 'bg-purple-50 text-purple-600' :
+                          log.action === 'Logout' ? 'bg-amber-50 text-amber-600' :
+                          log.action === 'Export' ? 'bg-indigo-50 text-indigo-600' :
                           'bg-gray-100 text-gray-600'
                         }`}>
                           {log.action}
                         </span>
-                        <span className="ml-2 text-xs font-semibold text-gray-600">{log.entity}</span>
+                        {log.entity && log.entity !== 'Unknown' && log.entity !== 'System' && (
+                          <span className="ml-2 text-xs font-semibold text-gray-600">{log.entity}</span>
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         <p className="text-sm text-gray-600 truncate max-w-xs">{log.details}</p>
