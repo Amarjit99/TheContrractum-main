@@ -9,7 +9,8 @@ const blogSchema = new mongoose.Schema({
   category: { type: String, default: 'Technology' },
   image: { type: String, default: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800' },
   status: { type: String, enum: ['Draft', 'Published'], default: 'Draft' },
-  content: { type: String, default: '' }
+  content: { type: mongoose.Schema.Types.Mixed, default: '' },
+  conclusion: { type: String, default: '' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Blog', blogSchema);

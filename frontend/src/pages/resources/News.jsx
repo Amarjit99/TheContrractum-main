@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import newsBrain from "../../assets/news_brain.png";
 import newsClimate from "../../assets/news_climate.png";
 
@@ -11,6 +12,12 @@ export default function News() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+
+  const handleNewsClick = (id) => {
+    navigate(`/resources/news/${id}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const categories = ["All", "Health", "Sport", "Politics", "Business", "World", "Technology", "Entertainment"];
 
@@ -56,7 +63,7 @@ export default function News() {
   const filteredNews = newsData.filter(news => {
     const matchesCategory = selectedCategory === "All" || news.category === selectedCategory;
     const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      news.description.toLowerCase().includes(searchTerm.toLowerCase());
+      (typeof news.description === 'string' ? news.description.toLowerCase().includes(searchTerm.toLowerCase()) : (news.description?.intro?.toLowerCase().includes(searchTerm.toLowerCase()) || false));
     return matchesCategory && matchesSearch;
   });
 
@@ -121,7 +128,7 @@ export default function News() {
 
       {/* HEADER - Smart Navbar */}
       <header
-        className={`bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
+        className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -182,7 +189,10 @@ export default function News() {
           <div className="grid md:grid-cols-3 gap-6 mb-14">
 
             {/* Big Featured News */}
-            <div className="md:col-span-2 relative rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <div
+              onClick={() => handleNewsClick(featuredNews._id || featuredNews.id)}
+              className="md:col-span-2 relative rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            >
               <img
                 src={getImageUrl(featuredNews.image)}
                 alt={featuredNews.title}
@@ -198,7 +208,7 @@ export default function News() {
                   {featuredNews.title}
                 </h2>
                 <p className="text-sm text-gray-200 mb-2 line-clamp-2">
-                  {featuredNews.description}
+                  {typeof featuredNews.description === 'object' && featuredNews.description !== null ? featuredNews.description.intro : featuredNews.description}
                 </p>
                 <p className="text-xs text-gray-300">
                   {formatDate(featuredNews.date)}
@@ -208,7 +218,11 @@ export default function News() {
 
             <div className="flex flex-col gap-6">
               {sideNews.length > 0 ? sideNews.map((news) => (
-                <div key={news._id || news.id} className="flex gap-4 cursor-pointer group bg-white rounded-lg p-3 shadow hover:shadow-lg transition-shadow">
+                <div
+                  key={news._id || news.id}
+                  onClick={() => handleNewsClick(news._id || news.id)}
+                  className="flex gap-4 cursor-pointer group bg-white rounded-lg p-3 shadow hover:shadow-lg transition-shadow"
+                >
                   <img
                     src={getImageUrl(news.image)}
                     className="w-32 h-24 object-cover rounded-lg flex-shrink-0"
@@ -257,7 +271,11 @@ export default function News() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {categoryNews.map((news) => (
-                <div key={news._id || news.id} className="cursor-pointer group bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div
+                  key={news._id || news.id}
+                  onClick={() => handleNewsClick(news._id || news.id)}
+                  className="cursor-pointer group bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                >
                   <div className="relative overflow-hidden">
                     <img
                       src={getImageUrl(news.image)}
@@ -276,7 +294,7 @@ export default function News() {
                       {news.title}
                     </h3>
                     <p className="text-xs text-gray-600 line-clamp-2">
-                      {news.description}
+                      {typeof news.description === 'object' && news.description !== null ? news.description.intro : news.description}
                     </p>
                   </div>
                 </div>
@@ -450,7 +468,7 @@ export default function News() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
             <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll receive the latest updates directly in your inbox.</p>
-            <button 
+            <button
               onClick={() => setShowSuccessPopup(false)}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
             >
