@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 // Events Data
-const eventsData = [
+const staticEvents = [
   {
     id: 1,
     title: "AI & Machine Learning Summit 2026",
@@ -224,6 +224,8 @@ const eventsData = [
 ];
 
 export default function Events() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedType, setSelectedType] = useState("upcoming");
@@ -233,6 +235,19 @@ export default function Events() {
   const [email, setEmail] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Event Registration States
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    organization: ""
+  });
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
 
   const categories = ["All", "Conference", "Workshop", "Training", "Networking", "Bootcamp", "Webinar", "Masterclass"];
 
@@ -253,6 +268,30 @@ export default function Events() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  // Fetch Events from API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API}/api/resource-events`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            // Combine with static events or just use DB events
+            // User wants "reflect on the featured events subsection", so we combine
+            setEvents([...data, ...staticEvents]);
+        } else {
+            setEvents(staticEvents);
+        }
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setEvents(staticEvents);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -283,8 +322,46 @@ export default function Events() {
     }
   };
 
+  const handleRegisterClick = (event) => {
+    setSelectedEvent(event);
+    setShowRegisterModal(true);
+  };
+
+  const handleRegistrationSubmit = async (e) => {
+    e.preventDefault();
+    setIsRegistering(true);
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/event-registrations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventName: selectedEvent.title,
+          eventDate: selectedEvent.date,
+          eventTime: selectedEvent.time,
+          ...formData
+        }),
+      });
+
+      if (response.ok) {
+        setShowRegisterModal(false);
+        setShowRegisterSuccess(true);
+        setFormData({ firstName: "", lastName: "", email: "", phone: "", organization: "" });
+        setTimeout(() => setShowRegisterSuccess(false), 5000);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Registration failed");
+      }
+    } catch (err) {
+      console.error("Error registering:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
   // Filter events
-  const filteredEvents = eventsData.filter(event => {
+  const filteredEvents = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -294,8 +371,8 @@ export default function Events() {
     return matchesSearch && matchesCategory && matchesType;
   });
 
-  const upcomingEvents = eventsData.filter(e => e.type === "upcoming");
-  const pastEvents = eventsData.filter(e => e.type === "past");
+  const upcomingEvents = events.filter(e => e.type === "upcoming");
+  const pastEvents = events.filter(e => e.type === "past");
   const featuredEvents = filteredEvents.filter(e => e.featured && e.type === "upcoming");
   const displayedEvents = filteredEvents.slice(0, visibleEvents);
 
@@ -536,7 +613,7 @@ export default function Events() {
                       <span className="text-lg font-bold text-primary">{event.price}</span>
                     </div>
 
-                    <button className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg">
+                    <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg">
                       Register Now →
                     </button>
                   </div>
@@ -613,7 +690,7 @@ export default function Events() {
                         </span>
                         <span className="font-bold text-primary">{event.price}</span>
                       </div>
-                      <button className="w-full bg-red-600 text-white py-2.5 rounded-full font-semibold hover:bg-red-700 transition-all duration-300">
+                      <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-2.5 rounded-full font-semibold hover:bg-red-700 transition-all duration-300">
                         Register Now
                       </button>
                     </>
@@ -684,7 +761,7 @@ export default function Events() {
                 required
                 className="flex-1 px-6 py-4 rounded-lg text-slate-900 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
               />
-              <button 
+              <button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
@@ -725,7 +802,7 @@ export default function Events() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
             <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll receive the latest event updates directly in your inbox.</p>
-            <button 
+            <button
               onClick={() => setShowSuccessPopup(false)}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
             >
@@ -743,6 +820,105 @@ export default function Events() {
               animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
           `}</style>
+        </div>
+      )}
+
+      {/* Event Registration Modal */}
+      {showRegisterModal && selectedEvent && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setShowRegisterModal(false)}></div>
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all animate-fade-in-up overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white shrink-0">
+              <button onClick={() => setShowRegisterModal(false)} className="absolute top-4 right-4 text-slate-300 hover:text-white bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                ✕
+              </button>
+              <h3 className="text-xl md:text-2xl font-bold mb-1">Register for Event</h3>
+              <p className="text-slate-300 text-sm">{selectedEvent.title}</p>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+              <div className="flex flex-wrap gap-4 text-sm text-slate-600 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  <span>{new Date(selectedEvent.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span>{selectedEvent.time}</span>
+                </div>
+              </div>
+
+              <form onSubmit={handleRegistrationSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">First Name *</label>
+                    <input type="text" required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="John" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Last Name *</label>
+                    <input type="text" required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Doe" />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
+                  <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="john@example.com" />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
+                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="+1 (555) 000-0000" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Company / College</label>
+                  <input type="text" value={formData.organization} onChange={(e) => setFormData({...formData, organization: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Optional" />
+                </div>
+
+                <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+                  <button type="button" onClick={() => setShowRegisterModal(false)} className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={isRegistering} className="px-8 py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
+                    {isRegistering ? (
+                      <><svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</>
+                    ) : "Complete Registration"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <style>{`
+            @keyframes fade-in-up {
+              0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+              100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .animate-fade-in-up {
+              animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* Registration Success Popup */}
+      {showRegisterSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center transform transition-all animate-bounce-in">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Registration Confirmed!</h3>
+            <p className="text-gray-600 mb-6">Thank you for registering. We have received your details and will contact you shortly.</p>
+            <button 
+              onClick={() => setShowRegisterSuccess(false)}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+            >
+              Done
+            </button>
+          </div>
         </div>
       )}
     </div>

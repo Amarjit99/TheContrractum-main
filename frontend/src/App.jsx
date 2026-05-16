@@ -31,6 +31,7 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminContracts from './pages/admin/AdminContracts';
 import AdminCertificates from './pages/admin/AdminCertificates';
 import AdminEvents from './pages/admin/AdminEvents';
+import AdminEventRegistrations from './pages/admin/AdminEventRegistrations';
 import VerifyCertificate from './pages/VerifyCertificate';
 import ContractEditor from './pages/admin/ContractEditor';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
@@ -209,6 +210,7 @@ export default function App() {
                 <Route path="/admin/contracts" element={<AdminContracts />} />
                 <Route path="/admin/certificates" element={<AdminCertificates />} />
                 <Route path="/admin/events" element={<AdminEvents />} />
+                <Route path="/admin/event-registrations" element={<AdminEventRegistrations />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
 
