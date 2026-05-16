@@ -135,7 +135,7 @@ export default function AdminLayout({ children }) {
                   if (item.hasSubmenu) toggleSubmenu(e, item.id);
                   else setSidebarOpen(false);
                 }}
-                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-white text-[#1e5cdc]' : 'text-blue-100 hover:bg-white hover:text-white'
+                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-white text-[#1e5cdc]' : 'text-blue-100 hover:bg-white/10 hover:text-white'
                   }`}
               >
                 <div className="flex items-center gap-3">

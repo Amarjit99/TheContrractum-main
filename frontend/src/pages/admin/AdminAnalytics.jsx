@@ -214,7 +214,7 @@ export default function AdminAnalytics() {
             </div>
             <button
               onClick={fetchLogs}
-              className="p-2 border border-gray-200 text-gray-600 bg-white rounded-lg hover:bg-gray-50:bg-gray-700 transition-all shadow-sm"
+              className="p-2 border border-gray-200 text-gray-600 bg-white rounded-lg hover:bg-gray-50 transition-all shadow-sm"
             >
               <RefreshCw size={18} />
             </button>
@@ -240,7 +240,7 @@ export default function AdminAnalytics() {
                   <tr><td colSpan={5} className="py-10 text-center text-gray-400">No logs match your search.</td></tr>
                 ) : (
                   filteredLogs.map(log => (
-                    <tr key={log._id} className="hover:bg-gray-50:bg-gray-700/50 transition-colors">
+                    <tr key={log._id} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3 px-4 whitespace-nowrap">
                         <p className="text-sm font-bold text-gray-800">{new Date(log.createdAt).toLocaleDateString()}</p>
                         <p className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleTimeString()}</p>
