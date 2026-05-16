@@ -15,7 +15,12 @@ const idCardSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["Student", "Employee", "Intern", "Visitor"],
+    enum: [
+      "Student", "Employee", "Intern", "Consultant", "Trainer", 
+      "Volunteer", "Research Associate", "Project Associate", "HR", 
+      "Management", "Guest", "Vendor", "Visitor", "Contractor", 
+      "Others"
+    ],
     default: "Employee",
   },
   department: {
@@ -61,6 +66,10 @@ const idCardSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  issuedBy: {
+    type: String,
+    default: 'The Contractum',
+  },
 });
 
-module.exports = mongoose.model("IdCard", idCardSchema);
+module.exports = mongoose.models.IdCard || mongoose.model("IdCard", idCardSchema);

@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const mockContacts = [
-  { _id: 'mock-1', name: "Alice Johnson", email: "alice@example.com", subject: "Enterprise Pricing Inquiry", message: "We are interested in your enterprise tier...", createdAt: new Date(Date.now() - 100000000).toISOString() },
-  { _id: 'mock-2', name: "Bob Smith", email: "bob@startup.io", subject: "API Integration Help", message: "How do we integrate the Partner API?", createdAt: new Date(Date.now() - 500000000).toISOString() },
-  { _id: 'mock-3', name: "Carol Davis", email: "carol@design.co", subject: "UI/UX Services", message: "Looking for a website redesign quote.", createdAt: new Date(Date.now() - 1000000000).toISOString() },
-  { _id: 'mock-4', name: "David Wilson", email: "david@marketing.org", subject: "Partnership Opportunity", message: "We would love to discuss a potential partnership.", createdAt: new Date(Date.now() - 2000000000).toISOString() }
-];
 
 export default function AdminContacts() {
   const { admin } = useAdminAuth();
@@ -33,8 +28,8 @@ export default function AdminContacts() {
     setLoading(false);
   };
 
-  const allContacts = [...(data.contacts || []), ...mockContacts];
-  const totalCount = (data.total || 0) + 1245;
+  const allContacts = data.contacts || [];
+  const totalCount = data.total || 0;
 
   const filteredContacts = allContacts.filter(c => 
     c.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -43,7 +38,7 @@ export default function AdminContacts() {
   );
 
   const deleteContact = async (id) => {
-    if (typeof id === 'string' && id.startsWith('mock-')) return alert("Cannot delete demo data.");
+    if (typeof id === 'string' && id.startsWith('mock-')) return toast.success("Cannot delete demo data.");
     if (!confirm('Delete this contact submission?')) return;
     const res = await fetch(`${API}/api/admin/contacts/${id}`, { method: 'DELETE', headers });
     if (res.ok) { setMsg('Lead deleted successfully.'); setTimeout(() => setMsg(''), 3000); fetchContacts(); }
@@ -113,7 +108,7 @@ export default function AdminContacts() {
               </div>
             </div>
             {expanded === c._id && (
-              <div className="border-t border-gray-100 px-3 sm:px-6 py-3 sm:py-5 bg-gray-50/50">
+              <div className="border-t border-gray-100 px-3 sm:px-6 py-3 sm:py-5 bg-gray-50">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Message Content</h4>
                 <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                   <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>

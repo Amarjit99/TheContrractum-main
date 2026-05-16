@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Contact = require("../models/Contact");
+const Notification = require("../models/Notification");
+const { protect } = require("../middleware/auth");
 
 // POST /api/contact - submit contact form
 router.post("/", async (req, res) => {
@@ -15,7 +17,6 @@ router.post("/", async (req, res) => {
     await newContact.save();
 
     // Create Notification
-    const Notification = require("../models/Notification");
     await Notification.create({
       type: 'Contact Form',
       title: 'New Contact Lead',
@@ -31,7 +32,7 @@ router.post("/", async (req, res) => {
 });
 
 // GET /api/contact - get all submissions (admin use)
-router.get("/", async (req, res) => {
+router.get("/", protect, async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
     res.json(contacts);

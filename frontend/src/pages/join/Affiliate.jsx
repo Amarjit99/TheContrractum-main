@@ -5,6 +5,7 @@ import { CheckCircle, DollarSign, Share2, UserPlus, HelpCircle, ChevronDown, Che
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 import { COUNTRIES } from '../../constants/countries';
+import { toast } from 'react-hot-toast';
 
 export default function Affiliate() {
     const [formData, setFormData] = useState({
@@ -57,11 +58,11 @@ export default function Affiliate() {
 
             if (!res.ok) throw new Error('Failed to store application');
 
-            alert('Affiliate application submitted successfully! We will review your entry and contact you soon.');
+            toast.success('Affiliate application submitted successfully! We will review your entry and contact you soon.');
             handleReset();
         } catch (err) {
             setStatus({ loading: false, error: err.message });
-            alert('Error submitting form: ' + err.message);
+            toast.error('Error submitting form: ' + err.message);
         }
     };
 

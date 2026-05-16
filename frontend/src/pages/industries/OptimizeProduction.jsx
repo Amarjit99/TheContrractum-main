@@ -41,7 +41,7 @@ export default function OptimizeProduction() {
                         The threshold between a standard assembly line and an autonomous production network is profound. Today's manufacturing landscape demands far more than basic automation; it requires deep-learning neural networks that can analyze robotic kinematics in real time, edge-computing infrastructure capable of processing sensory data locally, and digital twin environments that allow engineering teams to simulate supply chain shocks before they occur.
                     </p>
                     <p className="text-lg text-slate-700 leading-loose mb-12">
-                        At The Contrractum, we do not view manufacturing optimization as merely bolting tablets onto heavy machinery. We believe in total vertical integration. By breaking down data silos between the shop floor PLC networks and the executive ERP dashboards, we unlock unprecedented operational visibility.
+                        At The Contractum, we do not view manufacturing optimization as merely bolting tablets onto heavy machinery. We believe in total vertical integration. By breaking down data silos between the shop floor PLC networks and the executive ERP dashboards, we unlock unprecedented operational visibility.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">

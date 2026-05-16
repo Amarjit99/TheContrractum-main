@@ -5,6 +5,7 @@ import email from "../../assets/email.png";
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 import { COUNTRIES } from "../../constants/countries";
+import { toast } from 'react-hot-toast';
 
 const RequestQuote = () => {
   const [formData, setFormData] = useState({
@@ -54,11 +55,11 @@ const RequestQuote = () => {
 
       if (!res.ok) throw new Error("Failed to submit request");
 
-      alert("Quote request submitted successfully!");
+      toast.success("Quote request submitted successfully!");
       handleReset();
     } catch (err) {
       setStatus({ loading: false, error: err.message });
-      alert("Error submitting request: " + err.message);
+      toast.error("Error submitting request: " + err.message);
     }
   };
 

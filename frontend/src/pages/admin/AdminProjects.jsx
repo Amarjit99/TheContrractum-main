@@ -229,7 +229,7 @@ export default function AdminProjects() {
                         <div className="h-48 overflow-hidden relative">
                             <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
-                            <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1 rounded-full">
+                            <span className="absolute top-4 left-4 bg-white backdrop-blur-sm text-xs font-bold px-3 py-1 rounded-full">
                                 {project.priority} Priority
                             </span>
                             <span className="absolute top-4 right-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">

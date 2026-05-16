@@ -5,7 +5,8 @@ import {
   LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, LabelList, BarChart, Bar, Legend
 } from 'recharts';
-import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar } from 'lucide-react';
+import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, Search } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -31,10 +32,50 @@ export default function AdminAnalytics() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [logs, setLogs] = useState([]);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const fetchLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await fetch(`${API}/api/audit-logs`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(Array.isArray(data) ? data : []);
+      } else {
+        toast.error('Failed to fetch audit logs');
+        setLogs([]);
+      }
+    } catch (err) {
+      toast.error('Error fetching audit logs');
+      setLogs([]);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  const [detailedStats, setDetailedStats] = useState(null);
+
   useEffect(() => {
     fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
       .then(r => r.json()).then(setStats).finally(() => setLoading(false));
-  }, []);
+    
+    fetch(`${API}/api/admin/detailed-stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
+      .then(r => r.json()).then(setDetailedStats);
+
+    fetchLogs();
+  }, [admin]);
+
+  const filteredLogs = logs.filter(log => 
+    (log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.entity || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.targetType || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.adminName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.details || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <AdminLayout>
@@ -107,7 +148,7 @@ export default function AdminAnalytics() {
                  <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
                </span>
                <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-gray-500 uppercase">
-                 <span className="w-2.5 h-2.5 rounded-full bg-blue-200"></span> Pageviews
+                 <span className="w-2.5 h-2.5 rounded-full bg-blue-300"></span> Pageviews
                </span>
             </div>
           </div>
@@ -116,19 +157,19 @@ export default function AdminAnalytics() {
               <AreaChart data={visitorData}>
                 <defs>
                   <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.1}/>
+                    <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.15}/>
                     <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#64748b'}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#64748b'}} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} />
                 <Tooltip 
-                  contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                  contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', backgroundColor: '#fff'}}
                   itemStyle={{fontSize: '12px', fontWeight: 800}}
                 />
                 <Area type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} fillOpacity={1} fill="url(#colorVis)" />
-                <Area type="monotone" dataKey="pageViews" stroke="#bfdbfe" strokeWidth={2} fillOpacity={0} />
+                <Area type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={2} fillOpacity={0} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -142,12 +183,12 @@ export default function AdminAnalytics() {
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryData} layout="vertical" margin={{ left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 800, fill: '#1e293b'}} />
-                <Tooltip cursor={{fill: '#f8fafc', radius: 8}} contentStyle={{borderRadius: '12px', border: 'none'}} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 800, fill: '#94a3b8'}} />
+                <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)', radius: 8}} contentStyle={{borderRadius: '12px', border: 'none', backgroundColor: '#fff'}} />
                 <Bar dataKey="value" fill="#1e5cdc" radius={[0, 10, 10, 0]} barSize={32}>
-                  <LabelList dataKey="value" position="right" formatter={(v) => `${v}%`} style={{fontSize: '12px', fontWeight: 800, fill: '#64748b'}} />
+                  <LabelList dataKey="value" position="right" formatter={(v) => `${v}%`} style={{fontSize: '12px', fontWeight: 800, fill: '#94a3b8'}} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -155,7 +196,211 @@ export default function AdminAnalytics() {
           <p className="mt-4 text-xs text-gray-400 font-medium text-center">Data represents engagement distribution across site categories</p>
         </div>
       </div>
+
+      {/* Audit Logs Section */}
+      <div className="mt-12 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <ShieldAlert className="text-[#1e5cdc]" size={24} />
+              System Audit Logs
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Monitor administrative actions and security events.</p>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="Search logs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 border border-gray-200 bg-white text-gray-900 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] shadow-sm placeholder-gray-400"
+              />
+            </div>
+            <button
+              onClick={fetchLogs}
+              className="p-2 border border-gray-200 text-gray-600 bg-white rounded-lg hover:bg-gray-50 transition-all shadow-sm"
+            >
+              <RefreshCw size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Date & Time</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Admin User</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Action</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Details</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">IP Address</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {loadingLogs ? (
+                  <tr><td colSpan={5} className="py-10 text-center text-gray-400">Loading audit trail...</td></tr>
+                ) : filteredLogs.length === 0 ? (
+                  <tr><td colSpan={5} className="py-10 text-center text-gray-400">No logs match your search.</td></tr>
+                ) : (
+                  filteredLogs.map(log => (
+                    <tr key={log._id} className="hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <p className="text-sm font-bold text-gray-800">{new Date(log.createdAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleTimeString()}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <p className="text-sm font-bold text-gray-700">{log.performedBy?.name || log.adminName || 'System User'}</p>
+                        <p className="text-[10px] text-gray-400">{log.performedBy?.email || 'Unknown Email'}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase ${
+                          log.action === 'Create' ? 'bg-emerald-50 text-emerald-600' :
+                          log.action === 'Update' ? 'bg-blue-50 text-blue-600' :
+                          log.action === 'Delete' ? 'bg-red-50 text-red-600' :
+                          log.action === 'Login' ? 'bg-purple-50 text-purple-600' :
+                          log.action === 'Logout' ? 'bg-amber-50 text-amber-600' :
+                          log.action === 'Export' ? 'bg-indigo-50 text-indigo-600' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {log.action}
+                        </span>
+                        {log.entity && log.entity !== 'Unknown' && log.entity !== 'System' && (
+                          <span className="ml-2 text-xs font-semibold text-gray-600">{log.entity}</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="text-sm text-gray-600 truncate max-w-xs">{log.details}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className="font-mono text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                          {log.ipAddress || '127.0.0.1'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {/* Certificate Analytics Section */}
+      <div className="mt-12 mb-8">
+        <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-6">Certificate Lifecycle Insights</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Category Distribution */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Category Distribution</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={detailedStats?.categoryDistribution || []}>
+                  <XAxis dataKey="_id" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Bar dataKey="count" fill="#1e5cdc" radius={[4, 4, 0, 0]} barSize={30} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Department Distribution */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Department Volume</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={detailedStats?.deptDistribution || []} layout="vertical">
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="_id" type="category" fontSize={10} width={80} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Issuance Trends */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Monthly Issuance Trend</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={detailedStats?.monthlyTrends?.map(t => ({ month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t._id-1], count: t.count })) || []}>
+                  <XAxis dataKey="month" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Area type="monotone" dataKey="count" stroke="#6366f1" fill="url(#colorCount)" strokeWidth={3} />
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Audit Log Table (Integrated below charts) */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+        <div className="px-6 py-5 border-b border-gray-50 flex items-center justify-between bg-[#f8fafc]">
+          <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">System Audit Ledger</h3>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input 
+              type="text" 
+              placeholder="Search audit trail..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-4 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none w-48 sm:w-64"
+            />
+          </div>
+        </div>
+        <div className="overflow-x-auto max-h-[500px]">
+          <table className="w-full">
+            <thead className="bg-gray-50 sticky top-0">
+              <tr>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Timestamp</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Administrator</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">IP Address</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loadingLogs ? (
+                <tr><td colSpan="5" className="text-center py-12 text-gray-400 italic">Synchronizing audit data...</td></tr>
+              ) : filteredLogs.length === 0 ? (
+                <tr><td colSpan="5" className="text-center py-12 text-gray-400 italic">No audit records found.</td></tr>
+              ) : filteredLogs.map(log => (
+                <tr key={log._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 text-xs font-medium text-gray-500 whitespace-nowrap">{new Date(log.createdAt).toLocaleString()}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-gray-800">{log.adminName}</span>
+                      <span className="text-[9px] font-black text-blue-500 uppercase">{log.adminRole}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs font-mono text-gray-400">{log.ipAddress || '127.0.0.1'}</td>
+                  <td className="px-6 py-4">
+                    <span className={`text-[9px] font-black uppercase px-2 py-1 rounded border ${
+                      log.action.includes('Create') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                      log.action.includes('Delete') ? 'bg-red-50 text-red-600 border-red-100' :
+                      'bg-blue-50 text-blue-600 border-blue-100'
+                    }`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-600 max-w-xs truncate">{log.details}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </AdminLayout>
   );
 }
-

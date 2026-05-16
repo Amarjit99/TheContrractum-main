@@ -6,6 +6,7 @@ import {
   Send, Eye, ArrowRight, User as UserIcon, Calendar, ClipboardList
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -48,7 +49,7 @@ export default function AdminContracts() {
       if (res.ok) fetchContracts();
       else {
         const error = await res.json();
-        alert(error.message);
+        toast.error(error.message);
       }
     } catch (err) {
       console.error(err);
@@ -123,7 +124,7 @@ export default function AdminContracts() {
               <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
               <h3 className="text-2xl font-black text-gray-900">{stat.count}</h3>
             </div>
-            <div className="p-3 bg-white/80 rounded-xl shadow-sm">{stat.icon}</div>
+            <div className="p-3 bg-white rounded-xl shadow-sm">{stat.icon}</div>
           </div>
         ))}
       </div>
@@ -157,7 +158,7 @@ export default function AdminContracts() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50/50">
+            <thead className="bg-gray-50">
               <tr>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Contract Info</th>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:table-cell">Employee</th>
@@ -173,7 +174,7 @@ export default function AdminContracts() {
                 <tr><td colSpan="5" className="text-center py-20 text-gray-400 font-medium">No contracts found.</td></tr>
               ) : (
                 filteredContracts.map(c => (
-                  <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                  <tr key={c._id} className="hover:bg-gray-50 transition-colors group">
                     <td className="px-3 sm:px-6 py-3 sm:py-5">
                       <div className="flex items-start gap-2 sm:gap-4">
                         <div className="p-2 sm:p-3 bg-blue-50 text-[#1e5cdc] rounded-lg sm:rounded-xl group-hover:bg-[#1e5cdc] group-hover:text-white transition-colors shrink-0">

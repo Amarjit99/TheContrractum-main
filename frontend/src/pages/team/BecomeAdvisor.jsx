@@ -206,7 +206,7 @@ export default function BecomeAdvisor() {
                                 <Globe className="text-indigo-500 w-6 h-6" /> Statement of Interest
                             </h3>
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Why do you want to advise The Contrractum? <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Why do you want to advise The Contractum? <span className="text-red-500">*</span></label>
                                 <textarea name="interestStatement" value={form.interestStatement} onChange={handleChange} className="w-full px-5 py-4 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-500/10 transition text-slate-900 text-lg min-h-[180px]" placeholder="Please provide a detailed paragraph explaining your motivation and how your specific expertise aligns with our company vision..." required></textarea>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ export default function CoreTeam() {
         {
             name: "Amit Verma",
             role: "Founder & CEO",
-            bio: "Visionary leader with 15+ years in tech innovation. Driving Contrractum's mission to reshape digital landscapes.",
+            bio: "Visionary leader with 15+ years in tech innovation. Driving Contractum's mission to reshape digital landscapes.",
             image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
             linkedin: "https://www.linkedin.com/in/amit-verma-tech-leader",
         },
@@ -47,7 +47,7 @@ export default function CoreTeam() {
                             Meet Our Leadership
                         </h1>
                         <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
-                            The visionaries and strategists guiding The Contrractum towards a smarter, more connected future.
+                            The visionaries and strategists guiding The Contractum towards a smarter, more connected future.
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link to="/company/leadership/visionary" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl hover:bg-white/20 transition-all cursor-pointer">

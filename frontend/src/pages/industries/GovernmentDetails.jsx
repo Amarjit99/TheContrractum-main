@@ -32,7 +32,7 @@ export default function GovernmentDetails() {
                 <div className="max-w-5xl mx-auto">
                     <h2 className="text-4xl font-black text-gray-900 mb-8 pb-4 border-b-4 border-blue-200 inline-block">The Digital Governance Framework</h2>
                     <p className="text-gray-700 text-lg leading-loose mb-8">
-                        The modernization of government services is no longer a luxury—it is an absolute necessity. At The Contrractum, we have developed a robust, scalable framework designed specifically for the rigorous demands of federal and municipal operations. We address foundational legacy bottlenecks by migrating entire infrastructures onto secure, private cloud environments that strictly adhere to international data sovereignty laws.
+                        The modernization of government services is no longer a luxury—it is an absolute necessity. At The Contractum, we have developed a robust, scalable framework designed specifically for the rigorous demands of federal and municipal operations. We address foundational legacy bottlenecks by migrating entire infrastructures onto secure, private cloud environments that strictly adhere to international data sovereignty laws.
                     </p>
                     <p className="text-gray-700 text-lg leading-loose mb-12">
                         Our systems are designed for high availability and extreme fault tolerance. During unprecedented national emergencies or election periods, traffic to government portals can spike by over 10,000%. Our auto-scaling microservices architecture ensures zero downtime, guaranteeing that critical citizen services remain accessible precisely when they are most needed.

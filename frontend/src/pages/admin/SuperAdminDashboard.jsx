@@ -4,6 +4,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Link as LinkIcon, ChevronRight, UserPlus, CheckCircle2, Clock, Trash2, Mail, ShieldAlert } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -34,7 +35,7 @@ const mockBlogs = [
 ];
 
 const StatCardItem = ({ title, value, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50 flex flex-col justify-between hover:shadow-md transition-shadow">
+  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
     <p className="text-sm font-semibold text-gray-500 mb-3">{title}</p>
     <div className="flex items-center justify-between">
       <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight">{value}</h3>
@@ -86,13 +87,13 @@ export default function SuperAdminDashboard() {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
       if (res.ok) {
-        alert('Admin approved successfully!');
+        toast.success('Admin approved successfully!');
         fetchDashboardData(); // Refresh both stats and list
       } else {
-        alert('Failed to approve registration');
+        toast.error('Failed to approve registration');
       }
     } catch (err) {
-      alert('Error during approval');
+      toast.error('Error during approval');
     } finally {
       setIsApproving(null);
     }
@@ -107,7 +108,7 @@ export default function SuperAdminDashboard() {
         </div>
         <button
           onClick={() => navigate('/admin/form-links')}
-          className="flex items-center justify-center gap-2 bg-white border border-gray-200/60 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md w-full sm:w-auto mt-2 sm:mt-0 group"
+          className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md w-full sm:w-auto mt-2 sm:mt-0 group"
         >
           <LinkIcon size={18} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
           Form Links
@@ -138,14 +139,14 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 lg:col-span-2 flex flex-col">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
                 <h3 className="font-bold text-gray-800">Website Traffic</h3>
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-blue-50/50 px-3 py-1.5 rounded-full font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
                   </span>
-                  <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50/50 px-3 py-1.5 rounded-full font-bold">
+                  <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-300"></span> Page Views
                   </span>
                 </div>
@@ -168,7 +169,7 @@ export default function SuperAdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 flex flex-col relative overflow-visible">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 flex flex-col relative overflow-visible">
               <div className="flex justify-between items-center mb-6 sm:mb-10">
                 <h3 className="font-bold text-gray-800">Lead Conversion Rate</h3>
               </div>
@@ -211,7 +212,7 @@ export default function SuperAdminDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10">
               {pendingAdmins.length === 0 ? (
-                <div className="col-span-full py-20 flex flex-col items-center justify-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                <div className="col-span-full py-20 flex flex-col items-center justify-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
                   <ShieldAlert size={48} className="text-gray-200 mb-4" />
                   <p className="text-gray-400 font-bold text-sm tracking-tight">No pending registrations available</p>
                 </div>

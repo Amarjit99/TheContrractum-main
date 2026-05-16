@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import newsBrain from "../../assets/news_brain.png";
-import newsClimate from "../../assets/news_climate.png";
+import { toast } from 'react-hot-toast';
 
 export default function News() {
   const [newsData, setNewsData] = useState([]);
@@ -12,12 +11,7 @@ export default function News() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-
-  const handleNewsClick = (id) => {
-    navigate(`/resources/news/${id}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const [selectedNews, setSelectedNews] = useState(null);
 
   const categories = ["All", "Health", "Sport", "Politics", "Business", "World", "Technology", "Entertainment"];
 
@@ -69,7 +63,9 @@ export default function News() {
 
   const featuredNews = filteredNews.find(news => news.featured) || (filteredNews.length > 0 ? filteredNews[0] : null);
   const featuredId = featuredNews ? (featuredNews._id || featuredNews.id) : null;
-  const sideNews = filteredNews.filter(news => (news._id || news.id) !== featuredId && news.category === "Sport").slice(0, 2);
+  const sideNews = filteredNews.filter(news => (news._id || news.id) !== featuredId && news.category === "Sport").length > 0
+    ? filteredNews.filter(news => (news._id || news.id) !== featuredId && news.category === "Sport").slice(0, 2)
+    : filteredNews.filter(news => (news._id || news.id) !== featuredId).slice(0, 2);
   const categoryNews = filteredNews.filter(news => (news._id || news.id) !== featuredId).slice(0, visibleNews);
 
   const handleSubscribe = async (e) => {
@@ -89,11 +85,11 @@ export default function News() {
           setTimeout(() => setShowSuccessPopup(false), 5000);
         } else {
           const data = await response.json();
-          alert(data.message || "Subscription failed");
+          toast.error(data.message || "Subscription failed");
         }
       } catch (err) {
         console.error("Error subscribing:", err);
-        alert("An error occurred. Please try again.");
+        toast.error("An error occurred. Please try again.");
       }
     }
   };
@@ -128,21 +124,24 @@ export default function News() {
 
       {/* HEADER - Smart Navbar */}
       <header
-        className={`bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
+        className={`bg-white border-b border-gray-200 sticky top-16 sm:top-20 z-40 shadow-sm transition-transform duration-300 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-2xl font-bold tracking-wide">
-            NEXUS <span className="text-primary">NEWS</span>
+            THYTA <span className="text-primary">NEWS</span>
           </h1>
 
-          <nav className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm font-medium text-gray-600">
+          <nav className="flex items-center gap-4 md:gap-6 text-sm font-medium text-gray-600 overflow-x-auto pb-2 md:pb-0 scrollbar-hide max-w-full">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`hover:text-blue-600 transition-colors ${selectedCategory === category ? "text-blue-600 font-bold" : ""
-                  }`}
+                className={`whitespace-nowrap transition-all duration-300 px-2 py-1 rounded-lg ${
+                  selectedCategory === category 
+                  ? "text-primary font-bold bg-primary/10" 
+                  : "hover:text-primary hover:bg-gray-100"
+                }`}
               >
                 {category}
               </button>
@@ -189,8 +188,8 @@ export default function News() {
           <div className="grid md:grid-cols-3 gap-6 mb-14">
 
             {/* Big Featured News */}
-            <div
-              onClick={() => handleNewsClick(featuredNews._id || featuredNews.id)}
+            <div 
+              onClick={() => setSelectedNews(featuredNews)}
               className="md:col-span-2 relative rounded-xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300"
             >
               <img
@@ -218,9 +217,9 @@ export default function News() {
 
             <div className="flex flex-col gap-6">
               {sideNews.length > 0 ? sideNews.map((news) => (
-                <div
-                  key={news._id || news.id}
-                  onClick={() => handleNewsClick(news._id || news.id)}
+                <div 
+                  key={news._id || news.id} 
+                  onClick={() => setSelectedNews(news)}
                   className="flex gap-4 cursor-pointer group bg-white rounded-lg p-3 shadow hover:shadow-lg transition-shadow"
                 >
                   <img
@@ -242,7 +241,7 @@ export default function News() {
                 </div>
               )) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
-                  <p className="text-sm">No sport news available</p>
+                  <p className="text-sm">No additional news available</p>
                 </div>
               )}
             </div>
@@ -271,9 +270,9 @@ export default function News() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {categoryNews.map((news) => (
-                <div
-                  key={news._id || news.id}
-                  onClick={() => handleNewsClick(news._id || news.id)}
+                <div 
+                  key={news._id || news.id} 
+                  onClick={() => setSelectedNews(news)}
                   className="cursor-pointer group bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative overflow-hidden">
@@ -397,7 +396,7 @@ export default function News() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h2 className="text-2xl font-bold mb-4">
-                NEXUS <span className="text-blue-500">NEWS</span>
+                THYTA <span className="text-primary">NEWS</span>
               </h2>
               <p className="text-gray-400 text-sm">
                 Your trusted source for breaking news and in-depth analysis.
@@ -452,10 +451,64 @@ export default function News() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2026 Nexus News. All rights reserved.</p>
+            <p>&copy; 2026 Thyta News. All rights reserved.</p>
           </div>
         </div>
       </footer>
+
+      {/* News Detail Modal */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setSelectedNews(null)}></div>
+          <div className="relative bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-fadeIn shadow-2xl">
+            <button 
+              onClick={() => setSelectedNews(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <div className="overflow-y-auto">
+              <img 
+                src={getImageUrl(selectedNews.image)} 
+                alt={selectedNews.title} 
+                className="w-full h-64 md:h-[400px] object-cover"
+              />
+              <div className="p-6 md:p-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className={`${getCategoryColor(selectedNews.category)} text-white px-3 py-1 rounded-full text-xs font-bold`}>
+                    {selectedNews.category}
+                  </span>
+                  <span className="text-gray-500 text-sm">
+                    {formatDate(selectedNews.date)}
+                  </span>
+                </div>
+                <h2 className="text-2xl md:text-4xl font-extrabold text-slate-900 mb-6 leading-tight">
+                  {selectedNews.title}
+                </h2>
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
+                    {selectedNews.content || selectedNews.description}
+                  </p>
+                </div>
+                
+                <div className="mt-10 pt-10 border-t border-gray-100 flex flex-wrap gap-4">
+                  <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all">
+                    Share Story
+                  </button>
+                  <button 
+                    onClick={() => setSelectedNews(null)}
+                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all"
+                  >
+                    Back to News
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success Popup */}
       {showSuccessPopup && (
         <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">

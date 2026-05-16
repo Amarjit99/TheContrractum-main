@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -21,6 +21,7 @@ const MENU_ITEMS = [
   { id: 'contracts', to: '/admin/contracts', icon: <FileText size={20} />, label: 'Contracts' },
   { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
   { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
+  { id: 'certificates', to: '/admin/certificates', icon: <Award size={20} />, label: 'Certificates' },
   { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
 
@@ -168,7 +169,7 @@ export default function SuperAdminLayout({ children }) {
               <Menu size={20} />
             </button>
 
-            <div className="hidden md:flex items-center border border-gray-100/50 bg-[#eef2f6]/50 rounded-full px-5 py-2.5 shadow-sm min-w-[400px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 focus-within:bg-white focus-within:shadow-md transition-all">
+            <div className="hidden md:flex items-center border border-gray-100 bg-[#eef2f6]/50 rounded-full px-5 py-2.5 shadow-sm min-w-[400px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 focus-within:bg-white focus-within:shadow-md transition-all">
               <Search size={18} className="text-gray-400 mr-3" />
               <input
                 value={globalSearch}
@@ -214,7 +215,7 @@ export default function SuperAdminLayout({ children }) {
 
               {showNotifications && (
                 <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
                     <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
                     <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
                   </div>

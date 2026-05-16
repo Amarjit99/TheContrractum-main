@@ -8,7 +8,7 @@ export default function IndustryAdvisors() {
             name: "Dr. Robert Keynes",
             role: "Ex-Director, Global Strategy at TechGiant",
             quote:
-                "The Contrractum is uniquely positioned to bridge the gap between traditional industry silos and modern digital ecosystems.",
+                "The Contractum is uniquely positioned to bridge the gap between traditional industry silos and modern digital ecosystems.",
             impact: "Strategic Partnerships",
             image: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=400",
         },

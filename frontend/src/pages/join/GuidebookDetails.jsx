@@ -1,8 +1,9 @@
 import React from 'react';
+import { toast } from 'react-hot-toast';
 
 export default function GuidebookDetails() {
     const handleDownload = () => {
-        alert("Downloading Startup Guidebook PDF...");
+        toast.success("Downloading Startup Guidebook PDF...");
     };
 
     return (

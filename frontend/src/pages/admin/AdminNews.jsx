@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Edit2, Trash2, Plus, X, Upload, Calendar, Search, Newspaper } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -177,7 +178,7 @@ export default function AdminNews() {
         if (fileInputRef.current && fileInputRef.current.files[0]) {
             formData.append('image', fileInputRef.current.files[0]);
         } else if (!currentId) {
-            alert('Please select an image.');
+            toast.error('Please select an image.');
             return;
         }
 
@@ -205,7 +206,7 @@ export default function AdminNews() {
                 fetchNews();
             } else {
                 const data = await res.json();
-                alert(data.message || "Something went wrong.");
+                toast.success(data.message || "Something went wrong.");
             }
         } catch (error) {
             console.error("Submit failed", error);
@@ -418,7 +419,7 @@ export default function AdminNews() {
                                 {imagePreview && (
                                     <div className="relative w-48 h-32 rounded-lg overflow-hidden border-4 border-white shadow-xl shrink-0">
                                         <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                        <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="absolute top-1 right-1 bg-white/80 p-1 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition"><X size={14} /></button>
+                                        <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="absolute top-1 right-1 bg-white p-1 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition"><X size={14} /></button>
                                     </div>
                                 )}
                             </div>

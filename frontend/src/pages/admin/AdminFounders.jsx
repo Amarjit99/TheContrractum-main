@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload, Briefcase, Award, Target, Rocket, GraduationCap, QuoteIcon, Star } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -148,7 +149,7 @@ export default function AdminFounders() {
         }, 1500);
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to save data.");
+        toast.error(errData.message || "Failed to save data.");
       }
     } catch (err) {
       console.error(err);
@@ -198,7 +199,7 @@ export default function AdminFounders() {
                 <tr><td colSpan="4" className="text-center py-8 text-gray-500">No data found.</td></tr>
               ) : (
                 filteredFounders.map(f => (
-                  <tr key={f._id} className="hover:bg-gray-50/80 transition-colors">
+                  <tr key={f._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <img src={f.image && f.image.startsWith('/') ? `${API}${f.image}` : f.image} alt={f.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-100" />

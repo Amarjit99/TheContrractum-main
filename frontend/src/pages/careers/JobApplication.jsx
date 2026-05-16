@@ -30,7 +30,7 @@ const STATIC_APPLICATION_PROCESS = [
 const staticJobsData = {
     1: {
         title: "Senior Business Development Manager (BDM)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "India",
         type: "Full-Time",
         roles: [
@@ -54,7 +54,7 @@ const staticJobsData = {
     },
     2: {
         title: "Junior Business Development Manager (BDM)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "India",
         type: "Full-Time",
         roles: [
@@ -77,7 +77,7 @@ const staticJobsData = {
     },
     3: {
         title: "Content Writer (YTDP)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Remote",
         type: "Part-Time",
         roles: [
@@ -99,11 +99,11 @@ const staticJobsData = {
     },
     4: {
         title: "Corporate Ambassador (YTDP)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Remote",
         type: "Part-Time",
         roles: [
-            "Represent TheContrractum in college events and platforms",
+            "Represent TheContractum in college events and platforms",
             "Build brand awareness among student communities",
             "Coordinate with the marketing team for campaigns",
             "Generate leads through referrals and networking",
@@ -120,7 +120,7 @@ const staticJobsData = {
     },
     5: {
         title: "Social Media Marketer (YTDP)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Remote",
         type: "Part-Time",
         roles: [
@@ -141,7 +141,7 @@ const staticJobsData = {
     },
     6: {
         title: "Social Media Internship Program (YTDP)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Worldwide",
         type: "Internship",
         roles: [
@@ -163,7 +163,7 @@ const staticJobsData = {
     },
     7: {
         title: "Software Development Engineer (SDE I)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Kota, Rajasthan",
         type: "Full-Time",
         roles: [
@@ -186,7 +186,7 @@ const staticJobsData = {
     },
     8: {
         title: "Software Development Engineer (SDE II)",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Kota, Rajasthan",
         type: "Full-Time",
         roles: [
@@ -209,7 +209,7 @@ const staticJobsData = {
     },
     9: {
         title: "SDE III - Backend Developer",
-        company: "TheContrractum",
+        company: "TheContractum",
         location: "Kota, Rajasthan",
         type: "Full-Time",
         roles: [
@@ -239,7 +239,7 @@ export default function JobApplication() {
 
     const [job, setJob] = useState(null);
     const [jobLoading, setJobLoading] = useState(true);
-    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: "", coverLetter: "" });
+    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: null, coverLetter: "" });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
     useEffect(() => {
@@ -261,7 +261,7 @@ export default function JobApplication() {
                 const data = await res.json();
                 setJob({
                     ...data,
-                    company: 'TheContrractum',
+                    company: 'TheContractum',
                     _isStatic: false,
                 });
             } catch {
@@ -278,19 +278,29 @@ export default function JobApplication() {
     };
 
     const handleFileChange = (e) => {
-        setFormData(prev => ({ ...prev, resume: e.target.files[0]?.name || '' }));
+        setFormData(prev => ({ ...prev, resume: e.target.files[0] || null }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, success: false, error: null });
+
         const phoneWithCode = `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`;
-        const submissionData = { ...formData, phone: phoneWithCode };
+        
+        const data = new FormData();
+        data.append('fullName', formData.fullName);
+        data.append('email', formData.email);
+        data.append('phone', phoneWithCode);
+        data.append('jobTitle', job?.title);
+        data.append('coverLetter', formData.coverLetter);
+        if (formData.resume) {
+            data.append('resume', formData.resume);
+        }
+
         try {
             const res = await fetch(`${API}/api/cms/applications`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...submissionData, jobTitle: job?.title })
+                body: data
             });
             if (!res.ok) throw new Error('Submission failed');
             setStatus({ loading: false, success: true, error: null });
@@ -345,7 +355,7 @@ export default function JobApplication() {
                     <div className="flex flex-wrap gap-4 text-blue-100">
                         <div className="flex items-center gap-2">
                             <Briefcase size={18} />
-                            <span>{job.company || 'TheContrractum'}</span>
+                            <span>{job.company || 'TheContractum'}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <MapPin size={18} />
@@ -482,7 +492,7 @@ export default function JobApplication() {
 
                     {/* Application Form Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-6">
+                        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-24">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Apply for this position</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {status.success && (

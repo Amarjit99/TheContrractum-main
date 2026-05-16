@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -96,7 +97,7 @@ export default function Profile() {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert('Image must be under 2 MB'); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.success('Image must be under 2 MB'); return; }
     setUploadingAvatar(true);
     const fd = new FormData();
     fd.append('avatar', file);
@@ -104,7 +105,7 @@ export default function Profile() {
       const res = await fetch(`${API}/api/users/avatar`, { method:'POST', headers, body: fd });
       const data = await res.json();
       if (res.ok) setProfile(p => ({ ...p, avatar: data.avatar }));
-      else alert(data.message);
+      else toast.success(data.message);
     } finally { setUploadingAvatar(false); }
   };
 

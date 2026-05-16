@@ -22,7 +22,7 @@ export default function WhyChooseHealthcare() {
                         <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight drop-shadow-2xl">
                             Why Partner With <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
-                                The Contrractum?
+                                The Contractum?
                             </span>
                         </h1>
                         <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-3xl drop-shadow-lg font-light">
@@ -41,7 +41,7 @@ export default function WhyChooseHealthcare() {
                         The intersection of healthcare and technology is arguably the most critical juncture in modern society. When software fails in typical consumer sectors, it results in lost revenue or minor inconveniences. When software fails in healthcare, lives are directly at stake. That fundamental reality informs every line of code we write, every architecture we design, and every product we deploy.
                     </p>
                     <p className="text-lg text-slate-700 leading-loose mb-12">
-                        At The Contrractum, we do not view ourselves merely as software vendors; we are dedicated clinical partners. We integrate our elite engineering units directly alongside your doctors, nurses, hospital administrators, and compliance officers. This total immersion ensures that our solutions are not built in a vacuum but are actively designed to function seamlessly within high-pressure triage centers, remote tele-clinics, and sprawling research laboratories.
+                        At The Contractum, we do not view ourselves merely as software vendors; we are dedicated clinical partners. We integrate our elite engineering units directly alongside your doctors, nurses, hospital administrators, and compliance officers. This total immersion ensures that our solutions are not built in a vacuum but are actively designed to function seamlessly within high-pressure triage centers, remote tele-clinics, and sprawling research laboratories.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">

@@ -131,7 +131,7 @@ export default function AdminAdmins() {
               ) : !data.users || data.users.length === 0 ? (
                 <tr><td colSpan={6} className="py-12 text-center text-gray-400 font-medium">{data.message || 'No administrators found.'}</td></tr>
               ) : data.users.map(u => (
-                <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
+                <tr key={u._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-blue-200">
@@ -195,7 +195,7 @@ export default function AdminAdmins() {
       {editingAdmin && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
           <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h2 className="text-lg sm:text-xl font-bold text-gray-800">Admin Setup</h2>
               <button onClick={() => setEditingAdmin(null)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X size={20} />

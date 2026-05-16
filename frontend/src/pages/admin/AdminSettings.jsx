@@ -1,5 +1,6 @@
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Save } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function AdminSettings() {
   return (
@@ -9,14 +10,14 @@ export default function AdminSettings() {
           <h1 className="text-2xl font-bold text-gray-800">System Settings</h1>
           <p className="text-gray-500 text-sm mt-1">Manage core website configurations</p>
         </div>
-        <button onClick={() => alert('Settings saved successfully!')}
+        <button onClick={() => toast.success('Settings saved successfully!')}
           className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-sm">
           <Save size={16} /> Save Changes
         </button>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm max-w-3xl overflow-hidden">
-        <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+        <div className="p-6 border-b border-gray-100 bg-gray-50">
           <h2 className="text-lg font-bold text-gray-800">General Information</h2>
           <p className="text-gray-500 text-sm">Update your basic site details and SEO meta information.</p>
         </div>
@@ -37,7 +38,7 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        <div className="p-6 border-b border-t border-gray-100 bg-gray-50/50">
+        <div className="p-6 border-b border-t border-gray-100 bg-gray-50">
           <h2 className="text-lg font-bold text-gray-800">Contact Details</h2>
         </div>
         <div className="p-6 space-y-6">
