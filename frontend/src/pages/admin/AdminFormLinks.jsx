@@ -82,13 +82,13 @@ export default function AdminFormLinks() {
   };
 
   const SummaryCard = ({ title, value, icon, color }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-5 transition-all hover:shadow-md">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transition-all hover:shadow-md">
       <div className={`p-4 rounded-xl ${color} bg-opacity-10 text-${color.split('-')[1]}-600`}>
         {icon}
       </div>
       <div>
         <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">{title}</p>
-        <h3 className="text-3xl font-black text-gray-900 dark:text-gray-100 mt-0.5">{value}</h3>
+        <h3 className="text-3xl font-black text-gray-900 mt-0.5">{value}</h3>
       </div>
     </div>
   );
@@ -101,7 +101,7 @@ export default function AdminFormLinks() {
             <span className="p-2 bg-blue-100 text-[#1e5cdc] rounded-lg">
                 <LinkIcon size={20} />
             </span>
-            <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Form Builder & Links</h1>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Form Builder & Links</h1>
           </div>
           <p className="text-gray-500 text-sm font-medium">Create Google Form-like applications. Share links to collect candidate data seamlessly.</p>
         </div>
@@ -127,8 +127,8 @@ export default function AdminFormLinks() {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <h3 className="font-black text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
                     <BarChart3 size={16} className="text-blue-500" /> Response Distribution
                 </h3>
                 <div className="h-[300px] w-full">
@@ -151,8 +151,8 @@ export default function AdminFormLinks() {
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col">
-                <h3 className="font-black text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+                <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
                     <Filter size={16} className="text-purple-500" /> Category Share
                 </h3>
                 <div className="flex-1 h-[250px]">
@@ -188,9 +188,9 @@ export default function AdminFormLinks() {
           </div>
           
           {/* Form Links Section */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 dark:bg-gray-700/50">
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <LinkIcon size={18} className="text-[#1e5cdc]" />
                 Available Form Links
               </h2>
@@ -198,18 +198,18 @@ export default function AdminFormLinks() {
             
             <div className="divide-y divide-gray-50">
               {stats?.merged?.map((form) => (
-                <div key={form.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 dark:bg-gray-700/80 transition-colors">
+                <div key={form.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <h3 className="font-bold text-gray-900 dark:text-gray-100 truncate">{form.name}</h3>
+                      <h3 className="font-bold text-gray-900 truncate">{form.name}</h3>
                       <span className="text-[10px] font-black uppercase tracking-wider text-[#1e5cdc] bg-blue-50 px-2 py-0.5 rounded-full">
                         {form.category}
                       </span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                       <p className="flex items-center gap-1">
-                        <span className="font-semibold text-gray-700 dark:text-gray-300">Responses:</span> 
-                        <span className="bg-gray-100 px-2 py-0.5 rounded font-bold text-gray-700 dark:text-gray-300">{form.count || 0}</span>
+                        <span className="font-semibold text-gray-700">Responses:</span> 
+                        <span className="bg-gray-100 px-2 py-0.5 rounded font-bold text-gray-700">{form.count || 0}</span>
                       </p>
                       <p className="hidden sm:block text-gray-300">•</p>
                       <p className="text-gray-400 truncate max-w-xs md:max-w-md xl:max-w-xl">/{form.path}</p>
@@ -222,7 +222,7 @@ export default function AdminFormLinks() {
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                         copiedId === form.id 
                           ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' 
-                          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-[#1e5cdc] hover:border-[#1e5cdc]'
+                          : 'bg-white border border-gray-200 text-gray-600 hover:text-[#1e5cdc] hover:border-[#1e5cdc]'
                       }`}
                     >
                       {copiedId === form.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
@@ -231,7 +231,7 @@ export default function AdminFormLinks() {
                       href={`/#${form.path}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="p-1.5 bg-gray-50 dark:bg-gray-700 text-gray-500 hover:text-[#1e5cdc] rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                      className="p-1.5 bg-gray-50 text-gray-500 hover:text-[#1e5cdc] rounded-lg transition-colors border border-transparent hover:border-blue-100"
                       title="Preview Form"
                     >
                       <ExternalLink size={16} />

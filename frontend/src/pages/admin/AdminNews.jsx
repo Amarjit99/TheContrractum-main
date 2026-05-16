@@ -146,7 +146,7 @@ export default function AdminNews() {
         <AdminLayout>
             <div className="mb-6 mt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
                         <Newspaper size={24} className="text-[#1e5cdc] sm:w-7 sm:h-7" />
                         News Management
                     </h1>
@@ -156,7 +156,7 @@ export default function AdminNews() {
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                     <div className="relative w-full sm:w-auto">
                         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search news..." className="pl-10 pr-4 py-2 border border-blue-100 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64" />
+                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search news..." className="pl-10 pr-4 py-2 border border-blue-100 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64" />
                     </div>
                     {!isEditing && (
                         <button onClick={() => { resetForm(); setIsEditing(true); }} className="w-full sm:w-auto bg-[#1e5cdc] text-white px-4 py-2 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition shadow-lg shrink-0">
@@ -169,7 +169,7 @@ export default function AdminNews() {
             {msg && <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-bold animate-fade-in">{msg}</div>}
 
             {isEditing && (
-                <div className="bg-white dark:bg-gray-800 border-2 border-[#1e5cdc] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 shadow-xl animate-in fade-in zoom-in-95 duration-300 relative">
+                <div className="bg-white border-2 border-[#1e5cdc] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 shadow-xl animate-in fade-in zoom-in-95 duration-300 relative">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg sm:text-xl font-black text-slate-900 italic">{currentId ? 'Edit Article' : 'Create New Article'}</h2>
                         <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-red-500 transition"><X size={24} /></button>
@@ -209,7 +209,7 @@ export default function AdminNews() {
                             <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50 p-4 border-2 border-slate-100 border-dashed rounded-xl">
                                 <div className="flex-1 w-full">
                                     <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" id="image-upload" />
-                                    <label htmlFor="image-upload" className="flex flex-col justify-center items-center h-32 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-blue-200 cursor-pointer hover:bg-blue-50 transition w-full group">
+                                    <label htmlFor="image-upload" className="flex flex-col justify-center items-center h-32 bg-white rounded-lg border-2 border-dashed border-blue-200 cursor-pointer hover:bg-blue-50 transition w-full group">
                                         <Upload size={28} className="text-blue-400 group-hover:text-blue-600 mb-2" />
                                         <span className="text-sm font-bold text-slate-500">Click to upload image</span>
                                         <span className="text-xs text-slate-400 mt-1">JPEG, PNG, WEBP</span>
@@ -218,7 +218,7 @@ export default function AdminNews() {
                                 {imagePreview && (
                                     <div className="relative w-48 h-32 rounded-lg overflow-hidden border-4 border-white shadow-xl shrink-0">
                                         <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                        <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="absolute top-1 right-1 bg-white dark:bg-gray-800/80 p-1 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition"><X size={14} /></button>
+                                        <button type="button" onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="absolute top-1 right-1 bg-white p-1 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition"><X size={14} /></button>
                                     </div>
                                 )}
                             </div>
@@ -237,18 +237,18 @@ export default function AdminNews() {
                     {loading ? (
                         <div className="col-span-full flex justify-center py-20"><div className="w-10 h-10 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin"></div></div>
                     ) : filteredNews.length === 0 ? (
-                        <div className="col-span-full text-center py-20 bg-white dark:bg-gray-800 rounded-2xl text-gray-400 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center">
+                        <div className="col-span-full text-center py-20 bg-white rounded-2xl text-gray-400 shadow-sm border border-gray-100 flex flex-col items-center">
                             <Newspaper size={48} className="text-gray-200 mb-3" />
                             <p className="font-bold">No news articles found.</p>
                             <p className="text-sm">Create one to get started.</p>
                         </div>
                     ) : (
                         filteredNews.map(n => (
-                            <div key={n._id} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 group flex flex-col h-full">
+                            <div key={n._id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group flex flex-col h-full">
                                 <div className="h-40 sm:h-48 relative overflow-hidden bg-slate-100 shrink-0">
                                     <img src={n.image.startsWith('http') ? n.image : `${API}${n.image}`} alt={n.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                                     <div className="absolute top-3 left-3 flex gap-2">
-                                        <span className="bg-white dark:bg-gray-800/90 backdrop-blur text-[#1e5cdc] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">{n.category}</span>
+                                        <span className="bg-white backdrop-blur text-[#1e5cdc] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">{n.category}</span>
                                         {n.featured && <span className="bg-yellow-400/90 text-yellow-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">Featured</span>}
                                     </div>
                                 </div>
@@ -256,7 +256,7 @@ export default function AdminNews() {
                                     <p className="text-[10px] uppercase font-bold text-gray-400 flex items-center gap-1 mb-2"><Calendar size={12} /> {new Date(n.date).toLocaleDateString()}</p>
                                     <h3 className="font-black text-slate-800 text-base sm:text-lg leading-tight mb-2 line-clamp-2">{n.title}</h3>
                                     <p className="text-gray-500 text-sm line-clamp-3 mb-4">{n.description}</p>
-                                    <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                                         <button onClick={() => handleEdit(n)} className="text-[#1e5cdc] text-sm font-bold flex items-center gap-1 hover:underline"><Edit2 size={14} /> Edit</button>
                                         <button onClick={() => handleDelete(n._id)} className="text-red-400 text-sm font-bold flex items-center gap-1 hover:text-red-600 transition"><Trash2 size={14} /> Delete</button>
                                     </div>

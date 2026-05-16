@@ -21,7 +21,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
   return (
     <div
       id={id}
-      className="w-[800px] h-[580px] bg-white dark:bg-gray-800 relative flex flex-col items-center p-12 overflow-hidden border-[16px]"
+      className="w-[800px] h-[580px] bg-white relative flex flex-col items-center p-12 overflow-hidden border-[16px]"
       style={{ borderColor: selectedTheme.primary, backgroundColor: selectedTheme.bg }}
     >
       {/* Background Decorative Elements */}
@@ -43,7 +43,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         {globalSettings?.companySeal ? (
           <img src={globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`} alt="Seal" className="w-full h-full object-contain" crossOrigin="anonymous" />
         ) : (
-          <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40 bg-white dark:bg-gray-800/50 backdrop-blur-sm">
+          <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40 bg-white backdrop-blur-sm">
             <span className="text-[8px] font-black uppercase tracking-tighter text-center leading-tight">
               {globalSettings?.companyName ? globalSettings.companyName.substring(0, 10) : 'Contractum'}
             </span>
@@ -55,7 +55,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
 
       {/* Candidate Photo (if available) */}
       {formData.fileUrl && (
-        <div className="absolute top-12 left-12 z-20 w-24 h-28 border-[3px] bg-white dark:bg-gray-800/80 shadow-md flex items-center justify-center overflow-hidden rounded-md" style={{ borderColor: selectedTheme.primary + '66' }}>
+        <div className="absolute top-12 left-12 z-20 w-24 h-28 border-[3px] bg-white shadow-md flex items-center justify-center overflow-hidden rounded-md" style={{ borderColor: selectedTheme.primary + '66' }}>
           <img src={formData.fileUrl.startsWith('data:') ? formData.fileUrl : `${API}${formData.fileUrl}`} alt="Candidate" className="w-full h-full object-cover" crossOrigin="anonymous" />
         </div>
       )}
@@ -97,7 +97,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
       {/* Unified Bottom Layout */}
       <div className="absolute bottom-10 left-12 right-12 flex items-end justify-between z-10 border-t pt-6" style={{ borderColor: selectedTheme.primary + '33' }}>
         {/* QR Code Section */}
-        <div className="flex items-center gap-3 p-2 rounded-lg bg-white dark:bg-gray-800/40 border border-white/60 backdrop-blur-[2px]">
+        <div className="flex items-center gap-3 p-2 rounded-lg bg-white border border-white/60 backdrop-blur-[2px]">
           <QRCodeSVG
             value={`${window.location.origin}/verify/${formData.certificateId}`}
             size={52}
@@ -113,7 +113,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
 
         {/* Date Section */}
         <div className="flex flex-col items-center">
-          <span className="text-[14px] font-bold text-gray-800 dark:text-gray-200">
+          <span className="text-[14px] font-bold text-gray-800">
             {new Date(formData.issueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </span>
           <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
@@ -122,7 +122,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
 
         {/* Signature / Issued By Section */}
         <div className="flex flex-col items-center">
-          <span className="text-[18px] font-serif font-bold italic text-gray-800 dark:text-gray-200">{formData.issuedBy || 'The Contractum'}</span>
+          <span className="text-[18px] font-serif font-bold italic text-gray-800">{formData.issuedBy || 'The Contractum'}</span>
           <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Issued By</span>
           <span className="text-[7px] font-bold text-gray-400 uppercase">Authorized Authority</span>
@@ -888,7 +888,7 @@ export default function AdminCertificates() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Certificate Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Certificate Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage, Preview and Track Certificates</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -897,7 +897,7 @@ export default function AdminCertificates() {
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name or ID..."
-              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full bg-white dark:bg-gray-800"
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full bg-white"
             />
           </div>
           <button onClick={exportToExcel} className="p-2.5 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-100" title="Export to Excel">
@@ -918,7 +918,7 @@ export default function AdminCertificates() {
       {/* Filters Bar */}
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <select
-          className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={filterYear}
           onChange={(e) => setFilterYear(e.target.value)}
         >
@@ -928,7 +928,7 @@ export default function AdminCertificates() {
           ))}
         </select>
         <select
-          className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
         >
@@ -938,7 +938,7 @@ export default function AdminCertificates() {
           ))}
         </select>
         <select
-          className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={activeTab}
           onChange={(e) => setActiveTab(e.target.value)}
         >
@@ -948,7 +948,7 @@ export default function AdminCertificates() {
           ))}
         </select>
         <select
-          className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={filterDepartment}
           onChange={(e) => setFilterDepartment(e.target.value)}
         >
@@ -958,7 +958,7 @@ export default function AdminCertificates() {
           ))}
         </select>
         <select
-          className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -988,7 +988,7 @@ export default function AdminCertificates() {
           { label: 'Active / Issued', val: stats.approved, color: 'text-green-600', bg: 'bg-green-50', icon: <CheckCircle2 size={20} /> },
           { label: 'Revoked / Expired', val: stats.revoked, color: 'text-red-600', bg: 'bg-red-50', icon: <X size={20} /> }
         ].map((s, i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
+          <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
             <div>
               <p className="text-gray-400 text-xs font-black uppercase tracking-widest mb-1">{s.label}</p>
               <h3 className={`text-2xl font-black ${s.color}`}>{s.val}</h3>
@@ -996,7 +996,7 @@ export default function AdminCertificates() {
             <div className={`p-3 ${s.bg} ${s.color} rounded-xl`}>{s.icon}</div>
           </div>
         ))}
-        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-7 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-7 flex flex-col justify-between">
           <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Advanced Exports</div>
           <div className="flex flex-wrap gap-2">
             <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100 text-xs font-bold" title="Export Excel Report">
@@ -1018,7 +1018,7 @@ export default function AdminCertificates() {
       {certificates.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Category Distribution Pie Chart */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
               <Award size={14} className="text-[#1e5cdc]" /> Category Distribution
             </h3>
@@ -1048,7 +1048,7 @@ export default function AdminCertificates() {
           </div>
 
           {/* Monthly Issuance Bar Chart */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
               <FileText size={14} className="text-[#1e5cdc]" /> Monthly Issuance ({new Date().getFullYear()})
             </h3>
@@ -1080,19 +1080,19 @@ export default function AdminCertificates() {
 
       {/* Verification Activity Section (New Feature like ID Cards) */}
       {scanLogs.length > 0 && (
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
-            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
+        <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
               <ShieldCheck size={18} className="text-emerald-500" /> Recent Certificate Verifications
             </h3>
             <div className="flex items-center gap-3">
               <button onClick={fetchCertificates} className="p-1.5 text-gray-400 hover:text-[#1e5cdc] transition-colors" title="Refresh Logs"><RefreshCw size={14} className={loading ? 'animate-spin' : ''} /></button>
-              <span className="text-[10px] font-bold text-gray-400 bg-white dark:bg-gray-800 px-2 py-1 rounded-full border border-gray-100 dark:border-gray-700 uppercase tracking-tighter">Live Audit</span>
+              <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-full border border-gray-100 uppercase tracking-tighter">Live Audit</span>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700/50">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Recipient</th>
@@ -1102,9 +1102,9 @@ export default function AdminCertificates() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {scanLogs.slice(0, 5).map(log => (
-                  <tr key={log._id} className="hover:bg-gray-50 dark:bg-gray-700/50 transition-colors">
+                  <tr key={log._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.scannedAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 dark:text-gray-200 uppercase">{log.recipientName}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.recipientName}</td>
                     <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.certificateId}</td>
                     <td className="px-6 py-3 text-xs font-medium text-gray-400">{log.ipAddress}</td>
                   </tr>
@@ -1117,9 +1117,9 @@ export default function AdminCertificates() {
 
       {/* Admin Audit Logs Section */}
       {auditLogs.length > 0 && (
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
-            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
+        <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
               <FileText size={18} className="text-[#1e5cdc]" /> Administrator Activity Ledger
             </h3>
             <div className="flex items-center gap-3">
@@ -1128,7 +1128,7 @@ export default function AdminCertificates() {
           </div>
           <div className="overflow-x-auto max-h-64 overflow-y-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700/50 sticky top-0">
+              <thead className="bg-gray-50 sticky top-0">
                 <tr>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Admin</th>
@@ -1139,16 +1139,16 @@ export default function AdminCertificates() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {auditLogs.map(log => (
-                  <tr key={log._id} className="hover:bg-gray-50 dark:bg-gray-700/50 transition-colors">
+                  <tr key={log._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.createdAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 dark:text-gray-200 uppercase">{log.adminName}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.adminName}</td>
                     <td className="px-6 py-3">
                       <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${
                         log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                         log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                         log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
                         log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
-                        'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-100 dark:border-gray-700'
+                        'bg-gray-50 text-gray-600 border-gray-100'
                       }`}>
                         {log.action}
                       </span>
@@ -1164,7 +1164,7 @@ export default function AdminCertificates() {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto no-scrollbar items-center justify-between">
+      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar items-center justify-between">
         <div className="flex">
           {tabs.map(tab => (
             <button
@@ -1172,7 +1172,7 @@ export default function AdminCertificates() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
                 ? 'border-[#1e5cdc] text-[#1e5cdc]'
-                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
             >
               {tab.icon}
@@ -1181,7 +1181,7 @@ export default function AdminCertificates() {
           ))}
         </div>
         {isSuperAdmin && (
-          <button onClick={() => setIsSettingsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-sm mr-2">
+          <button onClick={() => setIsSettingsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 shadow-sm mr-2">
             <SettingsIcon size={16} /> Branding Settings
           </button>
         )}
@@ -1191,7 +1191,7 @@ export default function AdminCertificates() {
       {selectedIds.length > 0 && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-blue-600 text-white px-4 sm:px-6 py-4 rounded-2xl mb-6 shadow-lg shadow-blue-500/20 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center gap-3">
-            <div className="bg-white dark:bg-gray-800/20 p-2 rounded-lg shrink-0">
+            <div className="bg-white p-2 rounded-lg shrink-0">
               <CheckCircle2 size={18} />
             </div>
             <span className="font-bold text-sm">{selectedIds.length} Certificates Selected</span>
@@ -1200,7 +1200,7 @@ export default function AdminCertificates() {
             <button
               onClick={() => exportCertificatesAsPDF(certificates.filter(c => selectedIds.includes(c._id)))}
               disabled={downloading}
-              className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 rounded-xl text-xs sm:text-sm font-bold transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-2 bg-white hover:bg-white rounded-xl text-xs sm:text-sm font-bold transition-colors disabled:opacity-50"
             >
               {downloading ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />} Export PDF
             </button>
@@ -1214,10 +1214,10 @@ export default function AdminCertificates() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4">
                   <input
@@ -1246,7 +1246,7 @@ export default function AdminCertificates() {
                 <tr><td colSpan="8" className="text-center py-12 text-gray-500 font-medium">No certificates found matching your criteria.</td></tr>
               ) : (
                 filteredCerts.map(c => (
-                  <tr key={c._id} className={`hover:bg-gray-50 dark:bg-gray-700/80 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
+                  <tr key={c._id} className={`hover:bg-gray-50 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
@@ -1264,7 +1264,7 @@ export default function AdminCertificates() {
                           <Eye size={16} />
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-gray-800 dark:text-gray-200">{c.name}</span>
+                          <span className="font-semibold text-gray-800">{c.name}</span>
                           <span className="text-xs text-gray-400 font-medium uppercase tracking-tighter">{c.designation || 'No designation'}</span>
                         </div>
                       </div>
@@ -1273,9 +1273,9 @@ export default function AdminCertificates() {
                       <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 uppercase">{c.certificateId}</span>
                     </td>
                     <td className="px-6 py-4 text-gray-500 hidden md:table-cell">
-                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded text-gray-500">{c.type}</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-gray-50 border border-gray-100 rounded text-gray-500">{c.type}</span>
                     </td>
-                    <td className="px-6 py-4 text-xs font-bold text-gray-600 dark:text-gray-400 hidden md:table-cell">
+                    <td className="px-6 py-4 text-xs font-bold text-gray-600 hidden md:table-cell">
                       {new Date(c.issueDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
@@ -1287,7 +1287,7 @@ export default function AdminCertificates() {
                           'Approved': 'bg-indigo-50 text-indigo-600 border-indigo-100',
                           'Issued': 'bg-emerald-50 text-emerald-600 border-emerald-100',
                           'Revoked': 'bg-red-50 text-red-600 border-red-100',
-                          'Expired': 'bg-gray-100 text-gray-500 border-gray-200 dark:border-gray-700',
+                          'Expired': 'bg-gray-100 text-gray-500 border-gray-200',
                         };
                         return (
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${styles[s] || styles['Issued']}`}>
@@ -1297,7 +1297,7 @@ export default function AdminCertificates() {
                       })()}
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{c.issuedBy || 'The Contractum'}</span>
+                      <span className="text-xs font-bold text-gray-600">{c.issuedBy || 'The Contractum'}</span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5 flex-wrap">
@@ -1363,23 +1363,23 @@ export default function AdminCertificates() {
         {/* Add/Preview Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-[80vh] animate-in fade-in zoom-in duration-200">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-[80vh] animate-in fade-in zoom-in duration-200">
               {!previewMode ? (
                 <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
-                  <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">{editingId ? 'Edit Certificate' : 'Add New Certificate'}</h2>
-                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
+                  <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingId ? 'Edit Certificate' : 'Add New Certificate'}</h2>
+                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                       <X size={20} />
                     </button>
                   </div>
                   <form onSubmit={handlePreview} className="p-6 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Recipient Name *</label>
-                        <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Jane Doe" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Name *</label>
+                        <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Jane Doe" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
                         <select required value={formData.type} onChange={e => {
                           const newType = e.target.value;
                           setFormData({
@@ -1388,7 +1388,7 @@ export default function AdminCertificates() {
                             department: 'General',
                             designation: DESIGNATIONS_MAPPING[newType]?.General?.[0] || ''
                           });
-                        }} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
+                        }} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
                           <option value="">Select Category</option>
                           {CATEGORIES.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
@@ -1398,7 +1398,7 @@ export default function AdminCertificates() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Department *</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Department *</label>
                         <select required value={formData.department} onChange={e => {
                           const newDept = e.target.value;
                           setFormData({
@@ -1406,15 +1406,15 @@ export default function AdminCertificates() {
                             department: newDept,
                             designation: DESIGNATIONS_MAPPING[formData.type]?.[newDept]?.[0] || ''
                           });
-                        }} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
+                        }} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
                           {(DEPARTMENTS_BY_CATEGORY[formData.type] || ['General']).map(dept => (
                             <option key={dept} value={dept}>{dept}</option>
                           ))}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Designation *</label>
-                        <select required value={formData.designation} onChange={e => setFormData({ ...formData, designation: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Designation *</label>
+                        <select required value={formData.designation} onChange={e => setFormData({ ...formData, designation: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
                           {(DESIGNATIONS_MAPPING[formData.type]?.[formData.department] || ['Other']).map(des => (
                             <option key={des} value={des}>{des}</option>
                           ))}
@@ -1423,41 +1423,41 @@ export default function AdminCertificates() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Certificate ID *</label>
-                        <input required type="text" value={formData.certificateId} onChange={e => setFormData({ ...formData, certificateId: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] font-mono" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Certificate ID *</label>
+                        <input required type="text" value={formData.certificateId} onChange={e => setFormData({ ...formData, certificateId: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] font-mono" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Recipient Email (Optional)</label>
-                        <input type="email" value={formData.recipientEmail} onChange={e => setFormData({ ...formData, recipientEmail: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="jane@example.com" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Email (Optional)</label>
+                        <input type="email" value={formData.recipientEmail} onChange={e => setFormData({ ...formData, recipientEmail: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="jane@example.com" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Recipient Phone (WhatsApp)</label>
-                        <input type="tel" value={formData.recipientPhone} onChange={e => setFormData({ ...formData, recipientPhone: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+91 9876543210" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Phone (WhatsApp)</label>
+                        <input type="tel" value={formData.recipientPhone} onChange={e => setFormData({ ...formData, recipientPhone: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+91 9876543210" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Issue Date *</label>
-                        <input required type="date" value={formData.issueDate} onChange={e => setFormData({ ...formData, issueDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issue Date *</label>
+                        <input required type="date" value={formData.issueDate} onChange={e => setFormData({ ...formData, issueDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Issued By</label>
-                        <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By</label>
+                        <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Details / Project Description</label>
-                      <textarea value={formData.details} onChange={e => setFormData({ ...formData, details: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={2} placeholder="Briefly describe achievement..." />
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Details / Project Description</label>
+                      <textarea value={formData.details} onChange={e => setFormData({ ...formData, details: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={2} placeholder="Briefly describe achievement..." />
                     </div>
                     <div className="pt-2">
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-widest text-[10px]">Visual Theme Profile</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-widest text-[10px]">Visual Theme Profile</label>
                       <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
                         {THEME_COLORS.map(theme => (
                           <button
                             key={theme.id}
                             type="button"
                             onClick={() => setFormData({ ...formData, themeId: theme.id })}
-                            className={`group relative h-14 rounded-xl border-2 transition-all overflow-hidden ${formData.themeId === theme.id ? 'border-[#1e5cdc] scale-105 shadow-lg' : 'border-gray-100 dark:border-gray-700 hover:border-gray-300'}`}
+                            className={`group relative h-14 rounded-xl border-2 transition-all overflow-hidden ${formData.themeId === theme.id ? 'border-[#1e5cdc] scale-105 shadow-lg' : 'border-gray-100 hover:border-gray-300'}`}
                           >
                             <div className="absolute inset-0 flex flex-col">
                               <div className="h-2/3 w-full" style={{ backgroundColor: theme.primary }}></div>
@@ -1475,7 +1475,7 @@ export default function AdminCertificates() {
                         ))}
                       </div>
                     </div>
-                    <div className="pt-4 flex items-center justify-between gap-3 mt-4 border-t border-gray-100 dark:border-gray-700 pb-6">
+                    <div className="pt-4 flex items-center justify-between gap-3 mt-4 border-t border-gray-100 pb-6">
                       <div className="flex flex-col">
                         <label className="inline-flex items-center gap-2 cursor-pointer group">
                           <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
@@ -1488,7 +1488,7 @@ export default function AdminCertificates() {
                         <button
                           type="button"
                           onClick={() => setIsModalOpen(false)}
-                          className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors"
+                          className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                         >
                           Cancel
                         </button>
@@ -1504,7 +1504,7 @@ export default function AdminCertificates() {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 p-4 md:p-8 overflow-y-auto relative min-h-0">
-                  <button onClick={() => setPreviewMode(false)} className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-800 rounded-full shadow-md text-gray-500 hover:text-red-500 transition-all z-50">
+                  <button onClick={() => setPreviewMode(false)} className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md text-gray-500 hover:text-red-500 transition-all z-50">
                     <X size={24} />
                   </button>
                   {success ? (
@@ -1512,7 +1512,7 @@ export default function AdminCertificates() {
                       <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
                         <CheckCircle size={40} className="text-emerald-500" />
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Certificate Processed!</h3>
+                      <h3 className="text-2xl font-bold text-gray-800">Certificate Processed!</h3>
                       <p className="text-gray-500 mt-2">The record has been saved and theme generated.</p>
                     </div>
                   ) : (
@@ -1526,10 +1526,10 @@ export default function AdminCertificates() {
                           <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Generating High-Fidelity Preview...</span>
                         </div>
                       ) : (
-                        <div className="shadow-2xl flex-shrink-0 w-full max-w-4xl overflow-hidden rounded-lg bg-white dark:bg-gray-800">
+                        <div className="shadow-2xl flex-shrink-0 w-full max-w-4xl overflow-hidden rounded-lg bg-white">
                           {generatedPreview || candidatePhoto ? (
-                            <div className="absolute inset-0 z-0 bg-white dark:bg-gray-800 shadow-xl shadow-black/5 p-4 origin-center">
-                              <img src={generatedPreview || candidatePhoto} alt="Certificate Preview" className="w-full h-auto border border-gray-100 dark:border-gray-700 rounded-sm" />
+                            <div className="absolute inset-0 z-0 bg-white shadow-xl shadow-black/5 p-4 origin-center">
+                              <img src={generatedPreview || candidatePhoto} alt="Certificate Preview" className="w-full h-auto border border-gray-100 rounded-sm" />
                             </div>
                           ) : (
                             <div className="w-full h-64 flex items-center justify-center text-gray-400 font-bold uppercase">No Preview Available</div>
@@ -1540,7 +1540,7 @@ export default function AdminCertificates() {
                         <button
                           onClick={() => setPreviewMode(false)}
                           disabled={isProcessing}
-                          className="flex-1 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm disabled:opacity-50"
+                          className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
                         >
                           Edit Details
                         </button>
@@ -1570,7 +1570,7 @@ export default function AdminCertificates() {
         {/* Bulk Modal */}
         {isBulkModalOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-300 border border-white/20">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-300 border border-white/20">
               <div className="p-8">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
@@ -1578,11 +1578,11 @@ export default function AdminCertificates() {
                       <FileSpreadsheet size={24} />
                     </div>
                     <div>
-                      <h2 className="text-xl font-black text-gray-800 dark:text-gray-200">Bulk Generation</h2>
+                      <h2 className="text-xl font-black text-gray-800">Bulk Generation</h2>
                       <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Onboard Multiple Recipients</p>
                     </div>
                   </div>
-                  <button onClick={() => setIsBulkModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 p-2 hover:bg-gray-100 rounded-full transition-all">
+                  <button onClick={() => setIsBulkModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-full transition-all">
                     <X size={20} />
                   </button>
                 </div>
@@ -1606,7 +1606,7 @@ export default function AdminCertificates() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/50 transition-all cursor-pointer group relative overflow-hidden">
+                  <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50/50 transition-all cursor-pointer group relative overflow-hidden">
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload size={32} className="text-gray-400 group-hover:text-emerald-500 transition-colors mb-3" />
                       <p className="mb-2 text-sm text-gray-500 font-bold">Click to upload CSV</p>
@@ -1620,7 +1620,7 @@ export default function AdminCertificates() {
                       disabled={isProcessing}
                     />
                     {isProcessing && (
-                      <div className="absolute inset-0 bg-white dark:bg-gray-800/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+                      <div className="absolute inset-0 bg-white backdrop-blur-sm flex flex-col items-center justify-center gap-3">
                         <RefreshCw size={32} className="text-emerald-600 animate-spin" />
                         <p className="text-sm font-black text-emerald-600 uppercase tracking-widest">Processing Bulk Data...</p>
                       </div>
@@ -1636,9 +1636,9 @@ export default function AdminCertificates() {
       {/* Branding Settings Modal */}
       {isSettingsModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 shrink-0">
-              <h2 className="text-xl font-black text-gray-800 dark:text-gray-200">Branding Settings</h2>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50 shrink-0">
+              <h2 className="text-xl font-black text-gray-800">Branding Settings</h2>
               <button onClick={() => setIsSettingsModalOpen(false)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors">
                 <X size={20} />
               </button>
@@ -1649,7 +1649,7 @@ export default function AdminCertificates() {
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Name</label>
                   <input
                     type="text"
-                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                     value={globalSettings.companyName}
                     onChange={(e) => setGlobalSettings({ ...globalSettings, companyName: e.target.value })}
                   />
@@ -1657,7 +1657,7 @@ export default function AdminCertificates() {
                 <div>
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Logo</label>
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                       {globalSettings.companyLogo ? (
                         <img src={globalSettings.companyLogo.startsWith('data:') ? globalSettings.companyLogo : `${API}${globalSettings.companyLogo}`} alt="Logo" className="w-full h-full object-contain p-1" />
                       ) : (
@@ -1685,7 +1685,7 @@ export default function AdminCertificates() {
                 <div>
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Seal</label>
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                       {globalSettings.companySeal ? (
                         <img src={globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`} alt="Seal" className="w-full h-full object-contain p-1" />
                       ) : (
@@ -1713,7 +1713,7 @@ export default function AdminCertificates() {
                 <div>
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Authorized Signature</label>
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                       {globalSettings.authorizedSignature ? (
                         <img src={globalSettings.authorizedSignature.startsWith('data:') ? globalSettings.authorizedSignature : `${API}${globalSettings.authorizedSignature}`} alt="Signature" className="w-full h-full object-contain p-1" />
                       ) : (
@@ -1742,7 +1742,7 @@ export default function AdminCertificates() {
                   <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Signatory Designation</label>
                   <input
                     type="text"
-                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                     value={globalSettings.signatoryDesignation || ''}
                     onChange={(e) => setGlobalSettings({ ...globalSettings, signatoryDesignation: e.target.value })}
                     placeholder="e.g. Director, CEO, HR Manager"
@@ -1750,10 +1750,10 @@ export default function AdminCertificates() {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 shrink-0 flex justify-end gap-3">
+            <div className="p-6 border-t border-gray-100 bg-gray-50 shrink-0 flex justify-end gap-3">
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
-                className="px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-gray-300 rounded-xl transition-colors shadow-sm"
+                className="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 rounded-xl transition-colors shadow-sm"
               >
                 Cancel
               </button>

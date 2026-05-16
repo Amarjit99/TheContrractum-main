@@ -165,8 +165,8 @@ export default function AdminTasks() {
       case 'Urgent': return 'bg-red-100 text-red-700 border-red-200';
       case 'High': return 'bg-orange-100 text-orange-700 border-orange-200';
       case 'Medium': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'Low': return 'bg-gray-100 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700';
-      default: return 'bg-gray-100 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700';
+      case 'Low': return 'bg-gray-100 text-gray-700 border-gray-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
@@ -174,7 +174,7 @@ export default function AdminTasks() {
     switch(status) {
       case 'Completed': return 'bg-green-100 text-green-700 border-green-200';
       case 'In Progress': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700';
+      default: return 'bg-gray-100 text-gray-600 border-gray-200';
     }
   };
 
@@ -184,13 +184,13 @@ export default function AdminTasks() {
   const completedTasks = tasks.filter(t => t.status === 'Completed');
 
   const Column = ({ title, statusGroup, icon, bg }) => (
-    <div className={`flex flex-col bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-2xl h-full shadow-sm`}>
-      <div className={`p-4 border-b border-gray-200 dark:border-gray-700 ${bg} rounded-t-2xl flex items-center justify-between`}>
+    <div className={`flex flex-col bg-gray-50 border border-gray-200 rounded-2xl h-full shadow-sm`}>
+      <div className={`p-4 border-b border-gray-200 ${bg} rounded-t-2xl flex items-center justify-between`}>
         <div className="flex items-center gap-2">
           {icon}
-          <h3 className="font-bold text-gray-800 dark:text-gray-200">{title}</h3>
+          <h3 className="font-bold text-gray-800">{title}</h3>
         </div>
-        <span className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
+        <span className="bg-white text-gray-600 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm border border-gray-100">
           {statusGroup.length}
         </span>
       </div>
@@ -199,7 +199,7 @@ export default function AdminTasks() {
           <p className="text-gray-400 text-sm text-center py-8 italic">No tasks here</p>
         ) : (
           statusGroup.map(task => (
-            <div key={task._id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+            <div key={task._id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
               <div className="flex justify-between items-start mb-2">
                 <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border ${getPriorityColor(task.priority)}`}>
                   {task.priority}
@@ -213,10 +213,10 @@ export default function AdminTasks() {
                   </button>
                 </div>
               </div>
-              <h4 className="font-bold text-gray-800 dark:text-gray-200 text-sm mb-1">{task.title}</h4>
+              <h4 className="font-bold text-gray-800 text-sm mb-1">{task.title}</h4>
               <p className="text-gray-500 text-xs line-clamp-2 mb-3">{task.description}</p>
               
-              <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
+              <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
                 <div className="flex items-center gap-1.5">
                   <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-[10px] font-bold" title={task.assignedTo?.firstName}>
                     {task.assignedTo?.firstName?.charAt(0) || 'A'}
@@ -249,7 +249,7 @@ export default function AdminTasks() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 shrink-0">
           <div>
-            <h1 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
               <FolderKanban className="text-[#1e5cdc]" size={28} />
               Team Tasks
             </h1>
@@ -279,9 +279,9 @@ export default function AdminTasks() {
         {/* Task Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
-                <h2 className="text-xl font-black text-gray-800 dark:text-gray-200">{editingId ? 'Edit Task' : 'Create New Task'}</h2>
+            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 className="text-xl font-black text-gray-800">{editingId ? 'Edit Task' : 'Create New Task'}</h2>
                 <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full">
                   <X size={20} />
                 </button>
@@ -289,23 +289,23 @@ export default function AdminTasks() {
               <div className="p-6">
                 <form onSubmit={handleSave} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Task Title *</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Task Title *</label>
                     <input 
                       required 
                       type="text" 
                       value={formData.title} 
                       onChange={e => setFormData({ ...formData, title: e.target.value })} 
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
                       placeholder="e.g., Review pending certificates" 
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
                     <textarea 
                       value={formData.description} 
                       onChange={e => setFormData({ ...formData, description: e.target.value })} 
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
                       rows={3} 
                       placeholder="Add details, steps, or context..." 
                     />
@@ -313,12 +313,12 @@ export default function AdminTasks() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Assign To *</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Assign To *</label>
                       <select 
                         required 
                         value={formData.assignedTo} 
                         onChange={e => setFormData({ ...formData, assignedTo: e.target.value })} 
-                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                       >
                         <option value="">Select Admin</option>
                         {admins.map(a => (
@@ -327,11 +327,11 @@ export default function AdminTasks() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Related Module</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Related Module</label>
                       <select 
                         value={formData.relatedModule} 
                         onChange={e => setFormData({ ...formData, relatedModule: e.target.value })} 
-                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                       >
                         <option value="General">General</option>
                         <option value="Certificates">Certificates</option>
@@ -345,11 +345,11 @@ export default function AdminTasks() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
                       <select 
                         value={formData.status} 
                         onChange={e => setFormData({ ...formData, status: e.target.value })} 
-                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                       >
                         <option value="Pending">Pending</option>
                         <option value="In Progress">In Progress</option>
@@ -357,11 +357,11 @@ export default function AdminTasks() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Priority</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Priority</label>
                       <select 
                         value={formData.priority} 
                         onChange={e => setFormData({ ...formData, priority: e.target.value })} 
-                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
                       >
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
@@ -370,18 +370,18 @@ export default function AdminTasks() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Due Date</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Due Date</label>
                       <input 
                         type="date" 
                         value={formData.dueDate} 
                         onChange={e => setFormData({ ...formData, dueDate: e.target.value })} 
-                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl focus:bg-white dark:bg-gray-800 focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all" 
                       />
                     </div>
                   </div>
                   
-                  <div className="pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
-                    <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">
+                  <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                    <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">
                       Cancel
                     </button>
                     <button type="submit" className="px-6 py-2.5 text-sm font-bold text-white bg-[#1e5cdc] rounded-xl hover:bg-blue-700 transition-colors shadow-md">

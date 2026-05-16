@@ -149,7 +149,7 @@ export default function AdminStudentInterns() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Student Interns</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Student Interns</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">Manage intern profiles shown on the public team page</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -158,7 +158,7 @@ export default function AdminStudentInterns() {
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search interns..."
-              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white dark:bg-gray-800"
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
             />
           </div>
           <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
@@ -167,10 +167,10 @@ export default function AdminStudentInterns() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">Intern</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell text-xs sm:text-sm">Role</th>
@@ -185,17 +185,17 @@ export default function AdminStudentInterns() {
                 <tr><td colSpan="4" className="text-center py-8 text-gray-500">No interns found.</td></tr>
               ) : (
                 filteredInterns.map(i => (
-                  <tr key={i._id} className="hover:bg-gray-50 dark:bg-gray-700/80 transition-colors">
+                  <tr key={i._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <img src={i.image && i.image.includes('/uploads/') ? `${API}${i.image}` : i.image} alt={i.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-100 dark:border-gray-700" />
+                        <img src={i.image && i.image.includes('/uploads/') ? `${API}${i.image}` : i.image} alt={i.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-100" />
                         <div>
-                          <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">{i.name}</span>
+                          <span className="font-semibold text-gray-800 text-xs sm:text-sm">{i.name}</span>
                           <p className="text-[10px] text-gray-400 sm:hidden mt-0.5">{i.role}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 dark:text-gray-400 hidden sm:table-cell text-xs sm:text-sm">{i.role}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 hidden sm:table-cell text-xs sm:text-sm">{i.role}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 hidden md:table-cell text-xs sm:text-sm">{i.collegeName}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -216,10 +216,10 @@ export default function AdminStudentInterns() {
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">{editingIntern ? 'Edit Intern' : 'Add New Intern'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingIntern ? 'Edit Intern' : 'Add New Intern'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -227,43 +227,43 @@ export default function AdminStudentInterns() {
             {success ? (
               <div className="p-12 flex flex-col items-center justify-center text-center">
                 <CheckCircle size={48} className="text-emerald-500 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Intern Saved Successfully!</h3>
+                <h3 className="text-lg font-bold text-gray-800">Intern Saved Successfully!</h3>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
-                    <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Rahul Singh" />
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                    <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Rahul Singh" />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Role</label>
-                    <input required type="text" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Software Developer Intern" />
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Role</label>
+                    <input required type="text" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Software Developer Intern" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">College Name</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">College Name</label>
                   <div className="relative">
                     <GraduationCap size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input required type="text" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} className="w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. IIT Bombay" />
+                    <input required type="text" value={formData.collegeName} onChange={e => setFormData({ ...formData, collegeName: e.target.value })} className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. IIT Bombay" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Description / Quote</label>
-                  <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={3} placeholder="What should people know about their work?" />
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Description / Quote</label>
+                  <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={3} placeholder="What should people know about their work?" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Skills (comma separated)</label>
-                  <input type="text" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. React, Node.js, MongoDB" />
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Skills (comma separated)</label>
+                  <input type="text" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. React, Node.js, MongoDB" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Profile Image</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Profile Image</label>
                   <div className="mt-1 flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-lg bg-gray-50 dark:bg-gray-700 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                    <div className="w-20 h-20 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                       {imagePreview ? (
                         <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                       ) : (
@@ -287,7 +287,7 @@ export default function AdminStudentInterns() {
                 </div>
 
                 <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                   <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm">
                     {editingIntern ? 'Update Intern' : 'Save Intern'}
                   </button>

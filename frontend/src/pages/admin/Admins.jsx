@@ -81,7 +81,7 @@ export default function AdminAdmins() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
             <ShieldCheck className="text-[#1e5cdc]" size={24} />
             Administrator Management
           </h1>
@@ -93,7 +93,7 @@ export default function AdminAdmins() {
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search admins..."
-            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white dark:bg-gray-800"
+            className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white"
           />
         </div>
       </div>
@@ -104,10 +104,10 @@ export default function AdminAdmins() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs">Admin</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs hidden sm:table-cell">Role / Dept</th>
@@ -123,7 +123,7 @@ export default function AdminAdmins() {
               ) : !data.users || data.users.length === 0 ? (
                 <tr><td colSpan={6} className="py-12 text-center text-gray-400 font-medium">{data.message || 'No administrators found.'}</td></tr>
               ) : data.users.map(u => (
-                <tr key={u._id} className="hover:bg-gray-50 dark:bg-gray-700/80 transition-colors">
+                <tr key={u._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-blue-200">
@@ -132,13 +132,13 @@ export default function AdminAdmins() {
                           : u.name?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-gray-800 dark:text-gray-200 font-semibold text-xs sm:text-sm">{u.name}</p>
+                        <p className="text-gray-800 font-semibold text-xs sm:text-sm">{u.name}</p>
                         <p className="text-gray-500 text-[10px] sm:text-[11px] mt-0.5 truncate max-w-[100px] sm:max-w-none">{u.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
-                    <span className="text-gray-700 dark:text-gray-300 font-medium text-[10px] sm:text-xs bg-gray-100 px-2 py-1 rounded">
+                    <span className="text-gray-700 font-medium text-[10px] sm:text-xs bg-gray-100 px-2 py-1 rounded">
                       {u.adminSubRole || 'Not Assigned'}
                     </span>
                   </td>
@@ -186,10 +186,10 @@ export default function AdminAdmins() {
       {/* Edit Modal */}
       {editingAdmin && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Admin Setup</h2>
-              <button onClick={() => setEditingAdmin(null)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 p-1">
+          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">Admin Setup</h2>
+              <button onClick={() => setEditingAdmin(null)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X size={20} />
               </button>
             </div>
@@ -201,7 +201,7 @@ export default function AdminAdmins() {
                 <select
                   value={formData.adminSubRole}
                   onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
-                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 >
                   <option value="">Select a Role</option>
                   <option value="HR">HR</option>
@@ -218,7 +218,7 @@ export default function AdminAdmins() {
                   type="date"
                   value={formData.joiningDate}
                   onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 />
               </div>
 
@@ -226,7 +226,7 @@ export default function AdminAdmins() {
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Permissions Level</label>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 cursor-pointer transition-colors group">
+                  <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
                     <input
                       type="radio"
                       name="permissions"
@@ -235,12 +235,12 @@ export default function AdminAdmins() {
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Only See</span>
+                      <span className="text-sm font-bold text-gray-700">Only See</span>
                       <span className="text-[10px] text-gray-400">View-only access to dashboard data</span>
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 cursor-pointer transition-colors group">
+                  <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
                     <input
                       type="radio"
                       name="permissions"
@@ -249,12 +249,12 @@ export default function AdminAdmins() {
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">See and Delete</span>
+                      <span className="text-sm font-bold text-gray-700">See and Delete</span>
                       <span className="text-[10px] text-gray-400">Can view and remove existing records</span>
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 cursor-pointer transition-colors group">
+                  <label className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors group">
                     <input
                       type="radio"
                       name="permissions"
@@ -263,7 +263,7 @@ export default function AdminAdmins() {
                       className="w-4 h-4 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">See, Delete and Edit</span>
+                      <span className="text-sm font-bold text-gray-700">See, Delete and Edit</span>
                       <span className="text-[10px] text-gray-400">Full management control including updates</span>
                     </div>
                   </label>
@@ -279,16 +279,16 @@ export default function AdminAdmins() {
                   onChange={(e) => setFormData({ ...formData, isApproved: e.target.checked })}
                   className="w-5 h-5 text-emerald-600 rounded-md focus:ring-emerald-500 border-gray-300"
                 />
-                <label htmlFor="approve-check" className="text-sm font-bold text-gray-700 dark:text-gray-300 cursor-pointer">
+                <label htmlFor="approve-check" className="text-sm font-bold text-gray-700 cursor-pointer">
                   Approve and Verify Account
                 </label>
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-700 flex gap-2 sm:gap-3">
+            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-2 sm:gap-3">
               <button
                 onClick={() => setEditingAdmin(null)}
-                className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-white dark:bg-gray-800 transition-all"
+                className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-white transition-all"
               >
                 Cancel
               </button>

@@ -97,7 +97,7 @@ export default function AdminSubmissions() {
             <span className="p-2 bg-purple-100 text-purple-600 rounded-lg hidden sm:block">
                 <ClipboardList size={20} />
             </span>
-            <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Form Submissions</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Form Submissions</h1>
           </div>
           <p className="text-gray-500 text-sm font-medium">Overview of all active forms and their response counts across the platform.</p>
         </div>
@@ -108,7 +108,7 @@ export default function AdminSubmissions() {
                 placeholder="Filter forms..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 sm:py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
+                className="pl-10 pr-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
             />
         </div>
       </div>
@@ -120,10 +120,10 @@ export default function AdminSubmissions() {
       ) : (
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-lg font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">Available Forms List</h2>
+            <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Available Forms List</h2>
             <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-100 px-3 py-1 rounded-full">{filteredStats.length} FormsFound</span>
-                <button className="p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-400 hover:text-purple-600 transition-colors shadow-sm">
+                <button className="p-2 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-purple-600 transition-colors shadow-sm">
                     <Filter size={16} />
                 </button>
             </div>
@@ -131,14 +131,14 @@ export default function AdminSubmissions() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-12">
             {filteredStats.map(form => (
-                <div key={form.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 sm:p-6 space-y-3 sm:space-y-4 hover:border-purple-200 transition-all group hover:shadow-md">
+                <div key={form.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-3 sm:space-y-4 hover:border-purple-200 transition-all group hover:shadow-md">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-purple-50 text-purple-600 rounded-lg group-hover:scale-110 transition-transform">
                                 <FileText size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-gray-900 dark:text-gray-100">{form.name}</h4>
+                                <h4 className="font-bold text-gray-900">{form.name}</h4>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="text-[8px] sm:text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100">Active</span>
                                     <span className="text-[8px] sm:text-[9px] font-black text-purple-500 uppercase tracking-widest bg-purple-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-purple-100">{form.category}</span>
@@ -147,16 +147,16 @@ export default function AdminSubmissions() {
                         </div>
                         <div className="flex items-center gap-2 text-right">
                             <div>
-                                <span className="text-sm font-black text-gray-800 dark:text-gray-200 block leading-none">{form.count}</span>
+                                <span className="text-sm font-black text-gray-800 block leading-none">{form.count}</span>
                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Responses</span>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-700 flex items-center justify-center p-2 text-gray-300 border border-gray-100 dark:border-gray-700">
+                            <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center p-2 text-gray-300 border border-gray-100">
                                 <Users size={16} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
                         <code className="text-[9px] sm:text-[10px] text-gray-500 truncate max-w-[200px] sm:max-w-[250px]">
                             {`${window.location.origin}/#${form.path}`}
                         </code>
@@ -169,7 +169,7 @@ export default function AdminSubmissions() {
                     </div>
 
                     <div className="flex items-center gap-3 pt-2">
-                        <a href={`/#${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 text-gray-700 dark:text-gray-300 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition border border-gray-100 dark:border-gray-700 text-center leading-tight">
+                        <a href={`/#${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition border border-gray-100 text-center leading-tight">
                             <ExternalLink size={14} className="hidden sm:block" /> Preview
                         </a>
                         <button 
