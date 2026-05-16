@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import newsBrain from "../../assets/news_brain.png";
-import newsClimate from "../../assets/news_climate.png";
 import { toast } from 'react-hot-toast';
 
 export default function News() {
