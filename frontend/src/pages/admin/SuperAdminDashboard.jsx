@@ -103,7 +103,7 @@ export default function SuperAdminDashboard() {
     <SuperAdminLayout>
       <div className="mb-8 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 sm:gap-2">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Welcome, Admin!</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Welcome, SuperAdmin</h1>
           <p className="text-gray-500 text-xs sm:text-sm font-medium">Manage your website efficiently.</p>
         </div>
         <button

@@ -13,7 +13,7 @@ export default function AdminNews() {
     const [isEditing, setIsEditing] = useState(false);
     const [msg, setMsg] = useState('');
     const [search, setSearch] = useState('');
-    
+
     // Form state
     const [currentId, setCurrentId] = useState(null);
     const [title, setTitle] = useState('');
@@ -22,7 +22,13 @@ export default function AdminNews() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [featured, setFeatured] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
-    
+
+    const [isProfessional, setIsProfessional] = useState(false);
+    const [intro, setIntro] = useState('');
+    const [sections, setSections] = useState([{ heading: '', text: '', image: '', buttonText: '', buttonUrl: '' }]);
+    const [conclusion, setConclusion] = useState('');
+    const [uploading, setUploading] = useState(false);
+
     const fileInputRef = useRef(null);
     const categories = ["Health", "Sport", "Politics", "Business", "World", "Technology", "Entertainment"];
 
@@ -57,6 +63,42 @@ export default function AdminNews() {
         }
     };
 
+    const handleSectionImageUpload = async (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            const res = await fetch(`${API}/api/news/upload-image`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${admin?.token}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok) {
+                const updatedSections = [...sections];
+                updatedSections[index].image = `${API}${data.imageUrl}`;
+                setSections(updatedSections);
+            } else {
+                alert('Upload failed: ' + (data.message || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Image upload failed');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const addSection = () => setSections([...sections, { heading: '', text: '', image: '', buttonText: '', buttonUrl: '' }]);
+    const removeSection = (index) => setSections(sections.filter((_, i) => i !== index));
+    const updateSection = (index, field, value) => {
+        const updatedSections = [...sections];
+        updatedSections[index][field] = value;
+        setSections(updatedSections);
+    };
+
     const resetForm = () => {
         setCurrentId(null);
         setTitle('');
@@ -65,6 +107,10 @@ export default function AdminNews() {
         setDate(new Date().toISOString().split('T')[0]);
         setFeatured(false);
         setImagePreview(null);
+        setIsProfessional(false);
+        setIntro('');
+        setSections([{ heading: '', text: '', image: '', buttonText: '', buttonUrl: '' }]);
+        setConclusion('');
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
@@ -72,7 +118,22 @@ export default function AdminNews() {
         setCurrentId(article._id);
         setTitle(article.title);
         setCategory(article.category);
-        setDescription(article.description);
+
+        // Handle professional content
+        if (typeof article.description === 'object' && article.description !== null) {
+            setIsProfessional(true);
+            setIntro(article.description.intro || '');
+            setSections(article.description.sections || [{ heading: '', text: '', image: '', buttonText: '', buttonUrl: '' }]);
+            setConclusion(article.description.conclusion || '');
+            setDescription(''); // Clear simple description
+        } else {
+            setIsProfessional(false);
+            setDescription(article.description || '');
+            setIntro('');
+            setSections([{ heading: '', text: '', image: '', buttonText: '', buttonUrl: '' }]);
+            setConclusion('');
+        }
+
         setDate(new Date(article.date).toISOString().split('T')[0]);
         setFeatured(article.featured || false);
         setImagePreview(article.image.startsWith('http') ? article.image : `${API}${article.image}`);
@@ -98,7 +159,19 @@ export default function AdminNews() {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('category', category);
-        formData.append('description', description);
+
+        // Prepare description
+        if (isProfessional) {
+            const profContent = {
+                intro,
+                sections,
+                conclusion
+            };
+            formData.append('description', JSON.stringify(profContent));
+        } else {
+            formData.append('description', description);
+        }
+
         formData.append('date', date);
         formData.append('featured', featured);
 
@@ -171,10 +244,16 @@ export default function AdminNews() {
             {isEditing && (
                 <div className="bg-white border-2 border-[#1e5cdc] rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-8 shadow-xl animate-in fade-in zoom-in-95 duration-300 relative">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg sm:text-xl font-black text-slate-900 italic">{currentId ? 'Edit Article' : 'Create New Article'}</h2>
+                        <div className="flex flex-col">
+                            <h2 className="text-lg sm:text-xl font-black text-slate-900 italic">{currentId ? 'Edit Article' : 'Create New Article'}</h2>
+                            <div className="flex bg-gray-200 rounded-lg p-0.5 text-[10px] sm:text-xs font-bold mt-2 w-fit">
+                                <button type="button" onClick={() => setIsProfessional(false)} className={`px-2 sm:px-3 py-1 rounded-md transition-all ${!isProfessional ? 'bg-white text-[#1e5cdc] shadow-sm' : 'text-gray-500'}`}>Simple</button>
+                                <button type="button" onClick={() => setIsProfessional(true)} className={`px-2 sm:px-3 py-1 rounded-md transition-all ${isProfessional ? 'bg-white text-[#1e5cdc] shadow-sm' : 'text-gray-500'}`}>Professional</button>
+                            </div>
+                        </div>
                         <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-red-500 transition"><X size={24} /></button>
                     </div>
-                    
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -199,10 +278,132 @@ export default function AdminNews() {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-black text-slate-500 mb-1 uppercase tracking-widest">Description <span className="text-red-500">*</span></label>
-                            <textarea required rows={4} value={description} onChange={e => setDescription(e.target.value)} placeholder="Write the article content..." className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-[#1e5cdc] outline-none font-medium custom-scrollbar" />
-                        </div>
+                        {isProfessional ? (
+                            <div className="space-y-6">
+                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider border-b border-gray-50 pb-2">Professional Content Sections</h3>
+
+                                <div>
+                                    <label className="block text-xs font-black text-slate-500 mb-1 uppercase tracking-widest">Introduction Paragraph</label>
+                                    <textarea
+                                        value={intro}
+                                        onChange={e => setIntro(e.target.value)}
+                                        placeholder="Write a powerful introduction for your article..."
+                                        rows={3}
+                                        className="w-full px-4 py-3 bg-slate-50 border-2 border-blue-100 rounded-xl focus:border-blue-500 outline-none font-medium text-sm transition-colors"
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Article Sections</label>
+                                        <button
+                                            type="button"
+                                            onClick={addSection}
+                                            className="text-[10px] font-black uppercase tracking-widest bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm"
+                                        >
+                                            <Plus size={14} /> Add Section
+                                        </button>
+                                    </div>
+
+                                    {sections.map((section, idx) => (
+                                        <div key={idx} className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-4 relative group">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSection(idx)}
+                                                className="absolute -top-2 -right-2 bg-white text-red-500 border border-red-100 p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold">{idx + 1}</span>
+                                                <h4 className="text-sm font-bold text-gray-700">Section {idx + 1}</h4>
+                                            </div>
+
+                                            <input
+                                                type="text"
+                                                value={section.heading}
+                                                onChange={e => updateSection(idx, 'heading', e.target.value)}
+                                                placeholder="Section Heading (e.g. Key Challenges)"
+                                                className="w-full px-3 py-2 border-2 border-slate-100 rounded-lg focus:outline-none focus:border-blue-400 text-sm font-bold"
+                                            />
+
+                                            <textarea
+                                                value={section.text}
+                                                onChange={e => updateSection(idx, 'text', e.target.value)}
+                                                placeholder="Section Content Text..."
+                                                rows={4}
+                                                className="w-full px-3 py-2 border-2 border-slate-100 rounded-lg focus:outline-none focus:border-blue-400 text-sm font-medium resize-none"
+                                            />
+
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="text"
+                                                    value={section.image}
+                                                    onChange={e => updateSection(idx, 'image', e.target.value)}
+                                                    placeholder="Section Image URL"
+                                                    className="flex-1 px-3 py-2 border-2 border-slate-100 rounded-lg focus:outline-none focus:border-blue-400 text-[10px] font-medium"
+                                                />
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        onChange={(e) => handleSectionImageUpload(e, idx)}
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        id={`section-image-${idx}`}
+                                                    />
+                                                    <label
+                                                        htmlFor={`section-image-${idx}`}
+                                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer transition ${uploading ? 'bg-gray-100 text-gray-400' : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'}`}
+                                                    >
+                                                        <Upload size={14} /> {uploading ? 'Uploading...' : 'Upload'}
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3 pt-2">
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Button Label (Optional)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={section.buttonText || ''}
+                                                        onChange={e => updateSection(idx, 'buttonText', e.target.value)}
+                                                        placeholder="e.g. Read More"
+                                                        className="w-full px-3 py-2 border-2 border-slate-100 rounded-lg focus:outline-none focus:border-blue-400 text-[10px] font-bold"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">Button URL (Optional)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={section.buttonUrl || ''}
+                                                        onChange={e => updateSection(idx, 'buttonUrl', e.target.value)}
+                                                        placeholder="https://..."
+                                                        className="w-full px-3 py-2 border-2 border-slate-100 rounded-lg focus:outline-none focus:border-blue-400 text-[10px] font-bold"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-black text-slate-500 mb-1 uppercase tracking-widest">Conclusion Paragraph</label>
+                                    <textarea
+                                        value={conclusion}
+                                        onChange={e => setConclusion(e.target.value)}
+                                        placeholder="Summarize the article with a final conclusion..."
+                                        rows={3}
+                                        className="w-full px-4 py-3 bg-slate-50 border-2 border-blue-100 rounded-xl focus:border-blue-500 outline-none font-medium text-sm transition-colors"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="block text-xs font-black text-slate-500 mb-1 uppercase tracking-widest">Description <span className="text-red-500">*</span></label>
+                                <textarea required={!isProfessional} rows={4} value={description} onChange={e => setDescription(e.target.value)} placeholder="Write the article content..." className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-[#1e5cdc] outline-none font-medium custom-scrollbar" />
+                            </div>
+                        )}
 
                         <div>
                             <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">Article Image <span className="text-red-500">*</span></label>
@@ -248,14 +449,21 @@ export default function AdminNews() {
                                 <div className="h-40 sm:h-48 relative overflow-hidden bg-slate-100 shrink-0">
                                     <img src={n.image.startsWith('http') ? n.image : `${API}${n.image}`} alt={n.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                                     <div className="absolute top-3 left-3 flex gap-2">
-                                        <span className="bg-white backdrop-blur text-[#1e5cdc] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">{n.category}</span>
+                                        <span className="bg-white/90 backdrop-blur text-[#1e5cdc] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">{n.category}</span>
+                                        {typeof n.description === 'object' && n.description !== null && (
+                                            <span className="bg-purple-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">PRO</span>
+                                        )}
                                         {n.featured && <span className="bg-yellow-400/90 text-yellow-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow">Featured</span>}
                                     </div>
                                 </div>
                                 <div className="p-3 sm:p-5 flex flex-col flex-grow">
                                     <p className="text-[10px] uppercase font-bold text-gray-400 flex items-center gap-1 mb-2"><Calendar size={12} /> {new Date(n.date).toLocaleDateString()}</p>
                                     <h3 className="font-black text-slate-800 text-base sm:text-lg leading-tight mb-2 line-clamp-2">{n.title}</h3>
-                                    <p className="text-gray-500 text-sm line-clamp-3 mb-4">{n.description}</p>
+                                    <p className="text-gray-500 text-sm line-clamp-3 mb-4">
+                                        {typeof n.description === 'object' && n.description !== null
+                                            ? n.description.intro
+                                            : n.description}
+                                    </p>
                                     <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                                         <button onClick={() => handleEdit(n)} className="text-[#1e5cdc] text-sm font-bold flex items-center gap-1 hover:underline"><Edit2 size={14} /> Edit</button>
                                         <button onClick={() => handleDelete(n._id)} className="text-red-400 text-sm font-bold flex items-center gap-1 hover:text-red-600 transition"><Trash2 size={14} /> Delete</button>

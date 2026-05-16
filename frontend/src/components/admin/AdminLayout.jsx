@@ -28,6 +28,7 @@ const MENU_ITEMS = [
   { id: 'contracts', to: '/admin/contracts', icon: <FileText size={20} />, label: 'Contract Management' },
   { id: 'certificates', to: '/admin/certificates', icon: <Award size={20} />, label: 'Certificates' },
   { id: 'events', to: '/admin/events', icon: <Calendar size={20} />, label: 'Events Management' },
+  { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={20} />, label: 'Event Registrations' },
   { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
   { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
@@ -50,6 +51,11 @@ export default function AdminLayout({ children }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/unread-count`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
+      if (res.status === 401) {
+        logout();
+        navigate('/admin/login');
+        return;
+      }
       const data = await res.json();
       setUnreadCount(data.count || 0);
     } catch (err) {
@@ -62,6 +68,11 @@ export default function AdminLayout({ children }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications?limit=5`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
+      if (res.status === 401) {
+        logout();
+        navigate('/admin/login');
+        return;
+      }
       const data = await res.json();
       setNotifications(data || []);
     } catch (err) {

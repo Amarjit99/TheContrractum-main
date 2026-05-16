@@ -3,85 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export default function BlogArticle() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [showScrollTop, setShowScrollTop] = useState(false);
-    const [dbArticle, setDbArticle] = useState(null);
-    const [dbLoading, setDbLoading] = useState(false);
-
-    const [allDbBlogs, setAllDbBlogs] = useState([]);
-
-    // Fetch from DB if id is not a simple integer (i.e., it's a MongoDB ObjectId)
-    useEffect(() => {
-        const isStaticId = /^\d+$/.test(id);
-        
-        // Fetch all blogs to populate related articles
-        fetch(`${API}/api/cms/blogs`)
-            .then(res => res.json())
-            .then(data => {
-                const formatted = data
-                    .filter(b => b.status === 'Published')
-                    .map(b => ({
-                        id: b._id,
-                        title: b.title,
-                        excerpt: b.excerpt || b.content?.substring(0, 120) + '...' || '...',
-                        author: b.author,
-                        date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                        readTime: b.readTime || '5 min read',
-                        category: b.category,
-                        image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
-                        content: b.content
-                    }));
-                setAllDbBlogs(formatted);
-
-                if (!isStaticId) {
-                    const current = formatted.find(b => b.id === id);
-                    if (current) {
-                        setDbArticle(current);
-                    } else {
-                        // Fallback fetch single if not in list
-                        fetch(`${API}/api/cms/blogs/${id}`)
-                            .then(res => res.ok ? res.json() : null)
-                            .then(data => {
-                                if (data) {
-                                    setDbArticle({
-                                        id: data._id,
-                                        title: data.title,
-                                        excerpt: data.excerpt || '',
-                                        author: data.author,
-                                        date: new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                                        readTime: data.readTime || '5 min read',
-                                        category: data.category,
-                                        image: data.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
-                                        content: data.content || data.excerpt || 'No content available for this post.',
-                                    });
-                                }
-                            });
-                    }
-                }
-            })
-            .catch(err => console.error("Error fetching related blogs:", err));
-    }, [id]);
-
-    // Handle scroll for scroll-to-top button
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 400);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Full blog posts data with complete article content
-    const blogPosts = [
-        {
-            id: 1,
-            title: "Artificial Intelligence: Transforming Business Operations",
+// Full blog posts data with complete article content
+export const blogPosts = [
+    {
+        id: 1,
+        title: "Artificial Intelligence: Transforming Business Operations",
             excerpt: "Discover how AI is revolutionizing the way companies operate and make decisions in the modern era.",
             author: "Rahul Sharma",
             date: "Feb 15, 2026",
@@ -511,12 +437,84 @@ export default function BlogArticle() {
                 conclusion: "Leadership in the digital age requires combining technical awareness with strong people skills. Leaders who can navigate technological change while building engaged, innovative teams will drive their organizations to success in an increasingly digital world."
             }
         }
-    ];
+];
 
-    const article = blogPosts.find(post => post.id === parseInt(id));
+export default function BlogArticle() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const [dbArticle, setDbArticle] = useState(null);
+    const [dbLoading, setDbLoading] = useState(false);
+    const [allBlogs, setAllBlogs] = useState([]);
+
+    // Fetch from DB if id is not a simple integer (i.e., it's a MongoDB ObjectId)
+    useEffect(() => {
+        const isStaticId = /^\d+$/.test(id);
+        if (!isStaticId) {
+            setDbLoading(true);
+            fetch(`${API}/api/cms/blogs/${id}`)
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (data) {
+                        setDbArticle({
+                            id: data._id,
+                            title: data.title,
+                            excerpt: data.excerpt || '',
+                            author: data.author,
+                            date: new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                            readTime: data.readTime || '5 min read',
+                            category: data.category,
+                            image: data.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800',
+                            content: data.content || data.excerpt || 'No content available for this post.',
+                        });
+                    }
+                    setDbLoading(false);
+                })
+                .catch(() => setDbLoading(false));
+        }
+
+        // Fetch all blogs for "Related Articles"
+        fetch(`${API}/api/cms/blogs`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                const formatted = data
+                    .filter(b => b.status === 'Published')
+                    .map(b => ({
+                        id: b._id,
+                        title: b.title,
+                        excerpt: b.excerpt || '',
+                        author: b.author,
+                        date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        readTime: b.readTime || '5 min read',
+                        category: b.category,
+                        image: b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800'
+                    }));
+                setAllBlogs(formatted);
+            })
+            .catch(err => console.error("Error fetching related blogs:", err));
+    }, [id]);
+
+    // Handle scroll for scroll-to-top button
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 400);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const isStaticId = /^\d+$/.test(id);
+    const article = isStaticId ? blogPosts.find(post => post.id === parseInt(id)) : null;
+
+    // Determine which article to show (prioritize static if IDs are numeric)
+    const currentArticle = article || dbArticle;
 
     // Show loading state while fetching DB article
-    if (dbLoading) {
+    if (dbLoading && !article) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -527,79 +525,8 @@ export default function BlogArticle() {
         );
     }
 
-    // If it's a DB article (not found in static, but found in DB)
-    if (!article && dbArticle) {
-        return (
-            <div className="min-h-screen bg-gray-50">
-                {/* Hero */}
-                <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] overflow-hidden">
-                    <div className="absolute inset-0">
-                        <img src={dbArticle.image} alt={dbArticle.title} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
-                    </div>
-                    <div className="relative h-full max-w-4xl mx-auto px-4 sm:px-6 flex flex-col justify-end pb-8 sm:pb-12 md:pb-16">
-                        <button onClick={() => navigate('/resources/blogs')} className="mb-4 sm:mb-6 flex items-center gap-2 text-white hover:text-purple-300 transition-colors w-fit">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                            Back to Blogs
-                        </button>
-                        <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-primary text-white text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4 w-fit">{dbArticle.category}</span>
-                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">{dbArticle.title}</h1>
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-white/90 text-sm sm:text-base">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">{dbArticle.author.charAt(0)}</div>
-                                <span className="font-medium">{dbArticle.author}</span>
-                            </div>
-                            <span>•</span>
-                            <span>{dbArticle.date}</span>
-                            <span>•</span>
-                            <span>{dbArticle.readTime}</span>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Article Content */}
-                <article className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
-                    {dbArticle.excerpt && (
-                        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-6 sm:mb-8">
-                            <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed italic border-l-4 border-primary pl-4 sm:pl-6">{dbArticle.excerpt}</p>
-                        </div>
-                    )}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-8">
-                        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-line">{dbArticle.content}</div>
-                    </div>
-                    {/* Share Section */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8 sm:mb-12">
-                        <h3 className="text-lg sm:text-xl font-bold text-black mb-4">Share this article</h3>
-                        <div className="flex flex-wrap gap-3 sm:gap-4">
-                            <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                                Facebook
-                            </button>
-                            <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-                                Twitter
-                            </button>
-                            <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                                LinkedIn
-                            </button>
-                        </div>
-                    </div>
-                </article>
-
-                {/* Scroll to Top Button */}
-                {showScrollTop && (
-                    <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-50 p-3 sm:p-4 bg-gradient-to-r from-primary to-primary-light text-white rounded-full shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-110 group" aria-label="Scroll to top">
-                        <svg className="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
-                    </button>
-                )}
-            </div>
-        );
-    }
-
-    if (!article) {
+    // If no article is found in either static or DB
+    if (!currentArticle) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -615,13 +542,26 @@ export default function BlogArticle() {
         );
     }
 
-    // Combine static and dynamic articles for related section
-    const currentArticle = article || dbArticle;
-    const allAvailableArticles = [...blogPosts, ...allDbBlogs];
-    
-    const relatedArticles = allAvailableArticles
-        .filter(post => post.id !== (currentArticle?.id) && post.category === currentArticle?.category)
+    // Deduplicate related articles by title and prioritize static ones
+    const deduplicatedBlogs = [...allBlogs, ...blogPosts]
+        .reduce((acc, current) => {
+            const x = acc.find(item => item.title === current.title);
+            if (!x) return acc.concat([current]);
+            const isCurrentStatic = /^\d+$/.test(String(current.id));
+            if (isCurrentStatic) return acc.map(item => item.title === current.title ? current : item);
+            return acc;
+        }, []);
+
+    // Filter by category first, fallback to all blogs if no related ones found in same category
+    let relatedArticles = deduplicatedBlogs
+        .filter(post => post.title !== currentArticle.title && post.category === currentArticle.category)
         .slice(0, 3);
+    
+    if (relatedArticles.length === 0) {
+        relatedArticles = deduplicatedBlogs
+            .filter(post => post.title !== currentArticle.title)
+            .slice(0, 3);
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -629,8 +569,8 @@ export default function BlogArticle() {
             <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] overflow-hidden">
                 <div className="absolute inset-0">
                     <img 
-                        src={article.image} 
-                        alt={article.title}
+                        src={currentArticle.image} 
+                        alt={currentArticle.title}
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
@@ -648,92 +588,128 @@ export default function BlogArticle() {
                     </button>
                     
                     <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-primary text-white text-xs sm:text-sm font-semibold rounded-full mb-3 sm:mb-4 w-fit">
-                        {article.category}
+                        {currentArticle.category}
                     </span>
                     
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
-                        {article.title}
+                        {currentArticle.title}
                     </h1>
                     
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-white/90 text-sm sm:text-base">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">
-                                {article.author.charAt(0)}
+                                {currentArticle.author?.charAt(0) || 'A'}
                             </div>
-                            <span className="font-medium">{article.author}</span>
+                            <span className="font-medium">{currentArticle.author}</span>
                         </div>
                         <span>•</span>
-                        <span>{article.date}</span>
+                        <span>{currentArticle.date}</span>
                         <span>•</span>
-                        <span>{article.readTime}</span>
+                        <span>{currentArticle.readTime}</span>
                     </div>
                 </div>
             </section>
 
             {/* Article Content */}
             <article className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
-                {/* Introduction */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-6 sm:mb-8">
-                    <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed italic border-l-4 border-primary pl-4 sm:pl-6">
-                        {article.content.intro}
-                    </p>
-                </div>
+                {/* Introduction / Excerpt */}
+                {(currentArticle.excerpt || (currentArticle.content && currentArticle.content.intro)) && (
+                    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-6 sm:mb-8">
+                        <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed italic border-l-4 border-primary pl-4 sm:pl-6">
+                            {currentArticle.content?.intro || currentArticle.excerpt}
+                        </p>
+                    </div>
+                )}
 
-                {/* Main Content Sections */}
-                {article.content.sections.map((section, index) => (
-                    <div key={index} className="mb-8 sm:mb-12 md:mb-16">
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            {section.image && (
-                                <div className="w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden">
-                                    <img 
-                                        src={section.image} 
-                                        alt={section.heading}
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                                    />
-                                </div>
-                            )}
-                            <div className="p-6 sm:p-8 md:p-10">
-                                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
-                                    {section.heading}
-                                </h2>
-                                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
-                                    {section.text}
-                                </p>
-                            </div>
+                {/* Main Content Rendering */}
+                {typeof currentArticle.content === 'string' ? (
+                    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-8">
+                        <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
+                            {currentArticle.content}
                         </div>
                     </div>
-                ))}
+                ) : (
+                    <div className="space-y-8 sm:space-y-12">
+                        {currentArticle.content?.sections?.map((section, index) => (
+                            <section key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100">
+                                {section.image && (
+                                    <div className="aspect-video overflow-hidden">
+                                        <img 
+                                            src={section.image} 
+                                            alt={section.heading}
+                                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                                        />
+                                    </div>
+                                )}
+                                <div className="p-6 sm:p-8 md:p-10">
+                                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-black mb-4 sm:mb-6 flex items-center gap-3">
+                                        <span className="w-8 h-8 bg-primary/10 text-primary rounded-lg flex items-center justify-center text-sm sm:text-base">
+                                            {index + 1}
+                                        </span>
+                                        {section.heading}
+                                    </h2>
+                                    <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                                        {section.text}
+                                    </p>
+                                </div>
+                            </section>
+                        ))}
+                    </div>
+                )}
 
-                {/* Conclusion */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg p-6 sm:p-8 md:p-10 mb-8 sm:mb-12">
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-                        <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Conclusion
-                    </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
-                        {article.content.conclusion}
-                    </p>
-                </div>
+                {/* Conclusion - Shared for both DB and Static articles if they have it */}
+                {(currentArticle.conclusion || currentArticle.content?.conclusion) && (
+                    <div className="mt-8 sm:mt-12 bg-gradient-to-br from-primary to-primary-light rounded-2xl shadow-xl p-6 sm:p-8 md:p-12 text-white transform hover:scale-[1.02] transition-all duration-300">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-black">Conclusion</h2>
+                        <p className="text-base sm:text-lg text-black/95 leading-relaxed">
+                            {currentArticle.conclusion || currentArticle.content?.conclusion}
+                        </p>
+                    </div>
+                )}
 
-                {/* Share Section */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8 sm:mb-12">
+                <div className="mt-8 sm:mt-12 bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8 sm:mb-12">
                     <h3 className="text-lg sm:text-xl font-bold text-black mb-4">Share this article</h3>
                     <div className="flex flex-wrap gap-3 sm:gap-4">
-                        <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
+                        <button 
+                            onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#1877F2] text-white rounded-lg hover:opacity-90 transition-all text-sm sm:text-base shadow-sm hover:shadow-md"
+                        >
                             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                             </svg>
                             Facebook
                         </button>
-                        <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
+                        <button 
+                            onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(currentArticle.title)}`, '_blank')}
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#1DA1F2] text-white rounded-lg hover:opacity-90 transition-all text-sm sm:text-base shadow-sm hover:shadow-md"
+                        >
                             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                             </svg>
                             Twitter
                         </button>
-                        <button className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm sm:text-base">
+                        <button 
+                            onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentArticle.title + ' ' + window.location.href)}`, '_blank')}
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#25D366] text-white rounded-lg hover:opacity-90 transition-all text-sm sm:text-base shadow-sm hover:shadow-md"
+                        >
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                            </svg>
+                            WhatsApp
+                        </button>
+                        <button 
+                            onClick={() => window.open(`https://www.instagram.com/`, '_blank')}
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-tr from-[#FFB000] via-[#FF0069] to-[#AD00FF] text-white rounded-lg hover:opacity-90 transition-all text-sm sm:text-base shadow-sm hover:shadow-md"
+                        >
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.668-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                            </svg>
+                            Instagram
+                        </button>
+                        <button 
+                            onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                            className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#0A66C2] text-white rounded-lg hover:opacity-90 transition-all text-sm sm:text-base shadow-sm hover:shadow-md"
+                        >
                             <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                             </svg>
@@ -743,40 +719,57 @@ export default function BlogArticle() {
                 </div>
             </article>
 
-            {/* Related Articles */}
+            {/* Related Articles Section */}
             {relatedArticles.length > 0 && (
-                <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-6 sm:mb-8 md:mb-12 text-center">
-                        Related Articles
-                    </h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 md:pb-20">
+                    <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 2v4h4" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h10M7 16h6" />
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-black">
+                            {deduplicatedBlogs.filter(p => p.title !== currentArticle.title && p.category === currentArticle.category).length > 0 
+                                ? "Related Articles" 
+                                : "Latest Articles"}
+                        </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {relatedArticles.map((post) => (
                             <div 
-                                key={post.id}
+                                key={post.id} 
                                 onClick={() => {
                                     navigate(`/resources/blogs/${post.id}`);
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
-                                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:transform hover:-translate-y-2 cursor-pointer group"
+                                className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col h-full border border-gray-100"
                             >
-                                <div className="h-40 sm:h-48 overflow-hidden">
+                                <div className="relative h-48 overflow-hidden">
                                     <img 
                                         src={post.image} 
                                         alt={post.title}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
+                                    <div className="absolute top-3 left-3">
+                                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-primary text-xs font-bold rounded-lg shadow-sm">
+                                            {post.category}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="p-4 sm:p-6">
-                                    <span className="inline-block px-2 sm:px-3 py-1 bg-purple-100 text-primary text-xs font-semibold rounded-full mb-2 sm:mb-3">
-                                        {post.category}
-                                    </span>
-                                    <h3 className="text-base sm:text-lg md:text-xl font-bold text-black mb-2 sm:mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                                <div className="p-5 flex flex-col flex-grow">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">
                                         {post.title}
                                     </h3>
-                                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mb-3 sm:mb-4">
+                                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
                                         {post.excerpt}
                                     </p>
-                                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-auto">
+                                        <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-[10px]">
+                                            {post.author.charAt(0)}
+                                        </div>
                                         <span>{post.author}</span>
                                         <span>•</span>
                                         <span>{post.readTime}</span>

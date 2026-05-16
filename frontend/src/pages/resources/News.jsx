@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import newsBrain from "../../assets/news_brain.png";
-import newsClimate from "../../assets/news_climate.png";
 import { toast } from 'react-hot-toast';
 
 export default function News() {
@@ -58,7 +57,7 @@ export default function News() {
   const filteredNews = newsData.filter(news => {
     const matchesCategory = selectedCategory === "All" || news.category === selectedCategory;
     const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      news.description.toLowerCase().includes(searchTerm.toLowerCase());
+      (typeof news.description === 'string' ? news.description.toLowerCase().includes(searchTerm.toLowerCase()) : (news.description?.intro?.toLowerCase().includes(searchTerm.toLowerCase()) || false));
     return matchesCategory && matchesSearch;
   });
 
@@ -208,7 +207,7 @@ export default function News() {
                   {featuredNews.title}
                 </h2>
                 <p className="text-sm text-gray-200 mb-2 line-clamp-2">
-                  {featuredNews.description}
+                  {typeof featuredNews.description === 'object' && featuredNews.description !== null ? featuredNews.description.intro : featuredNews.description}
                 </p>
                 <p className="text-xs text-gray-300">
                   {formatDate(featuredNews.date)}
@@ -294,7 +293,7 @@ export default function News() {
                       {news.title}
                     </h3>
                     <p className="text-xs text-gray-600 line-clamp-2">
-                      {news.description}
+                      {typeof news.description === 'object' && news.description !== null ? news.description.intro : news.description}
                     </p>
                   </div>
                 </div>
@@ -522,7 +521,7 @@ export default function News() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
             <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll receive the latest updates directly in your inbox.</p>
-            <button 
+            <button
               onClick={() => setShowSuccessPopup(false)}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
             >

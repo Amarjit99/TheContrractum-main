@@ -31,9 +31,8 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminContracts from './pages/admin/AdminContracts';
 import AdminCertificates from './pages/admin/AdminCertificates';
 import AdminEvents from './pages/admin/AdminEvents';
-import AdminTasks from './pages/admin/AdminTasks';
+import AdminEventRegistrations from './pages/admin/AdminEventRegistrations';
 import VerifyCertificate from './pages/VerifyCertificate';
-import CertificateView from './pages/CertificateView';
 import ContractEditor from './pages/admin/ContractEditor';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
@@ -83,7 +82,7 @@ import BecomeAdvisor from './pages/team/BecomeAdvisor';
 import Csit from './pages/solutions/business/Csit';
 import Gissolution from './pages/solutions/business/Gis';
 import SolutionDownload from './pages/solutions/SolutionDownload';
-import MRASservices from './pages/solutions/business/Mras';
+import MRASservies from './pages/solutions/business/Mras';
 import ECommerceSolutions from './pages/solutions/digital/ECommerce';
 import HrTech from './pages/solutions/digital/HrTech';
 import BPO from './pages/solutions/digital/Bpo';
@@ -165,26 +164,20 @@ import Feedback from './pages/contact/FeedbackModal';
 import Location from './pages/contact/Location';
 import CookiesPopup from './components/CookiesPopup';
 import GoogleForm from './pages/contact/GoogleForm';
-import { Toaster } from 'react-hot-toast';
 
-import { useLocation } from 'react-router-dom';
-
-const AppContent = () => {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
-
+export default function App() {
   return (
-    <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
-      <Toaster position="top-right" />
-      <CookiesPopup />
-      {!isAdminRoute && <Navbar />}
-      <main className="flex-grow">
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
-
+    <AdminAuthProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
+          <CookiesPopup />
+          <Navbar />
+          <main className="flex-grow">
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/verify/:id" element={<VerifyCertificate />} />
-                <Route path="/certificates/:id" element={<CertificateView />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
@@ -217,7 +210,7 @@ const AppContent = () => {
                 <Route path="/admin/contracts" element={<AdminContracts />} />
                 <Route path="/admin/certificates" element={<AdminCertificates />} />
                 <Route path="/admin/events" element={<AdminEvents />} />
-                <Route path="/admin/tasks" element={<AdminTasks />} />
+                <Route path="/admin/event-registrations" element={<AdminEventRegistrations />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
 
@@ -249,7 +242,6 @@ const AppContent = () => {
                 <Route path="/company/leadership-journey" element={<LeadershipJourney />} />
                 <Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
                 <Route path="/company/employee-id" element={<EmployeeId />} />
-                <Route path="/company/employee-id/:id" element={<EmployeeId />} />
                 <Route path="/company/contracts" element={<CompanyContracts />} />
                 <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
                 <Route path="/company/cookie-policy" element={<CookiePolicy />} />
@@ -273,7 +265,7 @@ const AppContent = () => {
                 <Route path="/solutions/business/gis" element={<Gissolution />} />
                 <Route path="/solutions/download" element={<SolutionDownload />} />
                 <Route path="/solutions/download/" element={<SolutionDownload />} />
-                <Route path="/solutions/business/Mras" element={<MRASservices />} />
+                <Route path="/solutions/business/Mras" element={<MRASservies />} />
                 <Route path="/solutions/digital/digital-marketing" element={<DigitalMarketing />} />
                 <Route path="/solutions/digital/e-commerce" element={<ECommerceSolutions />} />
                 <Route path="/solutions/digital/hrtech" element={<HrTech />} />
@@ -328,7 +320,7 @@ const AppContent = () => {
                 <Route path="/projects/schedule-consultation" element={<ScheduleConsultation />} />
 
 
-                {/* ///////////////////////// Resources Routes///////////////////////// */}
+                {/* ///////////////////////// Cresources Routes///////////////////////// */}
                 <Route path="/resources/blogs" element={<Blogs />} />
                 <Route path="/resources/blogs/:id" element={<BlogArticle />} />
                 <Route path="/resources/news" element={<News />} />
@@ -340,7 +332,7 @@ const AppContent = () => {
                 <Route path="/resources/media" element={<Media />} />
 
 
-                {/* ///////////////////////// Join Us Routes///////////////////////// */}
+                {/* ///////////////////////// joins Routes///////////////////////// */}
                 <Route path="/join/partner" element={<Partner />} />
                 <Route path="/join/become-partner" element={<BecomePartner />} />
                 <Route path="/join/collaborate" element={<Collaborate />} />
@@ -363,18 +355,9 @@ const AppContent = () => {
               </Routes>
             </Suspense>
           </main>
-          {!isAdminRoute && <Footer />}
+          <Footer />
         </div>
-  );
-};
-
-export default function App() {
-  return (
-    <AdminAuthProvider>
-      <Router>
-        <ScrollToTop />
-        <AppContent />
       </Router>
     </AdminAuthProvider>
   );
-}
+}

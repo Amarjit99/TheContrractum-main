@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { blogPosts } from './BlogArticle';
 import p20 from "../../assets/p20.png";
 import p18 from "../../assets/p18.png";
 import { toast } from 'react-hot-toast';
@@ -89,14 +90,27 @@ export default function Blogs() {
         }
     };
 
-    // Only DB posts — no more hardcoded duplicates
-    const allPosts = dbBlogs;
+    // Combine DB posts and static posts, deduplicating by title
+    // We prioritize static posts because they have structured content (sections/images)
+    const allPosts = [...dbBlogs, ...blogPosts].reduce((acc, current) => {
+        const x = acc.find(item => item.title === current.title);
+        if (!x) {
+            return acc.concat([current]);
+        } else {
+            // If we found a duplicate, and the current one is static (numeric id), use it instead
+            const isCurrentStatic = /^\d+$/.test(String(current.id));
+            if (isCurrentStatic) {
+                return acc.map(item => item.title === current.title ? current : item);
+            }
+            return acc;
+        }
+    }, []);
 
     // Filter by category and search
     const filteredPosts = allPosts.filter(post => {
         const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
         const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+            post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
     });
 
@@ -105,7 +119,7 @@ export default function Blogs() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-            
+
             {/* Hero Section */}
             <section
                 className="relative h-[60vh] sm:h-[65vh] md:h-[75vh] flex items-center text-white"
@@ -128,18 +142,25 @@ export default function Blogs() {
                             Explore expert insights, industry trends, and innovative ideas that drive digital transformation and business success.
                         </p>
 
-                        <form onSubmit={handleSubscribe} className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-lg">
-                            <div className="relative flex-grow">
-                                <input 
-                                    type="email" 
-                                    placeholder="Enter your email..." 
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-6 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:border-primary transition-all"
-                                />
-                            </div>
-                            <button 
+                        <div className="mt-6 md:mt-8 flex flex-col gap-3 sm:gap-4 max-w-lg">
+                            <button
+                                onClick={scrollToBlogs}
+                                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-primary-light text-white text-sm sm:text-base font-bold rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                            >
+                                Explore Articles
+                            </button>
+                            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                                <div className="relative flex-grow">
+                                    <input 
+                                        type="email" 
+                                        placeholder="Enter your email..." 
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full px-6 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+                            <button
                                 type="submit"
                                 disabled={isSubscribed || isSubscribing}
                                 className={`px-6 sm:px-8 py-3.5 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 whitespace-nowrap ${
@@ -160,7 +181,8 @@ export default function Blogs() {
                                     </>
                                 ) : "Join Newsletter"}
                             </button>
-                        </form>
+                            </form>
+                        </div>
                     </div>
 
                     <div className="hidden md:flex justify-center md:justify-end">
@@ -219,8 +241,8 @@ export default function Blogs() {
             <section className="py-12 md:py-16 lg:py-20 bg-gradient-to-br from-indigo-50 via-blue-50 to-primary-light relative overflow-hidden">
                 {/* Decorative Elements */}
                 <div className="absolute top-10 right-10 w-48 h-48 sm:w-72 sm:h-72 bg-purple-200 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
-                <div className="absolute bottom-10 left-10 w-64 h-64 sm:w-96 sm:h-96 bg-pink-200 rounded-full filter blur-3xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
-                
+                <div className="absolute bottom-10 left-10 w-64 h-64 sm:w-96 sm:h-96 bg-pink-200 rounded-full filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
+
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
                     <div className="grid md:grid-cols-[40%_60%] items-center gap-0 shadow-xl md:shadow-2xl rounded-2xl md:rounded-3xl overflow-hidden bg-white">
 
@@ -238,13 +260,13 @@ export default function Blogs() {
                         {/* RIGHT CONTENT BOX */}
                         <div className="bg-gradient-to-br from-white to-gray-50 p-6 sm:p-8 md:p-10 lg:p-14">
                             <div className="flex items-center gap-3 mb-6">
-                                
+
                                 <div>
-                                    
-                                
+
+
                                 </div>
                             </div>
-                            
+
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-2 md:mb-3">
                                 Dynamic Learning for
                             </h2>
@@ -254,9 +276,9 @@ export default function Blogs() {
                             </h2>
 
                             <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-6 md:mb-8">
-                                At The Contractum, we deliver comprehensive training that enables you 
-                                to specialize in emerging technologies essential for today's job market. 
-                                Our programs span various competencies and industry certifications, 
+                                At The Contractum, we deliver comprehensive training that enables you
+                                to specialize in emerging technologies essential for today's job market.
+                                Our programs span various competencies and industry certifications,
                                 all supported by expert instructors with real-world experience.
                             </p>
 
@@ -303,7 +325,7 @@ export default function Blogs() {
 
             {/* Main Content Section */}
             <div id="blog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-                
+
                 {/* Search and Filter Header */}
                 <div className="mb-8 md:mb-12 bg-white rounded-xl md:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 md:gap-6 mb-4 md:mb-6">
@@ -311,7 +333,7 @@ export default function Blogs() {
                             <h2 className="text-2xl sm:text-3xl font-bold text-black">Explore Our Blogs</h2>
                             <p className="text-sm sm:text-base text-gray-600 mt-1 md:mt-2">Discover insights from industry experts and thought leaders</p>
                         </div>
-                        
+
                         {/* Search Bar */}
                         <div className="relative w-full lg:w-96">
                             <input
@@ -341,7 +363,7 @@ export default function Blogs() {
                                     className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
                                         selectedCategory === category
                                             ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg scale-105'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-primary hover:text-white border-2 border-transparent'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-primary hover:text-white border-2 border-transparent hover:border-purple-200'
                                     }`}
                                 >
                                     {category}
@@ -374,13 +396,13 @@ export default function Blogs() {
                         <>
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                                 {displayedPosts.map((post) => (
-                                    <div 
+                                    <div
                                         key={post.id}
                                         className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:transform hover:-translate-y-2 border border-gray-100 group"
                                     >
                                         <div className="h-48 overflow-hidden relative">
-                                            <img 
-                                                src={post.image} 
+                                            <img
+                                                src={post.image}
                                                 alt={post.title}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                             />
@@ -406,7 +428,7 @@ export default function Blogs() {
                                                 </div>
                                                 <span className="text-xs text-gray-500">{post.readTime}</span>
                                             </div>
-                                            <button 
+                                            <button
                                                 onClick={() => navigate(`/resources/blogs/${post.id}`)}
                                                 className="w-full py-2 bg-gradient-to-r from-primary to-primary-light text-black font-semibold rounded-lg hover:shadow-lg transition-all duration-300 group-hover:scale-105"
                                             >
@@ -432,7 +454,7 @@ export default function Blogs() {
                     )}
                 </div>
 
-               
+
 
                 {/* Trending Topics */}
                 <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">

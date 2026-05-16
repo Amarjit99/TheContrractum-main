@@ -18,6 +18,36 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/news/:id
+// @desc    Get single news article
+// @access  Public
+router.get('/:id', async (req, res) => {
+  try {
+    const article = await News.findById(req.params.id);
+    if (!article) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    res.json(article);
+  } catch (err) {
+    console.error("Fetch single news error:", err);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   POST /api/news/upload-image
+// @desc    Upload an image for professional content sections
+// @access  Admin/Private
+router.post('/upload-image', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No image file provided' });
+  }
+  const imageUrl = `/${req.file.path.replace(/\\/g, '/')}`;
+  res.json({ imageUrl });
+});
+
 // @route   POST /api/news
 // @desc    Create a new news article
 // @access  Admin/Private
@@ -39,10 +69,19 @@ router.post('/', upload.single('image'), async (req, res) => {
     // Convert file path to be accessible via URL
     const imagePath = `/${req.file.path.replace(/\\/g, '/')}`;
 
+    let finalDescription = description;
+    try {
+      if (typeof description === 'string' && (description.startsWith('{') || description.startsWith('['))) {
+        finalDescription = JSON.parse(description);
+      }
+    } catch (e) {
+      finalDescription = description;
+    }
+
     const newArticle = new News({
       title,
       category,
-      description,
+      description: finalDescription,
       date,
       image: imagePath,
       featured: featured === 'true' || featured === true
@@ -73,7 +112,17 @@ router.put('/:id', upload.single('image'), async (req, res) => {
     // Update fields
     if (title) article.title = title;
     if (category) article.category = category;
-    if (description) article.description = description;
+    if (description) {
+      try {
+        if (typeof description === 'string' && (description.startsWith('{') || description.startsWith('['))) {
+          article.description = JSON.parse(description);
+        } else {
+          article.description = description;
+        }
+      } catch (e) {
+        article.description = description;
+      }
+    }
     if (date) article.date = date;
     if (featured !== undefined) article.featured = featured === 'true' || featured === true;
 

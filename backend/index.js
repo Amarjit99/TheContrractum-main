@@ -107,6 +107,7 @@ app.use("/api/contracts", require("./routes/contracts"));
 app.use("/api/affiliate-applications", require("./routes/affiliates"));
 app.use("/api/certificates", require("./routes/certificates"));
 app.use("/api/mini-events", require("./routes/miniEventRoutes"));
+app.use("/api/event-registrations", require("./routes/eventRegistration"));
 app.use("/api/public", require("./routes/publicForms"));
 app.use("/api/audit-logs", require("./routes/auditLogs"));
 app.use("/api/settings", require("./routes/settings"));

@@ -21,6 +21,7 @@ const AdminRegistration = require('../models/AdminRegistration');
 const MiniEvent = require('../models/MiniEvent');
 const Feedback = require('../models/Feedback');
 const VolunteerApplication = require('../models/VolunteerApplication');
+const EventRegistration = require('../models/EventRegistration');
 const AdminDetail = require('../models/Admin');
 const Certificate = require('../models/Certificate');
 const IdCard = require('../models/IdCard');
@@ -106,7 +107,8 @@ router.get('/form-stats', async (req, res) => {
       demoRequestsCount, expertConsultsCount, quoteAppsCount,
       supportTicketsCount, newsletterCount, internAppsCount,
       affiliateAppsCount, surveyResponsesCount, referralCount,
-      staffRegistrationsCount, miniEvents, feedbackCount, volunteerAppsCount
+      staffRegistrationsCount, miniEvents, feedbackCount, volunteerAppsCount,
+      eventRegistrationsCount
     ] = await Promise.all([
       Contact.countDocuments(),
       JobApplication.countDocuments(),
@@ -124,7 +126,8 @@ router.get('/form-stats', async (req, res) => {
       AdminRegistration.countDocuments({ status: 'pending' }),
       MiniEvent.find(),
       Feedback.countDocuments(),
-      VolunteerApplication.countDocuments()
+      VolunteerApplication.countDocuments(),
+      EventRegistration.countDocuments()
     ]);
 
     const rsvpCount = miniEvents.reduce((acc, curr) => acc + (curr.attendees ? curr.attendees.length : 0), 0);
@@ -145,6 +148,7 @@ router.get('/form-stats', async (req, res) => {
       { name: 'Referrals', count: referralCount },
       { name: 'Staff Requests', count: staffRegistrationsCount },
       { name: 'Event RSVPs', count: rsvpCount },
+      { name: 'Event Registrations', count: eventRegistrationsCount },
       { name: 'User Feedback', count: feedbackCount },
       { name: 'Volunteer Apps', count: volunteerAppsCount }
     ];

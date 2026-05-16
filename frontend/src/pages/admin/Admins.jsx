@@ -3,10 +3,13 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Search, UserCheck, ShieldCheck, Edit3, Trash2, X, CheckCircle, Clock } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminAdmins() {
-  const { admin } = useAdminAuth();
+  const { admin, logout } = useAdminAuth();
+  const navigate = useNavigate();
   const headers = { Authorization: `Bearer ${admin?.token}`, 'Content-Type': 'application/json' };
 
   const [data, setData] = useState({ users: [], total: 0 });
@@ -35,6 +38,11 @@ export default function AdminAdmins() {
   const fetchAdmins = async () => {
     setLoading(true);
     const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10&role=admin`, { headers });
+    if (res.status === 401) {
+      if (logout) logout();
+      navigate('/admin/login');
+      return;
+    }
     const d = await res.json();
     setData(d);
     setLoading(false);

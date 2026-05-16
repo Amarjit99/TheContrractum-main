@@ -23,6 +23,7 @@ const FORM_DETAILS = [
   { id: 'referral', name: 'Employee Referral', path: '/join/referral', adminPath: '/admin/referrals', category: 'HR' },
   { id: 'staff-requests', name: 'Staff Registration', path: '/admin/login', adminPath: '/admin/staff-management', category: 'Admin' },
   { id: 'rsvps', name: 'Event RSVPs', path: '/events', adminPath: '/admin/mini-events', category: 'Community' },
+  { id: 'event-registrations', name: 'Event Registrations', path: '/resources/events', adminPath: '/admin/event-registrations', category: 'Community' },
   { id: 'feedback', name: 'User Feedback', path: '/contact/feedback', adminPath: '/admin/dashboard', category: 'Support' },
   { id: 'volunteer', name: 'Volunteer Application', path: '/join/volunteer', adminPath: '/admin/dashboard', category: 'Community' },
 ];
@@ -63,6 +64,7 @@ export default function AdminSubmissions() {
                                            (detail.id === 'interns' && s.name === 'Intern Apps') ||
                                            (detail.id === 'staff-requests' && s.name === 'Staff Requests') ||
                                            (detail.id === 'rsvps' && s.name === 'Event RSVPs') ||
+                                           (detail.id === 'event-registrations' && s.name === 'Event Registrations') ||
                                            (detail.id === 'feedback' && s.name === 'User Feedback') ||
                                            (detail.id === 'volunteer' && s.name === 'Volunteer Apps')
                                           );
