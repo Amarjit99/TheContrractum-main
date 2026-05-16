@@ -4,6 +4,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Link as LinkIcon, ChevronRight, UserPlus, CheckCircle2, Clock, Trash2, Mail, ShieldAlert } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -86,13 +87,13 @@ export default function SuperAdminDashboard() {
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
       if (res.ok) {
-        alert('Admin approved successfully!');
+        toast.success('Admin approved successfully!');
         fetchDashboardData(); // Refresh both stats and list
       } else {
-        alert('Failed to approve registration');
+        toast.error('Failed to approve registration');
       }
     } catch (err) {
-      alert('Error during approval');
+      toast.error('Error during approval');
     } finally {
       setIsApproving(null);
     }

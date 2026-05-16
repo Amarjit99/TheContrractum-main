@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 import QRCode from 'qrcode';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { toast } from 'react-hot-toast';
 // No html2canvas import needed — we draw via Canvas 2D API
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -702,15 +703,15 @@ export default function AdminIdCards() {
         });
 
         if (res.ok) {
-          alert(`Successfully onboarded ${onboardingData.length} employees!`);
+          toast.success(`Successfully onboarded ${onboardingData.length} employees!`);
           fetchIdCards();
         } else {
           const errData = await res.json();
-          alert(`Bulk upload failed: ${errData.message}`);
+          toast.error(`Bulk upload failed: ${errData.message}`);
         }
       } catch (err) {
         console.error('Bulk upload error:', err);
-        alert('Error processing file. Please check format.');
+        toast.error('Error processing file. Please check format.');
       } finally {
         setBulkLoading(false);
       }
@@ -833,7 +834,7 @@ export default function AdminIdCards() {
     const cardsToExport = Array.isArray(specificCards) ? specificCards : filteredCards;
 
     if (cardsToExport.length === 0) {
-      alert('No cards available to export.');
+      toast.success('No cards available to export.');
       setDownloading(false);
       return;
     }
@@ -853,7 +854,7 @@ export default function AdminIdCards() {
       doc.save(`Generated_ID_Cards_${new Date().getTime()}.pdf`);
     } catch (err) {
       console.error('Bulk PDF failed:', err);
-      alert('Failed to generate PDF cards.');
+      toast.error('Failed to generate PDF cards.');
     }
     setDownloading(false);
   };
@@ -968,7 +969,7 @@ export default function AdminIdCards() {
       });
 
       if (res.ok) {
-        alert(`${card.name}'s ID has been renewed successfully!`);
+        toast.success(`${card.name}'s ID has been renewed successfully!`);
         fetchIdCards();
       }
     } catch (err) {
@@ -981,7 +982,7 @@ export default function AdminIdCards() {
   const handlePreview = async (e) => {
     if (e) e.preventDefault();
     if (!formData.employeeId || !formData.name || !formData.department || !formData.designation || !formData.validUntil || !formData.photo) {
-      alert('Please fill all required fields and upload a photo before previewing.');
+      toast.error('Please fill all required fields and upload a photo before previewing.');
       return;
     }
     setLoading(true);
@@ -991,7 +992,7 @@ export default function AdminIdCards() {
       setPreviewMode(true);
     } catch (err) {
       console.error('Preview generation failed:', err);
-      alert('Error generating preview. Please ensure all data is correct.');
+      toast.error('Error generating preview. Please ensure all data is correct.');
     } finally {
       setLoading(false);
     }
@@ -1018,7 +1019,7 @@ export default function AdminIdCards() {
         fetchIdCards();
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to process ID Card.");
+        toast.error(errData.message || "Failed to process ID Card.");
       }
     } catch (err) {
       console.error(err);
@@ -1039,7 +1040,7 @@ export default function AdminIdCards() {
       document.body.removeChild(link);
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Download failed. Please try again.');
+      toast.error('Download failed. Please try again.');
     }
     setDownloading(false);
   };
@@ -1088,7 +1089,7 @@ export default function AdminIdCards() {
     const verifyUrl = `${window.location.origin}/company/employee-id/${formData.employeeId}`;
     const shareText = `Official ID Card for ${formData.name}\nID: ${formData.employeeId}\nRole: ${formData.designation}\nVerify at: ${verifyUrl}`;
     navigator.clipboard.writeText(shareText).catch(() => { });
-    alert('The ID Card image has been downloaded. Official verification link and details copied to clipboard — paste them in your message!');
+    toast.success('The ID Card image has been downloaded. Official verification link and details copied to clipboard — paste them in your message!');
   };
 
   const handleBulkUpload = async (e) => {
@@ -1161,13 +1162,13 @@ export default function AdminIdCards() {
             console.error('Bulk row failed:', err);
           }
         }
-        alert(`Bulk Upload Complete! ${successCount} cards generated.`);
+        toast.success(`Bulk Upload Complete! ${successCount} cards generated.`);
         fetchIdCards();
       };
       reader.readAsBinaryString(file);
     } catch (err) {
       console.error('Bulk Upload Error:', err);
-      alert('Failed to process bulk upload.');
+      toast.error('Failed to process bulk upload.');
     }
     setBulkLoading(false);
   };
@@ -1202,7 +1203,7 @@ export default function AdminIdCards() {
       setIsModalOpen(true);
     } catch (err) {
       console.error('View generation failed:', err);
-      alert('Unable to load card preview. Please check if the record is valid.');
+      toast.error('Unable to load card preview. Please check if the record is valid.');
     } finally {
       setLoading(false);
     }

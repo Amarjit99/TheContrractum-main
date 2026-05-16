@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -37,7 +38,7 @@ export default function AdminContacts() {
   );
 
   const deleteContact = async (id) => {
-    if (typeof id === 'string' && id.startsWith('mock-')) return alert("Cannot delete demo data.");
+    if (typeof id === 'string' && id.startsWith('mock-')) return toast.success("Cannot delete demo data.");
     if (!confirm('Delete this contact submission?')) return;
     const res = await fetch(`${API}/api/admin/contacts/${id}`, { method: 'DELETE', headers });
     if (res.ok) { setMsg('Lead deleted successfully.'); setTimeout(() => setMsg(''), 3000); fetchContacts(); }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Copy, Gift, Users, CreditCard, ChevronRight, Share2, Plus, X, ArrowRight, TrendingUp, CheckCircle, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 // Using a mock auth literal as asked by user for the dynamic UI representation
 const MOCK_USER = {
@@ -58,7 +59,7 @@ export default function ReferralDashboard() {
 
   const copyLink = () => {
       navigator.clipboard.writeText(`www.thecontractum.com/ref/${MOCK_USER.refcode}`);
-      alert("Referral link copied!");
+      toast.success("Referral link copied!");
   };
 
   // Derive stats dynamically

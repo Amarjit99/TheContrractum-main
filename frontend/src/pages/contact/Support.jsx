@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MessageCircle, Book, Clock, Headphones, Search, AlertCircle, CheckCircle, RefreshCcw } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -51,11 +52,11 @@ const Support = () => {
 
       if (!res.ok) throw new Error('Failed to submit ticket');
 
-      alert('Support ticket submitted successfully!');
+      toast.success('Support ticket submitted successfully!');
       handleReset();
     } catch (err) {
       setStatus({ loading: false, error: err.message });
-      alert('Error submitting ticket: ' + err.message);
+      toast.error('Error submitting ticket: ' + err.message);
     }
   };
 

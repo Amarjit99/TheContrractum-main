@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import p20 from "../../assets/p20.png";
 import p18 from "../../assets/p18.png";
+import { toast } from 'react-hot-toast';
 
 export default function Blogs() {
     const navigate = useNavigate();
@@ -78,11 +79,11 @@ export default function Blogs() {
                 fetch(`${API}/api/subscription/subscribe`, { method: 'POST' });
             } else {
                 const data = await response.json();
-                alert(data.message || "Subscription failed");
+                toast.error(data.message || "Subscription failed");
             }
         } catch (err) {
             console.error("Error subscribing:", err);
-            alert("An error occurred. Please try again.");
+            toast.error("An error occurred. Please try again.");
         } finally {
             setIsSubscribing(false);
         }

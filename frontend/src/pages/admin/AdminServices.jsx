@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Trash2, X, Edit } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -68,7 +69,7 @@ export default function AdminServices() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!newService.title) return alert("Please fill service title");
+    if (!newService.title) return toast.error("Please fill service title");
 
     try {
       const payload = {
@@ -99,7 +100,7 @@ export default function AdminServices() {
         setEditingId(null);
         setNewService({ title: '', category: 'Digital Solutions', subCategory: 'E-Commerce Platforms', description: '', features: '' });
       } else {
-        alert("Failed to publish service");
+        toast.error("Failed to publish service");
       }
     } catch (err) { console.error(err); }
   };

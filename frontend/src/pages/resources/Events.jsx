@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from 'react-hot-toast';
 
 // Events Data
 const eventsData = [
@@ -273,11 +274,11 @@ export default function Events() {
         setTimeout(() => setShowSuccessPopup(false), 5000);
       } else {
         const data = await response.json();
-        alert(data.message || "Subscription failed");
+        toast.error(data.message || "Subscription failed");
       }
     } catch (err) {
       console.error("Error subscribing:", err);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

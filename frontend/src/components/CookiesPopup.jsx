@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Mail, CheckCircle, AlertTriangle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const CookiesPopup = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -67,7 +68,7 @@ const CookiesPopup = () => {
                 setTimeout(() => setIsVisible(false), 2000);
             } else {
                 setStatus('idle');
-                alert('Subscription failed. Please try again.');
+                toast.error('Subscription failed. Please try again.');
             }
         } catch (error) {
             console.error('Error accepting cookies:', error);

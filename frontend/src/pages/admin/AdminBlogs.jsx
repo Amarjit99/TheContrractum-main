@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -42,11 +43,11 @@ export default function AdminBlogs() {
       if (res.ok) {
         setNewPost(prev => ({ ...prev, image: `${API}${data.imageUrl}` }));
       } else {
-        alert('Upload failed: ' + (data.error || 'Unknown error'));
+        toast.error('Upload failed: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
       console.error(err);
-      alert('Image upload failed');
+      toast.error('Image upload failed');
     }
     setUploading(false);
   };
@@ -93,11 +94,11 @@ export default function AdminBlogs() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if(!newPost.title || !newPost.author) return alert("Please fill title and author");
+    if(!newPost.title || !newPost.author) return toast.error("Please fill title and author");
     
     try {
       const categoryValue = newPost.category === '__custom__' ? customCategory.trim() : newPost.category;
-      if (newPost.category === '__custom__' && !categoryValue) return alert('Please enter a custom category');
+      if (newPost.category === '__custom__' && !categoryValue) return toast.error('Please enter a custom category');
       const payload = { ...newPost, category: categoryValue };
       let res;
       if (editingId) {
@@ -124,7 +125,7 @@ export default function AdminBlogs() {
           setNewPost({ title: '', author: '', category: 'Technology', status: 'Draft', excerpt: '', content: '', readTime: '', image: '' });
         }, 1500);
       } else {
-        alert(editingId ? "Failed to update post." : "Failed to create post.");
+        toast.error(editingId ? "Failed to update post." : "Failed to create post.");
       }
     } catch(err) {
       console.error(err);

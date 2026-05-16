@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload, GraduationCap } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -100,7 +101,7 @@ export default function AdminStudentInterns() {
     e.preventDefault();
 
     if (!editingIntern && !formData.image) {
-      alert("Please select a profile image.");
+      toast.error("Please select a profile image.");
       return;
     }
 
@@ -136,11 +137,11 @@ export default function AdminStudentInterns() {
         }, 1500);
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to save intern.");
+        toast.error(errData.message || "Failed to save intern.");
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while saving. Please check the console.");
+      toast.error("An error occurred while saving. Please check the console.");
     }
   };
 

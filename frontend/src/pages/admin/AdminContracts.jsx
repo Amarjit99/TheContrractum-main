@@ -6,6 +6,7 @@ import {
   Send, Eye, ArrowRight, User as UserIcon, Calendar, ClipboardList
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -48,7 +49,7 @@ export default function AdminContracts() {
       if (res.ok) fetchContracts();
       else {
         const error = await res.json();
-        alert(error.message);
+        toast.error(error.message);
       }
     } catch (err) {
       console.error(err);

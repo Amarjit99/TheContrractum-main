@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import newsBrain from "../../assets/news_brain.png";
 import newsClimate from "../../assets/news_climate.png";
+import { toast } from 'react-hot-toast';
 
 export default function News() {
   const [newsData, setNewsData] = useState([]);
@@ -85,11 +86,11 @@ export default function News() {
           setTimeout(() => setShowSuccessPopup(false), 5000);
         } else {
           const data = await response.json();
-          alert(data.message || "Subscription failed");
+          toast.error(data.message || "Subscription failed");
         }
       } catch (err) {
         console.error("Error subscribing:", err);
-        alert("An error occurred. Please try again.");
+        toast.error("An error occurred. Please try again.");
       }
     }
   };

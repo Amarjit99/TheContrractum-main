@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload, Briefcase, Award, Target, Rocket, GraduationCap, QuoteIcon, Star } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -148,7 +149,7 @@ export default function AdminFounders() {
         }, 1500);
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to save data.");
+        toast.error(errData.message || "Failed to save data.");
       }
     } catch (err) {
       console.error(err);
