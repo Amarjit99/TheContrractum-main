@@ -92,7 +92,7 @@ export default function Dashboard() {
         <div className="space-y-6">
 
           {/* Top Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
             <StatCardItem
               title="Total Leads"
               value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
@@ -119,6 +119,20 @@ export default function Dashboard() {
               value={stats?.totalBlogs || "12"}
               trendColor="text-emerald-500"
               trendText="Live"
+              trendIcon={<TrendingUp size={16} />}
+            />
+            <StatCardItem
+              title="Certificates"
+              value={stats?.totalCertificates || "0"}
+              trendColor="text-emerald-500"
+              trendText="Issued"
+              trendIcon={<TrendingUp size={16} />}
+            />
+            <StatCardItem
+              title="ID Cards"
+              value={stats?.totalIdCards || "0"}
+              trendColor="text-emerald-500"
+              trendText="Active"
               trendIcon={<TrendingUp size={16} />}
             />
           </div>

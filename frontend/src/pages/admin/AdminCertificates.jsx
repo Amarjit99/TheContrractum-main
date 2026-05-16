@@ -9,6 +9,7 @@ import QRCode from 'qrcode';
 import { QRCodeSVG } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { toast } from 'react-hot-toast';
 import { CATEGORIES, DEPARTMENTS_BY_CATEGORY, DESIGNATIONS_MAPPING, THEME_COLORS } from '../../constants/certificateConstants';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -314,9 +315,28 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
 
   // Issued By / Authorized Signature
   ctx.textAlign = 'center';
-  ctx.fillStyle = theme.primary;
-  ctx.font = 'italic 63px Georgia, serif';
-  ctx.fillText(data.issuedBy || 'The Contractum', W - 450, bottomY + 30);
+
+  // If signature image is uploaded in settings, render it; otherwise use italic text
+  if (globalSettings?.authorizedSignature) {
+    try {
+      const sigImg = new Image();
+      sigImg.crossOrigin = 'anonymous';
+      sigImg.src = globalSettings.authorizedSignature.startsWith('data:') ? globalSettings.authorizedSignature : `${API}${globalSettings.authorizedSignature}`;
+      await new Promise(resolve => { sigImg.onload = resolve; sigImg.onerror = resolve; });
+      const sigWidth = 240;
+      const sigHeight = 60;
+      ctx.drawImage(sigImg, W - 450 - sigWidth / 2, bottomY - 10, sigWidth, sigHeight);
+    } catch (e) {
+      // Fallback to italic text
+      ctx.fillStyle = theme.primary;
+      ctx.font = 'italic 63px Georgia, serif';
+      ctx.fillText(data.issuedBy || 'The Contractum', W - 450, bottomY + 30);
+    }
+  } else {
+    ctx.fillStyle = theme.primary;
+    ctx.font = 'italic 63px Georgia, serif';
+    ctx.fillText(data.issuedBy || 'The Contractum', W - 450, bottomY + 30);
+  }
 
   ctx.strokeStyle = theme.primary + '66';
   ctx.lineWidth = 3;
@@ -330,7 +350,7 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
   ctx.fillText('ISSUED BY', W - 450, bottomY + 105);
   ctx.fillStyle = '#9ca3af';
   ctx.font = 'bold 21px Montserrat, sans-serif';
-  ctx.fillText('AUTHORIZED AUTHORITY', W - 450, bottomY + 140);
+  ctx.fillText(globalSettings?.signatoryDesignation || 'AUTHORIZED AUTHORITY', W - 450, bottomY + 140);
 
   // Date of Issue
   ctx.textAlign = 'center';
@@ -373,7 +393,7 @@ export default function AdminCertificates() {
   const [downloading, setDownloading] = useState(false);
   const [scanLogs, setScanLogs] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
-  const [globalSettings, setGlobalSettings] = useState({ companyName: 'The Contractum', companyLogo: '', companySeal: '' });
+  const [globalSettings, setGlobalSettings] = useState({ companyName: 'The Contractum', companyLogo: '', companySeal: '', authorizedSignature: '', signatoryDesignation: 'Authorized Authority' });
   const [filterDepartment, setFilterDepartment] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [candidatePhoto, setCandidatePhoto] = useState('');
@@ -397,6 +417,7 @@ export default function AdminCertificates() {
     certificateId: '',
     details: '',
     recipientEmail: '',
+    recipientPhone: '',
     themeId: 'modern',
     designation: '',
     department: 'General',
@@ -501,6 +522,7 @@ export default function AdminCertificates() {
       designation: '',
       details: '',
       recipientEmail: '',
+      recipientPhone: '',
       themeId: 'modern',
       department: 'General',
       issuedBy: getAdminDisplayName(),
@@ -577,7 +599,7 @@ export default function AdminCertificates() {
       document.body.removeChild(link);
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Download failed. Please try again.');
+      toast.error('Download failed. Please try again.');
     }
     setDownloading(false);
   };
@@ -587,7 +609,7 @@ export default function AdminCertificates() {
     const certsToExport = Array.isArray(specificCerts) ? specificCerts : filteredCerts;
 
     if (certsToExport.length === 0) {
-      alert('No certificates available to export.');
+      toast.error('No certificates available to export.');
       setDownloading(false);
       return;
     }
@@ -610,7 +632,7 @@ export default function AdminCertificates() {
       doc.save(`Certificates_Batch_${new Date().getTime()}.pdf`);
     } catch (err) {
       console.error('Bulk PDF failed:', err);
-      alert('Failed to generate PDF certificates.');
+      toast.error('Failed to generate PDF certificates.');
     }
     setDownloading(false);
   };
@@ -618,7 +640,7 @@ export default function AdminCertificates() {
   const copyShareLink = (id) => {
     const url = `${window.location.origin}/verify/${id}`;
     navigator.clipboard.writeText(url);
-    alert('Verification link copied to clipboard!');
+    toast.success('Verification link copied to clipboard!');
   };
 
   const handleStatusChange = async (certId, newStatus) => {
@@ -647,11 +669,11 @@ export default function AdminCertificates() {
         await fetchCertificates();
       } else {
         const err = await res.json();
-        alert(err.message || 'Failed to update status.');
+        toast.error(err.message || 'Failed to update status.');
       }
     } catch (err) {
       console.error('Status change failed:', err);
-      alert('Failed to update certificate status.');
+      toast.error('Failed to update certificate status.');
     }
   };
 
@@ -671,7 +693,7 @@ export default function AdminCertificates() {
       setPreviewMode(true);
     } catch (err) {
       console.error('Preview generation failed:', err);
-      alert('Failed to generate preview.');
+      toast.error('Failed to generate preview.');
     }
     setLoading(false);
   };
@@ -704,11 +726,11 @@ export default function AdminCertificates() {
         }, 1500);
       } else {
         const errData = await res.json();
-        alert(errData.message || "Failed to save certificate.");
+        toast.error(errData.message || "Failed to save certificate.");
       }
     } catch (err) {
       console.error(err);
-      alert("An unexpected error occurred. Please check your connection.");
+      toast.error("An unexpected error occurred. Please check your connection.");
     }
     setIsProcessing(false);
   };
@@ -720,7 +742,7 @@ export default function AdminCertificates() {
       header: true,
       skipEmptyLines: true,
       complete: async (results) => {
-        if (results.data.length === 0) return alert('CSV is empty or invalid.');
+        if (results.data.length === 0) return toast.error('CSV is empty or invalid.');
 
         setIsProcessing(true);
         try {
@@ -739,7 +761,7 @@ export default function AdminCertificates() {
               department: row.Department || 'General',
             }));
 
-          if (mapped.length === 0) return alert('No valid rows found. Ensure Name and Designation columns are filled.');
+          if (mapped.length === 0) return toast.error('No valid rows found. Ensure Name and Designation columns are filled.');
 
           const res = await fetch(`${API}/api/certificates/bulk`, {
             method: 'POST',
@@ -747,12 +769,12 @@ export default function AdminCertificates() {
             body: JSON.stringify(mapped)
           });
           const result = await res.json();
-          alert(result.message);
+          toast.success(result.message);
           fetchCertificates();
           setIsBulkModalOpen(false);
         } catch (err) {
           console.error(err);
-          alert('Bulk upload failed. Please check your file and try again.');
+          toast.error('Bulk upload failed. Please check your file and try again.');
         }
         setIsProcessing(false);
       }
@@ -783,7 +805,7 @@ export default function AdminCertificates() {
       setIsModalOpen(true);
     } catch (err) {
       console.error('Preview generation failed:', err);
-      alert('Failed to load preview.');
+      toast.error('Failed to load preview.');
     }
     setLoading(false);
   };
@@ -798,7 +820,10 @@ export default function AdminCertificates() {
       'Department': c.department || 'General',
       'Designation': c.designation,
       'Issue Date': new Date(c.issueDate).toLocaleDateString(),
+      'Status': c.status || 'Issued',
       'Recipient Email': c.recipientEmail || 'N/A',
+      'Recipient Phone': c.recipientPhone || 'N/A',
+      'Issued By': c.issuedBy || 'N/A',
       'Project/Details': c.details || 'N/A'
     }));
     const ws = XLSX.utils.json_to_sheet(data);
@@ -819,10 +844,10 @@ export default function AdminCertificates() {
         ));
         setSelectedIds([]);
         fetchCertificates();
-        alert('Bulk deletion successful.');
+        toast.success('Bulk deletion successful.');
       } catch (err) {
         console.error(err);
-        alert('Failed to delete some certificates.');
+        toast.error('Failed to delete some certificates.');
       }
     }
   };
@@ -1310,6 +1335,7 @@ export default function AdminCertificates() {
                             certificateId: c.certificateId,
                             details: c.details || '',
                             recipientEmail: c.recipientEmail || '',
+                            recipientPhone: c.recipientPhone || '',
                             themeId: c.themeId || 'modern',
                             designation: c.designation || '',
                             department: c.department || 'General',
@@ -1403,6 +1429,10 @@ export default function AdminCertificates() {
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Email (Optional)</label>
                         <input type="email" value={formData.recipientEmail} onChange={e => setFormData({ ...formData, recipientEmail: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="jane@example.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Phone (WhatsApp)</label>
+                        <input type="tel" value={formData.recipientPhone} onChange={e => setFormData({ ...formData, recipientPhone: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+91 9876543210" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1652,6 +1682,72 @@ export default function AdminCertificates() {
                     </div>
                   </div>
                 </div>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Seal</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                      {globalSettings.companySeal ? (
+                        <img src={globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`} alt="Seal" className="w-full h-full object-contain p-1" />
+                      ) : (
+                        <span className="text-xs font-bold text-gray-400">NONE</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-600 hover:file:bg-red-100 transition-all cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setGlobalSettings({ ...globalSettings, companySeal: reader.result });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <p className="text-xs text-gray-400 mt-2">Upload official company seal (PNG with transparent background).</p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Authorized Signature</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                      {globalSettings.authorizedSignature ? (
+                        <img src={globalSettings.authorizedSignature.startsWith('data:') ? globalSettings.authorizedSignature : `${API}${globalSettings.authorizedSignature}`} alt="Signature" className="w-full h-full object-contain p-1" />
+                      ) : (
+                        <span className="text-xs font-bold text-gray-400">NONE</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-600 hover:file:bg-purple-100 transition-all cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setGlobalSettings({ ...globalSettings, authorizedSignature: reader.result });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <p className="text-xs text-gray-400 mt-2">Upload authorized signatory's signature image (PNG, transparent bg).</p>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Signatory Designation</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                    value={globalSettings.signatoryDesignation || ''}
+                    onChange={(e) => setGlobalSettings({ ...globalSettings, signatoryDesignation: e.target.value })}
+                    placeholder="e.g. Director, CEO, HR Manager"
+                  />
+                </div>
               </div>
             </div>
             <div className="p-6 border-t border-gray-100 bg-gray-50/50 shrink-0 flex justify-end gap-3">
@@ -1669,9 +1765,9 @@ export default function AdminCertificates() {
                       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin?.token}` },
                       body: JSON.stringify(globalSettings)
                     });
-                    alert('Settings updated successfully!');
+                    toast.success('Settings updated successfully!');
                     setIsSettingsModalOpen(false);
-                  } catch (err) { alert('Failed to update settings'); }
+                  } catch (err) { toast.error('Failed to update settings'); }
                 }}
                 className="px-6 py-2.5 text-sm font-bold text-white bg-[#1e5cdc] hover:bg-blue-700 shadow-md shadow-blue-500/20 rounded-xl transition-all"
               >
@@ -1684,3 +1780,4 @@ export default function AdminCertificates() {
     </AdminLayout>
   );
 }
+

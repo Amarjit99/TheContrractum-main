@@ -1,16 +1,41 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 const { initializeBackupCron } = require("./utils/backup");
+const { initializeReportCron } = require("./utils/reports");
+const { initializeExpiryCron } = require("./utils/expiryNotifier");
 
 const app = express();
 const PORT = process.env.PORT || 5000; // Updated to resolve port conflict
 
-// Middleware
+// Middleware (Must be before Rate Limiters for CORS to work on 429 responses)
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// Security Middleware
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// Rate Limiting — 1000 requests per 15 minutes per IP
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests. Please try again later." }
+});
+app.use("/api/", apiLimiter);
+
+// Stricter rate limit for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { message: "Too many login attempts. Please try again after 15 minutes." }
+});
+app.use("/api/auth/login", authLimiter);
 
 // Connect to MongoDB (only if URI is configured)
 const mongoUri = process.env.MONGO_URI;
@@ -85,6 +110,7 @@ app.use("/api/mini-events", require("./routes/miniEventRoutes"));
 app.use("/api/public", require("./routes/publicForms"));
 app.use("/api/audit-logs", require("./routes/auditLogs"));
 app.use("/api/settings", require("./routes/settings"));
+app.use("/api/tasks", require("./routes/tasks"));
 
 
 // Serve static files
@@ -95,4 +121,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.listen(PORT, () => {
   console.log(`🚀 API Server running on port ${PORT} (Hostinger Ready)`);
   initializeBackupCron();
+  initializeReportCron();
+  initializeExpiryCron();
 });

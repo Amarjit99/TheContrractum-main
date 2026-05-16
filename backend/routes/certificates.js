@@ -3,6 +3,7 @@ const router = express.Router();
 const Certificate = require('../models/Certificate');
 const upload = require('../middleware/upload');
 const sendEmail = require('../utils/sendEmail');
+const sendWhatsApp = require('../utils/sendWhatsApp');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 const ScanLog = require('../models/ScanLog');
@@ -37,17 +38,6 @@ router.get('/', protect, adminOnly, async (req, res) => {
   }
 });
 
-// GET single certificate
-router.get('/:id', protect, adminOnly, async (req, res) => {
-  try {
-    const certificate = await Certificate.findById(req.params.id);
-    if (!certificate) return res.status(404).json({ message: 'Certificate not found' });
-    res.json(certificate);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching certificate' });
-  }
-});
-
 // PUBLIC: GET all certificates for the careers page
 router.get('/all', async (req, res) => {
   try {
@@ -56,6 +46,16 @@ router.get('/all', async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Error fetching public records' });
   }
+});
+
+// GET Scan Logs (New Audit Feature) — MUST be before /:id
+router.get('/logs', protect, adminOnly, async (req, res) => {
+    try {
+        const logs = await ScanLog.find().sort({ scannedAt: -1 }).limit(100);
+        res.json(logs);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching logs' });
+    }
 });
 
 // PUBLIC: GET single certificate for verification
@@ -95,22 +95,21 @@ router.get('/public/verify/:id', async (req, res) => {
   }
 });
 
-// GET Scan Logs (New Audit Feature)
-router.get('/logs', protect, adminOnly, async (req, res) => {
-    try {
-        // We filter for logs where employeeId starts with TC- (or matches certificate patterns)
-        // For now, we'll fetch all and the frontend can filter or we can use a separate model
-        const logs = await ScanLog.find().sort({ scannedAt: -1 }).limit(100);
-        res.json(logs);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching logs' });
-    }
+// GET single certificate — MUST be after all static routes (/all, /logs, /public/*)
+router.get('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const certificate = await Certificate.findById(req.params.id);
+    if (!certificate) return res.status(404).json({ message: 'Certificate not found' });
+    res.json(certificate);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching certificate' });
+  }
 });
 
 // POST create certificate
 router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => {
   try {
-    const { name, type, issueDate, certificateId, details, recipientEmail, themeId, designation, department, issuedBy, status, validUntil } = req.body;
+    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil } = req.body;
     
     // Check if ID already exists
     const existing = await Certificate.findOne({ certificateId });
@@ -131,6 +130,7 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
       fileUrl: fileUrl || req.body.photo,
       details,
       recipientEmail,
+      recipientPhone,
       themeId,
       designation,
       department,
@@ -160,6 +160,15 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
         `
       }).catch(e => console.error("Email send failed:", e));
     }
+
+    // WhatsApp notification on issuance
+    if (savedCertificate.status === 'Issued' && savedCertificate.recipientPhone) {
+      const verifyUrlWA = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify/${savedCertificate.certificateId}`;
+      await sendWhatsApp({
+        phone: savedCertificate.recipientPhone,
+        message: `🎓 Congratulations ${savedCertificate.name}! Your official certificate (ID: ${savedCertificate.certificateId}) from The Contractum has been issued. View & download: ${verifyUrlWA}`
+      }).catch(e => console.error("WhatsApp send failed:", e));
+    }
     
     res.status(201).json(savedCertificate);
   } catch (err) {
@@ -170,8 +179,8 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
 // PUT update certificate
 router.put('/:id', protect, adminOnly, upload.single('file'), async (req, res) => {
   try {
-    const { name, type, issueDate, certificateId, details, recipientEmail, themeId, designation, department, issuedBy, status, validUntil } = req.body;
-    const updateData = { name, type, issueDate, certificateId, details, recipientEmail, themeId, designation, department, issuedBy, status, validUntil };
+    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil } = req.body;
+    const updateData = { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil };
 
     const oldCertificate = await Certificate.findById(req.params.id);
     if (!oldCertificate) return res.status(404).json({ message: 'Certificate not found' });
@@ -207,6 +216,15 @@ router.put('/:id', protect, adminOnly, upload.single('file'), async (req, res) =
           </div>
         `
       }).catch(e => console.error("Email send failed:", e));
+    }
+
+    // WhatsApp notification on status change to Issued
+    if (updatedCertificate.status === 'Issued' && oldCertificate.status !== 'Issued' && updatedCertificate.recipientPhone) {
+      const verifyUrlWA = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify/${updatedCertificate.certificateId}`;
+      await sendWhatsApp({
+        phone: updatedCertificate.recipientPhone,
+        message: `🎓 Congratulations ${updatedCertificate.name}! Your official certificate (ID: ${updatedCertificate.certificateId}) from The Contractum has been issued. View & download: ${verifyUrlWA}`
+      }).catch(e => console.error("WhatsApp send failed:", e));
     }
     
     res.json(updatedCertificate);

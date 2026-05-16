@@ -15,6 +15,7 @@ const certificateSchema = new mongoose.Schema({
   department: { type: String },
   details: { type: String },
   recipientEmail: { type: String },
+  recipientPhone: { type: String },
   issuedBy: { type: String, default: 'The Contractum' },
   // ── Approval Workflow Fields ──
   status: {
@@ -28,4 +29,4 @@ const certificateSchema = new mongoose.Schema({
   validUntil: { type: Date }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Certificate', certificateSchema);
+module.exports = mongoose.models.Certificate || mongoose.model('Certificate', certificateSchema);

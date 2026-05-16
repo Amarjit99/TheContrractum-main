@@ -31,6 +31,7 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminContracts from './pages/admin/AdminContracts';
 import AdminCertificates from './pages/admin/AdminCertificates';
 import AdminEvents from './pages/admin/AdminEvents';
+import AdminTasks from './pages/admin/AdminTasks';
 import VerifyCertificate from './pages/VerifyCertificate';
 import CertificateView from './pages/CertificateView';
 import ContractEditor from './pages/admin/ContractEditor';
@@ -164,6 +165,7 @@ import Feedback from './pages/contact/FeedbackModal';
 import Location from './pages/contact/Location';
 import CookiesPopup from './components/CookiesPopup';
 import GoogleForm from './pages/contact/GoogleForm';
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   return (
@@ -171,6 +173,7 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
+          <Toaster position="top-right" />
           <CookiesPopup />
           <Navbar />
           <main className="flex-grow">
@@ -211,6 +214,7 @@ export default function App() {
                 <Route path="/admin/contracts" element={<AdminContracts />} />
                 <Route path="/admin/certificates" element={<AdminCertificates />} />
                 <Route path="/admin/events" element={<AdminEvents />} />
+                <Route path="/admin/tasks" element={<AdminTasks />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
 

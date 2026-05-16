@@ -70,7 +70,43 @@ router.get("/", auth, async (req, res) => {
 
 const ScanLog = require("../models/ScanLog");
 
+// Get all scan logs (Admin) — MUST be before /:employeeId
+router.get("/logs/all", auth, async (req, res) => {
+  try {
+    const logs = await ScanLog.find().sort({ scannedAt: -1 }).limit(100);
+    res.json(logs);
+  } catch (error) {
+    console.error("Error fetching scan logs:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Batch upload ID Cards
+router.post("/bulk", auth, async (req, res) => {
+  try {
+    const cards = req.body;
+    if (!Array.isArray(cards)) return res.status(400).json({ message: "Invalid data format." });
+
+    // Filter out duplicates (based on employeeId)
+    const existingIds = await IdCard.find({ employeeId: { $in: cards.map(c => c.employeeId) } }).select('employeeId');
+    const existingSet = new Set(existingIds.map(c => c.employeeId));
+    
+    const newCards = cards.filter(c => !existingSet.has(c.employeeId));
+    
+    if (newCards.length === 0) {
+      return res.status(400).json({ message: "All records in this file already exist." });
+    }
+
+    await IdCard.insertMany(newCards);
+    res.status(201).json({ message: `Successfully onboarded ${newCards.length} records.`, count: newCards.length });
+  } catch (error) {
+    console.error("Bulk upload error:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
 // Get specific ID Card by Employee ID (Public, so no auth required for verifying)
+// MUST be after all static routes (/logs/all, /bulk)
 router.get("/:employeeId", async (req, res) => {
   try {
     const idCard = await IdCard.findOne({ employeeId: req.params.employeeId });
@@ -107,30 +143,6 @@ router.delete("/:id", auth, async (req, res) => {
   }
 });
 
-// Batch upload ID Cards
-router.post("/bulk", auth, async (req, res) => {
-  try {
-    const cards = req.body;
-    if (!Array.isArray(cards)) return res.status(400).json({ message: "Invalid data format." });
-
-    // Filter out duplicates (based on employeeId)
-    const existingIds = await IdCard.find({ employeeId: { $in: cards.map(c => c.employeeId) } }).select('employeeId');
-    const existingSet = new Set(existingIds.map(c => c.employeeId));
-    
-    const newCards = cards.filter(c => !existingSet.has(c.employeeId));
-    
-    if (newCards.length === 0) {
-      return res.status(400).json({ message: "All records in this file already exist." });
-    }
-
-    await IdCard.insertMany(newCards);
-    res.status(201).json({ message: `Successfully onboarded ${newCards.length} records.`, count: newCards.length });
-  } catch (error) {
-    console.error("Bulk upload error:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-});
-
 // Update ID Card Status
 router.put("/:id", auth, async (req, res) => {
   try {
@@ -139,17 +151,6 @@ router.put("/:id", auth, async (req, res) => {
     res.json(updatedCard);
   } catch (error) {
     console.error("Error updating ID Card:", error);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-
-// Get all scan logs (Admin)
-router.get("/logs/all", auth, async (req, res) => {
-  try {
-    const logs = await ScanLog.find().sort({ scannedAt: -1 }).limit(100);
-    res.json(logs);
-  } catch (error) {
-    console.error("Error fetching scan logs:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
