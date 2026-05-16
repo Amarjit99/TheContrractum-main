@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 // Models
 const Certificate = require('../models/Certificate');
-const IDCard = require('../models/IDCard');
+const IDCard = require('../models/IdCard');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const Settings = require('../models/Settings');

@@ -176,7 +176,7 @@ export default function AdminLayout({ children }) {
   );
 
   return (
-    <div className={`flex h-screen overflow-hidden font-sans ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-[#f0f4f8] dark:bg-gray-900 text-gray-900 dark:text-gray-100'}`}>
+    <div className={`flex h-screen overflow-hidden font-sans ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-[#f0f4f8] text-gray-900'}`}>
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 shrink-0 h-full shadow-xl z-20">
         <Sidebar />
@@ -195,7 +195,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header Row */}
-        <div className={`h-16 shrink-0 flex items-center justify-between px-4 lg:px-8 z-10 border-b ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-[#f0f4f8] dark:bg-gray-900 border-transparent'}`}>
+        <div className={`h-16 shrink-0 flex items-center justify-between px-4 lg:px-8 z-10 border-b ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-[#f0f4f8] border-transparent'}`}>
 
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -312,7 +312,7 @@ export default function AdminLayout({ children }) {
         </div>
 
         {/* Scrollable Page Content */}
-        <div className="flex-1 overflow-y-auto px-4 lg:px-8 pb-8 custom-scrollbar">
+        <div className={`flex-1 overflow-y-auto px-4 lg:px-8 pb-8 custom-scrollbar ${isDarkMode ? 'bg-gray-950' : 'bg-[#f0f4f8]'}`}>
           {children}
         </div>
       </div>

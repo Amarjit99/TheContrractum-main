@@ -3,26 +3,33 @@ const mongoose = require('mongoose');
 const auditLogSchema = new mongoose.Schema({
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User'
+  },
+  performedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   adminName: {
     type: String,
-    required: true
+    default: 'System'
   },
   action: {
     type: String,
-    enum: ['Create', 'Update', 'Delete', 'Status Change', 'Bulk Import'],
+    enum: ['Create', 'Update', 'Delete', 'Status Change', 'Bulk Import', 'Login', 'Logout', 'Export'],
     required: true
   },
+  entity: {
+    type: String,
+    default: ''
+  },
+  // Keep backward compat with old targetType/targetId fields
   targetType: {
     type: String,
-    enum: ['Certificate', 'ID Card', 'User'],
-    required: true
+    default: ''
   },
   targetId: {
-    type: String, // String to handle external IDs like TC-2026-EMP-001 or MongoDB IDs
-    required: true
+    type: String,
+    default: ''
   },
   details: {
     type: String,
@@ -34,4 +41,5 @@ const auditLogSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('AuditLog', auditLogSchema);
+module.exports = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema);
+

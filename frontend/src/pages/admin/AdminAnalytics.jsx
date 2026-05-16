@@ -66,6 +66,8 @@ export default function AdminAnalytics() {
   const filteredLogs = logs.filter(log => 
     (log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (log.entity || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.targetType || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.adminName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (log.details || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
