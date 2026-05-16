@@ -80,7 +80,7 @@ export default function AdminSurveys() {
         <AdminLayout>
             <div className="mb-6 mt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Survey Management</h1>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Survey Management</h1>
                     <div className="flex gap-4 mt-2">
                         <button onClick={() => setActiveTab('responses')} className={`text-sm font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${activeTab === 'responses' ? 'border-[#1e5cdc] text-[#1e5cdc]' : 'border-transparent text-gray-400'}`}>Responses ({surveys.length})</button>
                         <button onClick={() => setActiveTab('questions')} className={`text-sm font-bold uppercase tracking-wider pb-1 border-b-2 transition-all ${activeTab === 'questions' ? 'border-[#1e5cdc] text-[#1e5cdc]' : 'border-transparent text-gray-400'}`}>Manage Questions ({questions.length})</button>
@@ -96,7 +96,7 @@ export default function AdminSurveys() {
                 {activeTab === 'responses' && (
                     <div className="relative">
                         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." className="pl-10 pr-4 py-2 border border-blue-100 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full md:w-64" />
+                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." className="pl-10 pr-4 py-2 border border-blue-100 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full md:w-64" />
                     </div>
                 )}
             </div>
@@ -104,7 +104,7 @@ export default function AdminSurveys() {
             {msg && <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-bold animate-fade-in">{msg}</div>}
 
             {activeTab === 'questions' && isEditing && (
-                <div className="bg-white border-2 border-[#1e5cdc] rounded-2xl p-6 mb-8 shadow-xl animate-in slide-in-from-top duration-300">
+                <div className="bg-white dark:bg-gray-800 border-2 border-[#1e5cdc] rounded-2xl p-6 mb-8 shadow-xl animate-in slide-in-from-top duration-300">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-black text-slate-900 italic">{currentQuestion.id ? 'Edit Question' : 'Add New Question'}</h2>
                         <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-red-500 transition"><X size={24} /></button>
@@ -134,7 +134,7 @@ export default function AdminSurveys() {
             {activeTab === 'questions' ? (
                 <div className="space-y-4">
                     {questions.map((q, idx) => (
-                        <div key={q._id} className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div key={q._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="text-xs font-black text-[#1e5cdc] uppercase tracking-tighter">Question {idx + 1}</span>
@@ -150,13 +150,13 @@ export default function AdminSurveys() {
                             </div>
                         </div>
                     ))}
-                    {questions.length === 0 && <div className="text-center py-20 bg-white rounded-2xl text-gray-400">No questions added yet. Click "Add New Question" above.</div>}
+                    {questions.length === 0 && <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl text-gray-400">No questions added yet. Click "Add New Question" above.</div>}
                 </div>
             ) : (
                 <div className="space-y-4">
                     {loading ? <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin"></div></div> : filteredSurveys.map(s => (
-                        <div key={s._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 transition" onClick={() => setExpanded(expanded === s._id ? null : s._id)}>
+                        <div key={s._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 dark:bg-gray-700 transition" onClick={() => setExpanded(expanded === s._id ? null : s._id)}>
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#1e5cdc]"><User size={20} /></div>
                                     <div><p className="font-bold text-slate-800">{s.name}</p><p className="text-xs text-slate-500 font-medium">{s.email}</p></div>
@@ -171,14 +171,14 @@ export default function AdminSurveys() {
                                 <div className="px-6 py-5 bg-blue-50/20 border-t border-gray-50">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {s.responses.map((r, i) => (
-                                            <div key={i} className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm"><p className="text-[10px] font-black text-blue-400 uppercase mb-1">Q{i + 1}</p><p className="text-sm font-bold text-slate-800 mb-2">{r.question}</p><div className="bg-blue-50 px-3 py-2 rounded-lg"><p className="text-xs font-bold text-[#1e5cdc]">{r.answer}</p></div></div>
+                                            <div key={i} className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-blue-100 shadow-sm"><p className="text-[10px] font-black text-blue-400 uppercase mb-1">Q{i + 1}</p><p className="text-sm font-bold text-slate-800 mb-2">{r.question}</p><div className="bg-blue-50 px-3 py-2 rounded-lg"><p className="text-xs font-bold text-[#1e5cdc]">{r.answer}</p></div></div>
                                         ))}
                                     </div>
                                 </div>
                             )}
                         </div>
                     ))}
-                    {!loading && filteredSurveys.length === 0 && <div className="text-center py-20 bg-white rounded-2xl text-gray-400">No responses found matching your search.</div>}
+                    {!loading && filteredSurveys.length === 0 && <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl text-gray-400">No responses found matching your search.</div>}
                 </div>
             )}
         </AdminLayout>

@@ -83,7 +83,7 @@ export default function AdminAffiliates() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 mt-2">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2 sm:gap-3">
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2 sm:gap-3">
                         <span className="p-1.5 sm:p-2 bg-purple-100 text-purple-600 rounded-lg">
                             <Layout size={20} className="sm:w-6 sm:h-6" />
                         </span>
@@ -99,15 +99,15 @@ export default function AdminAffiliates() {
                         placeholder="Search by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
+                        className="pl-10 pr-4 py-2 sm:py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-full sm:w-64 shadow-sm transition-all"
                     />
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-500">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden animate-in fade-in duration-500">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-[#f8fafc] border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-[10px]">
+                        <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 text-gray-500 font-bold uppercase tracking-wider text-[10px]">
                             <tr>
                                 <th className="px-3 sm:px-6 py-3 sm:py-4">Applicant Info</th>
                                 <th className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">Website / Platform</th>
@@ -135,7 +135,7 @@ export default function AdminAffiliates() {
                                     <tr key={app._id} className="hover:bg-purple-50/30 transition-colors group">
                                         <td className="px-3 sm:px-6 py-3 sm:py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-black text-gray-900 text-sm sm:text-base">{app.name}</span>
+                                                <span className="font-black text-gray-900 dark:text-gray-100 text-sm sm:text-base">{app.name}</span>
                                                 <div className="flex items-center gap-1.5 sm:gap-2 text-gray-500 mt-0.5">
                                                     <Mail size={12} className="text-purple-400 shrink-0" />
                                                     <span className="text-[10px] sm:text-xs font-semibold truncate max-w-[120px] sm:max-w-none">{app.email}</span>
@@ -167,7 +167,7 @@ export default function AdminAffiliates() {
                                             </div>
                                         </td>
                                         <td className="px-3 sm:px-6 py-3 sm:py-4 max-w-xs hidden md:table-cell">
-                                            <p className="text-[10px] sm:text-xs text-gray-600 font-medium line-clamp-2 italic">
+                                            <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 font-medium line-clamp-2 italic">
                                                 "{app.promotionalMethods}"
                                             </p>
                                         </td>

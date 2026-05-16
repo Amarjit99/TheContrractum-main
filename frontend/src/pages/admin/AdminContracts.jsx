@@ -76,7 +76,7 @@ export default function AdminContracts() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'Active': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'Draft': return 'bg-gray-100 text-gray-600 border-gray-200';
+      case 'Draft': return 'bg-gray-100 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700';
       case 'Pending_Signature': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'Rejected': return 'bg-red-100 text-red-700 border-red-200';
       default: return 'bg-amber-100 text-amber-700 border-amber-200';
@@ -94,7 +94,7 @@ export default function AdminContracts() {
     <AdminLayout>
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 sm:gap-2">
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Contract Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">Contract Management</h1>
           <p className="text-gray-500 text-xs sm:text-sm font-medium">Lifecycle tracking, approvals, and digital signatures.</p>
         </div>
         <button 
@@ -122,14 +122,14 @@ export default function AdminContracts() {
           <div key={i} className={`${stat.color} p-5 rounded-2xl border border-white/50 flex items-center justify-between shadow-sm`}>
             <div>
               <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-              <h3 className="text-2xl font-black text-gray-900">{stat.count}</h3>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100">{stat.count}</h3>
             </div>
-            <div className="p-3 bg-white/80 rounded-xl shadow-sm">{stat.icon}</div>
+            <div className="p-3 bg-white dark:bg-gray-800/80 rounded-xl shadow-sm">{stat.icon}</div>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden min-h-[500px]">
         {/* Filters */}
         <div className="p-6 border-b border-gray-50 flex flex-col md:flex-row md:items-center gap-4">
           <div className="relative flex-1">
@@ -139,7 +139,7 @@ export default function AdminContracts() {
               placeholder="Search contracts or employees..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white transition-all text-xs sm:text-sm font-medium"
+              className="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white dark:bg-gray-800 transition-all text-xs sm:text-sm font-medium"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
@@ -147,7 +147,7 @@ export default function AdminContracts() {
               <button 
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${filter === f ? 'bg-[#1e5cdc] text-white border-[#1e5cdc]' : 'bg-white text-gray-500 border-gray-100 hover:border-[#1e5cdc]'}`}
+                className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all border ${filter === f ? 'bg-[#1e5cdc] text-white border-[#1e5cdc]' : 'bg-white dark:bg-gray-800 text-gray-500 border-gray-100 dark:border-gray-700 hover:border-[#1e5cdc]'}`}
               >
                 {f.replace('_', ' ')}
               </button>
@@ -158,7 +158,7 @@ export default function AdminContracts() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50/50">
+            <thead className="bg-gray-50 dark:bg-gray-700/50">
               <tr>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">Contract Info</th>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:table-cell">Employee</th>
@@ -174,14 +174,14 @@ export default function AdminContracts() {
                 <tr><td colSpan="5" className="text-center py-20 text-gray-400 font-medium">No contracts found.</td></tr>
               ) : (
                 filteredContracts.map(c => (
-                  <tr key={c._id} className="hover:bg-gray-50/50 transition-colors group">
+                  <tr key={c._id} className="hover:bg-gray-50 dark:bg-gray-700/50 transition-colors group">
                     <td className="px-3 sm:px-6 py-3 sm:py-5">
                       <div className="flex items-start gap-2 sm:gap-4">
                         <div className="p-2 sm:p-3 bg-blue-50 text-[#1e5cdc] rounded-lg sm:rounded-xl group-hover:bg-[#1e5cdc] group-hover:text-white transition-colors shrink-0">
                           <FileText size={16} className="sm:w-5 sm:h-5" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-bold text-gray-900 group-hover:text-[#1e5cdc] transition-colors text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">{c.title}</h4>
+                          <h4 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-[#1e5cdc] transition-colors text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">{c.title}</h4>
                           <p className="text-[10px] sm:text-xs text-gray-400 font-medium mt-0.5">{c.type}</p>
                           {/* Mobile-only Employee Info */}
                           <div className="sm:hidden flex items-center gap-1.5 mt-2 text-gray-500">
@@ -197,7 +197,7 @@ export default function AdminContracts() {
                           {c.employeeId?.firstName?.[0]}{c.employeeId?.lastName?.[0]}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">{c.employeeId?.firstName} {c.employeeId?.lastName}</p>
+                          <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{c.employeeId?.firstName} {c.employeeId?.lastName}</p>
                           <p className="text-[10px] sm:text-xs text-gray-400 font-medium truncate max-w-[100px] lg:max-w-none">{c.employeeId?.email}</p>
                         </div>
                       </div>

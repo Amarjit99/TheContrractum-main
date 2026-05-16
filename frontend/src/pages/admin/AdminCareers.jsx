@@ -207,7 +207,7 @@ export default function AdminCareers() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Careers & Jobs</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Careers & Jobs</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">Manage active listings and job applications</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -216,7 +216,7 @@ export default function AdminCareers() {
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search jobs..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
+              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white dark:bg-gray-800"
             />
           </div>
           <button onClick={() => { setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
@@ -226,19 +226,19 @@ export default function AdminCareers() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 bg-white border border-gray-100 rounded-2xl shadow-sm text-gray-500">Loading jobs...</div>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm text-gray-500">Loading jobs...</div>
       ) : filteredJobs.length === 0 ? (
-        <div className="text-center py-12 bg-white border border-gray-100 rounded-2xl shadow-sm text-gray-500">No jobs found matching your search.</div>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm text-gray-500">No jobs found matching your search.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredJobs.map(job => (
-            <div key={job._id} className="bg-white border border-gray-100 rounded-xl p-3 sm:p-5 shadow-sm hover:shadow-md transition-all relative group flex flex-col justify-between">
+            <div key={job._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-5 shadow-sm hover:shadow-md transition-all relative group flex flex-col justify-between">
               <div className={`absolute top-4 right-4 w-2.5 h-2.5 rounded-full ${job.status === 'Active' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
 
 
 
               <div>
-                <h3 className="font-bold text-gray-800 text-base sm:text-lg mb-2 sm:mb-3 pr-16 leading-tight">{job.title}</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-200 text-base sm:text-lg mb-2 sm:mb-3 pr-16 leading-tight">{job.title}</h3>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Briefcase size={16} className="text-gray-400" /> {job.department} ({job.type})
@@ -262,7 +262,7 @@ export default function AdminCareers() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100 gap-2">
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 gap-2">
                 <button 
                   onClick={() => openAppsModal(job)}
                   className="text-sm font-semibold text-[#1e5cdc] bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md shrink-0 transition-colors cursor-pointer"
@@ -297,40 +297,40 @@ export default function AdminCareers() {
       {/* ─── Post New Job Modal ─── */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingJob ? 'Edit Job Posting' : 'Post New Job'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">{editingJob ? 'Edit Job Posting' : 'Post New Job'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleAddSubmit} className="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Job Title</label>
-                <input required type="text" value={newJob.title} onChange={e => setNewJob({ ...newJob, title: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Lead Designer" />
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Job Title</label>
+                <input required type="text" value={newJob.title} onChange={e => setNewJob({ ...newJob, title: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Lead Designer" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Department</label>
-                  <select value={newJob.department} onChange={e => setNewJob({ ...newJob, department: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Department</label>
+                  <select value={newJob.department} onChange={e => setNewJob({ ...newJob, department: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Engineering</option><option>Design</option><option>Data Science</option><option>Marketing</option><option>YTDP</option><option>Software Developer</option><option>Operations</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
-                  <select value={newJob.type} onChange={e => setNewJob({ ...newJob, type: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                  <select value={newJob.type} onChange={e => setNewJob({ ...newJob, type: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Internship</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-                <input required type="text" value={newJob.location} onChange={e => setNewJob({ ...newJob, location: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Bangalore, India" />
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                <input required type="text" value={newJob.location} onChange={e => setNewJob({ ...newJob, location: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Bangalore, India" />
               </div>
 
               {/* Skills Multi-select */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
                   Skills <span className="font-normal text-gray-400">(top 3 shown on job card)</span>
                 </label>
                 {/* Selected chips */}
@@ -350,13 +350,13 @@ export default function AdminCareers() {
                 <button
                   type="button"
                   onClick={() => setSkillsOpen(p => !p)}
-                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:border-blue-400 hover:bg-blue-50 transition-colors"
                 >
                   <span>{newJob.tags.length === 0 ? 'Select skills...' : `${newJob.tags.length} skill${newJob.tags.length > 1 ? 's' : ''} selected`}</span>
                   <span className="text-gray-400">{skillsOpen ? '▲' : '▼'}</span>
                 </button>
                 {skillsOpen && (
-                  <div className="mt-1 border border-gray-200 rounded-lg bg-white max-h-40 overflow-y-auto shadow-lg z-10">
+                  <div className="mt-1 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 max-h-40 overflow-y-auto shadow-lg z-10">
                     {TECH_SKILLS.map(skill => (
                       <label key={skill} className="flex items-center gap-2.5 px-3 py-2 hover:bg-indigo-50 cursor-pointer text-sm">
                         <input
@@ -368,7 +368,7 @@ export default function AdminCareers() {
                           }}
                           className="accent-indigo-600 w-4 h-4"
                         />
-                        <span className={newJob.tags.includes(skill) ? 'font-semibold text-indigo-700' : 'text-gray-700'}>{skill}</span>
+                        <span className={newJob.tags.includes(skill) ? 'font-semibold text-indigo-700' : 'text-gray-700 dark:text-gray-300'}>{skill}</span>
                         {newJob.tags.indexOf(skill) !== -1 && newJob.tags.indexOf(skill) < 3 && (
                           <span className="ml-auto text-xs text-indigo-500 font-bold">Top {newJob.tags.indexOf(skill) + 1}</span>
                         )}
@@ -378,7 +378,7 @@ export default function AdminCareers() {
                 )}
               </div>
               <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                <button type="button" onClick={() => { setIsModalOpen(false); setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setSkillsOpen(false); }} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setSkillsOpen(false); }} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                 <button type="submit" disabled={submitting} className="px-5 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2">
                   {submitting ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span> {editingJob ? 'Updating...' : 'Posting...'}</> : (editingJob ? 'Update Job' : 'Post Job')}
                 </button>
@@ -391,15 +391,15 @@ export default function AdminCareers() {
       {/* ─── Bio Modal ─── */}
       {bioModalOpen && bioJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl my-2 sm:my-4 overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 bg-indigo-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl my-2 sm:my-4 overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700 bg-indigo-50">
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                   <BookOpen size={20} className="text-indigo-600" /> Job Bio
                 </h2>
                 <p className="text-sm text-gray-500 mt-0.5 font-medium">{bioJob.title}</p>
               </div>
-              <button onClick={() => setBioModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setBioModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -410,80 +410,80 @@ export default function AdminCareers() {
               </p>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
                   Roles & Responsibilities <span className="font-normal text-gray-400">(one per line)</span>
                 </label>
                 <textarea
                   rows={4}
                   value={bioForm.roles}
                   onChange={e => setBioForm({ ...bioForm, roles: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
                   placeholder={"Design and develop scalable web applications\nCollaborate with cross-functional teams\nWrite clean, maintainable code"}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
                   Required Skills <span className="font-normal text-gray-400">(comma-separated)</span>
                 </label>
                 <input
                   type="text"
                   value={bioForm.skills}
                   onChange={e => setBioForm({ ...bioForm, skills: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                   placeholder="React.js, Node.js, MongoDB, AWS"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Qualification</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Qualification</label>
                   <input
                     type="text"
                     value={bioForm.qualification}
                     onChange={e => setBioForm({ ...bioForm, qualification: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                     placeholder="B.Tech / B.E. in CS or equivalent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1.5">Experience</label>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Experience</label>
                   <input
                     type="text"
                     value={bioForm.experience}
                     onChange={e => setBioForm({ ...bioForm, experience: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                     placeholder="3–5 years of relevant experience"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">Salary / Compensation</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">Salary / Compensation</label>
                 <input
                   type="text"
                   value={bioForm.salary}
                   onChange={e => setBioForm({ ...bioForm, salary: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                   placeholder="₹12,00,000 – ₹18,00,000 per annum"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5">
                   Benefits <span className="font-normal text-gray-400">(one per line)</span>
                 </label>
                 <textarea
                   rows={3}
                   value={bioForm.benefits}
                   onChange={e => setBioForm({ ...bioForm, benefits: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+                  className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
                   placeholder={"Health Insurance\nFlexible Working Hours\nProfessional Development Budget"}
                 />
               </div>
 
               <div className="pt-2 flex items-center justify-end gap-3">
-                <button type="button" onClick={() => setBioModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button type="button" onClick={() => setBioModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                 <button type="submit" disabled={bioSubmitting} className="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2">
                   {bioSubmitting ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span> Saving...</> : <><BookOpen size={14} /> Save Bio</>}
                 </button>
@@ -495,13 +495,13 @@ export default function AdminCareers() {
       {/* ─── Applications Modal ─── */}
       {appsModalOpen && selectedJobForApps && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 bg-gray-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-3xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Job Applications</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Job Applications</h2>
                 <p className="text-sm text-gray-500 mt-0.5">{selectedJobForApps.title}</p>
               </div>
-              <button onClick={() => setAppsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setAppsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -512,9 +512,9 @@ export default function AdminCareers() {
               ) : (
                 <div className="space-y-4">
                   {jobApps.map(app => (
-                    <div key={app._id} className="border border-gray-200 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
+                    <div key={app._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-800">
                       <div>
-                        <h4 className="font-bold text-gray-800">{app.fullName}</h4>
+                        <h4 className="font-bold text-gray-800 dark:text-gray-200">{app.fullName}</h4>
                         <div className="text-sm text-gray-500 flex flex-col sm:flex-row sm:gap-4 mt-1">
                           <span>📧 {app.email}</span>
                           {app.phone && <span>📱 {app.phone}</span>}
@@ -524,7 +524,7 @@ export default function AdminCareers() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${app.status === 'New' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}`}>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${app.status === 'New' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-gray-100 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700'}`}>
                           {app.status || 'New'}
                         </span>
                         {app.resume && (

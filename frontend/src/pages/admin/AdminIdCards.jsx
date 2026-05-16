@@ -1213,7 +1213,7 @@ export default function AdminIdCards() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div className="flex flex-col gap-1 sm:gap-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight">ID Card Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">ID Card Management</h1>
           <p className="text-gray-500 text-xs sm:text-sm font-medium">Generate and manage identity cards</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -1222,12 +1222,12 @@ export default function AdminIdCards() {
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search ID/Name..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white transition-all shadow-sm"
+              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-48 bg-white dark:bg-gray-800 transition-all shadow-sm"
             />
           </div>
           <input type="file" id="bulk-upload" className="hidden" accept=".xlsx, .xls, .csv" onChange={handleBulkUpload} />
           <div className="flex gap-2">
-            <button onClick={downloadTemplate} className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors" title="Download Bulk Template">
+            <button onClick={downloadTemplate} className="p-2 bg-gray-100 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 transition-colors" title="Download Bulk Template">
               <Download size={18} />
             </button>
             <label htmlFor="bulk-upload" className={`flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm cursor-pointer shrink-0 ${bulkLoading ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -1242,17 +1242,17 @@ export default function AdminIdCards() {
 
       {/* Analytics Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Total Generated</div>
-          <div className="text-3xl font-black text-gray-800">{idCards.length}</div>
+          <div className="text-3xl font-black text-gray-800 dark:text-gray-200">{idCards.length}</div>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Active Cards</div>
           <div className="text-3xl font-black text-emerald-600">
             {idCards.filter(c => new Date(c.validUntil) > new Date()).length}
           </div>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Expiring Soon (30d)</div>
           <div className="text-3xl font-black text-orange-500">
             {idCards.filter(c => {
@@ -1261,13 +1261,13 @@ export default function AdminIdCards() {
             }).length}
           </div>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Expired Cards</div>
           <div className="text-3xl font-black text-red-500">
             {idCards.filter(c => new Date(c.validUntil) <= new Date()).length}
           </div>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-1">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-1">
           <div className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Reports & Export</div>
           <div className="flex gap-2 mt-1">
             <button onClick={exportToExcel} className="p-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors" title="Export Excel Report"><FileSpreadsheet size={18} /></button>
@@ -1282,19 +1282,19 @@ export default function AdminIdCards() {
 
       {/* Verification Activity Section */}
       {scanLogs.length > 0 && (
-        <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+        <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
+            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-widest flex items-center gap-2">
               <ShieldCheck size={18} className="text-emerald-500" /> Recent Verification Logs
             </h3>
             <div className="flex items-center gap-3">
               <button onClick={fetchIdCards} className="p-1.5 text-gray-400 hover:text-[#1e5cdc] transition-colors" title="Refresh Logs"><Loader2 size={14} className={loading ? 'animate-spin' : ''} /></button>
-              <span className="text-[10px] font-bold text-gray-400 bg-white px-2 py-1 rounded-full border border-gray-100 uppercase tracking-tighter">Live Audit</span>
+              <span className="text-[10px] font-bold text-gray-400 bg-white dark:bg-gray-800 px-2 py-1 rounded-full border border-gray-100 dark:border-gray-700 uppercase tracking-tighter">Live Audit</span>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50/50">
+              <thead className="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
                   <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Employee</th>
@@ -1304,9 +1304,9 @@ export default function AdminIdCards() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {scanLogs.slice(0, 5).map(log => (
-                  <tr key={log._id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={log._id} className="hover:bg-gray-50 dark:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.scannedAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.employeeName}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 dark:text-gray-200 uppercase">{log.employeeName}</td>
                     <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.employeeId}</td>
                     <td className="px-6 py-3 text-xs font-medium text-gray-400">{log.ipAddress}</td>
                   </tr>
@@ -1320,7 +1320,7 @@ export default function AdminIdCards() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <select
-            className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
           >
@@ -1330,7 +1330,7 @@ export default function AdminIdCards() {
             ))}
           </select>
           <select
-            className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
             value={filterMonth}
             onChange={(e) => setFilterMonth(e.target.value)}
           >
@@ -1340,7 +1340,7 @@ export default function AdminIdCards() {
             ))}
           </select>
           <select
-            className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
           >
@@ -1348,7 +1348,7 @@ export default function AdminIdCards() {
             {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
           <select
-            className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
+            className="px-3 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 transition-all shadow-sm"
             value={filterDepartment}
             onChange={(e) => setFilterDepartment(e.target.value)}
           >
@@ -1369,7 +1369,7 @@ export default function AdminIdCards() {
       {selectedIds.length > 0 && (
         <div className="bg-[#1e5cdc] text-white px-6 py-4 rounded-2xl mb-6 flex items-center justify-between shadow-lg shadow-blue-500/20 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex items-center gap-4">
-            <div className="bg-white/20 p-2 rounded-lg">
+            <div className="bg-white dark:bg-gray-800/20 p-2 rounded-lg">
               <CheckCircle2 size={20} />
             </div>
             <span className="font-bold">{selectedIds.length} Records Selected</span>
@@ -1377,7 +1377,7 @@ export default function AdminIdCards() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => exportCardsAsPDF(idCards.filter(c => selectedIds.includes(c._id)))}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
             >
               <Download size={16} /> Export Selected
             </button>
@@ -1397,10 +1397,10 @@ export default function AdminIdCards() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#f8fafc] border-b border-gray-100">
+            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
               <tr>
                 <th className="px-3 sm:px-6 py-3 sm:py-4">
                   <input
@@ -1427,7 +1427,7 @@ export default function AdminIdCards() {
                 <tr><td colSpan="9" className="text-center py-8 text-gray-500">No ID Cards generated yet.</td></tr>
               ) : (
                 filteredCards.map(c => (
-                  <tr key={c._id} className={`hover:bg-gray-50/80 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
+                  <tr key={c._id} className={`hover:bg-gray-50 dark:bg-gray-700/80 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <input
                         type="checkbox"
@@ -1436,19 +1436,19 @@ export default function AdminIdCards() {
                         className="w-4 h-4 rounded border-gray-300 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                       />
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-gray-700 text-xs sm:text-sm">{c.employeeId}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 font-mono font-medium text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{c.employeeId}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <img src={c.photo} alt={c.name} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200 shrink-0" />
-                        <span className="font-semibold text-gray-800 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{c.name}</span>
+                        <img src={c.photo} alt={c.name} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700 shrink-0" />
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">{c.name}</span>
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 text-xs sm:text-sm hidden lg:table-cell">{c.category}</td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 text-xs sm:text-sm hidden sm:table-cell">
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 dark:text-gray-400 text-xs sm:text-sm hidden lg:table-cell">{c.category}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 dark:text-gray-400 text-xs sm:text-sm hidden sm:table-cell">
                       {new Date(c.issueDate || c.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 text-xs sm:text-sm">
-                      <div className={`font-bold ${new Date(c.validUntil) < new Date() ? 'text-red-500' : 'text-gray-700'}`}>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
+                      <div className={`font-bold ${new Date(c.validUntil) < new Date() ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
                         {new Date(c.validUntil).toLocaleDateString()}
                       </div>
                       {new Date(c.validUntil) < new Date() && (
@@ -1463,7 +1463,7 @@ export default function AdminIdCards() {
                       </span>
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 hidden lg:table-cell">
-                      <span className="text-xs font-bold text-gray-600">{c.issuedBy || 'The Contractum'}</span>
+                      <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{c.issuedBy || 'The Contractum'}</span>
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5 sm:gap-2">
@@ -1485,14 +1485,14 @@ export default function AdminIdCards() {
       {/* Add/Preview Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-[80vh] animate-in fade-in zoom-in duration-200">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row h-[90vh] md:h-[80vh] animate-in fade-in zoom-in duration-200">
 
             {/* Form Section */}
             {!previewMode ? (
               <div className="flex-1 flex flex-col overflow-y-auto max-h-[calc(100vh-2rem)]">
-                <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">Generate ID Card</h2>
-                  <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Generate ID Card</h2>
+                  <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
                     <X size={20} />
                   </button>
                 </div>
@@ -1500,33 +1500,33 @@ export default function AdminIdCards() {
                 <form onSubmit={handlePreview} className="p-6 space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Employee ID *</label>
-                      <input readOnly type="text" value={formData.employeeId} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none bg-gray-50 uppercase font-mono text-gray-500 cursor-not-allowed" placeholder="Generating..." />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Employee ID *</label>
+                      <input readOnly type="text" value={formData.employeeId} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none bg-gray-50 dark:bg-gray-700 uppercase font-mono text-gray-500 cursor-not-allowed" placeholder="Generating..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name *</label>
-                      <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="John Doe" />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+                      <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="John Doe" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Category *</label>
-                      <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value, department: '', designation: '' })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+                      <select required value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value, department: '', designation: '' })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800">
                         {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Department *</label>
-                      <select required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value, designation: '' })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Department *</label>
+                      <select required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value, designation: '' })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800">
                         <option value="">Select Department</option>
                         {(DEPARTMENTS_BY_CATEGORY[formData.category] || []).map(dept => <option key={dept} value={dept}>{dept}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Designation *</label>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Designation *</label>
                       <select
                         required
                         value={formData.designation}
                         onChange={e => setFormData({ ...formData, designation: e.target.value })}
-                        className={`w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white ${!formData.department ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800 ${!formData.department ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={!formData.department}
                       >
                         <option value="">{formData.department ? 'Select Designation' : 'Select Department First'}</option>
@@ -1536,32 +1536,32 @@ export default function AdminIdCards() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Blood Group</label>
-                      <select value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Blood Group</label>
+                      <select value={formData.bloodGroup} onChange={e => setFormData({ ...formData, bloodGroup: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white dark:bg-gray-800">
                         <option value="">Select Blood Group</option>
                         {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Number *</label>
-                      <input required type="text" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+1 234 567 890" />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Contact Number *</label>
+                      <input required type="text" value={formData.contactNumber} onChange={e => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+1 234 567 890" />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Email *</label>
-                      <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="john@company.com" />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+                      <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="john@company.com" />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Valid Until *</label>
-                      <input required type="date" value={formData.validUntil} onChange={e => setFormData({ ...formData, validUntil: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Valid Until *</label>
+                      <input required type="date" value={formData.validUntil} onChange={e => setFormData({ ...formData, validUntil: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By</label>
-                      <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Issued By</label>
+                      <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
                     </div>
                   </div>
 
                   <div className="mt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">ID Card Theme Color</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">ID Card Theme Color</label>
                     <div className="flex flex-wrap gap-2 p-1">
                       {COLORS.map(color => (
                         <button
@@ -1577,9 +1577,9 @@ export default function AdminIdCards() {
                   </div>
 
                   <div className="mt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Photo Upload *</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Photo Upload *</label>
                     <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-gray-50 dark:bg-gray-700 border border-dashed border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
                         {imagePreview ? (
                           <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
@@ -1602,8 +1602,8 @@ export default function AdminIdCards() {
                     </div>
                   </div>
 
-                  <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 pb-6">
-                    <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                  <div className="pt-4 flex items-center justify-end gap-3 mt-4 border-t border-gray-100 dark:border-gray-700 pb-6">
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                     <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-all shadow-sm inline-flex items-center gap-2">
                       <IdCardIcon size={16} /> Preview Card
                     </button>
@@ -1611,8 +1611,8 @@ export default function AdminIdCards() {
                 </form>
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 border-l border-gray-100 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
-                <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white rounded-full shadow-sm border border-gray-100 z-50">
+              <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 border-l border-gray-100 dark:border-gray-700 p-4 sm:p-8 overflow-y-auto max-h-[calc(100vh-2rem)] relative">
+                <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 z-50">
                   <X size={20} />
                 </button>
 
@@ -1622,35 +1622,35 @@ export default function AdminIdCards() {
                     <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-5 shadow-lg shadow-emerald-100">
                       <CheckCircle size={52} className="text-emerald-500" strokeWidth={1.8} />
                     </div>
-                    <h3 className="text-2xl font-extrabold text-gray-900 mb-2">ID Card Generated!</h3>
+                    <h3 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">ID Card Generated!</h3>
                     <p className="text-gray-500 text-sm mb-8">The record has been stored successfully.<br />You can now download or share the ID card.</p>
 
                     {/* Generated card thumbnail (Hybrid Preview) */}
-                    <div className="w-[280px] h-[448px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-8 transition-all duration-500">
+                    <div className="w-[280px] h-[448px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 dark:border-gray-700 mb-8 transition-all duration-500">
                       {previewImageUrl ? (
                         <img src={previewImageUrl} alt="ID Card Final" className="w-full h-full object-contain animate-in fade-in duration-500" />
                       ) : (
                         /* Classic Fallback Mockup */
                         <div className="w-full h-full flex flex-col justify-between opacity-90 scale-95 transition-all duration-300">
                           <div className="h-[94px] relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                            <div className="absolute inset-0 opacity-10 bg-white dark:bg-gray-800/10"></div>
                             <div className="absolute top-4 text-white font-black text-[0.8rem] tracking-wider uppercase z-10 w-full text-center px-2 leading-tight drop-shadow-md">The Contractum</div>
                             <svg className="absolute bottom-0 w-full text-white" viewBox="0 0 1440 320" style={{ transform: "rotateY(180deg) rotateZ(180deg)" }}>
                               <path fill="currentColor" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,117.3C1248,96,1344,64,1392,48L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
                             </svg>
                           </div>
                           <div className="flex flex-col items-center -mt-12 z-20">
-                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white dark:bg-gray-800" />
                             <span className="mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>{formData.category}</span>
                           </div>
                           <div className="flex-1 flex flex-col items-center pt-1 px-4 text-center">
-                            <h1 className="text-sm font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                            <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight uppercase">{formData.name}</h1>
                             <p className="font-semibold text-[10px] mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
                             <p className="text-gray-500 text-[9px] font-medium">{formData.department}</p>
-                            <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 p-2 rounded-lg border border-gray-100">
-                              <div className="flex justify-between border-b border-gray-200 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span></div>
-                              {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
-                              <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
+                            <div className="w-full mt-2 flex flex-col gap-0.5 text-[9px] text-left bg-gray-50 dark:bg-gray-700 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
+                              <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-0.5"><span className="text-gray-500 font-semibold">ID No.</span><span className="font-bold text-gray-800 dark:text-gray-200">{formData.employeeId.toUpperCase()}</span></div>
+                              {formData.bloodGroup && <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-0.5"><span className="text-gray-500 font-semibold">Blood</span><span className="font-bold text-red-600">{formData.bloodGroup}</span></div>}
+                              <div className="flex justify-between pt-0.5"><span className="text-gray-500 font-semibold">Valid</span><span className="font-bold text-gray-800 dark:text-gray-200">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span></div>
                             </div>
                           </div>
                           <div className="h-4 mt-auto" style={{ background: `linear-gradient(to right, ${formData.cardColor}, ${formData.cardColor}aa)` }}></div>
@@ -1663,7 +1663,7 @@ export default function AdminIdCards() {
                         <button onClick={handleDownload} disabled={downloading} className={`flex-1 py-3 text-sm font-bold text-white bg-gray-900 rounded-xl hover:bg-black transition-colors shadow-lg flex items-center justify-center gap-2 ${downloading ? 'opacity-70 cursor-not-allowed' : ''}`}>
                           {downloading ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />} Download
                         </button>
-                        <button onClick={() => handlePrintCard(formData)} className="flex-1 py-3 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2">
+                        <button onClick={() => handlePrintCard(formData)} className="flex-1 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm flex items-center justify-center gap-2">
                           <FileText size={18} /> Print
                         </button>
                       </div>
@@ -1681,12 +1681,12 @@ export default function AdminIdCards() {
                         <button onClick={() => { setSuccess(false); setPreviewMode(false); }} className="flex-1 py-3 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2 border border-emerald-100">
                           <Edit2 size={18} /> Edit Details
                         </button>
-                        <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 flex items-center justify-center gap-2">
+                        <button onClick={() => { setIsModalOpen(false); resetForm(); setSuccess(false); }} className="flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-2">
                           <X size={16} /> Close
                         </button>
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-gray-100 w-full">
+                      <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 w-full">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Quick Share</p>
                         <div className="flex justify-center gap-4">
                           <a
@@ -1724,14 +1724,14 @@ export default function AdminIdCards() {
                     </h3>
 
                     {/* THE ID CARD DESIGN (Hybrid Preview) */}
-                    <div className="w-[300px] h-[480px] bg-white rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 mb-2 transition-all duration-500">
+                    <div className="w-[300px] h-[480px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl relative overflow-hidden flex flex-col justify-between border border-gray-200 dark:border-gray-700 mb-2 transition-all duration-500">
                       {previewImageUrl ? (
                         <img src={previewImageUrl} alt="ID Card Preview" className="w-full h-full object-contain animate-in fade-in duration-500" />
                       ) : (
                         /* Classic Fallback Mockup */
                         <div className="w-full h-full flex flex-col justify-between transition-all duration-300">
                           <div className="h-32 relative flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${formData.cardColor}, ${formData.cardColor}dd)` }}>
-                            <div className="absolute inset-0 opacity-10 bg-white/10"></div>
+                            <div className="absolute inset-0 opacity-10 bg-white dark:bg-gray-800/10"></div>
                             <div className="absolute top-6 text-white font-black text-[1.1rem] tracking-wider uppercase z-10 w-full text-center px-4 leading-tight drop-shadow-md">
                               The Contractum
                             </div>
@@ -1743,7 +1743,7 @@ export default function AdminIdCards() {
 
                           {/* Photo & Category */}
                           <div className="flex flex-col items-center -mt-16 z-20">
-                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white" />
+                            <img src={formData.photo || 'https://via.placeholder.com/150'} alt="Profile" className="w-28 h-28 rounded-full border-4 border-white shadow-md object-cover bg-white dark:bg-gray-800" />
                             <span className="mt-2 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white rounded-full" style={{ backgroundColor: formData.cardColor }}>
                               {formData.category}
                             </span>
@@ -1751,23 +1751,23 @@ export default function AdminIdCards() {
 
                           {/* Details */}
                           <div className="flex-1 flex flex-col items-center pt-2 px-6 text-center">
-                            <h1 className="text-xl font-bold text-gray-900 leading-tight uppercase">{formData.name}</h1>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight uppercase">{formData.name}</h1>
                             <p className="font-semibold text-sm mt-0.5 uppercase tracking-wide" style={{ color: formData.cardColor }}>{formData.designation}</p>
                             <p className="text-gray-500 text-xs font-medium">{formData.department}</p>
-                            <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 p-3 rounded-lg border border-gray-100">
-                              <div className="flex justify-between border-b border-gray-200 pb-1">
+                            <div className="w-full mt-4 flex flex-col gap-1 text-xs text-left bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+                              <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-1">
                                 <span className="text-gray-500 font-semibold">ID No.</span>
-                                <span className="font-bold text-gray-800">{formData.employeeId.toUpperCase()}</span>
+                                <span className="font-bold text-gray-800 dark:text-gray-200">{formData.employeeId.toUpperCase()}</span>
                               </div>
                               {formData.bloodGroup && (
-                                <div className="flex justify-between border-b border-gray-200 py-1">
+                                <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 py-1">
                                   <span className="text-gray-500 font-semibold">Blood Group</span>
                                   <span className="font-bold text-red-600">{formData.bloodGroup}</span>
                                 </div>
                               )}
                               <div className="flex justify-between pt-1">
                                 <span className="text-gray-500 font-semibold">Valid Till</span>
-                                <span className="font-bold text-gray-800">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
+                                <span className="font-bold text-gray-800 dark:text-gray-200">{formData.validUntil ? new Date(formData.validUntil).toLocaleDateString() : ''}</span>
                               </div>
                             </div>
                           </div>
@@ -1779,7 +1779,7 @@ export default function AdminIdCards() {
                     </div>
 
                     <div className="flex gap-4 mt-8 mb-4 w-full print:hidden">
-                      <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                      <button onClick={() => setPreviewMode(false)} className="flex-1 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:bg-gray-700 transition-colors">
                         Edit Details
                       </button>
                       <button onClick={handleSubmit} className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2">

@@ -46,10 +46,10 @@ const mockContacts = [
 ];
 
 const StatCardItem = ({ title, value, trendParams, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-    <p className="text-xs sm:text-sm font-semibold text-gray-700">{title}</p>
+  <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+    <p className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">{title}</p>
     <div className="flex items-end justify-between mt-2 sm:mt-3">
-      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">{value}</h3>
+      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{value}</h3>
       <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${trendColor}`}>
         {trendText} {trendIcon}
       </div>
@@ -72,12 +72,12 @@ export default function Dashboard() {
     <AdminLayout>
       <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 sm:gap-2">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome, Admin!</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Welcome, Admin!</h1>
           <p className="text-gray-500 text-xs sm:text-sm">Manage your website efficiently.</p>
         </div>
         <button
           onClick={() => navigate('/admin/form-links')}
-          className="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm group w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm group w-full sm:w-auto"
         >
           <LinkIcon size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
           Form Links
@@ -141,14 +141,14 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {/* Website Traffic Chart */}
-            <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 lg:col-span-2 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Website Traffic</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm sm:text-base">Website Traffic</h3>
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-blue-50 px-3 py-1.5 rounded-full font-medium">
+                  <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 bg-blue-50 px-3 py-1.5 rounded-full font-medium">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
                   </span>
-                  <span className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 px-3 py-1.5 border border-gray-100 rounded-full font-medium">
+                  <span className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 px-3 py-1.5 border border-gray-100 dark:border-gray-700 rounded-full font-medium">
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-300"></span> Page Views
                   </span>
                 </div>
@@ -172,9 +172,9 @@ export default function Dashboard() {
             </div>
 
             {/* Lead Conversion Rate Bar Chart */}
-            <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 flex flex-col relative">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col relative">
               <div className="flex justify-between items-center mb-4 sm:mb-6">
-                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Lead Conversion Rate</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 text-sm sm:text-base">Lead Conversion Rate</h3>
               </div>
               <div className="h-40 sm:h-52 w-full mt-auto">
                 {/* Custom tooltip-like label for the highest bar */}
@@ -192,7 +192,7 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex justify-end">
-                <button onClick={() => navigate('/admin/analytics')} className="text-gray-500 hover:text-[#1e5cdc] text-sm font-medium flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-md">View All <ChevronRight size={14} /></button>
+                <button onClick={() => navigate('/admin/analytics')} className="text-gray-500 hover:text-[#1e5cdc] text-sm font-medium flex items-center gap-1 bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-md">View All <ChevronRight size={14} /></button>
               </div>
             </div>
 
@@ -202,9 +202,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Recent Leads */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
               <div className="p-5 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">Live Feedback Loops</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Live Feedback Loops</h3>
                 <span className="text-xs font-bold text-gray-400">CONTACTS & APPS</span>
               </div>
               <div className="p-2 flex-1 overflow-y-auto max-h-[300px] custom-scrollbar">
@@ -213,7 +213,7 @@ export default function Dashboard() {
                   <div key={`app-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
                     <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{app.fullName}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate max-w-[200px]">{app.fullName}</span>
                       <span className="text-[10px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
                     </div>
                     <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
@@ -232,9 +232,9 @@ export default function Dashboard() {
             </div>
 
             {/* Latest Blog Posts */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
               <div className="p-5 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">Latest Blog Posts</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Latest Blog Posts</h3>
                 <button onClick={() => navigate('/admin/blogs')} className="text-[#1e5cdc] hover:text-blue-700 text-xs font-semibold flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-md">
                   View All <ChevronRight size={12} />
                 </button>
@@ -245,7 +245,7 @@ export default function Dashboard() {
               </div>
               <div className="p-2 flex-1">
                 {mockBlogs.map(b => (
-                  <div key={b.id} className="flex justify-between items-center py-2.5 px-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <div key={b.id} className="flex justify-between items-center py-2.5 px-3 hover:bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors">
                     <div className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
                       <span className="text-sm text-[#1e5cdc] font-medium truncate max-w-[200px] sm:max-w-[300px]">{b.title}</span>
@@ -257,9 +257,9 @@ export default function Dashboard() {
             </div>
 
             {/* Open Positions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 flex flex-col justify-between">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="font-semibold text-gray-800">Open Positions</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200">Open Positions</h3>
                 <div className="flex flex-col gap-2">
                   {mockJobs.map((job, idx) => (
                     <span key={job.id} className={`text-xs font-semibold px-3 py-1.5 rounded ${idx === 0 ? 'bg-[#1e5cdc] text-white' : 'bg-blue-50 text-[#1e5cdc] border border-blue-100'}`}>{job.title}</span>
@@ -273,11 +273,11 @@ export default function Dashboard() {
             </div>
 
             {/* Partner Requests */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <h3 className="font-semibold text-gray-800 mb-6">Partner Requests</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-6">Partner Requests</h3>
               <div className="flex items-end gap-2">
                 <span className="text-3xl font-bold text-amber-500">1</span>
-                <span className="text-sm font-medium text-gray-600 mb-1">Pending Approval</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Pending Approval</span>
               </div>
             </div>
 

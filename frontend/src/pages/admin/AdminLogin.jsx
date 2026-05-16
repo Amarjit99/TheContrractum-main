@@ -69,7 +69,7 @@ export default function AdminLogin() {
               {loading ? 'Signing in…' : 'Sign In as Admin'}
             </button>
           </form>
-          <p className="text-center text-xs text-gray-600 mt-5">
+          <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-5">
             Only authorized administrators can access this panel.
           </p>
         </div>

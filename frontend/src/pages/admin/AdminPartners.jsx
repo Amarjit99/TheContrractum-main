@@ -134,7 +134,7 @@ export default function AdminPartners() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Partner Network</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Partner Network</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">Manage enterprise, channel, and technology partners</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -143,7 +143,7 @@ export default function AdminPartners() {
             <input 
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search network..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white" 
+              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white dark:bg-gray-800" 
             />
           </div>
           <button onClick={() => { setEditingId(null); setNewPartner({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '', status: 'Active' }); setIsModalOpen(true); }} className="flex items-center justify-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
@@ -152,10 +152,10 @@ export default function AdminPartners() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-[#f8fafc] border-b border-gray-100 text-gray-500 font-semibold">
+            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 text-gray-500 font-semibold">
               <tr>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">Partner Name</th>
                 <th className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell text-xs sm:text-sm">Type & Tier</th>
@@ -171,17 +171,17 @@ export default function AdminPartners() {
                 <tr><td colSpan="5" className="text-center py-8 text-gray-500">No partners found.</td></tr>
               ) : (
                 filteredPartners.map(p => (
-                  <tr key={p._id} className="hover:bg-gray-50/80 transition-colors">
+                  <tr key={p._id} className="hover:bg-gray-50 dark:bg-gray-700/80 transition-colors">
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
-                      <p className="font-bold text-gray-800 text-xs sm:text-sm">{p.name}</p>
+                      <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">{p.name}</p>
                       <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">Joined {p.joined}</p>
                       <p className="text-[10px] text-[#1e5cdc] font-semibold mt-0.5 sm:hidden">{p.type} • {p.tier}</p>
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
-                      <p className="text-gray-700 font-medium text-xs sm:text-sm">{p.type}</p>
+                      <p className="text-gray-700 dark:text-gray-300 font-medium text-xs sm:text-sm">{p.type}</p>
                       <p className="text-xs text-[#1e5cdc] font-semibold mt-0.5">{p.tier} Tier</p>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 hidden lg:table-cell text-xs sm:text-sm">{p.pointOfContact || "Unassigned"}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 dark:text-gray-400 hidden lg:table-cell text-xs sm:text-sm">{p.pointOfContact || "Unassigned"}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-center">
                       <button
                         onClick={() => toggleStatus(p)}
@@ -214,46 +214,46 @@ export default function AdminPartners() {
       {/* Add New Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingId ? 'Edit Partner' : 'Enroll New Partner'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">{editingId ? 'Edit Partner' : 'Enroll New Partner'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleAddSubmit} className="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
               <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">Company Name</label>
-                <input required type="text" value={newPartner.name} onChange={e => setNewPartner({...newPartner, name: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="E.g. Acme Corp" />
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
+                <input required type="text" value={newPartner.name} onChange={e => setNewPartner({...newPartner, name: e.target.value})} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="E.g. Acme Corp" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">Partner Type</label>
-                  <select value={newPartner.type} onChange={e => setNewPartner({...newPartner, type: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Partner Type</label>
+                  <select value={newPartner.type} onChange={e => setNewPartner({...newPartner, type: e.target.value})} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                     <option>Technology</option><option>Enterprise</option><option>Reseller</option><option>Channel</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">Tier Level</label>
-                  <select value={newPartner.tier} onChange={e => setNewPartner({...newPartner, tier: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Tier Level</label>
+                  <select value={newPartner.tier} onChange={e => setNewPartner({...newPartner, tier: e.target.value})} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                     <option>Associate</option><option>Premier</option><option>Elite</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">Point of Contact</label>
-                <input required type="text" value={newPartner.pointOfContact} onChange={e => setNewPartner({...newPartner, pointOfContact: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="E.g. Jane Doe" />
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Point of Contact</label>
+                <input required type="text" value={newPartner.pointOfContact} onChange={e => setNewPartner({...newPartner, pointOfContact: e.target.value})} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="E.g. Jane Doe" />
               </div>
               <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">Status</label>
-                <select value={newPartner.status} onChange={e => setNewPartner({...newPartner, status: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                <select value={newPartner.status} onChange={e => setNewPartner({...newPartner, status: e.target.value})} className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                   <option value="Active">✅ Active</option>
                   <option value="Inactive">❌ Inactive</option>
                   <option value="Pending Review">⏳ Pending Review</option>
                 </select>
               </div>
               <div className="pt-3 sm:pt-4 flex items-center justify-end gap-2 sm:gap-3 mt-4 sm:mt-6">
-                <button type="button" onClick={() => { setIsModalOpen(false); setEditingId(null); setNewPartner({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '', status: 'Active' }); }} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingId(null); setNewPartner({ name: '', type: 'Technology', tier: 'Associate', pointOfContact: '', status: 'Active' }); }} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                 <button type="submit" disabled={submitting} className="px-5 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2">
                   {submitting ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span> Saving...</> : (editingId ? 'Save Changes' : 'Enroll Now')}
                 </button>

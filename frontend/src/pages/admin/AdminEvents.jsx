@@ -114,15 +114,15 @@ export default function AdminEvents() {
 
                 {/* Stats row */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                    <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Events</p>
                         <p className="text-xl sm:text-2xl font-black text-slate-900">{events.length}</p>
                     </div>
-                    <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Participants</p>
                         <p className="text-xl sm:text-2xl font-black text-slate-900">{events.reduce((acc, curr) => acc + curr.attendees.length, 0)}</p>
                     </div>
-                    <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Avg Occupancy</p>
                         <p className="text-xl sm:text-2xl font-black text-slate-900">
                             {events.length > 0 ? ((events.reduce((acc, curr) => acc + (curr.attendees.length / curr.capacity), 0) / events.length) * 100).toFixed(1) : 0}%
@@ -131,7 +131,7 @@ export default function AdminEvents() {
                 </div>
 
                 {/* Search and Table */}
-                <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
                     <div className="p-4 sm:p-6 border-b border-slate-50">
                         <div className="relative w-full sm:max-w-md">
                             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 sm:w-5 sm:h-5" />
@@ -235,8 +235,8 @@ export default function AdminEvents() {
             {/* Create/Edit Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800 z-10">
                             <h4 className="text-lg sm:text-xl font-black text-slate-800">{editingEvent ? 'Edit Event' : 'Create New Event'}</h4>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600"><X size={20} className="sm:w-6 sm:h-6" /></button>
                         </div>
@@ -279,8 +279,8 @@ export default function AdminEvents() {
             {/* Participants Modal */}
             {isParticipantsModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800 z-10">
                             <div>
                                 <h4 className="text-lg sm:text-xl font-black text-slate-800">Event Attendees</h4>
                                 <p className="text-[10px] sm:text-xs font-bold text-slate-400 tracking-wider">REAL-TIME PARTICIPANT LIST</p>

@@ -113,11 +113,11 @@ export default function ContractEditor() {
     <AdminLayout>
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/admin/contracts')} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-400 hover:text-gray-900 shadow-sm border border-transparent hover:border-gray-100">
+          <button onClick={() => navigate('/admin/contracts')} className="p-2 hover:bg-white dark:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-gray-900 dark:text-gray-100 shadow-sm border border-transparent hover:border-gray-100 dark:border-gray-700">
             <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">{isEdit ? 'Edit Contract' : 'Create Contract'}</h1>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{isEdit ? 'Edit Contract' : 'Create Contract'}</h1>
             <p className="text-gray-500 font-medium">Draft and assign contracts to users.</p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function ContractEditor() {
           <button 
             onClick={() => handleSubmit(false)}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-white text-gray-600 border border-gray-100 hover:bg-gray-50 transition-all shadow-sm"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-700 transition-all shadow-sm"
           >
             <Save size={18} /> Save as Draft
           </button>
@@ -142,7 +142,7 @@ export default function ContractEditor() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Editor */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
             <div className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Title</label>
@@ -151,7 +151,7 @@ export default function ContractEditor() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Employment Contract - John Doe"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white transition-all font-bold text-gray-900"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white dark:bg-gray-800 transition-all font-bold text-gray-900 dark:text-gray-100"
                 />
               </div>
               
@@ -162,7 +162,7 @@ export default function ContractEditor() {
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   placeholder="Enter the contract text here. You can use HTML tags for formatting."
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white transition-all font-mono text-sm leading-relaxed text-gray-700 h-[600px]"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 focus:bg-white dark:bg-gray-800 transition-all font-mono text-sm leading-relaxed text-gray-700 dark:text-gray-300 h-[600px]"
                 />
               </div>
             </div>
@@ -171,8 +171,8 @@ export default function ContractEditor() {
 
         {/* Configuration Sidebar */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
-            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-8 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
               <ClipboardList size={20} className="text-[#1e5cdc]" /> Configuration
             </h3>
             
@@ -197,7 +197,7 @@ export default function ContractEditor() {
                   value={formData.employeeId}
                   onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700 dark:text-gray-300"
                 >
                   <option value="">Select User...</option>
                   {users.map(u => <option key={u._id} value={u._id}>{u.firstName} {u.lastName} ({u.email})</option>)}
@@ -209,7 +209,7 @@ export default function ContractEditor() {
                 <select 
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700 dark:text-gray-300"
                 >
                   <option>Employee</option>
                   <option>Intern</option>
@@ -225,7 +225,7 @@ export default function ContractEditor() {
                     type="date" 
                     value={formData.validFrom}
                     onChange={(e) => setFormData({ ...formData, validFrom: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700" 
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700 dark:text-gray-300" 
                   />
                 </div>
                 <div>
@@ -234,7 +234,7 @@ export default function ContractEditor() {
                     type="date" 
                     value={formData.validUntil}
                     onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700" 
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]/20 text-sm font-bold text-gray-700 dark:text-gray-300" 
                   />
                 </div>
               </div>

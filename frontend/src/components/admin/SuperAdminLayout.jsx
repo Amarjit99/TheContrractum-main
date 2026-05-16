@@ -98,7 +98,7 @@ export default function SuperAdminLayout({ children }) {
 
   const Sidebar = () => (
     <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
-      <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
+      <div className="px-6 py-5 flex items-center gap-3 bg-white dark:bg-gray-800 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
         <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
         <div className="z-10">
@@ -119,7 +119,7 @@ export default function SuperAdminLayout({ children }) {
                   if (item.hasSubmenu) toggleSubmenu(e, item.id);
                   else setSidebarOpen(false);
                 }}
-                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]' : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-white dark:bg-gray-800 text-[#1e5cdc] shadow-md transform scale-[1.02]' : 'text-blue-100 hover:bg-white dark:bg-gray-800/10 hover:text-white'
                   }`}
               >
                 <div className="flex items-center gap-3">
@@ -148,7 +148,7 @@ export default function SuperAdminLayout({ children }) {
   );
 
   return (
-    <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#f0f4f8] dark:bg-gray-900 overflow-hidden font-sans">
       <div className="hidden lg:block w-72 shrink-0 h-full shadow-xl z-20">
         <Sidebar />
       </div>
@@ -163,13 +163,13 @@ export default function SuperAdminLayout({ children }) {
       )}
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <div className="h-16 bg-[#f0f4f8] shrink-0 flex items-center justify-between px-4 lg:px-8 z-10">
+        <div className="h-16 bg-[#f0f4f8] dark:bg-gray-900 shrink-0 flex items-center justify-between px-4 lg:px-8 z-10">
           <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 bg-white rounded-lg shadow-sm">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
               <Menu size={20} />
             </button>
 
-            <div className="hidden md:flex items-center border border-gray-100/50 bg-[#eef2f6]/50 rounded-full px-5 py-2.5 shadow-sm min-w-[400px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 focus-within:bg-white focus-within:shadow-md transition-all">
+            <div className="hidden md:flex items-center border border-gray-100 dark:border-gray-700/50 bg-[#eef2f6]/50 rounded-full px-5 py-2.5 shadow-sm min-w-[400px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 focus-within:bg-white dark:bg-gray-800 focus-within:shadow-md transition-all">
               <Search size={18} className="text-gray-400 mr-3" />
               <input
                 value={globalSearch}
@@ -177,13 +177,13 @@ export default function SuperAdminLayout({ children }) {
                 onKeyDown={handleGlobalSearch}
                 type="text"
                 placeholder="Search menu or data (press Enter)..."
-                className="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder-gray-400 font-semibold"
+                className="bg-transparent border-none outline-none text-sm w-full text-gray-700 dark:text-gray-300 placeholder-gray-400 font-semibold"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-4 md:gap-6">
-            <button className="text-gray-400 hover:text-gray-600">
+            <button className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
               <Search size={20} className="md:hidden" />
             </button>
 
@@ -214,9 +214,9 @@ export default function SuperAdminLayout({ children }) {
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                    <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
+                <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
+                    <h3 className="font-bold text-gray-800 dark:text-gray-200 text-sm">Notifications</h3>
                     <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
                   </div>
                   <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -234,7 +234,7 @@ export default function SuperAdminLayout({ children }) {
                             <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">{notif.type}</span>
                             <span className="text-[9px] font-bold text-gray-400">{new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
-                          <h4 className="font-bold text-gray-900 text-sm mb-0.5 group-hover:text-[#1e5cdc] transition-colors">{notif.title}</h4>
+                          <h4 className="font-bold text-gray-900 dark:text-gray-100 text-sm mb-0.5 group-hover:text-[#1e5cdc] transition-colors">{notif.title}</h4>
                           <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{notif.message}</p>
                         </div>
                       ))
@@ -247,7 +247,7 @@ export default function SuperAdminLayout({ children }) {
                       </div>
                     )}
                   </div>
-                  <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                  <div className="p-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-700 text-center">
                     <button
                       onClick={() => { setShowNotifications(false); navigate('/admin/super-dashboard'); }}
                       className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors"
@@ -259,9 +259,9 @@ export default function SuperAdminLayout({ children }) {
               )}
             </div>
 
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer">
-              <img src={`https://ui-avatars.com/api/?name=${admin?.name}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-              <div className="hidden sm:flex items-center gap-1 font-extrabold text-gray-700 text-sm uppercase tracking-tight">
+            <div className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-gray-700 cursor-pointer">
+              <img src={`https://ui-avatars.com/api/?name=${admin?.name}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700" />
+              <div className="hidden sm:flex items-center gap-1 font-extrabold text-gray-700 dark:text-gray-300 text-sm uppercase tracking-tight">
                 Super Admin <ChevronDown size={14} className="text-gray-400" />
               </div>
             </div>

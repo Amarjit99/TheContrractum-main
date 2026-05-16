@@ -89,7 +89,7 @@ export default function AdminUsers() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">User & Employee Management</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">User & Employee Management</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">{data.total} total registered users</p>
         </div>
         <div className="relative">
@@ -98,7 +98,7 @@ export default function AdminUsers() {
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search users..."
-            className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white"
+            className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:border-transparent w-full sm:w-72 shadow-sm transition-all bg-white dark:bg-gray-800"
           />
         </div>
       </div>
@@ -109,10 +109,10 @@ export default function AdminUsers() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#f8fafc] border-b border-gray-100">
+            <thead className="bg-[#f8fafc] dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
               <tr>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs">User Name</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 uppercase tracking-wider text-[10px] sm:text-xs hidden md:table-cell">Joined Date</th>
@@ -127,7 +127,7 @@ export default function AdminUsers() {
               ) : !data.users || data.users.length === 0 ? (
                 <tr><td colSpan={5} className="py-12 text-center text-gray-400 font-medium">{data.message || 'No users found.'}</td></tr>
               ) : data.users.map(u => (
-                <tr key={u._id} className="hover:bg-gray-50/80 transition-colors">
+                <tr key={u._id} className="hover:bg-gray-50 dark:bg-gray-700/80 transition-colors">
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-blue-200">
@@ -136,7 +136,7 @@ export default function AdminUsers() {
                           : u.name?.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-gray-800 font-semibold text-xs sm:text-sm">{u.name}</p>
+                        <p className="text-gray-800 dark:text-gray-200 font-semibold text-xs sm:text-sm">{u.name}</p>
                         <p className="text-gray-500 text-[10px] sm:text-xs mt-0.5 truncate max-w-[100px] sm:max-w-none">{u.email}</p>
                       </div>
                     </div>
@@ -148,7 +148,7 @@ export default function AdminUsers() {
                     <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${
                       u.role === 'super-admin' ? 'bg-purple-100 text-purple-700 border-purple-200' :
                       u.role === 'admin' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                      'bg-gray-100 text-gray-500 border-gray-200'
+                      'bg-gray-100 text-gray-500 border-gray-200 dark:border-gray-700'
                     }`}>
                       {u.role ? u.role.toUpperCase().replace('-', ' ') : 'USER'}
                     </span>
@@ -201,14 +201,14 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         {data.pages > 1 && (
-          <div className="flex justify-between items-center px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex justify-between items-center px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
             <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm">
               Previous
             </button>
             <span className="text-gray-500 text-sm font-medium">Page {page} of {data.pages}</span>
             <button disabled={page >= data.pages} onClick={() => setPage(p => p + 1)}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm">
               Next Step
             </button>
           </div>
@@ -218,10 +218,10 @@ export default function AdminUsers() {
       {/* Edit Modal */}
       {editingUser && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
-            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">Update User</h2>
-              <button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600 p-1">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+            <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-700/50">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Update User</h2>
+              <button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 p-1">
                 <X size={20} />
               </button>
             </div>
@@ -233,7 +233,7 @@ export default function AdminUsers() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 />
               </div>
 
@@ -244,7 +244,7 @@ export default function AdminUsers() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                   />
                 </div>
                 <div>
@@ -253,7 +253,7 @@ export default function AdminUsers() {
                     type="text"
                     value={formData.mobile}
                     onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                   />
                 </div>
               </div>
@@ -263,7 +263,7 @@ export default function AdminUsers() {
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   disabled={editingUser?.role === 'super-admin'}
-                  className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all ${editingUser?.role === 'super-admin' ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  className={`w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all ${editingUser?.role === 'super-admin' ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
@@ -281,15 +281,15 @@ export default function AdminUsers() {
                   placeholder="Leave blank to keep current password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
                 />
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 bg-gray-50 border-t border-gray-100 flex gap-2 sm:gap-3">
+            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-700 flex gap-2 sm:gap-3">
               <button
                 onClick={() => setEditingUser(null)}
-                className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 rounded-xl hover:bg-white transition-all"
+                className="flex-1 py-3 text-sm font-bold text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-white dark:bg-gray-800 transition-all"
               >
                 Cancel
               </button>

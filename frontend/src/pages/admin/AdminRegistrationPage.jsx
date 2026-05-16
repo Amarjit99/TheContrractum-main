@@ -45,8 +45,8 @@ export default function AdminRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f4f8] flex items-center justify-center p-6 font-sans">
-      <div className="bg-white w-full max-w-xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#f0f4f8] dark:bg-gray-900 flex items-center justify-center p-6 font-sans">
+      <div className="bg-white dark:bg-gray-800 w-full max-w-xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Info */}
         <div className="bg-[#1e5cdc] md:w-1/3 p-8 flex flex-col text-white">
           <ShieldCheck size={48} className="mb-6 opacity-90" />
@@ -61,7 +61,7 @@ export default function AdminRegistrationPage() {
 
         {/* Right Side - Form */}
         <div className="flex-1 p-10 md:p-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-8 tracking-tight">Admin Registration</h2>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-8 tracking-tight">Admin Registration</h2>
           
           {message.text && (
             <div className={`mb-6 p-4 rounded-2xl text-sm font-bold text-center ${
@@ -78,13 +78,13 @@ export default function AdminRegistrationPage() {
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="First Name" value={formData.firstName}
                     onChange={e => setFormData({...formData, firstName: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
                 <div className="relative group">
                   <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="Last Name" value={formData.lastName}
                     onChange={e => setFormData({...formData, lastName: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
 
@@ -92,7 +92,7 @@ export default function AdminRegistrationPage() {
                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                 <input required type="email" placeholder="Official Email Address" value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                  className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
@@ -100,13 +100,13 @@ export default function AdminRegistrationPage() {
                   <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="password" placeholder="Secure Password" value={formData.password}
                     onChange={e => setFormData({...formData, password: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
                 <div className="relative group">
                   <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="text" placeholder="Mobile Number" value={formData.mobile}
                     onChange={e => setFormData({...formData, mobile: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
 
@@ -115,7 +115,7 @@ export default function AdminRegistrationPage() {
                   <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <select required value={formData.adminSubRole}
                     onChange={e => setFormData({...formData, adminSubRole: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none appearance-none transition-all">
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none appearance-none transition-all">
                     <option value="">Assign Role</option>
                     <option value="HR">HR</option>
                     <option value="Finance">Finance</option>
@@ -127,7 +127,7 @@ export default function AdminRegistrationPage() {
                   <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1e5cdc] transition-colors" />
                   <input required type="date" value={formData.joiningDate}
                     onChange={e => setFormData({...formData, joiningDate: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
+                    className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 sm:py-4 pl-12 pr-4 text-sm font-medium focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none transition-all" />
                 </div>
               </div>
             </div>

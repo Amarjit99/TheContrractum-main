@@ -35,10 +35,10 @@ const mockBlogs = [
 ];
 
 const StatCardItem = ({ title, value, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50 flex flex-col justify-between hover:shadow-md transition-shadow">
+  <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 flex flex-col justify-between hover:shadow-md transition-shadow">
     <p className="text-sm font-semibold text-gray-500 mb-3">{title}</p>
     <div className="flex items-center justify-between">
-      <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight">{value}</h3>
+      <h3 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">{value}</h3>
       <div className={`flex items-center gap-1 text-[13px] font-bold ${trendColor} bg-emerald-50/50 px-2 py-1 rounded-lg`}>
         {trendText} {trendIcon}
       </div>
@@ -103,12 +103,12 @@ export default function SuperAdminDashboard() {
     <SuperAdminLayout>
       <div className="mb-8 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 sm:gap-2">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Welcome, Admin!</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Welcome, Admin!</h1>
           <p className="text-gray-500 text-xs sm:text-sm font-medium">Manage your website efficiently.</p>
         </div>
         <button
           onClick={() => navigate('/admin/form-links')}
-          className="flex items-center justify-center gap-2 bg-white border border-gray-200/60 text-gray-700 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md w-full sm:w-auto mt-2 sm:mt-0 group"
+          className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/60 text-gray-700 dark:text-gray-300 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md w-full sm:w-auto mt-2 sm:mt-0 group"
         >
           <LinkIcon size={18} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" />
           Form Links
@@ -139,14 +139,14 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 lg:col-span-2 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 lg:col-span-2 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
-                <h3 className="font-bold text-gray-800">Website Traffic</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-200">Website Traffic</h3>
                 <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-blue-50/50 px-3 py-1.5 rounded-full font-bold">
+                  <span className="flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400 bg-blue-50/50 px-3 py-1.5 rounded-full font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
                   </span>
-                  <span className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50/50 px-3 py-1.5 rounded-full font-bold">
+                  <span className="flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 rounded-full font-bold">
                     <span className="w-2.5 h-2.5 rounded-full bg-blue-300"></span> Page Views
                   </span>
                 </div>
@@ -169,9 +169,9 @@ export default function SuperAdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100/50 flex flex-col relative overflow-visible">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700/50 flex flex-col relative overflow-visible">
               <div className="flex justify-between items-center mb-6 sm:mb-10">
-                <h3 className="font-bold text-gray-800">Lead Conversion Rate</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-200">Lead Conversion Rate</h3>
               </div>
               <div className="h-56 w-full mt-auto relative overflow-visible">
                 <div className="absolute top-[-30px] right-[40px] bg-[#1a335a] text-white text-[12px] font-black px-2.5 py-1.5 rounded-lg shadow-xl z-20 before:content-[''] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-4 before:border-transparent before:border-t-[#1a335a]">
@@ -191,7 +191,7 @@ export default function SuperAdminDashboard() {
           </div>
 
           {/* System Overview Section */}
-          <div className="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-blue-900/5 border border-blue-50 overflow-hidden relative">
+          <div className="bg-white dark:bg-gray-800 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-blue-900/5 border border-blue-50 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-blue-50/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl sm:blur-3xl pointer-events-none"></div>
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 relative z-10">
@@ -200,7 +200,7 @@ export default function SuperAdminDashboard() {
                   <UserPlus size={20} className="sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-gray-800 uppercase tracking-tight">New Admin Registrations</h3>
+                  <h3 className="text-lg sm:text-xl font-black text-gray-800 dark:text-gray-200 uppercase tracking-tight">New Admin Registrations</h3>
                   <p className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">Verification Queue</p>
                 </div>
               </div>
@@ -212,19 +212,19 @@ export default function SuperAdminDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10">
               {pendingAdmins.length === 0 ? (
-                <div className="col-span-full py-20 flex flex-col items-center justify-center bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                <div className="col-span-full py-20 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700">
                   <ShieldAlert size={48} className="text-gray-200 mb-4" />
                   <p className="text-gray-400 font-bold text-sm tracking-tight">No pending registrations available</p>
                 </div>
               ) : (
                 pendingAdmins.map((reg) => (
-                  <div key={reg._id} className="group bg-white border border-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-6 hover:shadow-2xl hover:shadow-blue-900/10 hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+                  <div key={reg._id} className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 hover:shadow-2xl hover:shadow-blue-900/10 hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                     <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
                       <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-lg shadow-blue-100 shrink-0">
                         {(reg.firstName || reg.name || '?').charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-black text-gray-800 text-sm sm:text-base truncate leading-none mb-1">
+                        <h4 className="font-black text-gray-800 dark:text-gray-200 text-sm sm:text-base truncate leading-none mb-1">
                           {reg.firstName ? `${reg.firstName} ${reg.lastName}` : (reg.name || 'Admin User')}
                         </h4>
                         <div className="flex items-center gap-1.5 text-gray-400">
@@ -235,13 +235,13 @@ export default function SuperAdminDashboard() {
                     </div>
 
                     <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-2xl border border-gray-100 dark:border-gray-700">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Target Role</span>
                         <span className="text-[11px] font-black text-blue-700 bg-blue-100/50 px-2.5 py-1 rounded-lg uppercase">{reg.adminSubRole}</span>
                       </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-2xl border border-gray-100 dark:border-gray-700">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Apply Date</span>
-                        <span className="text-[11px] font-black text-gray-700">{new Date(reg.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[11px] font-black text-gray-700 dark:text-gray-300">{new Date(reg.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
 

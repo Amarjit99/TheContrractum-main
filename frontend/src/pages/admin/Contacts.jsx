@@ -48,7 +48,7 @@ export default function AdminContacts() {
     <AdminLayout>
       <div className="mb-6 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Leads & Contacts</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-200">Leads & Contacts</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">{totalCount.toLocaleString()} total submissions received</p>
         </div>
         <div className="flex items-center gap-3">
@@ -57,7 +57,7 @@ export default function AdminContacts() {
             <input 
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search leads..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white" 
+              className="pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white dark:bg-gray-800" 
             />
           </div>
         </div>
@@ -75,16 +75,16 @@ export default function AdminContacts() {
             <div className="w-8 h-8 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : filteredContacts.length === 0 ? (
-          <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center text-gray-500 font-medium shadow-sm">
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-12 text-center text-gray-500 font-medium shadow-sm">
             No contact submissions or leads found.
           </div>
         ) : filteredContacts.map(c => (
-          <div key={c._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
+          <div key={c._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-700 transition-colors"
               onClick={() => setExpanded(expanded === c._id ? null : c._id)}>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-wrap">
-                  <span className="text-gray-800 font-bold text-sm sm:text-base">{c.name}</span>
+                  <span className="text-gray-800 dark:text-gray-200 font-bold text-sm sm:text-base">{c.name}</span>
                   <span className="text-gray-400 text-sm hidden sm:inline-block">•</span>
                   <span className="flex items-center gap-1.5 text-gray-500 text-xs sm:text-sm truncate"><Mail size={14}/> {c.email}</span>
                   <span className="sm:ml-auto text-[10px] sm:text-xs font-semibold bg-blue-50 text-[#1e5cdc] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md border border-blue-100 self-start sm:self-auto mt-1 sm:mt-0">
@@ -108,10 +108,10 @@ export default function AdminContacts() {
               </div>
             </div>
             {expanded === c._id && (
-              <div className="border-t border-gray-100 px-3 sm:px-6 py-3 sm:py-5 bg-gray-50/50">
+              <div className="border-t border-gray-100 dark:border-gray-700 px-3 sm:px-6 py-3 sm:py-5 bg-gray-50 dark:bg-gray-700/50">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Message Content</h4>
-                <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{c.message}</p>
                 </div>
               </div>
             )}
@@ -122,12 +122,12 @@ export default function AdminContacts() {
       {data.pages > 1 && (
         <div className="flex justify-between items-center mt-6 p-2">
           <button disabled={page <= 1} onClick={() => setPage(p => p-1)}
-            className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm">
             Previous
           </button>
           <span className="text-gray-500 text-sm font-semibold">Page {page} of {data.pages}</span>
           <button disabled={page >= data.pages} onClick={() => setPage(p => p+1)}
-            className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-700 transition-colors shadow-sm">
             Next Page
           </button>
         </div>
