@@ -5,7 +5,8 @@ import {
   LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, LabelList, BarChart, Bar, Legend
 } from 'recharts';
-import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar } from 'lucide-react';
+import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, User, Monitor } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -31,10 +32,42 @@ export default function AdminAnalytics() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [logs, setLogs] = useState([]);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const fetchLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await fetch(`${API}/api/audit-logs`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(Array.isArray(data) ? data : []);
+      } else {
+        toast.error('Failed to fetch audit logs');
+        setLogs([]);
+      }
+    } catch (err) {
+      toast.error('Error fetching audit logs');
+      setLogs([]);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
   useEffect(() => {
     fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
       .then(r => r.json()).then(setStats).finally(() => setLoading(false));
-  }, []);
+    fetchLogs();
+  }, [admin]);
+
+  const filteredLogs = logs.filter(log => 
+    (log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.entity || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (log.details || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <AdminLayout>
@@ -153,6 +186,92 @@ export default function AdminAnalytics() {
             </ResponsiveContainer>
           </div>
           <p className="mt-4 text-xs text-gray-400 font-medium text-center">Data represents engagement distribution across site categories</p>
+        </div>
+      </div>
+
+      {/* Audit Logs Section */}
+      <div className="mt-12 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <ShieldAlert className="text-[#1e5cdc]" size={24} />
+              System Audit Logs
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Monitor administrative actions and security events.</p>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="Search logs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] shadow-sm"
+              />
+            </div>
+            <button
+              onClick={fetchLogs}
+              className="p-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-all shadow-sm"
+            >
+              <RefreshCw size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-[#f8fafc]">
+                <tr>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Date & Time</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Admin User</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Action</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">Details</th>
+                  <th className="py-3 px-4 text-xs font-bold text-gray-500 uppercase">IP Address</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {loadingLogs ? (
+                  <tr><td colSpan={5} className="py-10 text-center text-gray-400">Loading audit trail...</td></tr>
+                ) : filteredLogs.length === 0 ? (
+                  <tr><td colSpan={5} className="py-10 text-center text-gray-400">No logs match your search.</td></tr>
+                ) : (
+                  filteredLogs.map(log => (
+                    <tr key={log._id} className="hover:bg-gray-50/50">
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <p className="text-sm font-bold text-gray-800">{new Date(log.createdAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleTimeString()}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <p className="text-sm font-bold text-gray-700">{log.performedBy?.name || log.adminName || 'System User'}</p>
+                        <p className="text-[10px] text-gray-400">{log.performedBy?.email || 'Unknown Email'}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold uppercase ${
+                          log.action === 'Create' ? 'bg-emerald-50 text-emerald-600' :
+                          log.action === 'Update' ? 'bg-blue-50 text-blue-600' :
+                          log.action === 'Delete' ? 'bg-red-50 text-red-600' :
+                          'bg-gray-100 text-gray-600'
+                        }`}>
+                          {log.action}
+                        </span>
+                        <span className="ml-2 text-xs font-semibold text-gray-600">{log.entity}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <p className="text-sm text-gray-600 truncate max-w-xs">{log.details}</p>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className="font-mono text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                          {log.ipAddress || '127.0.0.1'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </AdminLayout>
