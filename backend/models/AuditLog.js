@@ -13,9 +13,13 @@ const auditLogSchema = new mongoose.Schema({
     type: String,
     default: 'System'
   },
+  adminRole: {
+    type: String,
+    default: ''
+  },
   action: {
     type: String,
-    enum: ['Create', 'Update', 'Delete', 'Status Change', 'Bulk Import', 'Login', 'Logout', 'Export'],
+    enum: ['Create', 'Update', 'Delete', 'Status Change', 'Bulk Import', 'Login', 'Logout', 'Export', 'Notification Sent', 'Bulk Notification'],
     required: true
   },
   entity: {

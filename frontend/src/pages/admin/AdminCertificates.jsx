@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck, Settings as SettingsIcon, Mail } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck, Settings as SettingsIcon, Mail, MessageCircle, Send, Share2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import QRCode from 'qrcode';
@@ -14,6 +14,42 @@ import { CATEGORIES, DEPARTMENTS_BY_CATEGORY, DESIGNATIONS_MAPPING, THEME_COLORS
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const TRANSLATIONS = {
+  'English': {
+    title: 'Certificate',
+    subtitle: 'OF ACHIEVEMENT',
+    presented: 'THIS CERTIFICATE IS PROUDLY PRESENTED TO',
+    awarded: 'This certificate is awarded for the successful completion of the',
+    track: 'track',
+    under: 'under the',
+    initiative: 'initiative.',
+    honors: 'This recognition honors exceptional dedication and professional excellence.',
+    project: 'Project'
+  },
+  'Hindi': {
+    title: 'प्रमाणपत्र',
+    subtitle: 'उपलब्धि का',
+    presented: 'यह प्रमाणपत्र गर्व के साथ प्रस्तुत किया गया है',
+    awarded: 'यह प्रमाणपत्र सफलतापूर्वक पूरा करने के लिए दिया जाता है',
+    track: 'ट्रैक',
+    under: 'के तहत',
+    initiative: 'पहल।',
+    honors: 'यह मान्यता असाधारण समर्पण और पेशेवर उत्कृष्टता का सम्मान करती है।',
+    project: 'परियोजना'
+  },
+  'Spanish': {
+    title: 'Certificado',
+    subtitle: 'DE LOGRO',
+    presented: 'ESTE CERTIFICADO SE PRESENTA CON ORGULLO A',
+    awarded: 'Este certificado se otorga por la finalización exitosa del',
+    track: 'trayectoria',
+    under: 'bajo la',
+    initiative: 'iniciativa.',
+    honors: 'Este reconocimiento honra la dedicación excepcional y la excelencia profesional.',
+    project: 'Proyecto'
+  }
+};
 
 
 // ── SHARED TEMPLATE COMPONENT FOR DRY ──
@@ -47,7 +83,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
             <span className="text-[8px] font-black uppercase tracking-tighter text-center leading-tight">
               {globalSettings?.companyName ? globalSettings.companyName.substring(0, 10) : 'Contractum'}
             </span>
-          <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
             <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
           </div>
         )}
@@ -196,7 +232,66 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
   // 6. Official Digital Seal (Reddish/Theme Mix)
   const sealX = W - 360;
   const sealY = 240;
-  ctx.strokeStyle = 'rgba(220, 38, 38, 0.3)';
+  if (globalSettings?.companySeal) {
+    try {
+      const sealImg = new Image();
+      sealImg.crossOrigin = 'anonymous';
+      sealImg.src = globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`;
+      await new Promise(resolve => { sealImg.onload = resolve; sealImg.onerror = resolve; });
+      ctx.save();
+      ctx.translate(sealX, sealY);
+      ctx.rotate(-15 * Math.PI / 180);
+      ctx.drawImage(sealImg, -150, -150, 300, 300);
+      ctx.restore();
+    } catch (e) {
+      ctx.strokeStyle = 'rgba(220, 38, 38, 0.3)';
+      ctx.lineWidth = 12;
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, 150, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  } else {
+    ctx.strokeStyle = 'rgba(220, 38, 38, 0.3)';
+    ctx.lineWidth = 12;
+    ctx.beginPath();
+    ctx.arc(sealX, sealY, 150, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(sealX, sealY);
+    ctx.rotate(-15 * Math.PI / 180);
+    ctx.fillStyle = 'rgba(220, 38, 38, 0.4)';
+    ctx.textAlign = 'center';
+    ctx.font = '900 24px Montserrat, sans-serif';
+    ctx.fillText('CONTRACTUM', 0, -30);
+    ctx.font = '900 30px Montserrat, sans-serif';
+    ctx.fillText('OFFICIAL', 0, 15);
+    ctx.font = '900 24px Montserrat, sans-serif';
+    ctx.fillText('VERIFIED', 0, 50);
+    ctx.restore();
+  }
+
+  // 6.5 Candidate Photo Integration
+  if (data.fileUrl) {
+    try {
+      const photoX = 240, photoY = 240, photoR = 120;
+      const photoImg = new Image();
+      photoImg.crossOrigin = 'anonymous';
+      photoImg.src = data.fileUrl.startsWith('data:') ? data.fileUrl : `${API}${data.fileUrl}`;
+      await new Promise(resolve => { photoImg.onload = resolve; photoImg.onerror = resolve; });
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(photoX, photoY, photoR + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = theme.primary;
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(photoX, photoY, photoR, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(photoImg, photoX - photoR, photoY - photoR, photoR * 2, photoR * 2);
+      ctx.restore();
+    } catch (e) { }
+  }
+
   ctx.lineWidth = 12;
   ctx.beginPath();
   ctx.arc(sealX, sealY, 150, 0, Math.PI * 2);
@@ -222,7 +317,7 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
 
   // 7. Branding
   ctx.textAlign = 'center';
-  
+
   if (globalSettings?.companyLogo) {
     try {
       const logoImg = new Image();
@@ -248,18 +343,21 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
     ctx.fillText(globalSettings?.companyName || 'The Contractum', W / 2, 300);
   }
 
+  const lang = data.language || 'English';
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['English'];
+
   // 8. Main Title
   ctx.fillStyle = theme.accent;
   ctx.font = 'bold italic 120px Georgia, serif';
-  ctx.fillText('Certificate', W / 2, 480);
+  ctx.fillText(t.title, W / 2, 480);
   ctx.fillStyle = theme.primary;
   ctx.font = 'bold 48px Montserrat, sans-serif';
-  ctx.fillText('OF ACHIEVEMENT', W / 2, 570);
+  ctx.fillText(t.subtitle, W / 2, 570);
 
   // 9. Recipient Info
   ctx.fillStyle = '#6b7280';
   ctx.font = '500 36px Montserrat, sans-serif';
-  ctx.fillText('THIS CERTIFICATE IS PROUDLY PRESENTED TO', W / 2, 720);
+  ctx.fillText(t.presented, W / 2, 720);
 
   // Name underline
   ctx.strokeStyle = theme.primary + '66';
@@ -277,16 +375,16 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
   ctx.fillStyle = '#4b5563';
   ctx.font = '500 39px Montserrat, sans-serif';
   const detailY = 990;
-  const mainText = `This certificate is awarded for the successful completion of the ${data.designation || 'Program'} track`;
+  const mainText = `${t.awarded} ${data.designation || 'Program'} ${t.track}`;
   ctx.fillText(mainText, W / 2, detailY);
-  ctx.fillText(`under the ${data.type.toUpperCase()} initiative.`, W / 2, detailY + 60);
+  ctx.fillText(`${t.under} ${data.type.toUpperCase()} ${t.initiative}`, W / 2, detailY + 60);
 
   if (data.details) {
     ctx.font = 'italic 500 36px Montserrat, sans-serif';
-    ctx.fillText(`Project: ${data.details}`, W / 2, detailY + 150);
+    ctx.fillText(`${t.project}: ${data.details}`, W / 2, detailY + 150);
   }
   ctx.font = '500 36px Montserrat, sans-serif';
-  ctx.fillText('This recognition honors exceptional dedication and professional excellence.', W / 2, detailY + (data.details ? 210 : 150));
+  ctx.fillText(t.honors, W / 2, detailY + (data.details ? 210 : 150));
 
   // 10. Bottom Layout
   const bottomY = H - 300;
@@ -407,7 +505,7 @@ export default function AdminCertificates() {
     return role ? `${name} (${role})` : name;
   };
 
-  const isSuperAdmin = admin?.role === 'super-admin';
+  const isSuperAdmin = admin?.role?.toLowerCase()?.includes('admin') || admin?.email === 'admin@thecontractum.com';
 
   // Form State
   const [formData, setFormData] = useState({
@@ -421,6 +519,9 @@ export default function AdminCertificates() {
     themeId: 'modern',
     designation: '',
     department: 'General',
+    location: 'India',
+    language: 'English',
+    status: 'Pending',
     issuedBy: '',
     file: null
   });
@@ -526,6 +627,7 @@ export default function AdminCertificates() {
       themeId: 'modern',
       department: 'General',
       issuedBy: getAdminDisplayName(),
+      status: 'Pending',
       file: null
     });
     setEditingId(null);
@@ -536,31 +638,34 @@ export default function AdminCertificates() {
 
   // ── Auto-Generate Certificate ID ──
   useEffect(() => {
-    if (!editingId && formData.type && certificates.length >= 0) {
-      const prefix = 'TC';
+    if (!editingId && formData.type && formData.department && certificates.length >= 0) {
+
       const year = new Date().getFullYear();
       const typeCode = formData.type.substring(0, 3).toUpperCase();
+      const deptCode = formData.department.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 3);
+      const idPrefix = `${year}/${typeCode}/${deptCode}/`;
+
 
       const sameTypeIds = certificates
         .map(c => c.certificateId)
-        .filter(id => id && id.startsWith(`${prefix}-${year}-${typeCode}`));
+        .filter(id => id && id.startsWith(idPrefix));
 
       let nextSeq = 1;
       if (sameTypeIds.length > 0) {
         const sequences = sameTypeIds.map(id => {
-          const parts = id.split('-');
+          const parts = id.split('/');
           return parseInt(parts[parts.length - 1]) || 0;
         });
         nextSeq = Math.max(...sequences) + 1;
       }
 
-      const nextId = `${prefix}-${year}-${typeCode}-${nextSeq.toString().padStart(3, '0')}`;
+      const nextId = `${idPrefix}${nextSeq.toString().padStart(4, '0')}`;
       if (formData.certificateId !== nextId && !editingId) {
         setFormData(prev => ({ ...prev, certificateId: nextId }));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.type, certificates, editingId]);
+  }, [formData.type, formData.department, certificates, editingId]);
 
   // ── Auto-Theme Selection ──
   useEffect(() => {
@@ -570,6 +675,26 @@ export default function AdminCertificates() {
       else if (formData.type === 'other') setFormData(prev => ({ ...prev, themeId: 'emerald' }));
     }
   }, [formData.type, editingId]);
+
+  const handleApprove = async (id) => {
+    try {
+      const res = await fetch(`${API}/api/certificates/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`
+        },
+        body: JSON.stringify({ status: 'Issued' })
+      });
+      if (res.ok) {
+        toast.success('Certificate Approved and Issued!');
+        fetchCertificates();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Approval failed');
+    }
+  };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this certificate record?")) {
@@ -581,6 +706,50 @@ export default function AdminCertificates() {
         if (res.ok) fetchCertificates();
       } catch (err) {
         console.error(err);
+      }
+    }
+  };
+
+  const handleNotify = async (id) => {
+    try {
+      const res = await fetch(`${API}/api/certificates/${id}/notify`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Notification Processed: ${data.emailSent ? 'Email Sent' : 'No Email'} | ${data.waSent ? 'WhatsApp Sent' : 'No WhatsApp'}`);
+      } else {
+        alert(`Failed: ${data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error sending notification');
+    }
+  };
+
+  const handleBulkNotify = async () => {
+    if (selectedIds.length === 0) return;
+    if (window.confirm(`Send notifications to ${selectedIds.length} selected recipients?`)) {
+      try {
+        const res = await fetch(`${API}/api/certificates/bulk-notify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${admin?.token}`
+          },
+          body: JSON.stringify({ ids: selectedIds })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          setSelectedIds([]);
+        } else {
+          alert(`Failed: ${data.message}`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error sending bulk notifications');
       }
     }
   };
@@ -792,7 +961,10 @@ export default function AdminCertificates() {
       recipientEmail: cert.recipientEmail || '',
       themeId: cert.themeId || 'modern',
       designation: cert.designation || '',
-      department: cert.department || 'General'
+      department: cert.department || 'General',
+      location: cert.location || 'India',
+      language: cert.language || 'English',
+      status: cert.status || 'Pending'
     });
 
     setLoading(true);
@@ -818,6 +990,8 @@ export default function AdminCertificates() {
       'Certificate ID': c.certificateId,
       'Category': c.type,
       'Department': c.department || 'General',
+      'Location': c.location || 'India',
+      'Language': c.language || 'English',
       'Designation': c.designation,
       'Issue Date': new Date(c.issueDate).toLocaleDateString(),
       'Status': c.status || 'Issued',
@@ -978,51 +1152,51 @@ export default function AdminCertificates() {
       </div>
 
       {/* Analytics Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
         {[
-          { label: 'Total Records', val: stats.total, color: 'text-blue-600', bg: 'bg-blue-50', icon: <FileText size={20} /> },
-          { label: 'Employees', val: stats.employees, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <ShieldCheck size={20} /> },
-          { label: 'Interns', val: stats.interns, color: 'text-amber-600', bg: 'bg-amber-50', icon: <Award size={20} /> },
-          { label: 'Newly Issued (7d)', val: stats.recent, color: 'text-purple-600', bg: 'bg-purple-50', icon: <RefreshCw size={20} /> },
-          { label: 'Pending Approvals', val: stats.pending, color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Filter size={20} /> },
-          { label: 'Active / Issued', val: stats.approved, color: 'text-green-600', bg: 'bg-green-50', icon: <CheckCircle2 size={20} /> },
-          { label: 'Revoked / Expired', val: stats.revoked, color: 'text-red-600', bg: 'bg-red-50', icon: <X size={20} /> }
+          { label: 'Total Records', val: stats.total, color: 'text-blue-600', bg: 'bg-blue-50', icon: <FileText size={16} /> },
+          { label: 'Employees', val: stats.employees, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <ShieldCheck size={16} /> },
+          { label: 'Interns', val: stats.interns, color: 'text-amber-600', bg: 'bg-amber-50', icon: <Award size={16} /> },
+          { label: 'Newly Issued (7d)', val: stats.recent, color: 'text-purple-600', bg: 'bg-purple-50', icon: <RefreshCw size={16} /> },
+          { label: 'Pending Approvals', val: stats.pending, color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Filter size={16} /> },
+          { label: 'Active / Issued', val: stats.approved, color: 'text-green-600', bg: 'bg-green-50', icon: <CheckCircle2 size={16} /> },
+          { label: 'Revoked / Expired', val: stats.revoked, color: 'text-red-600', bg: 'bg-red-50', icon: <X size={16} /> }
         ].map((s, i) => (
-          <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
+          <div key={i} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
             <div>
-              <p className="text-gray-400 text-xs font-black uppercase tracking-widest mb-1">{s.label}</p>
-              <h3 className={`text-2xl font-black ${s.color}`}>{s.val}</h3>
+              <p className="text-gray-400 text-[9px] font-black uppercase tracking-widest mb-0.5">{s.label}</p>
+              <h3 className={`text-xl font-black ${s.color}`}>{s.val}</h3>
             </div>
-            <div className={`p-3 ${s.bg} ${s.color} rounded-xl`}>{s.icon}</div>
+            <div className={`p-2 ${s.bg} ${s.color} rounded-lg`}>{s.icon}</div>
           </div>
         ))}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-7 flex flex-col justify-between">
-          <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Advanced Exports</div>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100 text-xs font-bold" title="Export Excel Report">
-              <FileSpreadsheet size={16} /> Excel Spreadsheet
-            </button>
-            <button
-              onClick={() => exportCertificatesAsPDF(filteredCerts)}
-              disabled={downloading}
-              className={`ml-auto px-6 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-black transition-all flex items-center gap-2 text-xs font-bold shadow-lg shadow-black/10 ${downloading ? 'opacity-50 pointer-events-none' : 'hover:scale-105 active:scale-95'}`}
-            >
-              {downloading ? <RefreshCw size={16} className="animate-spin" /> : <Award size={16} />}
-              Generate Batch PDF Portfolio
+        <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm col-span-2 sm:col-span-4 lg:col-span-7 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-400 text-[9px] font-black uppercase tracking-widest">Reports</span>
+            <button onClick={exportToExcel} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100 text-xs font-bold" title="Export Excel Report">
+              <FileSpreadsheet size={14} /> Excel
             </button>
           </div>
+          <button
+            onClick={() => exportCertificatesAsPDF(filteredCerts)}
+            disabled={downloading}
+            className={`px-4 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-black transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm ${downloading ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            {downloading ? <RefreshCw size={14} className="animate-spin" /> : <Award size={14} />}
+            Generate Batch PDF Portfolio
+          </button>
         </div>
       </div>
 
       {/* Analytics Charts */}
       {certificates.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {/* Category Distribution Pie Chart */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Award size={14} className="text-[#1e5cdc]" /> Category Distribution
+          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <Award size={12} className="text-[#1e5cdc]" /> Category Distribution
             </h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={(() => {
@@ -1030,29 +1204,28 @@ export default function AdminCertificates() {
                     certificates.forEach(c => { counts[c.type] = (counts[c.type] || 0) + 1; });
                     return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
                   })()}
-                  cx="50%" cy="50%"
-                  innerRadius={55} outerRadius={95}
+                  cx="50%" cy="45%"
+                  innerRadius={35} outerRadius={65}
                   paddingAngle={3}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
+                  label={false}
                 >
                   {['#1e5cdc', '#059669', '#d97706', '#9333ea', '#dc2626', '#0891b2', '#ea580c', '#7c3aed', '#16a34a', '#18181b', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6', '#f97316'].map((color, i) => (
                     <Cell key={i} fill={color} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 700 }} />
-                <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '11px', fontWeight: 700 }} formatter={(value, name) => [`${value} certificates`, name]} />
+                <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700, paddingTop: '8px' }} iconType="circle" iconSize={8} />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           {/* Monthly Issuance Bar Chart */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <FileText size={14} className="text-[#1e5cdc]" /> Monthly Issuance ({new Date().getFullYear()})
+          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <FileText size={12} className="text-[#1e5cdc]" /> Monthly Issuance ({new Date().getFullYear()})
             </h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={180}>
               <BarChart
                 data={(() => {
                   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1104,8 +1277,8 @@ export default function AdminCertificates() {
                 {scanLogs.slice(0, 5).map(log => (
                   <tr key={log._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.scannedAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.recipientName}</td>
-                    <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.certificateId}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.employeeName || log.recipientName || 'Unknown'}</td>
+                    <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.employeeId || log.certificateId || 'Unknown'}</td>
                     <td className="px-6 py-3 text-xs font-medium text-gray-400">{log.ipAddress}</td>
                   </tr>
                 ))}
@@ -1141,15 +1314,17 @@ export default function AdminCertificates() {
                 {auditLogs.map(log => (
                   <tr key={log._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.createdAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.adminName}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">
+                      {log.adminName}
+                      {log.adminRole && <span className="block text-[8px] text-blue-500 font-bold mt-0.5">{log.adminRole}</span>}
+                    </td>
                     <td className="px-6 py-3">
-                      <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${
-                        log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                        log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
-                        log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
-                        'bg-gray-50 text-gray-600 border-gray-100'
-                      }`}>
+                      <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                          log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                            log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
+                              log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                                'bg-gray-50 text-gray-600 border-gray-100'
+                        }`}>
                         {log.action}
                       </span>
                     </td>
@@ -1205,6 +1380,12 @@ export default function AdminCertificates() {
               {downloading ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />} Export PDF
             </button>
             <button
+              onClick={handleBulkNotify}
+              className="flex items-center gap-2 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm"
+            >
+              <Send size={14} /> Notify Selected
+            </button>
+            <button
               onClick={handleBulkDelete}
               className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-xl text-xs sm:text-sm font-bold transition-colors shadow-sm"
             >
@@ -1215,11 +1396,11 @@ export default function AdminCertificates() {
       )}
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="w-full">
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
-                <th className="px-6 py-4">
+                <th className="px-3 py-3 w-8">
                   <input
                     type="checkbox"
                     checked={selectedIds.length === filteredCerts.length && filteredCerts.length > 0}
@@ -1230,24 +1411,25 @@ export default function AdminCertificates() {
                     className="rounded border-gray-300 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                   />
                 </th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Recipient Name</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4">Certificate ID</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 hidden md:table-cell">Category</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 hidden md:table-cell">Issue Date</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 hidden md:table-cell">Status</th>
-                <th className="text-left text-gray-500 font-semibold px-6 py-4 hidden lg:table-cell">Issued By</th>
-                <th className="text-right text-gray-500 font-semibold px-6 py-4">Actions</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Recipient Name</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Certificate ID</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Dept</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Category</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Issue Date</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Status</th>
+                <th className="text-left text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Issued By</th>
+                <th className="text-center text-gray-500 font-semibold px-4 py-3 whitespace-nowrap text-xs">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                <tr><td colSpan="8" className="text-center py-12 text-gray-500 font-medium">Loading records...</td></tr>
+                <tr><td colSpan="9" className="text-center py-12 text-gray-500 font-medium">Loading records...</td></tr>
               ) : filteredCerts.length === 0 ? (
-                <tr><td colSpan="8" className="text-center py-12 text-gray-500 font-medium">No certificates found matching your criteria.</td></tr>
+                <tr><td colSpan="9" className="text-center py-12 text-gray-500 font-medium">No certificates found matching your criteria.</td></tr>
               ) : (
                 filteredCerts.map(c => (
                   <tr key={c._id} className={`hover:bg-gray-50 transition-colors ${selectedIds.includes(c._id) ? 'bg-blue-50/50' : ''}`}>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-2.5">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(c._id)}
@@ -1258,27 +1440,25 @@ export default function AdminCertificates() {
                         className="rounded border-gray-300 text-[#1e5cdc] focus:ring-[#1e5cdc]"
                       />
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                          <Eye size={16} />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="font-semibold text-gray-800">{c.name}</span>
-                          <span className="text-xs text-gray-400 font-medium uppercase tracking-tighter">{c.designation || 'No designation'}</span>
-                        </div>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-semibold text-gray-800 leading-tight">{c.name}</span>
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">{c.designation || 'No designation'}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 uppercase">{c.certificateId}</span>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase">{c.certificateId}</span>
                     </td>
-                    <td className="px-6 py-4 text-gray-500 hidden md:table-cell">
-                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-gray-50 border border-gray-100 rounded text-gray-500">{c.type}</span>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-[13px] font-medium text-gray-500">{c.department || 'General'}</span>
                     </td>
-                    <td className="px-6 py-4 text-xs font-bold text-gray-600 hidden md:table-cell">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-[11px] font-black uppercase tracking-wide px-2 py-0.5 bg-gray-50 border border-gray-100 rounded text-gray-500">{c.type}</span>
+                    </td>
+                    <td className="px-4 py-2.5 text-[13px] font-medium text-gray-600 whitespace-nowrap">
                       {new Date(c.issueDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 hidden md:table-cell">
+                    <td className="px-4 py-2.5 whitespace-nowrap">
                       {(() => {
                         const s = c.status || 'Issued';
                         const styles = {
@@ -1290,65 +1470,56 @@ export default function AdminCertificates() {
                           'Expired': 'bg-gray-100 text-gray-500 border-gray-200',
                         };
                         return (
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${styles[s] || styles['Issued']}`}>
-                            <CheckCircle size={12} /> {s}
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide border ${styles[s] || styles['Issued']}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${s === 'Issued' ? 'bg-emerald-500' : s === 'Revoked' ? 'bg-red-500' : 'bg-current'}`} /> {s}
                           </span>
                         );
                       })()}
                     </td>
-                    <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-xs font-bold text-gray-600">{c.issuedBy || 'The Contractum'}</span>
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <span className="text-[13px] font-medium text-gray-600">{c.issuedBy || 'The Contractum'}</span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                        {/* Status Actions (Super Admin Only) */}
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
                         {isSuperAdmin && (
                           <>
                             {(c.status === 'Pending' || c.status === 'Under Review') && (
-                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-100" title="Approve & Issue">
-                                <CheckCircle2 size={16} />
-                              </button>
+                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors" title="Approve & Issue"><CheckCircle2 size={13} /></button>
                             )}
                             {(c.status === 'Issued' || c.status === 'Approved') && (
-                              <button onClick={() => handleStatusChange(c._id, 'Revoked')} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Revoke Certificate">
-                                <X size={16} />
-                              </button>
+                              <button onClick={() => handleStatusChange(c._id, 'Revoked')} className="p-1 text-red-400 hover:bg-red-50 rounded transition-colors" title="Revoke"><X size={13} /></button>
                             )}
                             {(c.status === 'Revoked' || c.status === 'Expired') && (
-                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Reissue Certificate">
-                                <RefreshCw size={16} />
-                              </button>
+                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1 text-blue-500 hover:bg-blue-50 rounded transition-colors" title="Reissue"><RefreshCw size={13} /></button>
                             )}
                           </>
                         )}
-                        {/* Standard Actions */}
-                        <button onClick={() => handleView(c)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="View Certificate"><Award size={16} /></button>
-                        <Link to={`/verify/${c.certificateId}`} target="_blank" className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="View Verification Page"><Eye size={16} /></Link>
-                        <button onClick={() => handleDownload(c)} disabled={downloading} className={`p-1.5 rounded-lg transition-colors border border-transparent ${downloading ? 'text-gray-400 cursor-not-allowed' : 'text-emerald-600 hover:bg-emerald-50 hover:border-emerald-100'}`} title="Download PNG">{downloading ? <RefreshCw size={16} className="animate-spin" /> : <Download size={16} />}</button>
-                        <a href={`mailto:${c.recipientEmail || ''}?subject=Your Certificate from The Contractum&body=Hello ${c.name},%0D%0A%0D%0AYou can view your verified certificate at: ${window.location.origin}/verify/${c.certificateId}`} className="p-1.5 text-teal-500 hover:bg-teal-50 rounded-lg transition-colors border border-transparent hover:border-teal-100" title="Send Email"><Mail size={16} /></a>
-                        <button onClick={() => copyShareLink(c.certificateId)} className="p-1.5 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors border border-transparent hover:border-orange-100" title="Copy Share Link"><ExternalLink size={16} /></button>
+                        <button onClick={() => handleView(c)} className="p-1 text-indigo-500 hover:bg-indigo-50 rounded transition-colors" title="View"><Award size={13} /></button>
+                        <Link to={`/verify/${c.certificateId}`} target="_blank" className="p-1 text-blue-500 hover:bg-blue-50 rounded transition-colors" title="Verify"><Eye size={13} /></Link>
+                        <button onClick={() => handleDownload(c)} disabled={downloading} className={`p-1 rounded transition-colors ${downloading ? 'text-gray-400' : 'text-emerald-600 hover:bg-emerald-50'}`} title="Download">{downloading ? <RefreshCw size={13} className="animate-spin" /> : <Download size={13} />}</button>
+                        <a href={`mailto:${c.recipientEmail || ''}`} className="p-1 text-teal-500 hover:bg-teal-50 rounded transition-colors" title="Email"><Mail size={13} /></a>
+                        <button onClick={() => copyShareLink(c.certificateId)} className="p-1 text-orange-500 hover:bg-orange-50 rounded transition-colors" title="Copy Link"><ExternalLink size={13} /></button>
+                        <a href={`https://wa.me/${c.recipientPhone?.replace(/\D/g, '') || ''}`} target="_blank" rel="noopener noreferrer" className="p-1 text-green-500 hover:bg-green-50 rounded transition-colors" title="WhatsApp"><MessageCircle size={13} /></a>
+                        <button onClick={() => handleNotify(c._id)} className="p-1 text-sky-500 hover:bg-sky-50 rounded transition-colors" title="Notify"><Send size={13} /></button>
                         <button onClick={() => {
                           setEditingId(c._id);
                           setFormData({
-                            name: c.name,
-                            type: c.type,
+                            name: c.name, type: c.type,
                             issueDate: new Date(c.issueDate).toISOString().split('T')[0],
-                            certificateId: c.certificateId,
-                            details: c.details || '',
-                            recipientEmail: c.recipientEmail || '',
-                            recipientPhone: c.recipientPhone || '',
-                            themeId: c.themeId || 'modern',
-                            designation: c.designation || '',
-                            department: c.department || 'General',
-                            issuedBy: c.issuedBy || 'The Contractum'
+                            certificateId: c.certificateId, details: c.details || '',
+                            recipientEmail: c.recipientEmail || '', recipientPhone: c.recipientPhone || '',
+                            themeId: c.themeId || 'modern', designation: c.designation || '',
+                            department: c.department || 'General', issuedBy: c.issuedBy || 'The Contractum',
+                            location: c.location || 'India', language: c.language || 'English',
+                            status: c.status || 'Pending'
                           });
                           setCandidatePhoto(c.fileUrl || '');
                           setGeneratedPreview('');
                           setPreviewMode(false);
                           setIsModalOpen(true);
-                        }} className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-100" title="Edit Details"><Edit size={16} /></button>
+                        }} className="p-1 text-amber-500 hover:bg-amber-50 rounded transition-colors" title="Edit"><Edit size={13} /></button>
                         {isSuperAdmin && (
-                          <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete"><Trash2 size={16} /></button>
+                          <button onClick={() => handleDelete(c._id)} className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors" title="Delete"><Trash2 size={13} /></button>
                         )}
                       </div>
                     </td>
@@ -1435,6 +1606,10 @@ export default function AdminCertificates() {
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Recipient Phone (WhatsApp)</label>
                         <input type="tel" value={formData.recipientPhone} onChange={e => setFormData({ ...formData, recipientPhone: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="+91 9876543210" />
                       </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Location / City</label>
+                        <input type="text" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. India" />
+                      </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -1449,6 +1624,25 @@ export default function AdminCertificates() {
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Details / Project Description</label>
                       <textarea value={formData.details} onChange={e => setFormData({ ...formData, details: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={2} placeholder="Briefly describe achievement..." />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                        <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
+                          <option value="Pending">Pending</option>
+                          <option value="Under Review">Under Review</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Issued">Issued</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issuance Language</label>
+                        <select value={formData.language} onChange={e => setFormData({ ...formData, language: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]">
+                          {Object.keys(TRANSLATIONS).map(l => (
+                            <option key={l} value={l}>{l}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="pt-2">
                       <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-widest text-[10px]">Visual Theme Profile</label>

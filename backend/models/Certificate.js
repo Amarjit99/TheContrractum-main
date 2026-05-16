@@ -16,6 +16,7 @@ const certificateSchema = new mongoose.Schema({
   details: { type: String },
   recipientEmail: { type: String },
   recipientPhone: { type: String },
+  location: { type: String, default: 'India' },
   issuedBy: { type: String, default: 'The Contractum' },
   // ── Approval Workflow Fields ──
   status: {

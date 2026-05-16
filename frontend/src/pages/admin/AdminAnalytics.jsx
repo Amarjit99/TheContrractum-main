@@ -57,9 +57,15 @@ export default function AdminAnalytics() {
     }
   };
 
+  const [detailedStats, setDetailedStats] = useState(null);
+
   useEffect(() => {
     fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
       .then(r => r.json()).then(setStats).finally(() => setLoading(false));
+    
+    fetch(`${API}/api/admin/detailed-stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
+      .then(r => r.json()).then(setDetailedStats);
+
     fetchLogs();
   }, [admin]);
 
@@ -279,6 +285,120 @@ export default function AdminAnalytics() {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+      {/* Certificate Analytics Section */}
+      <div className="mt-12 mb-8">
+        <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-6">Certificate Lifecycle Insights</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Category Distribution */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Category Distribution</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={detailedStats?.categoryDistribution || []}>
+                  <XAxis dataKey="_id" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Bar dataKey="count" fill="#1e5cdc" radius={[4, 4, 0, 0]} barSize={30} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Department Distribution */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Department Volume</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={detailedStats?.deptDistribution || []} layout="vertical">
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="_id" type="category" fontSize={10} width={80} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Issuance Trends */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Monthly Issuance Trend</h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={detailedStats?.monthlyTrends?.map(t => ({ month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t._id-1], count: t.count })) || []}>
+                  <XAxis dataKey="month" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                  <Area type="monotone" dataKey="count" stroke="#6366f1" fill="url(#colorCount)" strokeWidth={3} />
+                  <defs>
+                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Audit Log Table (Integrated below charts) */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+        <div className="px-6 py-5 border-b border-gray-50 flex items-center justify-between bg-[#f8fafc]">
+          <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">System Audit Ledger</h3>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input 
+              type="text" 
+              placeholder="Search audit trail..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-4 py-1.5 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none w-48 sm:w-64"
+            />
+          </div>
+        </div>
+        <div className="overflow-x-auto max-h-[500px]">
+          <table className="w-full">
+            <thead className="bg-gray-50 sticky top-0">
+              <tr>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Timestamp</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Administrator</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">IP Address</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                <th className="px-6 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loadingLogs ? (
+                <tr><td colSpan="5" className="text-center py-12 text-gray-400 italic">Synchronizing audit data...</td></tr>
+              ) : filteredLogs.length === 0 ? (
+                <tr><td colSpan="5" className="text-center py-12 text-gray-400 italic">No audit records found.</td></tr>
+              ) : filteredLogs.map(log => (
+                <tr key={log._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 text-xs font-medium text-gray-500 whitespace-nowrap">{new Date(log.createdAt).toLocaleString()}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-gray-800">{log.adminName}</span>
+                      <span className="text-[9px] font-black text-blue-500 uppercase">{log.adminRole}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs font-mono text-gray-400">{log.ipAddress || '127.0.0.1'}</td>
+                  <td className="px-6 py-4">
+                    <span className={`text-[9px] font-black uppercase px-2 py-1 rounded border ${
+                      log.action.includes('Create') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                      log.action.includes('Delete') ? 'bg-red-50 text-red-600 border-red-100' :
+                      'bg-blue-50 text-blue-600 border-blue-100'
+                    }`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-gray-600 max-w-xs truncate">{log.details}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </AdminLayout>

@@ -64,6 +64,40 @@ router.get('/stats', async (req, res) => {
   }
 });
 
+// GET /api/admin/detailed-stats — Certificate and lifecycle insights
+router.get('/detailed-stats', async (req, res) => {
+  try {
+    const [
+      categoryDistribution,
+      deptDistribution,
+      locationDistribution,
+      monthlyTrends
+    ] = await Promise.all([
+      Certificate.aggregate([{ $group: { _id: "$type", count: { $sum: 1 } } }]),
+      Certificate.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]),
+      Certificate.aggregate([{ $group: { _id: "$location", count: { $sum: 1 } } }]),
+      Certificate.aggregate([
+        {
+          $group: {
+            _id: { $month: "$issueDate" },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { "_id": 1 } }
+      ])
+    ]);
+
+    res.json({
+      categoryDistribution,
+      deptDistribution,
+      locationDistribution,
+      monthlyTrends
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch detailed stats', error: err.message });
+  }
+});
+
 // GET /api/admin/form-stats — Dynamic form stats for dashboard visuals
 router.get('/form-stats', async (req, res) => {
   try {
