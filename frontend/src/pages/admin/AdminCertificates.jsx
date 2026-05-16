@@ -643,7 +643,7 @@ export default function AdminCertificates() {
       const year = new Date().getFullYear();
       const typeCode = formData.type.substring(0, 3).toUpperCase();
       const deptCode = formData.department.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 3);
-      const idPrefix = `${year}/${typeCode}/${deptCode}/`;
+      const idPrefix = `TC${year}${typeCode}${deptCode}`;
 
 
       const sameTypeIds = certificates
@@ -653,8 +653,8 @@ export default function AdminCertificates() {
       let nextSeq = 1;
       if (sameTypeIds.length > 0) {
         const sequences = sameTypeIds.map(id => {
-          const parts = id.split('/');
-          return parseInt(parts[parts.length - 1]) || 0;
+          const numStr = id.replace(idPrefix, '');
+          return parseInt(numStr, 10) || 0;
         });
         nextSeq = Math.max(...sequences) + 1;
       }
@@ -1320,10 +1320,10 @@ export default function AdminCertificates() {
                     </td>
                     <td className="px-6 py-3">
                       <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                          log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                            log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
-                              log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
-                                'bg-gray-50 text-gray-600 border-gray-100'
+                        log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                          log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
+                            log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                              'bg-gray-50 text-gray-600 border-gray-100'
                         }`}>
                         {log.action}
                       </span>
@@ -1396,7 +1396,7 @@ export default function AdminCertificates() {
       )}
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="w-full">
+        <div className="w-full overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>

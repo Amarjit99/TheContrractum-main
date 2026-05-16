@@ -9,7 +9,7 @@ const certificateSchema = new mongoose.Schema({
   },
   issueDate: { type: Date, required: true },
   certificateId: { type: String, unique: true, required: true },
-  fileUrl: { type: String, required: true },
+  fileUrl: { type: String, default: '' },
   themeId: { type: String, default: 'classic' },
   designation: { type: String },
   department: { type: String },

@@ -120,9 +120,6 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
     }
 
     const fileUrl = req.file ? `/uploads/certificates/${req.file.filename}` : '';
-    if (!fileUrl && !req.body.photo) {
-      return res.status(400).json({ message: 'Certificate data/file is required' });
-    }
 
     const certificate = new Certificate({
       name,
