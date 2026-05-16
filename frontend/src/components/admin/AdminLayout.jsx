@@ -5,8 +5,9 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, Moon, Sun
 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const MENU_ITEMS = [
   { id: 'dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
@@ -44,6 +45,7 @@ export default function AdminLayout({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const fetchUnreadCount = async () => {
     try {
@@ -174,7 +176,7 @@ export default function AdminLayout({ children }) {
   );
 
   return (
-    <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
+    <div className={`flex h-screen overflow-hidden font-sans ${isDarkMode ? 'bg-gray-950 text-white' : 'bg-[#f0f4f8] text-gray-900'}`}>
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 shrink-0 h-full shadow-xl z-20">
         <Sidebar />
@@ -193,7 +195,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header Row */}
-        <div className="h-16 bg-[#f0f4f8] shrink-0 flex items-center justify-between px-4 lg:px-8 z-10">
+        <div className={`h-16 shrink-0 flex items-center justify-between px-4 lg:px-8 z-10 border-b ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-[#f0f4f8] border-transparent'}`}>
 
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 bg-white rounded-lg shadow-sm">
@@ -218,6 +220,13 @@ export default function AdminLayout({ children }) {
           <div className="flex items-center gap-4 md:gap-6">
             <button className="text-gray-400 hover:text-gray-600">
               <Search size={20} className="md:hidden" />
+            </button>
+
+            <button 
+              onClick={toggleTheme} 
+              className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' : 'bg-gray-100 text-indigo-900 hover:bg-gray-200'}`}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
             <div className="relative">
