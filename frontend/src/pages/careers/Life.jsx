@@ -50,7 +50,7 @@ export default function Life() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {galleryImages.map((src, index) => (
                             <div key={index} className="overflow-hidden rounded-xl h-48 md:h-64 relative group cursor-pointer">
-                                <img src={src} alt={`Life at Contrractum ${index + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <img src={src} alt={`Life at Contractum ${index + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                     <Camera className="text-white w-8 h-8" />
                                 </div>
@@ -64,7 +64,7 @@ export default function Life() {
             <div className="bg-white py-20">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-black text-gray-900 mb-4">The Contrractum Vibe</h2>
+                        <h2 className="text-4xl font-black text-gray-900 mb-4">The Contractum Vibe</h2>
                         <p className="text-gray-600 max-w-2xl mx-auto text-lg">
                             It's the little things that make the big difference. From impromptu jam sessions to focused hackathons.
                         </p>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Trash2, X, Edit } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -68,7 +69,7 @@ export default function AdminServices() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!newService.title) return alert("Please fill service title");
+    if (!newService.title) return toast.error("Please fill service title");
 
     try {
       const payload = {
@@ -99,7 +100,7 @@ export default function AdminServices() {
         setEditingId(null);
         setNewService({ title: '', category: 'Digital Solutions', subCategory: 'E-Commerce Platforms', description: '', features: '' });
       } else {
-        alert("Failed to publish service");
+        toast.error("Failed to publish service");
       }
     } catch (err) { console.error(err); }
   };
@@ -146,7 +147,7 @@ export default function AdminServices() {
                 <tr><td colSpan="6" className="text-center py-8 text-gray-500">No services found.</td></tr>
               ) : (
                 filteredServices.map(s => (
-                  <tr key={s._id} className="hover:bg-gray-50/80 transition-colors">
+                  <tr key={s._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <div className="font-bold text-gray-800 text-xs sm:text-sm">{s.title}</div>
                       <div className="text-[10px] text-gray-400 lg:hidden uppercase tracking-wider mt-0.5">{s.category}</div>

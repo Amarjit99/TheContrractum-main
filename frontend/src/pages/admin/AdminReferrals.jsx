@@ -150,7 +150,7 @@ export default function AdminReferrals() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-200">
+                <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">Candidate / Role</th>
                   <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider hidden sm:table-cell">Referred By</th>
                   <th className="py-3 sm:py-4 px-3 sm:px-6 font-bold text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider hidden md:table-cell">Contact</th>
@@ -173,7 +173,7 @@ export default function AdminReferrals() {
                         </td>
                     </tr>
                 ) : filteredReferrals.map((ref) => (
-                  <tr key={ref._id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={ref._id} className="hover:bg-gray-50 transition-colors">
                     <td className="py-3 sm:py-4 px-3 sm:px-6">
                       <div className="font-bold text-gray-900 text-xs sm:text-sm">{ref.candidateName}</div>
                       <div className="text-[10px] sm:text-sm text-gray-500">{ref.jobRole}</div>

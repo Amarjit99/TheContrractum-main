@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Plus, LogOut, Calendar, MapPin, Users, Edit, Trash2, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -608,7 +609,7 @@ function MiniEventDemo() {
     };
 
     const handleRSVP = async (id) => {
-        if (!user) { alert('Please login to RSVP'); return; }
+        if (!user) { toast.error('Please login to RSVP'); return; }
         try {
             const res = await fetch(`${API}/api/mini-events/${id}/rsvp`, {
                 method: 'POST',
@@ -618,7 +619,7 @@ function MiniEventDemo() {
             if (res.ok) {
                 fetchEvents();
             } else {
-                alert(data.message);
+                toast.success(data.message);
             }
         } catch (err) {
             console.error(err);
@@ -738,7 +739,7 @@ function MiniEventDemo() {
 
                                         <div className="mt-auto space-y-2">
                                             <button 
-                                                onClick={() => isAttending ? alert('RSVP is confirmed and locked') : handleRSVP(event._id)}
+                                                onClick={() => isAttending ? toast.success('RSVP is confirmed and locked') : handleRSVP(event._id)}
                                                 className={`w-full py-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-2 ${isAttending ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100'}`}
                                             >
                                                 {isAttending ? <><CheckCircle size={14}/> RSVP CONFIRMED</> : 'RSVP NOW'}

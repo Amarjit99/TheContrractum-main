@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { COUNTRIES } from '../../constants/countries';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -51,11 +52,11 @@ export default function BecomePartner() {
 
             if (!res.ok) throw new Error('Failed to store application');
 
-            alert('Form submitted and stored in database successfully!');
+            toast.success('Form submitted and stored in database successfully!');
             handleReset();
         } catch (err) {
             setStatus({ loading: false, error: err.message });
-            alert('Error submitting form: ' + err.message);
+            toast.error('Error submitting form: ' + err.message);
         }
     };
 

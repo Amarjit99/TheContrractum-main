@@ -182,7 +182,7 @@ export default function ConnectExperts() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="bg-slate-50 p-12 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center hover:shadow-lg transition-shadow">
                             <h3 className="text-3xl font-black text-blue-600 mb-6">Direct Email</h3>
-                            <p className="text-slate-800 text-xl font-medium mb-2">experts@thecontrractum.com</p>
+                            <p className="text-slate-800 text-xl font-medium mb-2">experts@thecontractum.com</p>
                             <p className="text-slate-500 text-base">We typically respond within 24 hours to all business inquiries.</p>
                         </div>
                         <div className="bg-slate-50 p-12 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center hover:shadow-lg transition-shadow">

@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -30,6 +30,7 @@ const MENU_ITEMS = [
   { id: 'events', to: '/admin/events', icon: <Calendar size={20} />, label: 'Events Management' },
   { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
   { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
+  { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
   { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
 
@@ -229,6 +230,7 @@ export default function AdminLayout({ children }) {
               <Search size={20} className="md:hidden" />
             </button>
 
+
             <div className="relative">
               <button
                 onClick={async () => {
@@ -258,7 +260,7 @@ export default function AdminLayout({ children }) {
               {/* Notifications Dropdown */}
               {showNotifications && (
                 <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
                     <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
                     <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
                   </div>

@@ -6,6 +6,7 @@ import {
   FileText, ClipboardList, Info, AlertTriangle, CheckCircle 
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -70,7 +71,7 @@ export default function ContractEditor() {
   const handleSubmit = async (submitForApproval = false) => {
     // Basic validation
     if (!formData.employeeId || !formData.title || !formData.content) {
-      alert("Please select an employee and provide a title and contract content.");
+      toast.error("Please select an employee and provide a title and contract content.");
       return;
     }
 
@@ -99,11 +100,11 @@ export default function ContractEditor() {
       if (res.ok) {
         navigate('/admin/contracts');
       } else {
-        alert(data.error || 'Failed to save contract');
+        toast.error(data.error || 'Failed to save contract');
       }
     } catch (err) {
       console.error(err);
-      alert('An unexpected error occurred while saving.');
+      toast.error('An unexpected error occurred while saving.');
     }
     setLoading(false);
   };

@@ -133,7 +133,7 @@ export default function Volunteer() {
         {
             name: "Priya Sharma",
             role: "Tech Volunteer",
-            quote: "Volunteering with TheContrractum changed my perspective. I've learned so much while helping others discover their potential.",
+            quote: "Volunteering with TheContractum changed my perspective. I've learned so much while helping others discover their potential.",
             image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
         },
         {

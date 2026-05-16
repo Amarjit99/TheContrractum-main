@@ -83,7 +83,7 @@ export default function EmployeeCertificates() {
                     </div>
                     <h1 className="text-4xl lg:text-6xl font-black mb-6 tracking-tight">Employee Certificates</h1>
                     <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                        Verify and download official credentials issued by The Contrractum. Our digital registry ensures the integrity of every professional milestone.
+                        Verify and download official credentials issued by The Contractum. Our digital registry ensures the integrity of every professional milestone.
                     </p>
                 </div>
             </div>

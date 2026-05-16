@@ -68,11 +68,62 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+const ScanLog = require("../models/ScanLog");
+
+// Get all scan logs (Admin) — MUST be before /:employeeId
+router.get("/logs/all", auth, async (req, res) => {
+  try {
+    const logs = await ScanLog.find().sort({ scannedAt: -1 }).limit(100);
+    res.json(logs);
+  } catch (error) {
+    console.error("Error fetching scan logs:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Batch upload ID Cards
+router.post("/bulk", auth, async (req, res) => {
+  try {
+    const cards = req.body;
+    if (!Array.isArray(cards)) return res.status(400).json({ message: "Invalid data format." });
+
+    // Filter out duplicates (based on employeeId)
+    const existingIds = await IdCard.find({ employeeId: { $in: cards.map(c => c.employeeId) } }).select('employeeId');
+    const existingSet = new Set(existingIds.map(c => c.employeeId));
+    
+    const newCards = cards.filter(c => !existingSet.has(c.employeeId));
+    
+    if (newCards.length === 0) {
+      return res.status(400).json({ message: "All records in this file already exist." });
+    }
+
+    await IdCard.insertMany(newCards);
+    res.status(201).json({ message: `Successfully onboarded ${newCards.length} records.`, count: newCards.length });
+  } catch (error) {
+    console.error("Bulk upload error:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
 // Get specific ID Card by Employee ID (Public, so no auth required for verifying)
+// MUST be after all static routes (/logs/all, /bulk)
 router.get("/:employeeId", async (req, res) => {
   try {
     const idCard = await IdCard.findOne({ employeeId: req.params.employeeId });
     if (!idCard) return res.status(404).json({ message: "ID Card not found." });
+
+    // Log the scan event for auditing
+    try {
+      await ScanLog.create({
+        employeeId: idCard.employeeId,
+        employeeName: idCard.name,
+        ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        userAgent: req.headers['user-agent']
+      });
+    } catch (logErr) {
+      console.error("Failed to save scan log:", logErr);
+    }
+
     res.json(idCard);
   } catch (error) {
     console.error("Error fetching ID Card:", error);

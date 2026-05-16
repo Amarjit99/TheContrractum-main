@@ -22,6 +22,8 @@ const MiniEvent = require('../models/MiniEvent');
 const Feedback = require('../models/Feedback');
 const VolunteerApplication = require('../models/VolunteerApplication');
 const AdminDetail = require('../models/Admin');
+const Certificate = require('../models/Certificate');
+const IdCard = require('../models/IdCard');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -35,7 +37,8 @@ router.get('/stats', async (req, res) => {
   try {
     const [
       totalUsers, totalContacts, totalVisitors,
-      totalApplications, totalPartners, totalBlogs
+      totalApplications, totalPartners, totalBlogs,
+      totalCertificates, totalIdCards
     ] = await Promise.all([
       User.countDocuments(),
       Contact.countDocuments(),
@@ -43,6 +46,8 @@ router.get('/stats', async (req, res) => {
       JobApplication.countDocuments(),
       Partner.countDocuments(),
       Blog.countDocuments(),
+      Certificate.countDocuments(),
+      IdCard.countDocuments()
     ]);
 
     const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(10);
@@ -51,10 +56,45 @@ router.get('/stats', async (req, res) => {
     res.json({
       totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
+      totalCertificates, totalIdCards,
       recentContacts, recentApplications
     });
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch stats', error: err.message });
+  }
+});
+
+// GET /api/admin/detailed-stats — Certificate and lifecycle insights
+router.get('/detailed-stats', async (req, res) => {
+  try {
+    const [
+      categoryDistribution,
+      deptDistribution,
+      locationDistribution,
+      monthlyTrends
+    ] = await Promise.all([
+      Certificate.aggregate([{ $group: { _id: "$type", count: { $sum: 1 } } }]),
+      Certificate.aggregate([{ $group: { _id: "$department", count: { $sum: 1 } } }]),
+      Certificate.aggregate([{ $group: { _id: "$location", count: { $sum: 1 } } }]),
+      Certificate.aggregate([
+        {
+          $group: {
+            _id: { $month: "$issueDate" },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { "_id": 1 } }
+      ])
+    ]);
+
+    res.json({
+      categoryDistribution,
+      deptDistribution,
+      locationDistribution,
+      monthlyTrends
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch detailed stats', error: err.message });
   }
 });
 

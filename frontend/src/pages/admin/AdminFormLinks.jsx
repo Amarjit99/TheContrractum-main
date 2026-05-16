@@ -189,7 +189,7 @@ export default function AdminFormLinks() {
           
           {/* Form Links Section */}
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
+            <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <LinkIcon size={18} className="text-[#1e5cdc]" />
                 Available Form Links
@@ -198,7 +198,7 @@ export default function AdminFormLinks() {
             
             <div className="divide-y divide-gray-50">
               {stats?.merged?.map((form) => (
-                <div key={form.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/80 transition-colors">
+                <div key={form.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
                       <h3 className="font-bold text-gray-900 truncate">{form.name}</h3>

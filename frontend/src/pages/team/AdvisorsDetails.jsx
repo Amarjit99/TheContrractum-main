@@ -21,7 +21,7 @@ export default function AdvisorsDetails() {
                 <div className="max-w-5xl mx-auto text-left">
                     <h2 className="text-4xl font-black text-slate-900 mb-8 border-b-4 border-indigo-100 pb-4 inline-block">Our Advisory Philosophy</h2>
                     <p className="text-slate-700 text-lg leading-loose mb-6">
-                        At The Contrractum, we do not view our advisors as mere figureheads. They are active participants in shaping our macro-strategy, deeply embedding their decades of enterprise navigation into our core product offerings. They challenge our assumptions, refine our go-to-market strategies, and open doors to strategic partnerships that accelerate our global footprint.
+                        At The Contractum, we do not view our advisors as mere figureheads. They are active participants in shaping our macro-strategy, deeply embedding their decades of enterprise navigation into our core product offerings. They challenge our assumptions, refine our go-to-market strategies, and open doors to strategic partnerships that accelerate our global footprint.
                     </p>
                     <p className="text-slate-700 text-lg leading-loose mb-12">
                         By establishing a formalized advisory board comprising seasoned executives from Fortune 500 corporations, influential policymakers, and leading academic researchers, we consistently deliver solutions that anticipate regulatory shifts and market demands long before they become mainstream.
@@ -68,7 +68,7 @@ export default function AdvisorsDetails() {
                                 <h3 className="text-3xl font-black text-slate-900 mb-2">Dr. Robert Keynes, Ph.D.</h3>
                                 <p className="text-indigo-600 font-bold text-xl mb-6">Chairman of the Advisory Board</p>
                                 <p className="text-slate-700 text-lg leading-relaxed mb-6">
-                                    Dr. Keynes brings over 35 years of executive experience leading global strategy for top-tier multinational technology firms. His pioneering work in systems theory and enterprise architecture optimization has been published in numerous prestigious journals. At The Contrractum, he focuses on macro-level strategic partnerships and overarching corporate governance.
+                                    Dr. Keynes brings over 35 years of executive experience leading global strategy for top-tier multinational technology firms. His pioneering work in systems theory and enterprise architecture optimization has been published in numerous prestigious journals. At The Contractum, he focuses on macro-level strategic partnerships and overarching corporate governance.
                                 </p>
                                 <div className="flex gap-4">
                                     <span className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium">B2B Strategy</span>

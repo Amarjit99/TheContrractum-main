@@ -171,7 +171,7 @@ export default function AdminPartners() {
                 <tr><td colSpan="5" className="text-center py-8 text-gray-500">No partners found.</td></tr>
               ) : (
                 filteredPartners.map(p => (
-                  <tr key={p._id} className="hover:bg-gray-50/80 transition-colors">
+                  <tr key={p._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <p className="font-bold text-gray-800 text-xs sm:text-sm">{p.name}</p>
                       <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">Joined {p.joined}</p>
