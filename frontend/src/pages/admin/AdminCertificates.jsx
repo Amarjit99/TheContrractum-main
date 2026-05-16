@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, X, FileText, ExternalLink, Download, Award, Filter, FileSpreadsheet, RefreshCw, CheckCircle2, Upload, Eye, CheckCircle, ShieldCheck, Settings as SettingsIcon } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import QRCode from 'qrcode';
@@ -10,12 +10,13 @@ import { QRCodeSVG } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { CATEGORIES, DEPARTMENTS_BY_CATEGORY, DESIGNATIONS_MAPPING, THEME_COLORS } from '../../constants/certificateConstants';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 
 // ── SHARED TEMPLATE COMPONENT FOR DRY ──
-function CertificateTemplate({ formData, selectedTheme, id }) {
+function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
   return (
     <div
       id={id}
@@ -31,26 +32,45 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none flex flex-wrap gap-12 rotate-[-35deg] scale-150 justify-center items-center content-center">
         {Array.from({ length: 40 }).map((_, i) => (
           <span key={i} className="text-[14px] font-black uppercase whitespace-nowrap tracking-widest">
-            The Contractum Official • Secure Registry •
+            {globalSettings?.companyName || 'The Contractum'} Official • Secure Registry •
           </span>
         ))}
       </div>
 
       {/* Official Digital Seal */}
-      <div className="absolute top-12 right-12 z-20 w-28 h-28 border-4 border-red-600/30 rounded-full flex items-center justify-center">
-        <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40">
-          <span className="text-[8px] font-black uppercase tracking-tighter">Contractum</span>
+      <div className="absolute top-12 right-12 z-20 w-28 h-28 border-4 border-red-600/30 rounded-full flex items-center justify-center overflow-hidden">
+        {globalSettings?.companySeal ? (
+          <img src={globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`} alt="Seal" className="w-full h-full object-contain" crossOrigin="anonymous" />
+        ) : (
+          <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40 bg-white/50 backdrop-blur-sm">
+            <span className="text-[8px] font-black uppercase tracking-tighter text-center leading-tight">
+              {globalSettings?.companyName ? globalSettings.companyName.substring(0, 10) : 'Contractum'}
+            </span>
           <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
-          <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
-        </div>
+            <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
+          </div>
+        )}
       </div>
 
-      {/* Top Logo / Branding */}
-      <div className="text-center z-10 mb-6">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
-        <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
-          The Contractum
+      {/* Candidate Photo (if available) */}
+      {formData.fileUrl && (
+        <div className="absolute top-12 left-12 z-20 w-24 h-28 border-[3px] bg-white/80 shadow-md flex items-center justify-center overflow-hidden rounded-md" style={{ borderColor: selectedTheme.primary + '66' }}>
+          <img src={formData.fileUrl.startsWith('data:') ? formData.fileUrl : `${API}${formData.fileUrl}`} alt="Candidate" className="w-full h-full object-cover" crossOrigin="anonymous" />
         </div>
+      )}
+
+      {/* Top Logo / Branding */}
+      <div className="text-center z-10 mb-6 flex flex-col items-center">
+        {globalSettings?.companyLogo ? (
+          <img src={globalSettings.companyLogo.startsWith('data:') ? globalSettings.companyLogo : `${API}${globalSettings.companyLogo}`} alt="Company Logo" className="h-16 object-contain mb-2" crossOrigin="anonymous" />
+        ) : (
+          <>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
+            <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+              {globalSettings?.companyName || 'The Contractum'}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Title Area */}
@@ -113,7 +133,7 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
 
 
 // ── PURE CANVAS 2D GENERATOR (Pixel-Perfect Clone of HTML Template) ──
-async function generateCertificateCanvas(data, theme) {
+async function generateCertificateCanvas(data, theme, globalSettings = null) {
   const W = 2400; // 800 * 3
   const H = 1740; // 580 * 3
   const canvas = document.createElement('canvas');
@@ -201,11 +221,31 @@ async function generateCertificateCanvas(data, theme) {
 
   // 7. Branding
   ctx.textAlign = 'center';
-  ctx.fillStyle = theme.primary;
-  ctx.font = '900 30px Montserrat, sans-serif';
-  ctx.fillText('OFFICIAL RECOGNITION', W / 2, 210);
-  ctx.font = 'italic 900 72px Montserrat, sans-serif';
-  ctx.fillText('The Contractum', W / 2, 300);
+  
+  if (globalSettings?.companyLogo) {
+    try {
+      const logoImg = new Image();
+      logoImg.crossOrigin = "anonymous";
+      logoImg.src = globalSettings.companyLogo.startsWith('data:') ? globalSettings.companyLogo : `${API}${globalSettings.companyLogo}`;
+      await new Promise(resolve => {
+        logoImg.onload = resolve;
+        logoImg.onerror = resolve; // Continue on error
+      });
+      // Draw logo centered
+      const maxLogoHeight = 120;
+      const aspect = logoImg.width / logoImg.height;
+      const logoWidth = maxLogoHeight * aspect;
+      ctx.drawImage(logoImg, W / 2 - logoWidth / 2, 190, logoWidth, maxLogoHeight);
+    } catch (e) {
+      console.error("Failed to load global logo for canvas", e);
+    }
+  } else {
+    ctx.fillStyle = theme.primary;
+    ctx.font = '900 30px Montserrat, sans-serif';
+    ctx.fillText('OFFICIAL RECOGNITION', W / 2, 210);
+    ctx.font = 'italic 900 72px Montserrat, sans-serif';
+    ctx.fillText(globalSettings?.companyName || 'The Contractum', W / 2, 300);
+  }
 
   // 8. Main Title
   ctx.fillStyle = theme.accent;
@@ -322,6 +362,7 @@ export default function AdminCertificates() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
@@ -331,8 +372,12 @@ export default function AdminCertificates() {
   const [filterMonth, setFilterMonth] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [scanLogs, setScanLogs] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [globalSettings, setGlobalSettings] = useState({ companyName: 'The Contractum', companyLogo: '', companySeal: '' });
   const [filterDepartment, setFilterDepartment] = useState('');
-  const [previewImageUrl, setPreviewImageUrl] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [candidatePhoto, setCandidatePhoto] = useState('');
+  const [generatedPreview, setGeneratedPreview] = useState('');
 
   // Helper to get the admin's display name for "Issued By"
   const getAdminDisplayName = () => {
@@ -341,6 +386,8 @@ export default function AdminCertificates() {
     const role = admin.role === 'super-admin' ? 'Super Admin' : admin.role === 'admin' ? 'Admin' : admin.role || '';
     return role ? `${name} (${role})` : name;
   };
+
+  const isSuperAdmin = admin?.role === 'super-admin';
 
   // Form State
   const [formData, setFormData] = useState({
@@ -374,6 +421,22 @@ export default function AdminCertificates() {
         const logs = await logsRes.json();
         setScanLogs(Array.isArray(logs) ? logs : []);
       }
+
+      // Fetch Admin Activity Audit Logs
+      const auditRes = await fetch(`${API}/api/audit-logs`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      if (auditRes.ok) {
+        const auditData = await auditRes.json();
+        setAuditLogs(Array.isArray(auditData) ? auditData : []);
+      }
+
+      // Fetch Global Settings
+      const settingsRes = await fetch(`${API}/api/settings`);
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        setGlobalSettings(settingsData);
+      }
     } catch (err) {
       console.error('Failed to fetch certificates:', err);
     }
@@ -395,6 +458,7 @@ export default function AdminCertificates() {
     if (!c) return false;
     const matchesTab = activeTab === 'All' || c.type === activeTab;
     const matchesDept = !filterDepartment || c.department === filterDepartment;
+    const matchesStatus = !filterStatus || (c.status || 'Issued') === filterStatus;
 
     let matchesYear = true;
     if (filterYear) {
@@ -413,7 +477,7 @@ export default function AdminCertificates() {
     const matchesSearch = (c.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (c.certificateId || '').toLowerCase().includes(search.toLowerCase());
 
-    return matchesTab && matchesDept && matchesYear && matchesMonth && matchesSearch;
+    return matchesTab && matchesDept && matchesStatus && matchesYear && matchesMonth && matchesSearch;
   });
 
   const handleFileChange = (e) => {
@@ -422,7 +486,7 @@ export default function AdminCertificates() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData({ ...formData, file: file });
-        setPreviewImageUrl(reader.result);
+        setCandidatePhoto(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -444,7 +508,8 @@ export default function AdminCertificates() {
     });
     setEditingId(null);
     setPreviewMode(false);
-    setPreviewImageUrl('');
+    setCandidatePhoto('');
+    setGeneratedPreview('');
   };
 
   // ── Auto-Generate Certificate ID ──
@@ -502,7 +567,7 @@ export default function AdminCertificates() {
     setDownloading(true);
     try {
       const theme = THEME_COLORS.find(t => t.id === certData.themeId) || THEME_COLORS[0];
-      const canvas = await generateCertificateCanvas(certData, theme);
+      const canvas = await generateCertificateCanvas(certData, theme, globalSettings);
       const dataUrl = canvas.toDataURL('image/png', 1.0);
       const link = document.createElement('a');
       link.download = `Certificate_${certData.certificateId || 'download'}.png`;
@@ -535,7 +600,7 @@ export default function AdminCertificates() {
         if (i > 0) doc.addPage('a4', 'l');
 
         const theme = THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0];
-        const canvas = await generateCertificateCanvas(cert, theme);
+        const canvas = await generateCertificateCanvas(cert, theme, globalSettings);
         const imgData = canvas.toDataURL('image/png', 1.0);
 
         // A4 is 297mm x 210mm
@@ -556,17 +621,53 @@ export default function AdminCertificates() {
     alert('Verification link copied to clipboard!');
   };
 
+  const handleStatusChange = async (certId, newStatus) => {
+    const confirmMsg = {
+      'Revoked': 'Are you sure you want to REVOKE this certificate? This action is visible publicly.',
+      'Approved': 'Mark this certificate as Approved?',
+      'Issued': 'Mark this certificate as Issued?',
+      'Pending': 'Move this certificate back to Pending?',
+    };
+    if (confirmMsg[newStatus] && !window.confirm(confirmMsg[newStatus])) return;
+
+    try {
+      const res = await fetch(`${API}/api/certificates/${certId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          ...(newStatus === 'Approved' || newStatus === 'Issued' ? { approvedBy: getAdminDisplayName() } : {}),
+          ...(newStatus === 'Revoked' ? { rejectedBy: getAdminDisplayName() } : {})
+        })
+      });
+      if (res.ok) {
+        await fetchCertificates();
+      } else {
+        const err = await res.json();
+        alert(err.message || 'Failed to update status.');
+      }
+    } catch (err) {
+      console.error('Status change failed:', err);
+      alert('Failed to update certificate status.');
+    }
+  };
+
   const handlePreview = async (e) => {
     e.preventDefault();
-    if (formData.file && previewImageUrl) {
+    if (generatedPreview) {
       setPreviewMode(true);
       return;
     }
     setLoading(true);
     try {
       const theme = THEME_COLORS.find(t => t.id === formData.themeId) || THEME_COLORS[0];
-      const canvas = await generateCertificateCanvas(formData, theme);
-      setPreviewImageUrl(canvas.toDataURL('image/png', 1.0));
+      // Include candidate photo in the data for rendering
+      const renderData = { ...formData, fileUrl: candidatePhoto };
+      const canvas = await generateCertificateCanvas(renderData, theme, globalSettings);
+      setGeneratedPreview(canvas.toDataURL('image/png', 1.0));
       setPreviewMode(true);
     } catch (err) {
       console.error('Preview generation failed:', err);
@@ -578,7 +679,8 @@ export default function AdminCertificates() {
   const handleSubmit = async () => {
     setIsProcessing(true);
     try {
-      const payload = { ...formData, photo: previewImageUrl, status: 'Generated' };
+      // If there's a candidate photo, pass it as photo to be saved as fileUrl
+      const payload = { ...formData, photo: candidatePhoto };
 
       const url = editingId ? `${API}/api/certificates/${editingId}` : `${API}/api/certificates`;
       const method = editingId ? 'PUT' : 'POST';
@@ -738,6 +840,7 @@ export default function AdminCertificates() {
     setFilterYear('');
     setFilterMonth('');
     setFilterDepartment('');
+    setFilterStatus('');
     setSearch('');
     setActiveTab('All');
   };
@@ -750,7 +853,10 @@ export default function AdminCertificates() {
       if (!c?.issueDate) return false;
       const diff = new Date() - new Date(c.issueDate);
       return diff < (7 * 24 * 60 * 60 * 1000);
-    }).length
+    }).length,
+    pending: (certificates || []).filter(c => c?.status === 'Pending' || c?.status === 'Under Review').length,
+    approved: (certificates || []).filter(c => c?.status === 'Approved' || c?.status === 'Issued').length,
+    revoked: (certificates || []).filter(c => c?.status === 'Revoked' || c?.status === 'Expired').length,
   };
 
   return (
@@ -826,7 +932,17 @@ export default function AdminCertificates() {
             <option key={dept} value={dept}>{dept}</option>
           ))}
         </select>
-        {(filterYear || filterMonth || activeTab !== 'All' || filterDepartment || search) && (
+        <select
+          className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white transition-all shadow-sm"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">All Statuses</option>
+          {['Pending', 'Under Review', 'Approved', 'Issued', 'Revoked', 'Expired'].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        {(filterYear || filterMonth || activeTab !== 'All' || filterDepartment || filterStatus || search) && (
           <button
             onClick={resetFilters}
             className="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-widest flex items-center gap-1 px-2"
@@ -837,12 +953,15 @@ export default function AdminCertificates() {
       </div>
 
       {/* Analytics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
         {[
           { label: 'Total Records', val: stats.total, color: 'text-blue-600', bg: 'bg-blue-50', icon: <FileText size={20} /> },
           { label: 'Employees', val: stats.employees, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <ShieldCheck size={20} /> },
           { label: 'Interns', val: stats.interns, color: 'text-amber-600', bg: 'bg-amber-50', icon: <Award size={20} /> },
-          { label: 'Newly Issued (7d)', val: stats.recent, color: 'text-purple-600', bg: 'bg-purple-50', icon: <RefreshCw size={20} /> }
+          { label: 'Newly Issued (7d)', val: stats.recent, color: 'text-purple-600', bg: 'bg-purple-50', icon: <RefreshCw size={20} /> },
+          { label: 'Pending Approvals', val: stats.pending, color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Filter size={20} /> },
+          { label: 'Active / Issued', val: stats.approved, color: 'text-green-600', bg: 'bg-green-50', icon: <CheckCircle2 size={20} /> },
+          { label: 'Revoked / Expired', val: stats.revoked, color: 'text-red-600', bg: 'bg-red-50', icon: <X size={20} /> }
         ].map((s, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
             <div>
@@ -852,7 +971,7 @@ export default function AdminCertificates() {
             <div className={`p-3 ${s.bg} ${s.color} rounded-xl`}>{s.icon}</div>
           </div>
         ))}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-1 sm:col-span-2 lg:col-span-4 flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm col-span-2 sm:col-span-3 lg:col-span-4 xl:col-span-7 flex flex-col justify-between">
           <div className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Reports & Advanced Exports</div>
           <div className="flex flex-wrap gap-2">
             <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-colors border border-emerald-100 text-xs font-bold" title="Export Excel Report">
@@ -869,6 +988,70 @@ export default function AdminCertificates() {
           </div>
         </div>
       </div>
+
+      {/* Analytics Charts */}
+      {certificates.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Category Distribution Pie Chart */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Award size={14} className="text-[#1e5cdc]" /> Category Distribution
+            </h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={(() => {
+                    const counts = {};
+                    certificates.forEach(c => { counts[c.type] = (counts[c.type] || 0) + 1; });
+                    return Object.entries(counts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+                  })()}
+                  cx="50%" cy="50%"
+                  innerRadius={55} outerRadius={95}
+                  paddingAngle={3}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {['#1e5cdc', '#059669', '#d97706', '#9333ea', '#dc2626', '#0891b2', '#ea580c', '#7c3aed', '#16a34a', '#18181b', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6', '#f97316'].map((color, i) => (
+                    <Cell key={i} fill={color} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 700 }} />
+                <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 700 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Monthly Issuance Bar Chart */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <FileText size={14} className="text-[#1e5cdc]" /> Monthly Issuance ({new Date().getFullYear()})
+            </h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart
+                data={(() => {
+                  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                  const currentYear = new Date().getFullYear();
+                  const monthData = months.map((m, i) => ({
+                    month: m,
+                    Issued: certificates.filter(c => {
+                      const d = new Date(c.issueDate);
+                      return d.getFullYear() === currentYear && d.getMonth() === i;
+                    }).length
+                  }));
+                  return monthData;
+                })()}
+                margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
+              >
+                <XAxis dataKey="month" tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '12px', fontWeight: 700 }} />
+                <Bar dataKey="Issued" fill="#1e5cdc" radius={[6, 6, 0, 0]} barSize={28} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Verification Activity Section (New Feature like ID Cards) */}
       {scanLogs.length > 0 && (
@@ -907,21 +1090,76 @@ export default function AdminCertificates() {
         </div>
       )}
 
+      {/* Admin Audit Logs Section */}
+      {auditLogs.length > 0 && (
+        <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+              <FileText size={18} className="text-[#1e5cdc]" /> Administrator Activity Ledger
+            </h3>
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-bold text-[#1e5cdc] bg-blue-50 px-2 py-1 rounded-full border border-blue-100 uppercase tracking-tighter">Security Audit</span>
+            </div>
+          </div>
+          <div className="overflow-x-auto max-h-64 overflow-y-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50/50 sticky top-0">
+                <tr>
+                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
+                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Admin</th>
+                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Target ID</th>
+                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Details</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {auditLogs.map(log => (
+                  <tr key={log._id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.createdAt).toLocaleString()}</td>
+                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">{log.adminName}</td>
+                    <td className="px-6 py-3">
+                      <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${
+                        log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                        log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                        log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
+                        log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                        'bg-gray-50 text-gray-600 border-gray-100'
+                      }`}>
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.targetId}</td>
+                    <td className="px-6 py-3 text-xs font-medium text-gray-500">{log.details}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
-              ? 'border-[#1e5cdc] text-[#1e5cdc]'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-          >
-            {tab.icon}
-            {tab.label}
+      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar items-center justify-between">
+        <div className="flex">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+                ? 'border-[#1e5cdc] text-[#1e5cdc]'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        {isSuperAdmin && (
+          <button onClick={() => setIsSettingsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 shadow-sm mr-2">
+            <SettingsIcon size={16} /> Branding Settings
           </button>
-        ))}
+        )}
       </div>
 
       {/* Bulk Actions Toolbar */}
@@ -1016,15 +1254,49 @@ export default function AdminCertificates() {
                       {new Date(c.issueDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100">
-                        <CheckCircle size={12} className="text-emerald-500" /> Issued
-                      </span>
+                      {(() => {
+                        const s = c.status || 'Issued';
+                        const styles = {
+                          'Pending': 'bg-yellow-50 text-yellow-600 border-yellow-100',
+                          'Under Review': 'bg-blue-50 text-blue-600 border-blue-100',
+                          'Approved': 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                          'Issued': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                          'Revoked': 'bg-red-50 text-red-600 border-red-100',
+                          'Expired': 'bg-gray-100 text-gray-500 border-gray-200',
+                        };
+                        return (
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${styles[s] || styles['Issued']}`}>
+                            <CheckCircle size={12} /> {s}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
                       <span className="text-xs font-bold text-gray-600">{c.issuedBy || 'The Contractum'}</span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        {/* Status Actions (Super Admin Only) */}
+                        {isSuperAdmin && (
+                          <>
+                            {(c.status === 'Pending' || c.status === 'Under Review') && (
+                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-100" title="Approve & Issue">
+                                <CheckCircle2 size={16} />
+                              </button>
+                            )}
+                            {(c.status === 'Issued' || c.status === 'Approved') && (
+                              <button onClick={() => handleStatusChange(c._id, 'Revoked')} className="p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Revoke Certificate">
+                                <X size={16} />
+                              </button>
+                            )}
+                            {(c.status === 'Revoked' || c.status === 'Expired') && (
+                              <button onClick={() => handleStatusChange(c._id, 'Issued')} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Reissue Certificate">
+                                <RefreshCw size={16} />
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {/* Standard Actions */}
                         <button onClick={() => handleView(c)} className="p-1.5 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="View Certificate"><Award size={16} /></button>
                         <Link to={`/verify/${c.certificateId}`} target="_blank" className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="View Verification Page"><Eye size={16} /></Link>
                         <button onClick={() => handleDownload(c)} disabled={downloading} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-100" title="Download PNG"><Download size={16} /></button>
@@ -1043,10 +1315,14 @@ export default function AdminCertificates() {
                             department: c.department || 'General',
                             issuedBy: c.issuedBy || 'The Contractum'
                           });
+                          setCandidatePhoto(c.fileUrl || '');
+                          setGeneratedPreview('');
                           setPreviewMode(false);
                           setIsModalOpen(true);
                         }} className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-100" title="Edit Details"><Edit size={16} /></button>
-                        <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete"><Trash2 size={16} /></button>
+                        {isSuperAdmin && (
+                          <button onClick={() => handleDelete(c._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete"><Trash2 size={16} /></button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -1221,8 +1497,10 @@ export default function AdminCertificates() {
                         </div>
                       ) : (
                         <div className="shadow-2xl flex-shrink-0 w-full max-w-4xl overflow-hidden rounded-lg bg-white">
-                          {previewImageUrl ? (
-                            <img src={previewImageUrl} alt="Certificate Preview" className="w-full h-auto object-contain" />
+                          {generatedPreview || candidatePhoto ? (
+                            <div className="absolute inset-0 z-0 bg-white shadow-xl shadow-black/5 p-4 origin-center">
+                              <img src={generatedPreview || candidatePhoto} alt="Certificate Preview" className="w-full h-auto border border-gray-100 rounded-sm" />
+                            </div>
                           ) : (
                             <div className="w-full h-64 flex items-center justify-center text-gray-400 font-bold uppercase">No Preview Available</div>
                           )}
@@ -1324,6 +1602,85 @@ export default function AdminCertificates() {
           </div>
         )}
       </>
+
+      {/* Branding Settings Modal */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50 shrink-0">
+              <h2 className="text-xl font-black text-gray-800">Branding Settings</h2>
+              <button onClick={() => setIsSettingsModalOpen(false)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Name</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] transition-all"
+                    value={globalSettings.companyName}
+                    onChange={(e) => setGlobalSettings({ ...globalSettings, companyName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-black text-gray-500 uppercase tracking-widest mb-1.5">Company Logo</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                      {globalSettings.companyLogo ? (
+                        <img src={globalSettings.companyLogo.startsWith('data:') ? globalSettings.companyLogo : `${API}${globalSettings.companyLogo}`} alt="Logo" className="w-full h-full object-contain p-1" />
+                      ) : (
+                        <span className="text-xs font-bold text-gray-400">NONE</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#1e5cdc]/10 file:text-[#1e5cdc] hover:file:bg-[#1e5cdc]/20 transition-all cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setGlobalSettings({ ...globalSettings, companyLogo: reader.result });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <p className="text-xs text-gray-400 mt-2">Upload a PNG or JPG logo with a transparent background for best results.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50 shrink-0 flex justify-end gap-3">
+              <button
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 rounded-xl transition-colors shadow-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await fetch(`${API}/api/settings`, {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin?.token}` },
+                      body: JSON.stringify(globalSettings)
+                    });
+                    alert('Settings updated successfully!');
+                    setIsSettingsModalOpen(false);
+                  } catch (err) { alert('Failed to update settings'); }
+                }}
+                className="px-6 py-2.5 text-sm font-bold text-white bg-[#1e5cdc] hover:bg-blue-700 shadow-md shadow-blue-500/20 rounded-xl transition-all"
+              >
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

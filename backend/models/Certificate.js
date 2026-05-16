@@ -15,7 +15,17 @@ const certificateSchema = new mongoose.Schema({
   department: { type: String },
   details: { type: String },
   recipientEmail: { type: String },
-  issuedBy: { type: String, default: 'The Contractum' }
+  issuedBy: { type: String, default: 'The Contractum' },
+  // ── Approval Workflow Fields ──
+  status: {
+    type: String,
+    enum: ['Pending', 'Under Review', 'Approved', 'Issued', 'Revoked', 'Expired'],
+    default: 'Issued'
+  },
+  approvedBy: { type: String, default: '' },
+  rejectedBy: { type: String, default: '' },
+  rejectionReason: { type: String, default: '' },
+  validUntil: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Certificate', certificateSchema);

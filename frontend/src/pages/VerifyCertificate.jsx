@@ -7,7 +7,7 @@ import { THEME_COLORS } from '../constants/certificateConstants';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ── SHARED TEMPLATE COMPONENT (Copied for Public Page) ──
-function CertificateTemplate({ formData, selectedTheme, id }) {
+function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
   return (
     <div
       id={id}
@@ -23,26 +23,45 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none flex flex-wrap gap-12 rotate-[-35deg] scale-150 justify-center items-center content-center">
         {Array.from({ length: 40 }).map((_, i) => (
           <span key={i} className="text-[14px] font-black uppercase whitespace-nowrap tracking-widest">
-            The Contractum Official • Secure Registry •
+            {globalSettings?.companyName || 'The Contractum'} Official • Secure Registry •
           </span>
         ))}
       </div>
 
       {/* Official Digital Seal */}
-      <div className="absolute top-12 right-12 z-20 w-28 h-28 border-4 border-red-600/30 rounded-full flex items-center justify-center">
-        <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40">
-          <span className="text-[8px] font-black uppercase tracking-tighter">Contractum</span>
-          <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
-          <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
-        </div>
+      <div className="absolute top-12 right-12 z-20 w-28 h-28 border-4 border-red-600/30 rounded-full flex items-center justify-center overflow-hidden">
+        {globalSettings?.companySeal ? (
+          <img src={globalSettings.companySeal.startsWith('data:') ? globalSettings.companySeal : `${API}${globalSettings.companySeal}`} alt="Seal" className="w-full h-full object-contain" crossOrigin="anonymous" />
+        ) : (
+          <div className="w-24 h-24 border-2 border-red-600/20 rounded-full flex flex-col items-center justify-center text-red-600/40 bg-white/50 backdrop-blur-sm">
+            <span className="text-[8px] font-black uppercase tracking-tighter text-center leading-tight">
+              {globalSettings?.companyName ? globalSettings.companyName.substring(0, 10) : 'Contractum'}
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-widest">OFFICIAL</span>
+            <span className="text-[8px] font-black uppercase tracking-tighter">VERIFIED</span>
+          </div>
+        )}
       </div>
 
-      {/* Top Logo / Branding */}
-      <div className="text-center z-10 mb-6">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
-        <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
-          The Contractum
+      {/* Candidate Photo (if available) */}
+      {formData.fileUrl && (
+        <div className="absolute top-12 left-12 z-20 w-24 h-28 border-[3px] bg-white/80 shadow-md flex items-center justify-center overflow-hidden rounded-md" style={{ borderColor: selectedTheme.primary + '66' }}>
+          <img src={formData.fileUrl.startsWith('data:') ? formData.fileUrl : `${API}${formData.fileUrl}`} alt="Candidate" className="w-full h-full object-cover" crossOrigin="anonymous" />
         </div>
+      )}
+
+      {/* Top Logo / Branding */}
+      <div className="text-center z-10 mb-6 flex flex-col items-center">
+        {globalSettings?.companyLogo ? (
+          <img src={globalSettings.companyLogo.startsWith('data:') ? globalSettings.companyLogo : `${API}${globalSettings.companyLogo}`} alt="Company Logo" className="h-16 object-contain mb-2" crossOrigin="anonymous" />
+        ) : (
+          <>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
+            <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+              {globalSettings?.companyName || 'The Contractum'}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Title Area */}
@@ -104,6 +123,7 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
 export default function VerifyCertificate() {
   const { id } = useParams();
   const [cert, setCert] = useState(null);
+  const [globalSettings, setGlobalSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -119,6 +139,12 @@ export default function VerifyCertificate() {
       }
       const data = await res.json();
       setCert(data);
+
+      const settingsRes = await fetch(`${API}/api/settings`);
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        setGlobalSettings(settingsData);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -164,10 +190,15 @@ export default function VerifyCertificate() {
         </Link>
         <div className="flex items-center gap-2">
             <div className="hidden sm:flex flex-col items-end mr-2">
-                <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Officially Verified</span>
+                <span className={`text-[9px] font-black uppercase tracking-widest ${(cert?.status === 'Revoked' || cert?.status === 'Expired') ? 'text-red-500' : 'text-emerald-500'}`}>
+                  {(cert?.status === 'Revoked' || cert?.status === 'Expired') ? 'Certificate Revoked' : 'Officially Verified'}
+                </span>
                 <span className="text-[10px] text-gray-400 font-bold">Secure Digital Record</span>
             </div>
-            <CheckCircle className="text-emerald-500" size={24} />
+            {(cert?.status === 'Revoked' || cert?.status === 'Expired') 
+              ? <X className="text-red-500" size={24} />
+              : <CheckCircle className="text-emerald-500" size={24} />
+            }
         </div>
       </header>
 
@@ -181,6 +212,7 @@ export default function VerifyCertificate() {
                         <CertificateTemplate 
                             formData={cert} 
                             selectedTheme={THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0]} 
+                            globalSettings={globalSettings}
                             id="verified-cert-canvas" 
                         />
                     </div>
@@ -235,16 +267,32 @@ export default function VerifyCertificate() {
                          <p className="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1">Classification</p>
                          <span className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black uppercase rounded-full mt-1">{cert.type}</span>
                      </div>
+                     {cert.issuedBy && (
+                       <div>
+                         <p className="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1">Issued By</p>
+                         <p className="font-bold text-gray-800">{cert.issuedBy}</p>
+                       </div>
+                     )}
                  </div>
 
                  <div className="mt-8 pt-6 border-t border-gray-50">
-                    <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                    {(cert.status === 'Revoked' || cert.status === 'Expired') ? (
+                      <div className="flex items-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-100">
+                        <X size={20} className="text-red-500 shrink-0" />
+                        <div>
+                          <p className="text-[10px] font-black text-red-700 uppercase tracking-tighter leading-none">Status: {cert.status}</p>
+                          <p className="text-[8px] text-red-600 font-bold uppercase mt-1 opacity-70">This certificate is no longer valid</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                         <CheckCircle size={20} className="text-emerald-500 shrink-0" />
                         <div>
-                            <p className="text-[10px] font-black text-emerald-700 uppercase tracking-tighter leading-none">Status: Active</p>
-                            <p className="text-[8px] text-emerald-600 font-bold uppercase mt-1 opacity-70">Integrity Check Passed</p>
+                          <p className="text-[10px] font-black text-emerald-700 uppercase tracking-tighter leading-none">Status: {cert.status || 'Active'}</p>
+                          <p className="text-[8px] text-emerald-600 font-bold uppercase mt-1 opacity-70">Integrity Check Passed</p>
                         </div>
-                    </div>
+                      </div>
+                    )}
                  </div>
              </div>
 

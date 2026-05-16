@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const { initializeBackupCron } = require("./utils/backup");
 
 const app = express();
 const PORT = process.env.PORT || 5000; // Updated to resolve port conflict
@@ -82,6 +83,8 @@ app.use("/api/affiliate-applications", require("./routes/affiliates"));
 app.use("/api/certificates", require("./routes/certificates"));
 app.use("/api/mini-events", require("./routes/miniEventRoutes"));
 app.use("/api/public", require("./routes/publicForms"));
+app.use("/api/audit-logs", require("./routes/auditLogs"));
+app.use("/api/settings", require("./routes/settings"));
 
 
 // Serve static files
@@ -91,4 +94,5 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ---------- Start Server ----------
 app.listen(PORT, () => {
   console.log(`🚀 API Server running on port ${PORT} (Hostinger Ready)`);
+  initializeBackupCron();
 });

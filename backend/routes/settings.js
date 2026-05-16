@@ -1,0 +1,46 @@
+const express = require('express');
+const router = express.Router();
+const Settings = require('../models/Settings');
+const { protect } = require('../middleware/auth');
+const { adminOnly } = require('../middleware/admin');
+
+// GET settings (Publicly accessible for templates)
+router.get('/', async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+    if (!settings) {
+      settings = await Settings.create({ companyName: 'The Contractum' });
+    }
+    res.json(settings);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching settings' });
+  }
+});
+
+// PUT update settings (Admin only)
+router.put('/', protect, adminOnly, async (req, res) => {
+  try {
+    const { companyName, companyLogo, companySeal } = req.body;
+    let settings = await Settings.findOne();
+    
+    if (settings) {
+      settings.companyName = companyName || settings.companyName;
+      settings.companyLogo = companyLogo !== undefined ? companyLogo : settings.companyLogo;
+      settings.companySeal = companySeal !== undefined ? companySeal : settings.companySeal;
+      settings.updatedBy = req.user?.name || req.user?.email || 'Admin';
+      await settings.save();
+    } else {
+      settings = await Settings.create({
+        companyName: companyName || 'The Contractum',
+        companyLogo: companyLogo || '',
+        companySeal: companySeal || '',
+        updatedBy: req.user?.name || req.user?.email || 'Admin'
+      });
+    }
+    res.json(settings);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating settings' });
+  }
+});
+
+module.exports = router;
