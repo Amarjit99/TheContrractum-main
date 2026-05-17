@@ -24,6 +24,7 @@ import AdminFounders from './pages/admin/AdminFounders';
 import AdminFormLinks from './pages/admin/AdminFormLinks';
 import AdminSubmissions from './pages/admin/AdminSubmissions';
 import AdminSurveys from './pages/admin/AdminSurveys';
+import AdminProfile from './pages/admin/AdminProfile';
 import AdminNews from './pages/admin/AdminNews';
 import AdminIdCards from './pages/admin/AdminIdCards';
 import AdminReferrals from './pages/admin/AdminReferrals';
@@ -202,6 +203,7 @@ export default function App() {
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/submissions" element={<AdminSubmissions />} />
                 <Route path="/admin/surveys" element={<AdminSurveys />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/news" element={<AdminNews />} />
                 <Route path="/admin/id-cards" element={<AdminIdCards />} />
                 <Route path="/admin/referrals" element={<AdminReferrals />} />

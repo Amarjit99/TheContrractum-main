@@ -334,7 +334,7 @@ export default function AdminLayout({ children }) {
                     <button 
                       onClick={() => {
                         setShowProfileMenu(false);
-                        navigate('/admin/dashboard');
+                        navigate('/admin/profile');
                       }}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
                     >
