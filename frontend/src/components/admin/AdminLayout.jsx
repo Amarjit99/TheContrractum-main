@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -322,31 +322,53 @@ export default function AdminLayout({ children }) {
 
               {/* Profile Dropdown */}
               {showProfileMenu && (
-                <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-5 py-4 border-b border-gray-50 bg-gray-50 flex flex-col items-center justify-center text-center">
-                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-12 h-12 rounded-full border-2 border-white shadow-sm mb-2" />
-                    <h3 className="font-bold text-gray-800 text-sm">{admin?.name || 'Admin'}</h3>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{admin?.role || 'Administrator'}</p>
+                <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/80">
+                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-bold text-gray-900 text-sm truncate">{admin?.name || 'Admin'}</span>
+                      <span className="text-xs text-gray-500 truncate">{admin?.email || 'admin@thecontractum.com'}</span>
+                    </div>
                   </div>
-                  <div className="p-2 space-y-1">
+                  <div className="p-2 space-y-0.5">
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/dashboard');
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
+                    >
+                      <User size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> My Profile
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/analytics');
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
+                    >
+                      <Activity size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Activity Log
+                    </button>
                     <button 
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/settings');
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
                     >
-                      <Settings size={16} /> Global Settings
+                      <Settings size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Global Settings
                     </button>
-                    <div className="h-[1px] bg-gray-100 my-1 mx-2"></div>
+                  </div>
+                  <div className="h-[1px] bg-gray-100 w-full"></div>
+                  <div className="p-2 bg-gray-50/30">
                     <button 
                       onClick={() => {
                         setShowProfileMenu(false);
                         handleLogout();
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl transition-colors font-semibold group"
                     >
-                      <X size={16} /> Logout Securely
+                      <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" /> Logout Securely
                     </button>
                   </div>
                 </div>
