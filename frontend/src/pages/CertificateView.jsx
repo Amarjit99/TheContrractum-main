@@ -3,11 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import { Award, CheckCircle, Download, Share2, ArrowLeft, X, FileText, ShieldCheck, Printer, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { THEME_COLORS } from '../constants/certificateConstants';
+import { generateCertificateCanvas } from './admin/AdminCertificates';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ── SHARED TEMPLATE COMPONENT ──
-function CertificateTemplate({ formData, selectedTheme, id }) {
+function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
   return (
     <div
       id={id}
@@ -31,7 +32,7 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
       {/* Top Logo / Branding */}
       <div className="text-center z-10 mb-6">
         <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
-        <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+        <div className="text-2xl font-black italic tracking-normal uppercase" style={{ color: selectedTheme.primary }}>
           The Contractum
         </div>
       </div>
@@ -81,10 +82,19 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
         </div>
 
         <div className="flex flex-col items-center">
-          <span className="text-[18px] font-serif font-bold italic text-gray-800">Amit Verma</span>
+          {formData?.issuerSignature || globalSettings?.authorizedSignature ? (
+            <img 
+              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`} 
+              alt="Signature" 
+              className="h-10 object-contain mb-1"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <span className="text-[18px] font-serif font-bold italic text-gray-800">{formData.issuedBy || 'The Contractum'}</span>
+          )}
           <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
-          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Authorized Signature</span>
-          <span className="text-[7px] font-bold text-gray-400 uppercase">Director • The Contractum</span>
+          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Issued By</span>
+          <span className="text-[7px] font-bold text-gray-400 uppercase">{formData?.issuerDesignation || globalSettings?.signatoryDesignation || 'Authorized Authority'}</span>
         </div>
       </div>
     </div>
@@ -94,8 +104,10 @@ function CertificateTemplate({ formData, selectedTheme, id }) {
 export default function CertificateView() {
   const { id } = useParams();
   const [cert, setCert] = useState(null);
+  const [globalSettings, setGlobalSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     fetchCertificate();
@@ -108,10 +120,33 @@ export default function CertificateView() {
       if (!res.ok) throw new Error('Certificate not found');
       const data = await res.json();
       setCert(data);
+
+      const settingsRes = await fetch(`${API}/api/settings`);
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        setGlobalSettings(settingsData);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const theme = THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0];
+      const canvas = await generateCertificateCanvas(cert, theme, globalSettings);
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.download = `Certificate_${cert.certificateId}.png`;
+      link.href = imgData;
+      link.click();
+    } catch (err) {
+      console.error('Download error:', err);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -154,21 +189,25 @@ export default function CertificateView() {
             <CertificateTemplate 
               formData={cert} 
               selectedTheme={THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0]} 
+              globalSettings={globalSettings}
               id="view-cert-canvas" 
             />
           </div>
         </div>
 
         <div className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-4">
-          <a 
-            href={`${API}${cert.fileUrl}`} 
-            download 
-            target="_blank" 
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+          <button 
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            <Download size={18} /> Download High-Res
-          </a>
+            {downloading ? (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <Download size={18} />
+            )}
+            Download High-Res
+          </button>
           <button 
             onClick={() => window.print()}
             className="flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-black transition-all shadow-lg"

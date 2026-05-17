@@ -36,6 +36,26 @@ export default function AdminAnalytics() {
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [scanLogs, setScanLogs] = useState([]);
+  const [loadingScanLogs, setLoadingScanLogs] = useState(true);
+
+  const fetchScanLogs = async () => {
+    setLoadingScanLogs(true);
+    try {
+      const res = await fetch(`${API}/api/certificates/logs`, {
+        headers: { Authorization: `Bearer ${admin?.token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setScanLogs(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch scan logs', err);
+    } finally {
+      setLoadingScanLogs(false);
+    }
+  };
+
   const fetchLogs = async () => {
     setLoadingLogs(true);
     try {
@@ -67,6 +87,7 @@ export default function AdminAnalytics() {
       .then(r => r.json()).then(setDetailedStats);
 
     fetchLogs();
+    fetchScanLogs();
   }, [admin]);
 
   const filteredLogs = logs.filter(log => 
@@ -328,12 +349,19 @@ export default function AdminAnalytics() {
                       log.action === 'Login' ? 'bg-purple-50 text-purple-600 border-purple-100' :
                       log.action === 'Logout' ? 'bg-amber-50 text-amber-600 border-amber-100' :
                       log.action === 'Export' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
+                      log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                      (log.action === 'Notification Sent' || log.action === 'Notify') ? 'bg-cyan-50 text-cyan-600 border-cyan-100' :
                       'bg-gray-100 text-gray-600 border-gray-200'
                     }`}>
                       {log.action}
                     </span>
                     {log.entity && log.entity !== 'Unknown' && log.entity !== 'System' && (
                       <span className="ml-2 text-[10px] font-bold text-gray-500 uppercase">{log.entity}</span>
+                    )}
+                    {(log.targetId || log.certificateId || log.employeeId) && (
+                      <span className="ml-2 font-mono text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
+                        {log.targetId || log.certificateId || log.employeeId}
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-xs text-gray-600 max-w-xs truncate">{log.details}</td>
@@ -343,6 +371,64 @@ export default function AdminAnalytics() {
           </table>
         </div>
       </div>
+
+      {/* Verification Activity Section (Ported from Certificates) */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+        <div className="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-[#f8fafc] gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl hidden sm:flex">
+              <ShieldAlert size={20} />
+            </div>
+            <div>
+              <h3 className="font-black text-gray-900 uppercase tracking-tight text-sm">Recent Certificate Verifications</h3>
+              <p className="text-xs text-gray-500 font-medium mt-0.5">Live feed of public certificate authenticity checks.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={fetchScanLogs}
+              className="p-2 border border-gray-200 text-gray-600 bg-white rounded-lg hover:bg-gray-50 transition-all shadow-sm flex-shrink-0"
+              title="Refresh Logs"
+            >
+              <RefreshCw size={16} className={loadingScanLogs ? 'animate-spin' : ''} />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
+                <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Recipient</th>
+                <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Cert ID</th>
+                <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">IP Address</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {loadingScanLogs ? (
+                <tr><td colSpan="4" className="text-center py-12 text-gray-400 italic">Synchronizing verification data...</td></tr>
+              ) : scanLogs.length === 0 ? (
+                <tr><td colSpan="4" className="text-center py-12 text-gray-400 italic">No verification records found.</td></tr>
+              ) : scanLogs.slice(0, 10).map(log => (
+                <tr key={log._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <p className="text-xs font-bold text-gray-800">{new Date(log.scannedAt).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-gray-500">{new Date(log.scannedAt).toLocaleTimeString()}</p>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-gray-800 uppercase">{log.employeeName || log.recipientName || 'Unknown'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-xs font-mono font-bold text-blue-600">{log.employeeId || log.certificateId || 'Unknown'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="font-mono text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {log.ipAddress || '127.0.0.1'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </AdminLayout>
   );
 }

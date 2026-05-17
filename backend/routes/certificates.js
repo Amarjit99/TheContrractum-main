@@ -109,9 +109,9 @@ router.get('/:id', protect, adminOnly, async (req, res) => {
 });
 
 // POST create certificate
-router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => {
+router.post('/', protect, adminOnly, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'issuerSignature', maxCount: 1 }]), async (req, res) => {
   try {
-    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil } = req.body;
+    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, issuerDesignation, status, validUntil } = req.body;
     
     // Check if ID already exists
     const existing = await Certificate.findOne({ certificateId });
@@ -119,7 +119,8 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
         return res.status(400).json({ message: 'Certificate ID already exists' });
     }
 
-    const fileUrl = req.file ? `/uploads/certificates/${req.file.filename}` : '';
+    const fileUrl = req.files && req.files['file'] ? `/uploads/certificates/${req.files['file'][0].filename}` : '';
+    const issuerSignatureUrl = req.files && req.files['issuerSignature'] ? `/uploads/certificates/${req.files['issuerSignature'][0].filename}` : '';
 
     const certificate = new Certificate({
       name,
@@ -134,6 +135,8 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
       designation,
       department,
       issuedBy: issuedBy || req.user?.name || 'The Contractum',
+      issuerDesignation,
+      issuerSignature: issuerSignatureUrl || req.body.issuerSignature,
       status: status || 'Issued',
       approvedBy: req.user?.name || '',
       validUntil
@@ -176,22 +179,34 @@ router.post('/', protect, adminOnly, upload.single('file'), async (req, res) => 
 });
 
 // PUT update certificate
-router.put('/:id', protect, adminOnly, upload.single('file'), async (req, res) => {
+router.put('/:id', protect, adminOnly, upload.fields([{ name: 'file', maxCount: 1 }, { name: 'issuerSignature', maxCount: 1 }]), async (req, res) => {
   try {
-    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil } = req.body;
-    const updateData = { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, status, validUntil };
+    const { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, issuerDesignation, status, validUntil } = req.body;
+    const updateData = { name, type, issueDate, certificateId, details, recipientEmail, recipientPhone, themeId, designation, department, issuedBy, issuerDesignation, status, validUntil };
 
     const oldCertificate = await Certificate.findById(req.params.id);
     if (!oldCertificate) return res.status(404).json({ message: 'Certificate not found' });
 
-    if (req.file) {
+    if (req.files && req.files['file']) {
       if (oldCertificate.fileUrl) {
         const fullOldPath = `.${oldCertificate.fileUrl}`;
         if (fs.existsSync(fullOldPath)) {
           fs.unlinkSync(fullOldPath);
         }
       }
-      updateData.fileUrl = `/uploads/certificates/${req.file.filename}`;
+      updateData.fileUrl = `/uploads/certificates/${req.files['file'][0].filename}`;
+    }
+
+    if (req.files && req.files['issuerSignature']) {
+      if (oldCertificate.issuerSignature) {
+        const fullOldPath = `.${oldCertificate.issuerSignature}`;
+        if (fs.existsSync(fullOldPath)) {
+          fs.unlinkSync(fullOldPath);
+        }
+      }
+      updateData.issuerSignature = `/uploads/certificates/${req.files['issuerSignature'][0].filename}`;
+    } else if (req.body.issuerSignature) {
+      updateData.issuerSignature = req.body.issuerSignature;
     }
 
     const updatedCertificate = await Certificate.findByIdAndUpdate(req.params.id, updateData, { new: true });

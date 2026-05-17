@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast';
 import { CATEGORIES, DEPARTMENTS_BY_CATEGORY, DESIGNATIONS_MAPPING, THEME_COLORS } from '../../constants/certificateConstants';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
+
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const TRANSLATIONS = {
@@ -103,7 +104,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         ) : (
           <>
             <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
-            <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+            <div className="text-2xl font-black italic tracking-normal uppercase" style={{ color: selectedTheme.primary }}>
               {globalSettings?.companyName || 'The Contractum'}
             </div>
           </>
@@ -158,10 +159,19 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
 
         {/* Signature / Issued By Section */}
         <div className="flex flex-col items-center">
-          <span className="text-[18px] font-serif font-bold italic text-gray-800">{formData.issuedBy || 'The Contractum'}</span>
+          {formData?.issuerSignature || globalSettings?.authorizedSignature ? (
+            <img 
+              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`} 
+              alt="Signature" 
+              className="h-10 object-contain mb-1"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <span className="text-[18px] font-serif font-bold italic text-gray-800">{formData.issuedBy || 'The Contractum'}</span>
+          )}
           <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Issued By</span>
-          <span className="text-[7px] font-bold text-gray-400 uppercase">Authorized Authority</span>
+          <span className="text-[7px] font-bold text-gray-400 uppercase">{formData?.issuerDesignation || globalSettings?.signatoryDesignation || 'Authorized Authority'}</span>
         </div>
       </div>
     </div>
@@ -170,7 +180,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
 
 
 // ── PURE CANVAS 2D GENERATOR (Pixel-Perfect Clone of HTML Template) ──
-async function generateCertificateCanvas(data, theme, globalSettings = null) {
+export async function generateCertificateCanvas(data, theme, globalSettings = null) {
   const W = 2400; // 800 * 3
   const H = 1740; // 580 * 3
   const canvas = document.createElement('canvas');
@@ -414,12 +424,13 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
   // Issued By / Authorized Signature
   ctx.textAlign = 'center';
 
-  // If signature image is uploaded in settings, render it; otherwise use italic text
-  if (globalSettings?.authorizedSignature) {
+  // If signature image is uploaded in settings or custom certificate, render it; otherwise use italic text
+  const signatureUrl = data?.issuerSignature || globalSettings?.authorizedSignature;
+  if (signatureUrl) {
     try {
       const sigImg = new Image();
       sigImg.crossOrigin = 'anonymous';
-      sigImg.src = globalSettings.authorizedSignature.startsWith('data:') ? globalSettings.authorizedSignature : `${API}${globalSettings.authorizedSignature}`;
+      sigImg.src = signatureUrl.startsWith('data:') ? signatureUrl : `${API}${signatureUrl}`;
       await new Promise(resolve => { sigImg.onload = resolve; sigImg.onerror = resolve; });
       const sigWidth = 240;
       const sigHeight = 60;
@@ -448,7 +459,7 @@ async function generateCertificateCanvas(data, theme, globalSettings = null) {
   ctx.fillText('ISSUED BY', W - 450, bottomY + 105);
   ctx.fillStyle = '#9ca3af';
   ctx.font = 'bold 21px Montserrat, sans-serif';
-  ctx.fillText(globalSettings?.signatoryDesignation || 'AUTHORIZED AUTHORITY', W - 450, bottomY + 140);
+  ctx.fillText(data?.issuerDesignation || globalSettings?.signatoryDesignation || 'AUTHORIZED AUTHORITY', W - 450, bottomY + 140);
 
   // Date of Issue
   ctx.textAlign = 'center';
@@ -490,7 +501,6 @@ export default function AdminCertificates() {
   const [filterMonth, setFilterMonth] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [scanLogs, setScanLogs] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
   const [globalSettings, setGlobalSettings] = useState({ companyName: 'The Contractum', companyLogo: '', companySeal: '', authorizedSignature: '', signatoryDesignation: 'Authorized Authority' });
   const [filterDepartment, setFilterDepartment] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -523,6 +533,8 @@ export default function AdminCertificates() {
     language: 'English',
     status: 'Pending',
     issuedBy: '',
+    issuerDesignation: '',
+    issuerSignature: '',
     file: null
   });
 
@@ -544,14 +556,6 @@ export default function AdminCertificates() {
         setScanLogs(Array.isArray(logs) ? logs : []);
       }
 
-      // Fetch Admin Activity Audit Logs
-      const auditRes = await fetch(`${API}/api/audit-logs`, {
-        headers: { Authorization: `Bearer ${admin?.token}` }
-      });
-      if (auditRes.ok) {
-        const auditData = await auditRes.json();
-        setAuditLogs(Array.isArray(auditData) ? auditData : []);
-      }
 
       // Fetch Global Settings
       const settingsRes = await fetch(`${API}/api/settings`);
@@ -627,6 +631,8 @@ export default function AdminCertificates() {
       themeId: 'modern',
       department: 'General',
       issuedBy: getAdminDisplayName(),
+      issuerDesignation: '',
+      issuerSignature: '',
       status: 'Pending',
       file: null
     });
@@ -964,7 +970,10 @@ export default function AdminCertificates() {
       department: cert.department || 'General',
       location: cert.location || 'India',
       language: cert.language || 'English',
-      status: cert.status || 'Pending'
+      status: cert.status || 'Pending',
+      issuedBy: cert.issuedBy || '',
+      issuerDesignation: cert.issuerDesignation || '',
+      issuerSignature: cert.issuerSignature || ''
     });
 
     setLoading(true);
@@ -1288,55 +1297,6 @@ export default function AdminCertificates() {
         </div>
       )}
 
-      {/* Admin Audit Logs Section */}
-      {auditLogs.length > 0 && (
-        <div className="mb-8 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
-            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
-              <FileText size={18} className="text-[#1e5cdc]" /> Administrator Activity Ledger
-            </h3>
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] font-bold text-[#1e5cdc] bg-blue-50 px-2 py-1 rounded-full border border-blue-100 uppercase tracking-tighter">Security Audit</span>
-            </div>
-          </div>
-          <div className="overflow-x-auto max-h-64 overflow-y-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 sticky top-0">
-                <tr>
-                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Time</th>
-                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Admin</th>
-                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
-                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Target ID</th>
-                  <th className="text-left px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Details</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {auditLogs.map(log => (
-                  <tr key={log._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3 text-xs font-medium text-gray-500">{new Date(log.createdAt).toLocaleString()}</td>
-                    <td className="px-6 py-3 text-xs font-bold text-gray-800 uppercase">
-                      {log.adminName}
-                      {log.adminRole && <span className="block text-[8px] text-blue-500 font-bold mt-0.5">{log.adminRole}</span>}
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border ${log.action === 'Create' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        log.action === 'Update' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                          log.action === 'Delete' ? 'bg-red-50 text-red-600 border-red-100' :
-                            log.action === 'Status Change' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
-                              'bg-gray-50 text-gray-600 border-gray-100'
-                        }`}>
-                        {log.action}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 text-xs font-mono font-bold text-blue-600">{log.targetId}</td>
-                    <td className="px-6 py-3 text-xs font-medium text-gray-500">{log.details}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar items-center justify-between">
@@ -1617,10 +1577,56 @@ export default function AdminCertificates() {
                         <input required type="date" value={formData.issueDate} onChange={e => setFormData({ ...formData, issueDate: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By</label>
-                        <input type="text" value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="The Contractum" />
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By Name</label>
+                        <select value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                          <option value="The Contractum">The Contractum</option>
+                          <option value="Amit Verma">Amit Verma</option>
+                          <option value="Super Admin">Super Admin</option>
+                          <option value="Admin">Admin</option>
+                          <option value="Director">Director</option>
+                          <option value="CEO">CEO</option>
+                        </select>
                       </div>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Issuer Designation</label>
+                        <select value={formData.issuerDesignation} onChange={e => setFormData({ ...formData, issuerDesignation: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                          <option value="">-- Default Global Setting --</option>
+                          <option value="Authorized Authority">Authorized Authority</option>
+                          <option value="Director">Director</option>
+                          <option value="CEO">CEO</option>
+                          <option value="HR Manager">HR Manager</option>
+                          <option value="Project Manager">Project Manager</option>
+                          <option value="Head of Department">Head of Department</option>
+                          <option value="Program Coordinator">Program Coordinator</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Custom Issuer Signature (Optional)</label>
+                        <input type="file" accept="image/*" onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setFormData({ ...formData, issuerSignature: reader.result });
+                            reader.readAsDataURL(file);
+                          }
+                        }} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] text-sm" />
+                        <p className="text-[10px] text-gray-400 mt-1 font-bold">Leave empty to use Default Global Signature.</p>
+                      </div>
+                    </div>
+                    {formData.issuerSignature ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-emerald-600 font-bold uppercase">Custom Signature Added:</span>
+                        <img src={formData.issuerSignature.startsWith('data:') ? formData.issuerSignature : `${API}${formData.issuerSignature}`} alt="Sig" className="h-6 object-contain" />
+                        <button type="button" onClick={() => setFormData({...formData, issuerSignature: ''})} className="text-[10px] text-red-500 hover:underline">Remove</button>
+                      </div>
+                    ) : globalSettings?.authorizedSignature ? (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase">Using Default Global Signature:</span>
+                        <img src={globalSettings.authorizedSignature.startsWith('data:') ? globalSettings.authorizedSignature : `${API}${globalSettings.authorizedSignature}`} alt="Default Sig" className="h-6 object-contain opacity-50 grayscale" />
+                      </div>
+                    ) : null}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Details / Project Description</label>
                       <textarea value={formData.details} onChange={e => setFormData({ ...formData, details: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={2} placeholder="Briefly describe achievement..." />
