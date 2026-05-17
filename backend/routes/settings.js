@@ -4,7 +4,7 @@ const Settings = require('../models/Settings');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
-// GET settings (Publicly accessible for templates)
+// GET settings (Publicly accessible - used by footer, templates, etc.)
 router.get('/', async (req, res) => {
   try {
     let settings = await Settings.findOne();
@@ -20,15 +20,23 @@ router.get('/', async (req, res) => {
 // PUT update settings (Admin only)
 router.put('/', protect, adminOnly, async (req, res) => {
   try {
-    const { companyName, companyLogo, companySeal, authorizedSignature, signatoryDesignation } = req.body;
+    const { companyName, companyLogo, companySeal, authorizedSignature, signatoryDesignation, socialLinks, contactDetails } = req.body;
     let settings = await Settings.findOne();
-    
+
     if (settings) {
-      settings.companyName = companyName || settings.companyName;
-      settings.companyLogo = companyLogo !== undefined ? companyLogo : settings.companyLogo;
-      settings.companySeal = companySeal !== undefined ? companySeal : settings.companySeal;
-      settings.authorizedSignature = authorizedSignature !== undefined ? authorizedSignature : settings.authorizedSignature;
-      settings.signatoryDesignation = signatoryDesignation !== undefined ? signatoryDesignation : settings.signatoryDesignation;
+      if (companyName) settings.companyName = companyName;
+      if (companyLogo !== undefined) settings.companyLogo = companyLogo;
+      if (companySeal !== undefined) settings.companySeal = companySeal;
+      if (authorizedSignature !== undefined) settings.authorizedSignature = authorizedSignature;
+      if (signatoryDesignation) settings.signatoryDesignation = signatoryDesignation;
+      if (socialLinks) {
+        const current = settings.socialLinks ? settings.socialLinks.toObject() : {};
+        settings.socialLinks = { ...current, ...socialLinks };
+      }
+      if (contactDetails) {
+        const current = settings.contactDetails ? settings.contactDetails.toObject() : {};
+        settings.contactDetails = { ...current, ...contactDetails };
+      }
       settings.updatedBy = req.user?.name || req.user?.email || 'Admin';
       await settings.save();
     } else {
@@ -38,12 +46,14 @@ router.put('/', protect, adminOnly, async (req, res) => {
         companySeal: companySeal || '',
         authorizedSignature: authorizedSignature || '',
         signatoryDesignation: signatoryDesignation || 'Authorized Authority',
+        socialLinks: socialLinks || {},
+        contactDetails: contactDetails || {},
         updatedBy: req.user?.name || req.user?.email || 'Admin'
       });
     }
     res.json(settings);
   } catch (err) {
-    res.status(500).json({ message: 'Error updating settings' });
+    res.status(500).json({ message: 'Error updating settings', error: err.message });
   }
 });
 
