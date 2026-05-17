@@ -36,6 +36,7 @@ import AdminEvents from './pages/admin/AdminEvents';
 import AdminEventRegistrations from './pages/admin/AdminEventRegistrations';
 import VerifyCertificate from './pages/VerifyCertificate';
 import ContractEditor from './pages/admin/ContractEditor';
+import AdminContractTemplates from './pages/admin/AdminContractTemplates';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import AdminNotifications from './pages/admin/AdminNotifications';
@@ -217,6 +218,7 @@ export default function App() {
                 <Route path="/admin/tasks" element={<AdminTasks />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
+                <Route path="/admin/contracts/templates" element={<AdminContractTemplates />} />
 
                 {/* ///////////////////////// Company Routes///////////////////////// */}
                 <Route path="/company/about-us" element={<AboutUs />} />
