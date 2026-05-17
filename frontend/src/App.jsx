@@ -25,6 +25,7 @@ import AdminFormLinks from './pages/admin/AdminFormLinks';
 import AdminSubmissions from './pages/admin/AdminSubmissions';
 import AdminSurveys from './pages/admin/AdminSurveys';
 import AdminProfile from './pages/admin/AdminProfile';
+import AdminTasks from './pages/admin/AdminTasks';
 import AdminNews from './pages/admin/AdminNews';
 import AdminIdCards from './pages/admin/AdminIdCards';
 import AdminReferrals from './pages/admin/AdminReferrals';
@@ -213,6 +214,7 @@ export default function App() {
                 <Route path="/admin/certificates" element={<AdminCertificates />} />
                 <Route path="/admin/events" element={<AdminEvents />} />
                 <Route path="/admin/event-registrations" element={<AdminEventRegistrations />} />
+                <Route path="/admin/tasks" element={<AdminTasks />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
 
