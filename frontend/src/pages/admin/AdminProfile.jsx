@@ -41,7 +41,8 @@ export default function AdminProfile() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+      const token = adminUser?.token;
       
       const payload = {
         name: formData.name,

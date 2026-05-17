@@ -16,7 +16,7 @@ export default function AdminSettings() {
     authorizedSignature: '',
     signatoryDesignation: 'Authorized Authority',
     socialLinks: {
-      linkedin: 'https://www.linkedin.com/company/contractum-integral-solution-pvt-ltd/posts/?feedView=all',
+      linkedin: '',
       twitter: '',
       facebook: '',
       youtube: ''
@@ -44,7 +44,7 @@ export default function AdminSettings() {
           authorizedSignature: data.authorizedSignature || '',
           signatoryDesignation: data.signatoryDesignation || 'Authorized Authority',
           socialLinks: {
-            linkedin: data.socialLinks?.linkedin || 'https://www.linkedin.com/company/contractum-integral-solution-pvt-ltd/posts/?feedView=all',
+            linkedin: data.socialLinks?.linkedin || '',
             twitter: data.socialLinks?.twitter || '',
             facebook: data.socialLinks?.facebook || '',
             youtube: data.socialLinks?.youtube || ''
@@ -66,7 +66,8 @@ export default function AdminSettings() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+      const token = adminUser?.token;
       const res = await fetch(`${API}/api/settings`, {
         method: 'PUT',
         headers: {
