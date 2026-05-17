@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
@@ -196,7 +196,6 @@ export default function AdminContracts() {
     return matchSearch && matchFilter;
   });
 
-  const canApproveReject = (c) => c.status?.startsWith('Pending_') && c.status !== 'Pending_Signature';
 
   const stats = [
     { label: 'Total Contracts',    count: contracts.length,                                         icon: <FileText className="text-blue-500" size={22} />,    bg: 'bg-blue-50',    border: 'border-blue-100' },
