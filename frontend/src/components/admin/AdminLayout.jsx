@@ -45,6 +45,7 @@ export default function AdminLayout({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const fetchUnreadCount = async () => {
     try {
@@ -305,11 +306,51 @@ export default function AdminLayout({ children }) {
               )}
             </div>
 
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer">
-              <img src={`https://ui-avatars.com/api/?name=${admin?.name}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-              <div className="hidden sm:flex items-center gap-1 font-medium text-gray-700 text-sm">
-                Admin <ChevronDown size={14} className="text-gray-400" />
+            <div className="relative">
+              <div 
+                className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                onClick={() => {
+                  setShowProfileMenu(!showProfileMenu);
+                  setShowNotifications(false); // Close notifications if open
+                }}
+              >
+                <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
+                <div className="hidden sm:flex items-center gap-1 font-medium text-gray-700 text-sm">
+                  {admin?.name || 'Admin'} <ChevronDown size={14} className={`text-gray-400 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+                </div>
               </div>
+
+              {/* Profile Dropdown */}
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-5 py-4 border-b border-gray-50 bg-gray-50 flex flex-col items-center justify-center text-center">
+                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-12 h-12 rounded-full border-2 border-white shadow-sm mb-2" />
+                    <h3 className="font-bold text-gray-800 text-sm">{admin?.name || 'Admin'}</h3>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{admin?.role || 'Administrator'}</p>
+                  </div>
+                  <div className="p-2 space-y-1">
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/settings');
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                    >
+                      <Settings size={16} /> Global Settings
+                    </button>
+                    <div className="h-[1px] bg-gray-100 my-1 mx-2"></div>
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                    >
+                      <X size={16} /> Logout Securely
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
