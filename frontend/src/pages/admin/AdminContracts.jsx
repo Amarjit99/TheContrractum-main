@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
   FileText, Plus, Search, CheckCircle, Clock, XCircle, 
   Send, Eye, ArrowRight, User as UserIcon, Calendar, ClipboardList,
-  Trash2, LayoutTemplate, RefreshCw, TrendingUp, Shield, FilePlus2
+  Trash2, LayoutTemplate, RefreshCw, TrendingUp, Shield, FilePlus2,
+  Mail, Download, AlertTriangle, X, Users, ChevronDown
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -33,29 +36,58 @@ export default function AdminContracts() {
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState(null);
+  const [sendingEmail, setSendingEmail] = useState(null);
+  const [expiryAlerts, setExpiryAlerts] = useState([]);
+  const [showExpiry, setShowExpiry] = useState(true);
+  // Bulk Generate State
+  const [showBulk, setShowBulk] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [bulkForm, setBulkForm] = useState({ templateId: '', employeeIds: [], validFrom: '', validUntil: '', type: 'Employee' });
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  const token = localStorage.getItem('adminToken') || admin?.token;
+  const headers = { Authorization: `Bearer ${token}` };
+  const jsonHeaders = { ...headers, 'Content-Type': 'application/json' };
 
   const fetchContracts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/contracts`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` }
-      });
+      const res = await fetch(`${API}/api/contracts`, { headers });
       const data = await res.json();
       if (Array.isArray(data)) setContracts(data);
     } catch (err) {
-      console.error('Failed to fetch contracts:', err);
       toast.error('Failed to load contracts');
     }
     setLoading(false);
   };
 
-  useEffect(() => { fetchContracts(); }, []);
+  const fetchExpiryAlerts = async () => {
+    try {
+      const res = await fetch(`${API}/api/contracts/expiry-alerts?days=30`, { headers });
+      const data = await res.json();
+      if (data.expiring) setExpiryAlerts(data.expiring);
+    } catch {}
+  };
+
+  const fetchTemplatesAndUsers = async () => {
+    try {
+      const [tRes, uRes] = await Promise.all([
+        fetch(`${API}/api/contracts/templates`, { headers }),
+        fetch(`${API}/api/users?t=${Date.now()}`, { headers, cache: 'no-cache' })
+      ]);
+      const [tData, uData] = await Promise.all([tRes.json(), uRes.json()]);
+      if (Array.isArray(tData)) setTemplates(tData);
+      if (Array.isArray(uData)) setAllUsers(uData);
+    } catch {}
+  };
+
+  useEffect(() => { fetchContracts(); fetchExpiryAlerts(); }, []);
 
   const handleApprove = async (id) => {
     try {
       const res = await fetch(`${API}/api/contracts/${id}/approve`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` },
+        method: 'PUT', headers: jsonHeaders,
         body: JSON.stringify({ comments: 'Approved' })
       });
       const data = await res.json();
@@ -65,15 +97,79 @@ export default function AdminContracts() {
   };
 
   const handleReject = async (id) => {
-    if (!window.confirm('Are you sure you want to reject this contract?')) return;
+    if (!window.confirm('Reject this contract?')) return;
     try {
       const res = await fetch(`${API}/api/contracts/${id}/reject`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` },
+        method: 'PUT', headers: jsonHeaders,
         body: JSON.stringify({ comments: 'Rejected by admin' })
       });
       if (res.ok) { toast.success('Contract rejected'); fetchContracts(); }
     } catch { toast.error('Failed to reject'); }
+  };
+
+  const handleSendEmail = async (c) => {
+    if (!window.confirm(`Send contract "${c.title}" to ${c.employeeId?.email}?`)) return;
+    setSendingEmail(c._id);
+    try {
+      const res = await fetch(`${API}/api/contracts/${c._id}/send-email`, { method: 'POST', headers: jsonHeaders });
+      const data = await res.json();
+      if (res.ok) toast.success(data.message);
+      else toast.error(data.message || 'Email failed');
+    } catch { toast.error('Failed to send email'); }
+    setSendingEmail(null);
+  };
+
+  const handleDownloadPDF = async (c) => {
+    const toastId = toast.loading('Generating PDF…');
+    try {
+      const div = document.createElement('div');
+      div.style.cssText = 'width:794px;padding:40px;font-family:Georgia,serif;background:white;position:fixed;left:-9999px;top:0;';
+      div.innerHTML = c.content || '<p>No content</p>';
+      document.body.appendChild(div);
+      const canvas = await html2canvas(div, { scale: 2, useCORS: true, logging: false });
+      document.body.removeChild(div);
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let y = 0;
+      while (y < imgHeight) {
+        if (y > 0) pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, -y, imgWidth, imgHeight);
+        y += 297;
+      }
+      pdf.save(`${(c.title || 'Contract').replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      toast.success('PDF downloaded!', { id: toastId });
+    } catch (err) {
+      toast.error('PDF generation failed', { id: toastId });
+    }
+  };
+
+  const handleBulkGenerate = async () => {
+    if (!bulkForm.templateId || !bulkForm.employeeIds.length) {
+      toast.error('Select a template and at least one employee'); return;
+    }
+    setBulkLoading(true);
+    try {
+      const res = await fetch(`${API}/api/contracts/bulk-generate`, {
+        method: 'POST', headers: jsonHeaders, body: JSON.stringify(bulkForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message); setShowBulk(false);
+        setBulkForm({ templateId: '', employeeIds: [], validFrom: '', validUntil: '', type: 'Employee' });
+        fetchContracts();
+      } else toast.error(data.message || 'Bulk generation failed');
+    } catch { toast.error('Bulk generation failed'); }
+    setBulkLoading(false);
+  };
+
+  const toggleEmployee = (id) => {
+    setBulkForm(prev => ({
+      ...prev,
+      employeeIds: prev.employeeIds.includes(id)
+        ? prev.employeeIds.filter(e => e !== id)
+        : [...prev.employeeIds, id]
+    }));
   };
 
   const handleDelete = async (id, title) => {
@@ -91,14 +187,16 @@ export default function AdminContracts() {
   };
 
   const filteredContracts = contracts.filter(c => {
-    const matchSearch = 
+    const empName = c.employeeId?.name || `${c.employeeId?.firstName || ''} ${c.employeeId?.lastName || ''}`.trim();
+    const matchSearch =
       (c.title || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.employeeId?.firstName || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.employeeId?.lastName || '').toLowerCase().includes(search.toLowerCase()) ||
+      empName.toLowerCase().includes(search.toLowerCase()) ||
       (c.type || '').toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'All' || c.status === filter;
     return matchSearch && matchFilter;
   });
+
+  const canApproveReject = (c) => c.status?.startsWith('Pending_') && c.status !== 'Pending_Signature';
 
   const stats = [
     { label: 'Total Contracts',    count: contracts.length,                                         icon: <FileText className="text-blue-500" size={22} />,    bg: 'bg-blue-50',    border: 'border-blue-100' },
@@ -125,6 +223,90 @@ export default function AdminContracts() {
 
   return (
     <AdminLayout>
+      {/* Expiry Alerts Banner */}
+      {showExpiry && expiryAlerts.length > 0 && (
+        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+          <AlertTriangle size={20} className="text-amber-500 shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-amber-800">⚠️ {expiryAlerts.length} contract{expiryAlerts.length > 1 ? 's' : ''} expiring within 30 days</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {expiryAlerts.map(c => (
+                <span key={c._id} className="text-[11px] bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-semibold border border-amber-200">
+                  {c.title} – {new Date(c.validUntil).toLocaleDateString('en-IN', {day:'2-digit',month:'short'})}
+                </span>
+              ))}
+            </div>
+          </div>
+          <button onClick={() => setShowExpiry(false)} className="text-amber-400 hover:text-amber-600"><X size={16} /></button>
+        </div>
+      )}
+
+      {/* Bulk Generate Modal */}
+      {showBulk && (
+        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+              <div>
+                <h2 className="text-lg font-black text-gray-900">Bulk Generate Contracts</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Generate draft contracts for multiple employees at once</p>
+              </div>
+              <button onClick={() => setShowBulk(false)} className="p-2 hover:bg-gray-100 rounded-xl"><X size={18} /></button>
+            </div>
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div>
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Template *</label>
+                <select value={bulkForm.templateId} onChange={e => setBulkForm({...bulkForm, templateId: e.target.value})}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-700 focus:outline-none">
+                  <option value="">Choose template…</option>
+                  {templates.map(t => <option key={t._id} value={t._id}>{t.name} ({t.type})</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Valid From</label>
+                  <input type="date" value={bulkForm.validFrom} onChange={e => setBulkForm({...bulkForm, validFrom: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Valid Until</label>
+                  <input type="date" value={bulkForm.validUntil} onChange={e => setBulkForm({...bulkForm, validUntil: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Employees * ({bulkForm.employeeIds.length} selected)</label>
+                <div className="max-h-48 overflow-y-auto space-y-1.5 border border-gray-100 rounded-xl p-3 bg-gray-50">
+                  {allUsers.length === 0 ? (
+                    <p className="text-xs text-gray-400 text-center py-4">No employees loaded</p>
+                  ) : allUsers.map(u => {
+                    const name = u.name || `${u.firstName||''} ${u.lastName||''}`.trim();
+                    const checked = bulkForm.employeeIds.includes(u._id);
+                    return (
+                      <label key={u._id} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer ${checked ? 'bg-blue-50 border border-blue-100' : 'hover:bg-white'}`}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleEmployee(u._id)} />
+                        <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[11px] font-bold shrink-0">{name[0]?.toUpperCase()}</div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-gray-800 truncate">{name}</p>
+                          <p className="text-[10px] text-gray-400">{u.jobTitle || 'Employee'} • {u.email}</p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 px-6 py-5 border-t border-gray-100 bg-gray-50/50 rounded-b-3xl">
+              <button onClick={() => setShowBulk(false)} className="flex-1 py-3 text-sm font-bold border border-gray-200 rounded-xl text-gray-600">Cancel</button>
+              <button onClick={handleBulkGenerate} disabled={bulkLoading}
+                className="flex-[2] py-3 text-sm font-bold bg-[#1e5cdc] text-white rounded-xl disabled:opacity-50 flex items-center justify-center gap-2">
+                {bulkLoading ? <RefreshCw size={15} className="animate-spin" /> : <Users size={15} />}
+                {bulkLoading ? 'Generating…' : `Generate ${bulkForm.employeeIds.length || ''} Contracts`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Page Header ── */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
@@ -137,12 +319,18 @@ export default function AdminContracts() {
               Lifecycle tracking · Multi-stage approvals · Digital signatures
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => navigate('/admin/contracts/templates')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-all shadow-sm"
             >
               <LayoutTemplate size={17} /> Templates
+            </button>
+            <button
+              onClick={() => { setShowBulk(true); fetchTemplatesAndUsers(); }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all shadow-sm"
+            >
+              <Users size={17} /> Bulk Generate
             </button>
             <button
               onClick={() => navigate('/admin/contracts/create')}
@@ -311,36 +499,34 @@ export default function AdminContracts() {
                         <div className="flex items-center justify-end gap-1">
                           {canApproveReject(c) && (
                             <>
-                              <button
-                                onClick={() => handleApprove(c._id)}
-                                title="Approve"
-                                className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                              >
+                              <button onClick={() => handleApprove(c._id)} title="Approve"
+                                className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                                 <CheckCircle size={17} />
                               </button>
-                              <button
-                                onClick={() => handleReject(c._id)}
-                                title="Reject"
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                              >
+                              <button onClick={() => handleReject(c._id)} title="Reject"
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                                 <XCircle size={17} />
                               </button>
                             </>
                           )}
-                          <button
-                            onClick={() => navigate(`/admin/contracts/view/${c._id}`)}
-                            title="View / Edit"
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
+                          {/* Download PDF */}
+                          <button onClick={() => handleDownloadPDF(c)} title="Download PDF"
+                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                            <Download size={17} />
+                          </button>
+                          {/* Send Email */}
+                          <button onClick={() => handleSendEmail(c)} title="Email to Employee"
+                            disabled={sendingEmail === c._id}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-40">
+                            {sendingEmail === c._id ? <RefreshCw size={17} className="animate-spin" /> : <Mail size={17} />}
+                          </button>
+                          <button onClick={() => navigate(`/admin/contracts/view/${c._id}`)} title="View / Edit"
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <Eye size={17} />
                           </button>
                           {(c.status === 'Draft' || c.status === 'Rejected') && (
-                            <button
-                              onClick={() => handleDelete(c._id, c.title)}
-                              disabled={deleting === c._id}
-                              title="Delete"
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40"
-                            >
+                            <button onClick={() => handleDelete(c._id, c.title)} disabled={deleting === c._id}
+                              title="Delete" className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40">
                               <Trash2 size={17} />
                             </button>
                           )}

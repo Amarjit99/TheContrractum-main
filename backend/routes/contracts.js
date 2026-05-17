@@ -639,5 +639,148 @@ router.delete('/:id', protect, adminOnly, async (req, res) => {
     }
 });
 
-module.exports = router;
 
+// ── Email a contract to the employee ────────────────────────────
+router.post('/:id/send-email', protect, adminOnly, async (req, res) => {
+    try {
+        const nodemailer = require('nodemailer');
+        const contract = await Contract.findById(req.params.id)
+            .populate('employeeId', 'firstName lastName email name');
+        if (!contract) return res.status(404).json({ message: 'Contract not found' });
+
+        const employee = contract.employeeId;
+        const toEmail = employee?.email;
+        if (!toEmail) return res.status(400).json({ message: 'Employee email not found' });
+
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE || 'gmail',
+            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+        });
+
+        const employeeName = employee.name || `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Employee';
+
+        await transporter.sendMail({
+            from: `"The Contractum" <${process.env.EMAIL_USER}>`,
+            to: toEmail,
+            subject: `Your Contract: ${contract.title}`,
+            html: `
+<div style="font-family:Arial,sans-serif;max-width:650px;margin:0 auto;background:#f8fafc;padding:32px;border-radius:16px;">
+  <div style="background:#1e5cdc;color:white;padding:24px 32px;border-radius:12px 12px 0 0;margin:-32px -32px 32px;">
+    <h1 style="margin:0;font-size:20px;">The Contractum</h1>
+    <p style="margin:4px 0 0;opacity:0.8;font-size:13px;">Official Contract Notification</p>
+  </div>
+  <p style="font-size:16px;">Dear <strong>${employeeName}</strong>,</p>
+  <p>Please find your contract document below. Review it carefully and contact HR if you have any questions.</p>
+  <div style="background:white;border-radius:12px;padding:24px;margin:20px 0;border:1px solid #e5e7eb;">
+    <h2 style="color:#1e5cdc;font-size:16px;margin:0 0 8px;">${contract.title}</h2>
+    <p style="color:#6b7280;font-size:13px;margin:0;">Type: ${contract.type} | Status: ${contract.status}</p>
+  </div>
+  <div style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin:20px 0;line-height:1.6;">
+    ${contract.content}
+  </div>
+  <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:32px;">
+    This is an automated email from The Contractum system. Please do not reply to this email.
+  </p>
+</div>`,
+        });
+
+        // Log the action
+        contract.history = contract.history || [];
+        contract.history.push({ action: 'Email Sent', by: req.user._id, timestamp: new Date(), comments: `Email sent to ${toEmail}` });
+        await contract.save();
+
+        res.json({ message: `Contract successfully emailed to ${toEmail}` });
+    } catch (err) {
+        console.error('Email error:', err);
+        res.status(500).json({ message: 'Failed to send email', error: err.message });
+    }
+});
+
+// ── Bulk Generate contracts ──────────────────────────────────────
+router.post('/bulk-generate', protect, adminOnly, async (req, res) => {
+    try {
+        const { templateId, employeeIds, validFrom, validUntil, type } = req.body;
+        if (!templateId || !employeeIds?.length) {
+            return res.status(400).json({ message: 'Template and at least one employee are required' });
+        }
+
+        const template = await ContractTemplate.findById(templateId);
+        if (!template) return res.status(404).json({ message: 'Template not found' });
+
+        const User = require('../models/User');
+        const employees = await User.find({ _id: { $in: employeeIds } })
+            .select('name firstName lastName email jobTitle department');
+
+        const created = [];
+        for (const emp of employees) {
+            const empName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim();
+            let content = template.content;
+            const replacements = {
+                '{{employee_name}}': empName,
+                '{{position}}': emp.jobTitle || 'Employee',
+                '{{department}}': emp.department || 'General',
+                '{{company_name}}': 'The Contractum Private Limited',
+                '{{company_address}}': 'India',
+                '{{start_date}}': validFrom ? new Date(validFrom).toLocaleDateString('en-IN', { year:'numeric',month:'long',day:'numeric'}) : '___',
+                '{{end_date}}': validUntil ? new Date(validUntil).toLocaleDateString('en-IN', { year:'numeric',month:'long',day:'numeric'}) : '___',
+                '{{salary}}': '___',
+                '{{employee_address}}': '___',
+                '{{company_city}}': 'India',
+            };
+            Object.entries(replacements).forEach(([k, v]) => {
+                content = content.replace(new RegExp(k.replace(/[{}]/g, '\\$&'), 'g'), v);
+            });
+
+            const contractData = {
+                title: `${template.name} – ${empName}`,
+                type: type || template.type || 'Employee',
+                content,
+                employeeId: emp._id,
+                createdBy: req.user._id,
+                status: 'Draft',
+            };
+            if (validFrom) contractData.validFrom = validFrom;
+            if (validUntil) contractData.validUntil = validUntil;
+
+            const contract = await Contract.create(contractData);
+            created.push(contract._id);
+        }
+
+        res.status(201).json({ message: `${created.length} contracts created successfully`, contractIds: created });
+    } catch (err) {
+        res.status(500).json({ message: 'Bulk generation failed', error: err.message });
+    }
+});
+
+// ── Expiry alerts ────────────────────────────────────────────────
+router.get('/expiry-alerts', protect, adminOnly, async (req, res) => {
+    try {
+        const days = parseInt(req.query.days) || 30;
+        const now = new Date();
+        const threshold = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+
+        const expiring = await Contract.find({
+            status: 'Active',
+            validUntil: { $gte: now, $lte: threshold }
+        }).populate('employeeId', 'name firstName lastName email').sort({ validUntil: 1 });
+
+        const expired = await Contract.find({
+            status: { $ne: 'Expired' },
+            validUntil: { $lt: now }
+        }).populate('employeeId', 'name firstName lastName email');
+
+        // Auto-mark expired ones
+        if (expired.length > 0) {
+            await Contract.updateMany(
+                { _id: { $in: expired.map(c => c._id) } },
+                { $set: { status: 'Expired' } }
+            );
+        }
+
+        res.json({ expiring, expiredCount: expired.length, days });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch expiry data', error: err.message });
+    }
+});
+
+module.exports = router;

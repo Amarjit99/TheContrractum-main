@@ -4,7 +4,7 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
   ArrowLeft, Save, Send, User as UserIcon, Calendar,
   FileText, ClipboardList, Info, Eye, EyeOff, RefreshCw,
-  CheckCircle, LayoutTemplate, ChevronDown
+  CheckCircle, LayoutTemplate, ChevronDown, Upload
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -112,6 +112,23 @@ export default function ContractEditor() {
       newContent = newContent.replace(new RegExp(key, 'g'), replacements[key] || '');
     });
     return newContent;
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      let loadedContent = event.target.result;
+      if (formData.employeeId) {
+        loadedContent = replacePlaceholders(loadedContent, formData.employeeId);
+      }
+      setFormData(prev => ({ ...prev, content: loadedContent }));
+      toast.success('Custom contract file loaded successfully!');
+    };
+    reader.onerror = () => toast.error('Failed to read file');
+    reader.readAsText(file);
+    e.target.value = null; // Reset input
   };
 
   const applyTemplate = (templateId) => {
@@ -274,9 +291,17 @@ export default function ContractEditor() {
 
               {/* Content / Preview */}
               <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
-                  Contract Content <span className="text-red-400">*</span>
-                  {!preview && <span className="text-blue-400 font-medium normal-case tracking-normal ml-2">(HTML supported)</span>}
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+                  <span>
+                    Contract Content <span className="text-red-400">*</span>
+                    {!preview && <span className="text-blue-400 font-medium normal-case tracking-normal ml-2">(HTML supported)</span>}
+                  </span>
+                  {!preview && (
+                    <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
+                      <Upload size={14} /> Upload Custom File
+                      <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
+                    </label>
+                  )}
                 </label>
                 {preview ? (
                   <div

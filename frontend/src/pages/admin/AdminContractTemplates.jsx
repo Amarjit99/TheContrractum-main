@@ -3,7 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
   LayoutTemplate, Plus, Search, Pencil, Trash2, Eye, X, Save,
-  CheckCircle, RefreshCw, Tag, AlignLeft, ArrowLeft
+  CheckCircle, RefreshCw, Tag, AlignLeft, ArrowLeft, Upload
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -50,6 +50,19 @@ export default function AdminContractTemplates() {
   useEffect(() => { fetchTemplates(); }, []);
 
   const openCreate = () => { setForm(EMPTY); setModal('create'); };
+  
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setForm(prev => ({ ...prev, content: event.target.result }));
+      toast.success('Template file loaded successfully!');
+    };
+    reader.onerror = () => toast.error('Failed to read file');
+    reader.readAsText(file);
+    e.target.value = null; // Reset input
+  };
   const openEdit = (t) => { setSelected(t); setForm({ name: t.name, description: t.description || '', type: t.type, content: t.content, isActive: t.isActive }); setModal('edit'); };
   const openPreview = (t) => { setSelected(t); setModal('preview'); };
 
@@ -157,8 +170,12 @@ export default function AdminContractTemplates() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
-                Template Content * <span className="text-blue-500 font-medium normal-case tracking-normal ml-1">(HTML supported · use {'{{employee_name}}'}, {'{{company_name}}'} as placeholders)</span>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+                <span>Template Content * <span className="text-blue-500 font-medium normal-case tracking-normal ml-1">(HTML supported)</span></span>
+                <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
+                  <Upload size={14} /> Upload HTML/TXT
+                  <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
+                </label>
               </label>
               <textarea
                 rows={20}
