@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { User, Mail, Shield, Calendar, Phone, Save, KeyRound, Briefcase } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
+import AdminLayout from '../../components/admin/AdminLayout';
 
 export default function AdminProfile() {
   const { admin, login } = useAdminAuth();
@@ -81,10 +82,11 @@ export default function AdminProfile() {
   };
 
   return (
-    <div className="p-4 lg:p-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <Toaster position="top-right" />
-      <div className="flex justify-between items-center mb-8">
-        <div>
+    <AdminLayout>
+      <div className="p-4 lg:p-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <Toaster position="top-right" />
+        <div className="flex justify-between items-center mb-8">
+          <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">My Profile</h1>
           <p className="text-gray-500 mt-1">Manage your administrative account and security settings.</p>
         </div>
@@ -234,5 +236,6 @@ export default function AdminProfile() {
         </div>
       </div>
     </div>
+    </AdminLayout>
   );
 }
