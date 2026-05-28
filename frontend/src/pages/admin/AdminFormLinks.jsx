@@ -75,7 +75,7 @@ export default function AdminFormLinks() {
   }, [admin]);
 
   const handleCopy = (id, path) => {
-    const fullUrl = `${window.location.origin}/#${path}`;
+    const fullUrl = `${window.location.origin}${path}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -228,7 +228,7 @@ export default function AdminFormLinks() {
                       {copiedId === form.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
                     </button>
                     <a 
-                      href={`/#${form.path}`}
+                      href={`${form.path}`}
                       target="_blank"
                       rel="noreferrer"
                       className="p-1.5 bg-gray-50 text-gray-500 hover:text-[#1e5cdc] rounded-lg transition-colors border border-transparent hover:border-blue-100"

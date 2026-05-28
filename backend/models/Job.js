@@ -16,6 +16,9 @@ const jobSchema = new mongoose.Schema({
   experience: { type: String, default: '' },
   salary: { type: String, default: '' },
   benefits: { type: [String], default: [] },
+  startDate: { type: String, default: '' },
+  endDate: { type: String, default: '' },
+  jobId: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Job', jobSchema);

@@ -684,7 +684,10 @@ export default function CaseStudyDetails() {
               <p className="text-green-100 mb-6">
                 Let's discuss how we can deliver transformative results for your organization.
               </p>
-              <button className="w-full bg-white text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition-all shadow-lg">
+              <button 
+                onClick={() => navigate("/contact/touch")}
+                className="w-full bg-white text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition-all shadow-lg"
+              >
                 Start Your Project
               </button>
             </div>

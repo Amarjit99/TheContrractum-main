@@ -289,7 +289,10 @@ export default function CompletedProjectDetails() {
               <p className="text-purple-100 mb-6">
                 Let's discuss how we can deliver similar results for your organization.
               </p>
-              <button className="w-full bg-white text-purple-600 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-all shadow-lg">
+              <button 
+                onClick={() => navigate("/contact/touch")}
+                className="w-full bg-white text-purple-600 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-all shadow-lg"
+              >
                 Start Your Project
               </button>
             </div>

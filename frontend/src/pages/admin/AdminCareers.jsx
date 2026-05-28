@@ -7,10 +7,14 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 
 
-const TECH_SKILLS = [
+const DEFAULT_TECH_SKILLS = [
   'React.js', 'Node.js', 'Python', 'MongoDB', 'AWS / Cloud',
   'Docker', 'Machine Learning', 'JavaScript', 'TypeScript', 'SQL / PostgreSQL',
   'REST APIs', 'Git & CI/CD', 'Kubernetes', 'Figma / UI Design', 'Cybersecurity',
+];
+
+const DEFAULT_DEPARTMENTS = [
+  'Engineering', 'Design', 'Data Science', 'Marketing', 'YTDP', 'Software Developer', 'Operations'
 ];
 
 const emptyBio = {
@@ -22,6 +26,151 @@ const emptyBio = {
   benefits: '',
 };
 
+const JOB_CATEGORIES = [
+  "All",
+  "Information Technology (IT)",
+  "Human Resources (HR)",
+  "Marketing & Branding",
+  "Sales & Business Development",
+  "Operations & Administration",
+  "Finance & Accounts",
+  "Customer Support & Services",
+  "Legal & Compliance",
+  "Content & Media",
+  "Event Management",
+  "Research & Consulting",
+  "Training & Development",
+  "Internship Programs",
+  "Freelance & Contract-Based Roles"
+];
+
+const getJobCategory = (job) => {
+  const title = (job.title || '').toLowerCase();
+  const dept = (job.department || '').toLowerCase();
+  const type = (job.type || '').toLowerCase();
+
+  // 1. Internship Programs
+  if (type === 'internship' || dept.includes('intern') || title.includes('intern')) {
+    return "Internship Programs";
+  }
+
+  // 2. Freelance & Contract-Based Roles
+  if (type === 'contract' || type === 'freelance' || title.includes('freelance') || title.includes('contract') || dept.includes('freelance') || dept.includes('contract')) {
+    return "Freelance & Contract-Based Roles";
+  }
+
+  // 3. Information Technology (IT)
+  if (
+    dept === 'information technology (it)' || dept === 'it' || dept === 'engineering' || dept === 'software developer' || dept === 'data science' || dept === 'design' ||
+    title.includes('developer') || title.includes('engineer') || title.includes('designer') || title.includes('ux') || title.includes('ui') || title.includes('administrator') || title.includes('analyst') || title.includes('programmer') || title.includes('support')
+  ) {
+    if (title.includes('support') && (title.includes('technical') || title.includes('it'))) {
+      return "Information Technology (IT)";
+    }
+    return "Information Technology (IT)";
+  }
+
+  // 4. Human Resources (HR)
+  if (dept.includes('hr') || dept.includes('human resource') || dept.includes('recruitment') || title.includes('hr') || title.includes('recruiter') || title.includes('talent acquisition') || title.includes('relations') || title.includes('payroll')) {
+    return "Human Resources (HR)";
+  }
+
+  // 5. Marketing & Branding
+  if (dept.includes('marketing') || dept.includes('brand') || title.includes('marketing') || title.includes('seo') || title.includes('social media') || title.includes('brand') || title.includes('strategist')) {
+    return "Marketing & Branding";
+  }
+
+  // 6. Sales & Business Development
+  if (dept.includes('sales') || dept.includes('business development') || dept.includes('crm') || title.includes('sales') || title.includes('business development') || title.includes('bdm') || title.includes('crm') || title.includes('relationship') || title.includes('lead generation')) {
+    return "Sales & Business Development";
+  }
+
+  // 7. Operations & Administration
+  if (dept.includes('operations') || dept.includes('admin') || title.includes('operations') || title.includes('administrative') || title.includes('coordinator') || title.includes('administrator') || title.includes('office') || title.includes('workflow')) {
+    return "Operations & Administration";
+  }
+
+  // 8. Finance & Accounts
+  if (dept.includes('finance') || dept.includes('account') || dept.includes('billing') || title.includes('accountant') || title.includes('finance') || title.includes('billing') || title.includes('analyst') || title.includes('audit')) {
+    return "Finance & Accounts";
+  }
+
+  // 9. Customer Support & Services
+  if (dept.includes('customer support') || dept.includes('helpdesk') || title.includes('customer support') || title.includes('helpdesk') || title.includes('complaint') || title.includes('client support')) {
+    return "Customer Support & Services";
+  }
+
+  // 10. Legal & Compliance
+  if (dept.includes('legal') || dept.includes('compliance') || title.includes('legal') || title.includes('compliance') || title.includes('contract') || title.includes('documentation') || title.includes('risk')) {
+    return "Legal & Compliance";
+  }
+
+  // 11. Content & Media
+  if (dept.includes('content') || dept.includes('media') || title.includes('writer') || title.includes('copywriter') || title.includes('graphic') || title.includes('editor') || title.includes('media') || title.includes('publication') || dept.includes('ytdp')) {
+    return "Content & Media";
+  }
+
+  // 12. Event Management
+  if (dept.includes('event') || dept.includes('webinar') || title.includes('event') || title.includes('webinar') || title.includes('registration') || title.includes('conference')) {
+    return "Event Management";
+  }
+
+  // 13. Research & Consulting
+  if (dept.includes('research') || dept.includes('consult') || title.includes('research') || title.includes('consultant') || title.includes('analyst') || title.includes('policy') || title.includes('expert')) {
+    return "Research & Consulting";
+  }
+
+  // 14. Training & Development
+  if (dept.includes('training') || dept.includes('learning') || title.includes('training') || title.includes('learning') || title.includes('certification') || title.includes('skill')) {
+    return "Training & Development";
+  }
+
+  // Subheading checks as fallbacks
+  const itTitles = ['software developer', 'web developer', 'full stack developer', 'ui/ux designer', 'qa engineer', 'devops engineer', 'system administrator', 'technical support engineer', 'cybersecurity analyst'];
+  if (itTitles.some(t => title.includes(t))) return "Information Technology (IT)";
+
+  const hrTitles = ['hr executive', 'talent acquisition specialist', 'recruitment coordinator', 'payroll executive', 'employee relations executive'];
+  if (hrTitles.some(t => title.includes(t))) return "Human Resources (HR)";
+
+  const marketingTitles = ['digital marketing executive', 'seo specialist', 'social media manager', 'content strategist', 'brand executive', 'performance marketing executive'];
+  if (marketingTitles.some(t => title.includes(t))) return "Marketing & Branding";
+
+  const salesTitles = ['sales executive', 'business development executive', 'crm executive', 'client relationship manager', 'lead generation executive'];
+  if (salesTitles.some(t => title.includes(t))) return "Sales & Business Development";
+
+  const opsTitles = ['operations executive', 'administrative officer', 'process coordinator', 'office administrator', 'workflow coordinator'];
+  if (opsTitles.some(t => title.includes(t))) return "Operations & Administration";
+
+  const financeTitles = ['accountant', 'finance executive', 'billing executive', 'payroll coordinator', 'financial analyst'];
+  if (financeTitles.some(t => title.includes(t))) return "Finance & Accounts";
+
+  const customerTitles = ['customer support executive', 'technical support executive', 'helpdesk executive', 'complaint resolution officer', 'client support coordinator'];
+  if (customerTitles.some(t => title.includes(t))) return "Customer Support & Services";
+
+  const legalTitles = ['legal advisor', 'compliance executive', 'contract administrator', 'documentation specialist', 'risk management officer'];
+  if (legalTitles.some(t => title.includes(t))) return "Legal & Compliance";
+
+  const contentTitles = ['content writer', 'copywriter', 'graphic designer', 'video editor', 'media coordinator', 'publication executive'];
+  if (contentTitles.some(t => title.includes(t))) return "Content & Media";
+
+  const eventTitles = ['event coordinator', 'webinar manager', 'registration executive', 'event support staff', 'conference coordinator'];
+  if (eventTitles.some(t => title.includes(t))) return "Event Management";
+
+  const researchTitles = ['research associate', 'business consultant', 'data analyst', 'policy researcher', 'industry expert'];
+  if (researchTitles.some(t => title.includes(t))) return "Research & Consulting";
+
+  const trainingTitles = ['training coordinator', 'learning & development executive', 'certification coordinator', 'skill development trainer'];
+  if (trainingTitles.some(t => title.includes(t))) return "Training & Development";
+
+  const internTitles = ['technical intern', 'hr intern', 'marketing intern', 'content writing intern', 'operations intern', 'business development intern'];
+  if (internTitles.some(t => title.includes(t))) return "Internship Programs";
+
+  const freelanceTitles = ['freelance developer', 'freelance designer', 'freelance consultant', 'contract recruiter', 'project-based specialist'];
+  if (freelanceTitles.some(t => title.includes(t))) return "Freelance & Contract-Based Roles";
+
+  return "Information Technology (IT)";
+};
+
 
 export default function AdminCareers() {
   const { admin } = useAdminAuth();
@@ -29,6 +178,7 @@ export default function AdminCareers() {
 
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -42,8 +192,13 @@ export default function AdminCareers() {
 
   // New Job / Edit Job State
   const [editingJob, setEditingJob] = useState(null);
-  const [newJob, setNewJob] = useState({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] });
+  const [newJob, setNewJob] = useState({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [], startDate: '', endDate: '', jobId: '' });
   const [skillsOpen, setSkillsOpen] = useState(false);
+  const [techSkills, setTechSkills] = useState(DEFAULT_TECH_SKILLS);
+  const [departments, setDepartments] = useState(DEFAULT_DEPARTMENTS);
+  const [customDeptInput, setCustomDeptInput] = useState('');
+  const [isAddingDept, setIsAddingDept] = useState(false);
+  const [customSkillInput, setCustomSkillInput] = useState('');
 
   // Applications state
   const [applications, setApplications] = useState([]);
@@ -59,6 +214,24 @@ export default function AdminCareers() {
     fetchJobs(); 
     fetchApps(); 
   }, []);
+
+  useEffect(() => {
+    if (jobs.length > 0) {
+      const depts = new Set(DEFAULT_DEPARTMENTS);
+      jobs.forEach(j => {
+        if (j.department) depts.add(j.department);
+      });
+      setDepartments(Array.from(depts));
+
+      const skills = new Set(DEFAULT_TECH_SKILLS);
+      jobs.forEach(j => {
+        if (Array.isArray(j.tags)) {
+          j.tags.forEach(t => skills.add(t));
+        }
+      });
+      setTechSkills(Array.from(skills));
+    }
+  }, [jobs]);
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -82,7 +255,12 @@ export default function AdminCareers() {
     }
   };
 
-  const filteredJobs = jobs.filter(j => j.title.toLowerCase().includes(search.toLowerCase()) || j.department?.toLowerCase().includes(search.toLowerCase()));
+  const filteredJobs = jobs.filter(j => {
+    const matchesSearch = j.title.toLowerCase().includes(search.toLowerCase()) || j.department?.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+    if (activeTab === 'All') return true;
+    return getJobCategory(j) === activeTab;
+  });
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
@@ -112,8 +290,11 @@ export default function AdminCareers() {
         await fetchJobs();
         setIsModalOpen(false);
         setEditingJob(null);
-        setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] });
+        setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [], startDate: '', endDate: '', jobId: '' });
         setSkillsOpen(false);
+        setIsAddingDept(false);
+        setCustomDeptInput('');
+        setCustomSkillInput('');
         showToast(`Job "${newJob.title}" ${editingJob ? 'updated' : 'posted'} successfully!`, 'success');
       } else {
         const errData = await res.json().catch(() => ({}));
@@ -134,6 +315,9 @@ export default function AdminCareers() {
       location: job.location,
       type: job.type,
       tags: job.tags || [],
+      startDate: job.startDate || '',
+      endDate: job.endDate || '',
+      jobId: job.jobId || '',
     });
     setIsModalOpen(true);
   };
@@ -219,10 +403,41 @@ export default function AdminCareers() {
               className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
             />
           </div>
-          <button onClick={() => { setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
+          <button onClick={() => { setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [], startDate: '', endDate: '', jobId: '' }); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
             <Plus size={16} /> Post Job
           </button>
         </div>
+      </div>
+
+      {/* Job Categories Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 -mx-4 px-4 scrollbar-none">
+        {JOB_CATEGORIES.map(category => {
+          const count = category === 'All' 
+            ? jobs.length 
+            : jobs.filter(j => getJobCategory(j) === category).length;
+          
+          return (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveTab(category)}
+              className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-full border transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === category
+                  ? 'bg-[#1e5cdc] text-white border-[#1e5cdc] shadow-sm shadow-[#1e5cdc]/20'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {category}
+              {count > 0 && (
+                <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  activeTab === category ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {loading ? (
@@ -246,6 +461,16 @@ export default function AdminCareers() {
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <MapPin size={16} className="text-gray-400" /> {job.location}
                   </div>
+                  {job.jobId && (
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded w-fit">
+                      ID: {job.jobId}
+                    </div>
+                  )}
+                  {job.startDate && job.endDate && (
+                    <div className="text-[11px] font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded w-fit">
+                      📅 Open: {job.startDate} to {job.endDate}
+                    </div>
+                  )}
                 </div>
 
                 {/* Bio status indicator */}
@@ -312,9 +537,61 @@ export default function AdminCareers() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Department</label>
-                  <select value={newJob.department} onChange={e => setNewJob({ ...newJob, department: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Engineering</option><option>Design</option><option>Data Science</option><option>Marketing</option><option>YTDP</option><option>Software Developer</option><option>Operations</option>
-                  </select>
+                  {!isAddingDept ? (
+                    <select 
+                      value={newJob.department} 
+                      onChange={e => {
+                        if (e.target.value === "ADD_NEW_DEPT") {
+                          setIsAddingDept(true);
+                        } else {
+                          setNewJob({ ...newJob, department: e.target.value });
+                        }
+                      }} 
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      {departments.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                      <option value="ADD_NEW_DEPT">+ Add Custom Department...</option>
+                    </select>
+                  ) : (
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={customDeptInput}
+                        onChange={e => setCustomDeptInput(e.target.value)}
+                        placeholder="Name..."
+                        className="w-full px-2 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = customDeptInput.trim();
+                          if (val) {
+                            if (!departments.includes(val)) {
+                              setDepartments([...departments, val]);
+                            }
+                            setNewJob({ ...newJob, department: val });
+                          }
+                          setIsAddingDept(false);
+                          setCustomDeptInput('');
+                        }}
+                        className="bg-[#1e5cdc] text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 shrink-0"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsAddingDept(false);
+                          setCustomDeptInput('');
+                        }}
+                        className="bg-gray-100 text-gray-600 px-2 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
@@ -326,6 +603,36 @@ export default function AdminCareers() {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
                 <input required type="text" value={newJob.location} onChange={e => setNewJob({ ...newJob, location: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="E.g. Bangalore, India" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Starting Date</label>
+                  <input 
+                    type="date" 
+                    value={newJob.startDate || ''} 
+                    onChange={e => setNewJob({ ...newJob, startDate: e.target.value })} 
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Closing Date</label>
+                  <input 
+                    type="date" 
+                    value={newJob.endDate || ''} 
+                    onChange={e => setNewJob({ ...newJob, endDate: e.target.value })} 
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800" 
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Job ID / Position Number</label>
+                <input 
+                  type="text" 
+                  value={newJob.jobId || ''} 
+                  onChange={e => setNewJob({ ...newJob, jobId: e.target.value })} 
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 bg-white" 
+                  placeholder="E.g. JB-1004"
+                />
               </div>
 
               {/* Skills Multi-select */}
@@ -356,8 +663,50 @@ export default function AdminCareers() {
                   <span className="text-gray-400">{skillsOpen ? '▲' : '▼'}</span>
                 </button>
                 {skillsOpen && (
-                  <div className="mt-1 border border-gray-200 rounded-lg bg-white max-h-40 overflow-y-auto shadow-lg z-10">
-                    {TECH_SKILLS.map(skill => (
+                  <div className="mt-1 border border-gray-200 rounded-lg bg-white max-h-48 overflow-y-auto shadow-lg z-10">
+                    <div className="p-2 border-b border-gray-100 flex gap-1.5 sticky top-0 bg-white">
+                      <input
+                        type="text"
+                        value={customSkillInput}
+                        onChange={e => setCustomSkillInput(e.target.value)}
+                        placeholder="Add custom skill..."
+                        className="flex-grow px-2 py-1 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white text-gray-800"
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const val = customSkillInput.trim();
+                            if (val) {
+                              if (!techSkills.includes(val)) {
+                                setTechSkills([...techSkills, val]);
+                              }
+                              if (!newJob.tags.includes(val)) {
+                                setNewJob({ ...newJob, tags: [...newJob.tags, val] });
+                              }
+                              setCustomSkillInput('');
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const val = customSkillInput.trim();
+                          if (val) {
+                            if (!techSkills.includes(val)) {
+                              setTechSkills([...techSkills, val]);
+                            }
+                            if (!newJob.tags.includes(val)) {
+                              setNewJob({ ...newJob, tags: [...newJob.tags, val] });
+                            }
+                            setCustomSkillInput('');
+                          }
+                        }}
+                        className="bg-indigo-600 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-indigo-700 shrink-0"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                    {techSkills.map(skill => (
                       <label key={skill} className="flex items-center gap-2.5 px-3 py-2 hover:bg-indigo-50 cursor-pointer text-sm">
                         <input
                           type="checkbox"
@@ -378,7 +727,7 @@ export default function AdminCareers() {
                 )}
               </div>
               <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                <button type="button" onClick={() => { setIsModalOpen(false); setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setSkillsOpen(false); }} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setIsModalOpen(false); setEditingJob(null); setNewJob({ title: '', department: 'Engineering', location: 'Remote', type: 'Full-Time', tags: [] }); setSkillsOpen(false); setIsAddingDept(false); setCustomDeptInput(''); setCustomSkillInput(''); }} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
                 <button type="submit" disabled={submitting} className="px-5 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2">
                   {submitting ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span> {editingJob ? 'Updating...' : 'Posting...'}</> : (editingJob ? 'Update Job' : 'Post Job')}
                 </button>

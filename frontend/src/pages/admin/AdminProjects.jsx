@@ -3,6 +3,44 @@ import { useAdminAuth } from "../../context/AdminAuthContext";
 import { FolderKanban, Plus, Search, RefreshCw, X, Image as ImageIcon, Briefcase, Calendar, CheckSquare, Settings2, Trash2 } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
 
+const formatDateForInput = (dateStr) => {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  if (/^\d{4}-\d{2}$/.test(dateStr)) return `${dateStr}-01`;
+  
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+  } catch (e) {}
+  return "";
+};
+
+const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    try {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+      }
+    } catch(e) {}
+  }
+  if (/^\d{4}-\d{2}$/.test(dateStr)) {
+    try {
+      const d = new Date(`${dateStr}-01`);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString("en-US", { year: 'numeric', month: 'long' });
+      }
+    } catch(e) {}
+  }
+  return dateStr;
+};
+
 export default function AdminProjects() {
   const { admin } = useAdminAuth();
   const [projects, setProjects] = useState([]);
@@ -88,6 +126,8 @@ export default function AdminProjects() {
     // Parse comma-separated strings to arrays
     const formattedData = {
         ...formData,
+        startDate: formatDisplayDate(formData.startDate),
+        expectedCompletion: formatDisplayDate(formData.expectedCompletion),
         technologies: formData.technologies.split(",").map(t => t.trim()).filter(Boolean),
         keyFeatures: formData.keyFeatures.split(",").map(k => k.trim()).filter(Boolean),
         objectives: formData.objectives.split(",").map(k => k.trim()).filter(Boolean),
@@ -440,11 +480,11 @@ export default function AdminProjects() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-xs font-bold text-gray-700 mb-1">Start Date</label>
-                                            <input required type="month" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none"/>
+                                            <input required type="date" value={formatDateForInput(formData.startDate)} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none"/>
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-700 mb-1">Target Completion</label>
-                                            <input required type="month" value={formData.expectedCompletion} onChange={e => setFormData({...formData, expectedCompletion: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none"/>
+                                            <input required type="date" value={formatDateForInput(formData.expectedCompletion)} onChange={e => setFormData({...formData, expectedCompletion: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none"/>
                                         </div>
                                     </div>
                                     <div>
