@@ -287,7 +287,10 @@ export default function ProjectDetails() {
               <p className="text-blue-100 mb-6">
                 Get in touch with us to discuss how we can help with your project needs.
               </p>
-              <button className="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg">
+              <button 
+                onClick={() => navigate("/contact/touch")}
+                className="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all shadow-lg"
+              >
                 Contact Us
               </button>
             </div>

@@ -79,8 +79,8 @@ export default function HeroSection() {
           <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-4">
 
             <Link
-              to="/team/core-team"
-              className="px-6 sm:px-8 py-3 bg-gradient-to-r from-primary to-primary-light text-white font-semibold rounded-md hover:opacity-90 transition text-center w-full sm:w-auto"
+              to="/careers/jobs"
+              className="px-6 sm:px-8 py-3 bg-gradient-to-r from-primary to-primary-light border border-white text-white font-semibold rounded-md hover:from-white hover:to-white hover:text-black transition text-center w-full sm:w-auto"
             >
               Join Our Team
             </Link>

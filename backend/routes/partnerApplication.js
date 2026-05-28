@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
     await Notification.create({
       type: 'Partner Application',
       title: 'New Partner Application',
-      message: `${req.body.name || 'A new partner'} has applied for partnership.`,
+      message: `${req.body.organizationName || req.body.name || 'A new partner'} has applied for partnership.`,
       link: '/admin/partners'
     });
 

@@ -6,14 +6,15 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function BecomePartner() {
     const [formData, setFormData] = useState({
-        name: '',
-        contact: '',
+        organizationName: '',
+        contactPerson: '',
+        businessType: '',
+        website: '',
         email: '',
         countryIndex: 0,
-        domain: '',
-        sector: '',
-        organizationDetails: '',
-        achievements: ''
+        contact: '',
+        partnershipCategory: '',
+        businessProposal: ''
     });
 
     const [status, setStatus] = useState({ loading: false, error: null });
@@ -24,14 +25,15 @@ export default function BecomePartner() {
 
     const handleReset = () => {
         setFormData({
-            name: '',
-            contact: '',
+            organizationName: '',
+            contactPerson: '',
+            businessType: '',
+            website: '',
             email: '',
             countryIndex: 0,
-            domain: '',
-            sector: '',
-            organizationDetails: '',
-            achievements: ''
+            contact: '',
+            partnershipCategory: '',
+            businessProposal: ''
         });
         setStatus({ loading: false, error: null });
     };
@@ -79,30 +81,104 @@ export default function BecomePartner() {
             {/* Form Section */}
             <div className="max-w-3xl mx-auto px-6 py-16">
                 <div className="bg-slate-50 rounded-2xl shadow-xl p-8 border border-slate-200">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">Partnership Application</h2>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-8 text-center">Partner Registration Form</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Organization Name</label>
                                 <input
                                     type="text"
-                                    name="name"
+                                    name="organizationName"
                                     required
-                                    value={formData.name}
+                                    value={formData.organizationName}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white"
-                                    placeholder="Enter your name"
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
+                                    placeholder="Enter your organization name"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Contact Number</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Contact Person</label>
+                                <input
+                                    type="text"
+                                    name="contactPerson"
+                                    required
+                                    value={formData.contactPerson}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
+                                    placeholder="Enter contact person's name"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Business Type</label>
+                                <select
+                                    name="businessType"
+                                    required
+                                    value={formData.businessType}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800 appearance-none"
+                                >
+                                    <option value="">Select Business Type</option>
+                                    <option value="Sole Proprietorship">Sole Proprietorship</option>
+                                    <option value="Partnership">Partnership</option>
+                                    <option value="LLC">LLC (Limited Liability Company)</option>
+                                    <option value="Corporation">Corporation</option>
+                                    <option value="Non-Profit">Non-Profit</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Website</label>
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
+                                    placeholder="https://example.com"
+                                />
+                            </div>
+                        </div>
+
+                        {formData.businessType === "Others" && (
+                            <div className="animate-fadeIn">
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Specify Business Type</label>
+                                <input
+                                    type="text"
+                                    name="otherBusinessType"
+                                    required
+                                    value={formData.otherBusinessType || ''}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
+                                    placeholder="Enter your business type"
+                                />
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
+                                    placeholder="john@example.com"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
                                 <div className="flex gap-2">
                                     <select
                                         name="countryIndex"
                                         value={formData.countryIndex}
                                         onChange={handleChange}
-                                        className="w-32 px-2 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white font-bold appearance-none cursor-pointer"
+                                        className="w-32 px-2 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white font-bold appearance-none cursor-pointer text-gray-800"
                                     >
                                         {COUNTRIES.map((c, i) => (
                                             <option key={i} value={i}>{c.code} ({c.iso})</option>
@@ -114,7 +190,7 @@ export default function BecomePartner() {
                                         required
                                         value={formData.contact}
                                         onChange={handleChange}
-                                        className="flex-1 px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white"
+                                        className="flex-1 px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800"
                                         placeholder="XXXXX XXXXX"
                                     />
                                 </div>
@@ -122,110 +198,33 @@ export default function BecomePartner() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                            <input
-                                type="email"
-                                name="email"
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Partnership Category</label>
+                            <select
+                                name="partnershipCategory"
                                 required
-                                value={formData.email}
+                                value={formData.partnershipCategory}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white"
-                                placeholder="john@example.com"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Domain</label>
-                                <select
-                                    name="domain"
-                                    required
-                                    value={formData.domain}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white appearance-none"
-                                >
-                                    <option value="">Select Domain</option>
-                                    <option value="Technology">Technology</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Healthcare">Healthcare</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Retail">Retail</option>
-                                    <option value="Others">Others</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Sector</label>
-                                <select
-                                    name="sector"
-                                    required
-                                    value={formData.sector}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white appearance-none"
-                                >
-                                    <option value="">Select Sector</option>
-                                    <option value="Public">Public</option>
-                                    <option value="Private">Private</option>
-                                    <option value="Non-Profit">Non-Profit</option>
-                                    <option value="Government">Government</option>
-                                    <option value="Start-up">Start-up</option>
-                                    <option value="Others">Others</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {formData.domain === "Others" && (
-                                <div className="animate-fadeIn">
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Specify Domain</label>
-                                    <input
-                                        type="text"
-                                        name="otherDomain"
-                                        required
-                                        value={formData.otherDomain}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white"
-                                        placeholder="Enter your domain"
-                                    />
-                                </div>
-                            )}
-                            {formData.sector === "Others" && (
-                                <div className="animate-fadeIn">
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Specify Sector</label>
-                                    <input
-                                        type="text"
-                                        name="otherSector"
-                                        required
-                                        value={formData.otherSector}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white"
-                                        placeholder="Enter your sector"
-                                    />
-                                </div>
-                            )}
+                                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition bg-white text-gray-800 appearance-none"
+                            >
+                                <option value="">Select Partnership Category</option>
+                                <option value="Technology Partner">Technology Partner</option>
+                                <option value="Reseller Partner">Reseller Partner</option>
+                                <option value="Enterprise Partner">Enterprise Partner</option>
+                                <option value="Channel Partner">Channel Partner</option>
+                                <option value="Others">Others</option>
+                            </select>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Organization Details</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Business Proposal</label>
                             <textarea
-                                name="organizationDetails"
+                                name="businessProposal"
                                 required
-                                rows="4"
-                                value={formData.organizationDetails}
+                                rows="6"
+                                value={formData.businessProposal}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition resize-none bg-white"
-                                placeholder="Tell us about your organization..."
-                            ></textarea>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Achievements / Milestones</label>
-                            <textarea
-                                name="achievements"
-                                rows="3"
-                                value={formData.achievements}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition resize-none bg-white"
-                                placeholder="Highlight key achievements..."
+                                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition resize-none bg-white text-gray-800"
+                                placeholder="Describe your business proposal here..."
                             ></textarea>
                         </div>
 
@@ -233,14 +232,14 @@ export default function BecomePartner() {
                             <button
                                 type="submit"
                                 disabled={status.loading}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50"
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 cursor-pointer"
                             >
                                 {status.loading ? 'Submitting...' : 'Submit Application'}
                             </button>
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-4 rounded-lg transition shadow hover:shadow-md transform hover:-translate-y-1"
+                                className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-4 rounded-lg transition shadow hover:shadow-md transform hover:-translate-y-1 cursor-pointer"
                             >
                                 Reset Form
                             </button>

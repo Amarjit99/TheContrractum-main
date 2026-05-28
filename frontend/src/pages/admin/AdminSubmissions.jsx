@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
@@ -30,6 +31,7 @@ const FORM_DETAILS = [
 
 export default function AdminSubmissions() {
   const { admin } = useAdminAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
@@ -80,7 +82,7 @@ export default function AdminSubmissions() {
   }, [admin, API]);
 
   const handleCopy = (id, path) => {
-    const fullUrl = `${window.location.origin}/#${path}`;
+    const fullUrl = `${window.location.origin}${path}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -160,7 +162,7 @@ export default function AdminSubmissions() {
 
                     <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
                         <code className="text-[9px] sm:text-[10px] text-gray-500 truncate max-w-[200px] sm:max-w-[250px]">
-                            {`${window.location.origin}/#${form.path}`}
+                            {`${window.location.origin}${form.path}`}
                         </code>
                         <button 
                           onClick={() => handleCopy(form.id, form.path)}
@@ -171,11 +173,11 @@ export default function AdminSubmissions() {
                     </div>
 
                     <div className="flex items-center gap-3 pt-2">
-                        <a href={`/#${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition border border-gray-100 text-center leading-tight">
+                        <a href={`${form.path}`} target="_blank" rel="noreferrer" className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition border border-gray-100 text-center leading-tight">
                             <ExternalLink size={14} className="hidden sm:block" /> Preview
                         </a>
                         <button 
-                            onClick={() => window.location.href = `/#${form.adminPath}`}
+                            onClick={() => navigate(form.adminPath)}
                             className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition shadow-lg shadow-blue-100 text-center leading-tight"
                         >
                             <Eye size={14} className="hidden sm:block" /> View Data

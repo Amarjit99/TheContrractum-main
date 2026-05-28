@@ -40,6 +40,7 @@ import AdminContractTemplates from './pages/admin/AdminContractTemplates';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import AdminNotifications from './pages/admin/AdminNotifications';
+import { Toaster } from 'react-hot-toast';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 
 /////////////////////// Company Pages//////////////////////////////////
@@ -171,6 +172,7 @@ import GoogleForm from './pages/contact/GoogleForm';
 export default function App() {
   return (
     <AdminAuthProvider>
+      <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">

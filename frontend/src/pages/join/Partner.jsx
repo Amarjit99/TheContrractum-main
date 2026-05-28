@@ -95,7 +95,7 @@ export default function Partner() {
                 measurable business outcomes across industries.
               </p>
               <Link to="/join/become-partner">
-                <button className="bg-primary hover:bg-primary-dark px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 transform tracking-wide">
+                <button className="bg-gray-800 hover:bg-white hover:text-black px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 transform tracking-wide border-2 border-white">
                   Become a Partner
                 </button>
               </Link>
