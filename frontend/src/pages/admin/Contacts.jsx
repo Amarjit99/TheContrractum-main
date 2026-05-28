@@ -31,8 +31,8 @@ export default function AdminContacts() {
   const allContacts = data.contacts || [];
   const totalCount = data.total || 0;
 
-  const filteredContacts = allContacts.filter(c => 
-    c.name.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredContacts = allContacts.filter(c =>
+    c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.email.toLowerCase().includes(search.toLowerCase()) ||
     c.subject.toLowerCase().includes(search.toLowerCase())
   );
@@ -54,10 +54,10 @@ export default function AdminContacts() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
+            <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search leads..."
-              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white" 
+              className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
             />
           </div>
         </div>
@@ -80,20 +80,20 @@ export default function AdminContacts() {
           </div>
         ) : filteredContacts.map(c => (
           <div key={c._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
+            <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === c._id ? null : c._id)}>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-wrap">
                   <span className="text-gray-800 font-bold text-sm sm:text-base">{c.name}</span>
                   <span className="text-gray-400 text-sm hidden sm:inline-block">•</span>
-                  <span className="flex items-center gap-1.5 text-gray-500 text-xs sm:text-sm truncate"><Mail size={14}/> {c.email}</span>
+                  <span className="flex items-center gap-1.5 text-gray-500 text-xs sm:text-sm truncate"><Mail size={14} /> {c.email}</span>
                   <span className="sm:ml-auto text-[10px] sm:text-xs font-semibold bg-blue-50 text-[#1e5cdc] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md border border-blue-100 self-start sm:self-auto mt-1 sm:mt-0">
                     {c.subject}
                   </span>
                 </div>
                 <p className="flex items-center gap-1.5 text-gray-400 text-xs mt-2 font-medium">
                   <Calendar size={12} />
-                  {new Date(c.createdAt).toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' })}
+                  {new Date(c.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
                 </p>
               </div>
               <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-2 sm:ml-4">
@@ -121,12 +121,12 @@ export default function AdminContacts() {
 
       {data.pages > 1 && (
         <div className="flex justify-between items-center mt-6 p-2">
-          <button disabled={page <= 1} onClick={() => setPage(p => p-1)}
+          <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
             className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
             Previous
           </button>
           <span className="text-gray-500 text-sm font-semibold">Page {page} of {data.pages}</span>
-          <button disabled={page >= data.pages} onClick={() => setPage(p => p+1)}
+          <button disabled={page >= data.pages} onClick={() => setPage(p => p + 1)}
             className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors shadow-sm">
             Next Page
           </button>
