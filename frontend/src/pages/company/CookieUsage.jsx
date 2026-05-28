@@ -53,7 +53,7 @@ const sections = [
   },
 ];
 
-const CookiePolicy = () => {
+const CookieUsage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
 
@@ -182,4 +182,4 @@ const CookiePolicy = () => {
   );
 };
 
-export default CookiePolicy;
+export default CookieUsage;

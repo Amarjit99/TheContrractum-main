@@ -3,7 +3,7 @@ import { Shield, Mail, CheckCircle, AlertTriangle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-const CookiesPopup = () => {
+const ConsentPopup = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [manageCount, setManageCount] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
@@ -226,4 +226,4 @@ const CookiesPopup = () => {
     );
 };
 
-export default CookiesPopup;
+export default ConsentPopup;
