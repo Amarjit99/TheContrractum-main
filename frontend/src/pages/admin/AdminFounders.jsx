@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload, Briefcase, Award, Target, Rocket, GraduationCap, QuoteIcon, Star } from 'lucide-react';
@@ -30,11 +30,7 @@ export default function AdminFounders() {
     image: null
   });
 
-  useEffect(() => {
-    fetchFounders();
-  }, []);
-
-  const fetchFounders = async () => {
+  const fetchFounders = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/founders`);
@@ -44,7 +40,13 @@ export default function AdminFounders() {
       console.error('Failed to fetch founders:', err);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchFounders();
+    });
+  }, [fetchFounders]);
 
   const filteredFounders = founders.filter(f =>
     f.name.toLowerCase().includes(search.toLowerCase()) ||

@@ -1,0 +1,661 @@
+﻿
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\components\Hero.jsx
+  28:6  warning  React Hook useEffect has a missing dependency: 'texts.length'. Either include it or remove the dependency array             react-hooks/exhaustive-deps
+  35:6  warning  React Hook useEffect has a missing dependency: 'backgroundImages.length'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\components\Services.jsx
+  27:6  warning  React Hook useEffect has a missing dependency: 'API'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminCertificates.jsx
+  304:13  error  Empty block statement  no-empty
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminIdCards.jsx
+  551:9  error    'cardRef' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                            no-unused-vars
+  579:6  warning  React Hook useEffect has a missing dependency: 'fetchIdCards'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+  616:6  warning  React Hook useEffect has a missing dependency: 'generateNextId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  643:9  error    'handleBulkOnboarding' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminNews.jsx
+  39:8  warning  React Hook useEffect has a missing dependency: 'fetchNews'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminNotifications.jsx
+  20:6  warning  React Hook useEffect has a missing dependency: 'fetchNotifications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminProfile.jsx
+  8:18  error  'login' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminRegistrationPage.jsx
+   8:9   error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  40:14  error  'err' is defined but never used                                                           no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminSettings.jsx
+   59:14  error  'err' is defined but never used   no-unused-vars
+  112:34  error  'Icon' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminSubmissions.jsx
+  80:6  warning  React Hook useEffect has an unnecessary dependency: 'API'. Either exclude it or remove the dependency array. Outer scope values like 'API' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\AdminTasks.jsx
+   30:6   warning  React Hook useEffect has missing dependencies: 'fetchAdmins' and 'fetchTasks'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   40:14  error    'err' is defined but never used                                                                                                    no-unused-vars
+   91:14  error    'err' is defined but never used                                                                                                    no-unused-vars
+  109:14  error    'err' is defined but never used                                                                                                    no-unused-vars
+  130:14  error    'err' is defined but never used                                                                                                    no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\Contacts.jsx
+  21:21  error    Error: Cannot access variable before it is declared
+
+`fetchContacts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  19 |   const [search, setSearch] = useState('');
+  20 |
+> 21 |   useEffect(() => { fetchContacts(); }, [page]);
+     |                     ^^^^^^^^^^^^^ `fetchContacts` accessed before it is declared
+  22 |
+  23 |   const fetchContacts = async () => {
+  24 |     setLoading(true);
+
+  21 |   useEffect(() => { fetchContacts(); }, [page]);
+  22 |
+> 23 |   const fetchContacts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 25 |     const res = await fetch(`${API}/api/admin/contacts?page=${page}&limit=10`, { headers });
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 26 |     const d = await res.json();
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 27 |     setData(d);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 28 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 29 |   };
+     | ^^^^^ `fetchContacts` is declared here
+  30 |
+  31 |   const allContacts = data.contacts || [];
+  32 |   const totalCount = data.total || 0;  react-hooks/immutability
+  21:41  warning  React Hook useEffect has a missing dependency: 'fetchContacts'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\ContractEditor.jsx
+  50:5   error    Error: Cannot access variable before it is declared
+
+`fetchUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  48 |
+  49 |   useEffect(() => {
+> 50 |     fetchUsers();
+     |     ^^^^^^^^^^ `fetchUsers` accessed before it is declared
+  51 |     fetchTemplates();
+  52 |     if (isEdit) fetchContract();
+  53 |   }, [id]);
+
+  53 |   }, [id]);
+  54 |
+> 55 |   const fetchUsers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |     try {
+     | ^^^^^^^^^
+> 57 |       const res = await fetch(`${API}/api/users?t=${new Date().getTime()}`, { 
+     | ^^^^^^^^^
+> 58 |         headers: { Authorization: `Bearer ${token}` },
+     | ^^^^^^^^^
+> 59 |         cache: 'no-cache'
+     | ^^^^^^^^^
+> 60 |       });
+     | ^^^^^^^^^
+> 61 |       const data = await res.json();
+     | ^^^^^^^^^
+> 62 |       if (Array.isArray(data)) setUsers(data);
+     | ^^^^^^^^^
+> 63 |     } catch { console.error('Failed to fetch users'); }
+     | ^^^^^^^^^
+> 64 |   };
+     | ^^^^^ `fetchUsers` is declared here
+  65 |
+  66 |   const fetchTemplates = async () => {
+  67 |     try {  react-hooks/immutability
+  51:5   error    Error: Cannot access variable before it is declared
+
+`fetchTemplates` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  49 |   useEffect(() => {
+  50 |     fetchUsers();
+> 51 |     fetchTemplates();
+     |     ^^^^^^^^^^^^^^ `fetchTemplates` accessed before it is declared
+  52 |     if (isEdit) fetchContract();
+  53 |   }, [id]);
+  54 |
+
+  64 |   };
+  65 |
+> 66 |   const fetchTemplates = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |     try {
+     | ^^^^^^^^^
+> 68 |       const res = await fetch(`${API}/api/contracts/templates`, { headers: { Authorization: `Bearer ${token}` } });
+     | ^^^^^^^^^
+> 69 |       const data = await res.json();
+     | ^^^^^^^^^
+> 70 |       if (Array.isArray(data)) setTemplates(data);
+     | ^^^^^^^^^
+> 71 |     } catch { console.error('Failed to fetch templates'); }
+     | ^^^^^^^^^
+> 72 |   };
+     | ^^^^^ `fetchTemplates` is declared here
+  73 |
+  74 |   const fetchContract = async () => {
+  75 |     try {                                                                                                        react-hooks/immutability
+  52:17  error    Error: Cannot access variable before it is declared
+
+`fetchContract` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  50 |     fetchUsers();
+  51 |     fetchTemplates();
+> 52 |     if (isEdit) fetchContract();
+     |                 ^^^^^^^^^^^^^ `fetchContract` accessed before it is declared
+  53 |   }, [id]);
+  54 |
+  55 |   const fetchUsers = async () => {
+
+  72 |   };
+  73 |
+> 74 |   const fetchContract = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |     try {
+     | ^^^^^^^^^
+> 76 |       const res = await fetch(`${API}/api/contracts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+     …
+     | ^^^^^^^^^
+> 90 |     } catch { console.error('Failed to fetch contract'); }
+     | ^^^^^^^^^
+> 91 |   };
+     | ^^^^^ `fetchContract` is declared here
+  92 |
+  93 |   const replacePlaceholders = (contentText, userId) => {
+  94 |     if (!contentText) return '';                                                                                                                                                                               react-hooks/immutability
+  53:6   warning  React Hook useEffect has missing dependencies: 'fetchContract', 'fetchTemplates', 'fetchUsers', and 'isEdit'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\Dashboard.jsx
+  48:39  error    'trendParams' is defined but never used                                                                          no-unused-vars
+  69:6   warning  React Hook useEffect has a missing dependency: 'admin?.token'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\SuperAdminDashboard.jsx
+  31:7   error    'mockBlogs' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                              no-unused-vars
+  79:6   warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  95:14  error    'err' is defined but never used                                                                                        no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\admin\Users.jsx
+  26:21  error    Error: Cannot access variable before it is declared
+
+`fetchUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  24 |   }, [search]);
+  25 |
+> 26 |   useEffect(() => { fetchUsers(); }, [debouncedSearch, page]);
+     |                     ^^^^^^^^^^ `fetchUsers` accessed before it is declared
+  27 |
+  28 |   const fetchUsers = async () => {
+  29 |     setLoading(true);
+
+  26 |   useEffect(() => { fetchUsers(); }, [debouncedSearch, page]);
+  27 |
+> 28 |   const fetchUsers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 30 |     // Fetch all users
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 31 |     const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10`, { headers });
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 32 |     const d = await res.json();
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 33 |     setData(d);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 34 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 35 |   };
+     | ^^^^^ `fetchUsers` is declared here
+  36 |
+  37 |   const deleteUser = async (id, name) => {
+  38 |     if (!confirm(`Delete user "${name}"? This cannot be undone.`)) return;  react-hooks/immutability
+  26:38  warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  57:14  error    'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  81:14  error    'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\careers\JobOpenings.jsx
+  27:8  warning  React Hook useEffect has a missing dependency: 'API'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\CompanyContracts.jsx
+  18:13  error    Error: Cannot access variable before it is declared
+
+`fetchMyContracts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  16 |     useEffect(() => {
+  17 |         if (user) {
+> 18 |             fetchMyContracts();
+     |             ^^^^^^^^^^^^^^^^ `fetchMyContracts` accessed before it is declared
+  19 |         }
+  20 |     }, [user]);
+  21 |
+
+  20 |     }, [user]);
+  21 |
+> 22 |     const fetchMyContracts = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |         try {
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |     };
+     | ^^^^^^^ `fetchMyContracts` is declared here
+  33 |
+  34 |     const workflowSteps = [
+  35 |         { icon: <Clock />, label: 'Manager Review', desc: 'Initial validation by reporting manager.' },  react-hooks/immutability
+  20:8   warning  React Hook useEffect has a missing dependency: 'fetchMyContracts'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\EmployeeId.jsx
+  18:13  error    Error: Cannot access variable before it is declared
+
+`handleSearch` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  16 |     useEffect(() => {
+  17 |         if (id) {
+> 18 |             handleSearch(null, id);
+     |             ^^^^^^^^^^^^ `handleSearch` accessed before it is declared
+  19 |         }
+  20 |     }, [id]);
+  21 |
+
+  20 |     }, [id]);
+  21 |
+> 22 |     const handleSearch = async (e, forcedId = null) => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         if (e) e.preventDefault();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |         const targetId = forcedId || employeeId;
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 52 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |     };
+     | ^^^^^^^ `handleSearch` is declared here
+  54 |
+  55 |     return (
+  56 |         <div className="min-h-screen bg-[#f0f4f8] py-20 px-4 flex flex-col items-center">  react-hooks/immutability
+  20:8   warning  React Hook useEffect has a missing dependency: 'handleSearch'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Founder.jsx
+   12:12  error    'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+   24:52  error    Error: Cannot access variable before it is declared
+
+`staticFounders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  22 |                     
+  23 |                     const dynamicFounderNames = new Set(apiFounders.map(f => f.name.toLowerCase()));
+> 24 |                     const filteredStaticFounders = staticFounders.filter(f => !dynamicFounderNames.has(f.name.toLowerCase()));
+     |                                                    ^^^^^^^^^^^^^^ `staticFounders` accessed before it is declared
+  25 |                     setFounders([...apiFounders, ...filteredStaticFounders]);
+  26 |
+  27 |                     const dynamicDirectorNames = new Set(apiDirectors.map(d => d.name.toLowerCase()));
+
+  42 |     }, []);
+  43 |
+> 44 |     const staticFounders = [
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |         {
+     | ^^^^^^^^^
+> 46 |             id: 1,
+     …
+     | ^^^^^^^^^
+> 92 |         },
+     | ^^^^^^^^^
+> 93 |     ];
+     | ^^^^^^^ `staticFounders` is declared here
+  94 |
+  95 |     const staticDirectors = [
+  96 |         {  react-hooks/immutability
+   28:53  error    Error: Cannot access variable before it is declared
+
+`staticDirectors` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  26 |
+  27 |                     const dynamicDirectorNames = new Set(apiDirectors.map(d => d.name.toLowerCase()));
+> 28 |                     const filteredStaticDirectors = staticDirectors.filter(d => !dynamicDirectorNames.has(d.name.toLowerCase()));
+     |                                                     ^^^^^^^^^^^^^^^ `staticDirectors` accessed before it is declared
+  29 |                     setDirectors([...apiDirectors, ...filteredStaticDirectors]);
+  30 |                 } else {
+  31 |                     setFounders(staticFounders);
+
+   93 |     ];
+   94 |
+>  95 |     const staticDirectors = [
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |         {
+      | ^^^^^^^^^
+>  97 |             id: 1,
+      …
+      | ^^^^^^^^^
+> 149 |         },
+      | ^^^^^^^^^
+> 150 |     ];
+      | ^^^^^^^ `staticDirectors` is declared here
+  151 |
+  152 |     const leadershipValues = [
+  153 |         {                         react-hooks/immutability
+   42:8   warning  React Hook useEffect has missing dependencies: 'staticDirectors' and 'staticFounders'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  152:11  error    'leadershipValues' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Impact.jsx
+  5:8  error  'imp2' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Innovation.jsx
+  6:10  error  'hoveredCard' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  7:10  error  'hoveredTech' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  8:10  error  'expandedProject' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Leadership.jsx
+  5:8  error  'management' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Mission.jsx
+  4:8  error  'about1' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\OurJourney.jsx
+  20:10  error  'hoveredCard' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\ReferralDashboard.jsx
+  38:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  36 |
+  37 |   useEffect(() => {
+> 38 |     fetchReferrals();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |   }, []);
+  40 |
+  41 |   const handleSubmit = async (e) => {  react-hooks/set-state-in-effect
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Reliability.jsx
+  603:47  error  'index' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Scalability.jsx
+  7:10  error  'hoveredCard' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  8:10  error  'expandedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  8:27  error  'setExpandedSection' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  9:10  error  'selectedTab' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  9:23  error  'setSelectedTab' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\company\Vision.jsx
+    1:17  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+    1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+    1:38  error  'useRef' is defined but never used. Allowed unused vars must match /^[A-Z_]/u          no-unused-vars
+  194:11  error  'stats' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\contact\FeedbackModal.jsx
+  36:14  error  'err' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\contact\GoogleForm.jsx
+  85:18  error  'err' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\join\Collaborate.jsx
+  50:9  error  'benefits' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  59:9  error  'process' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u   no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\join\Partner.jsx
+   4:8  error    'p21' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                              no-unused-vars
+  28:6  warning  React Hook useEffect has a missing dependency: 'API'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\join\Startup.jsx
+  188:12  error  'expandedFaq' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  188:25  error  'setExpandedFaq' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  192:11  error  'faqs' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\join\Volunteer.jsx
+   6:8   error  'p26' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  47:18  error  'err' is defined but never used                                             no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\CaseStudies.jsx
+  195:70   error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:74   error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:84   error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:88   error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:99   error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:110  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:119  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:147  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:162  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:168  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:181  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:190  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:205  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:216  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:232  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:235  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:250  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  195:384  error  Unnecessary escape character: \"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-useless-escape
+  531:9    error  Error: Cannot access variable before it is declared
+
+`fetchEvents` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  529 |
+  530 |     useEffect(() => {
+> 531 |         fetchEvents();
+      |         ^^^^^^^^^^^ `fetchEvents` accessed before it is declared
+  532 |     }, []);
+  533 |
+  534 |     const fetchEvents = async () => {
+
+  532 |     }, []);
+  533 |
+> 534 |     const fetchEvents = async () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 535 |         setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 536 |         try {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 543 |         setLoading(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 544 |     };
+      | ^^^^^^^ `fetchEvents` is declared here
+  545 |
+  546 |     const handleAuth = async (e) => {
+  547 |         e.preventDefault();  react-hooks/immutability
+  566:18   error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  598:11   error  'handleDelete' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\Completed.jsx
+  91:70   error  Unnecessary escape character: \"  no-useless-escape
+  91:74   error  Unnecessary escape character: \"  no-useless-escape
+  91:84   error  Unnecessary escape character: \"  no-useless-escape
+  91:88   error  Unnecessary escape character: \"  no-useless-escape
+  91:99   error  Unnecessary escape character: \"  no-useless-escape
+  91:110  error  Unnecessary escape character: \"  no-useless-escape
+  91:119  error  Unnecessary escape character: \"  no-useless-escape
+  91:147  error  Unnecessary escape character: \"  no-useless-escape
+  91:162  error  Unnecessary escape character: \"  no-useless-escape
+  91:168  error  Unnecessary escape character: \"  no-useless-escape
+  91:181  error  Unnecessary escape character: \"  no-useless-escape
+  91:190  error  Unnecessary escape character: \"  no-useless-escape
+  91:205  error  Unnecessary escape character: \"  no-useless-escape
+  91:216  error  Unnecessary escape character: \"  no-useless-escape
+  91:232  error  Unnecessary escape character: \"  no-useless-escape
+  91:235  error  Unnecessary escape character: \"  no-useless-escape
+  91:250  error  Unnecessary escape character: \"  no-useless-escape
+  91:384  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\Ongoing.jsx
+   7:10   error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  94:70   error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:74   error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:84   error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:88   error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:99   error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:110  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:119  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:147  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:162  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:168  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:181  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:190  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:205  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:216  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:232  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:235  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:250  error  Unnecessary escape character: \"                                                         no-useless-escape
+  94:384  error  Unnecessary escape character: \"                                                         no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\Research.jsx
+  311:70   error  Unnecessary escape character: \"  no-useless-escape
+  311:74   error  Unnecessary escape character: \"  no-useless-escape
+  311:84   error  Unnecessary escape character: \"  no-useless-escape
+  311:88   error  Unnecessary escape character: \"  no-useless-escape
+  311:99   error  Unnecessary escape character: \"  no-useless-escape
+  311:110  error  Unnecessary escape character: \"  no-useless-escape
+  311:119  error  Unnecessary escape character: \"  no-useless-escape
+  311:147  error  Unnecessary escape character: \"  no-useless-escape
+  311:162  error  Unnecessary escape character: \"  no-useless-escape
+  311:168  error  Unnecessary escape character: \"  no-useless-escape
+  311:181  error  Unnecessary escape character: \"  no-useless-escape
+  311:190  error  Unnecessary escape character: \"  no-useless-escape
+  311:205  error  Unnecessary escape character: \"  no-useless-escape
+  311:216  error  Unnecessary escape character: \"  no-useless-escape
+  311:232  error  Unnecessary escape character: \"  no-useless-escape
+  311:235  error  Unnecessary escape character: \"  no-useless-escape
+  311:250  error  Unnecessary escape character: \"  no-useless-escape
+  311:605  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\ScheduleConsultation.jsx
+  44:18  error  'err' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\projects\Testimonials.jsx
+  266:70    error  Unnecessary escape character: \"  no-useless-escape
+  266:75    error  Unnecessary escape character: \"  no-useless-escape
+  266:85    error  Unnecessary escape character: \"  no-useless-escape
+  266:90    error  Unnecessary escape character: \"  no-useless-escape
+  266:101   error  Unnecessary escape character: \"  no-useless-escape
+  266:114   error  Unnecessary escape character: \"  no-useless-escape
+  266:123   error  Unnecessary escape character: \"  no-useless-escape
+  266:151   error  Unnecessary escape character: \"  no-useless-escape
+  266:166   error  Unnecessary escape character: \"  no-useless-escape
+  266:1205  error  Unnecessary escape character: \"  no-useless-escape
+  266:1213  error  Unnecessary escape character: \"  no-useless-escape
+  266:1224  error  Unnecessary escape character: \"  no-useless-escape
+  266:1240  error  Unnecessary escape character: \"  no-useless-escape
+  266:1243  error  Unnecessary escape character: \"  no-useless-escape
+  266:1256  error  Unnecessary escape character: \"  no-useless-escape
+  266:1265  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\BlogArticle.jsx
+    7:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-refresh/only-export-components
+  454:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  452 |         const isStaticId = /^\d+$/.test(id);
+  453 |         if (!isStaticId) {
+> 454 |             setDbLoading(true);
+      |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  455 |             fetch(`${API}/api/cms/blogs/${id}`)
+  456 |                 .then(res => res.ok ? res.json() : null)
+  457 |                 .then(data => {  react-hooks/set-state-in-effect
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\CSR.jsx
+  260:70   error  Unnecessary escape character: \"  no-useless-escape
+  260:74   error  Unnecessary escape character: \"  no-useless-escape
+  260:84   error  Unnecessary escape character: \"  no-useless-escape
+  260:88   error  Unnecessary escape character: \"  no-useless-escape
+  260:99   error  Unnecessary escape character: \"  no-useless-escape
+  260:110  error  Unnecessary escape character: \"  no-useless-escape
+  260:119  error  Unnecessary escape character: \"  no-useless-escape
+  260:147  error  Unnecessary escape character: \"  no-useless-escape
+  260:162  error  Unnecessary escape character: \"  no-useless-escape
+  260:168  error  Unnecessary escape character: \"  no-useless-escape
+  260:181  error  Unnecessary escape character: \"  no-useless-escape
+  260:190  error  Unnecessary escape character: \"  no-useless-escape
+  260:205  error  Unnecessary escape character: \"  no-useless-escape
+  260:216  error  Unnecessary escape character: \"  no-useless-escape
+  260:232  error  Unnecessary escape character: \"  no-useless-escape
+  260:235  error  Unnecessary escape character: \"  no-useless-escape
+  260:250  error  Unnecessary escape character: \"  no-useless-escape
+  260:384  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\Events.jsx
+  759:8  error  'lastScrollY' is not defined  no-undef
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\Media.jsx
+  268:70   error  Unnecessary escape character: \"  no-useless-escape
+  268:74   error  Unnecessary escape character: \"  no-useless-escape
+  268:84   error  Unnecessary escape character: \"  no-useless-escape
+  268:88   error  Unnecessary escape character: \"  no-useless-escape
+  268:99   error  Unnecessary escape character: \"  no-useless-escape
+  268:110  error  Unnecessary escape character: \"  no-useless-escape
+  268:119  error  Unnecessary escape character: \"  no-useless-escape
+  268:147  error  Unnecessary escape character: \"  no-useless-escape
+  268:162  error  Unnecessary escape character: \"  no-useless-escape
+  268:168  error  Unnecessary escape character: \"  no-useless-escape
+  268:181  error  Unnecessary escape character: \"  no-useless-escape
+  268:190  error  Unnecessary escape character: \"  no-useless-escape
+  268:205  error  Unnecessary escape character: \"  no-useless-escape
+  268:216  error  Unnecessary escape character: \"  no-useless-escape
+  268:232  error  Unnecessary escape character: \"  no-useless-escape
+  268:235  error  Unnecessary escape character: \"  no-useless-escape
+  268:250  error  Unnecessary escape character: \"  no-useless-escape
+  268:384  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\NewsArticle.jsx
+  173:46  error  '_' is defined but never used  no-unused-vars
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\Reports.jsx
+  310:70   error  Unnecessary escape character: \"  no-useless-escape
+  310:74   error  Unnecessary escape character: \"  no-useless-escape
+  310:84   error  Unnecessary escape character: \"  no-useless-escape
+  310:88   error  Unnecessary escape character: \"  no-useless-escape
+  310:99   error  Unnecessary escape character: \"  no-useless-escape
+  310:110  error  Unnecessary escape character: \"  no-useless-escape
+  310:119  error  Unnecessary escape character: \"  no-useless-escape
+  310:147  error  Unnecessary escape character: \"  no-useless-escape
+  310:162  error  Unnecessary escape character: \"  no-useless-escape
+  310:168  error  Unnecessary escape character: \"  no-useless-escape
+  310:181  error  Unnecessary escape character: \"  no-useless-escape
+  310:190  error  Unnecessary escape character: \"  no-useless-escape
+  310:205  error  Unnecessary escape character: \"  no-useless-escape
+  310:216  error  Unnecessary escape character: \"  no-useless-escape
+  310:232  error  Unnecessary escape character: \"  no-useless-escape
+  310:235  error  Unnecessary escape character: \"  no-useless-escape
+  310:250  error  Unnecessary escape character: \"  no-useless-escape
+  310:384  error  Unnecessary escape character: \"  no-useless-escape
+
+D:\THE-internship\Rahul1\NEW\TheContrractum-main-1\frontend\src\pages\resources\Whitepapers.jsx
+  301:70   error  Unnecessary escape character: \"  no-useless-escape
+  301:74   error  Unnecessary escape character: \"  no-useless-escape
+  301:84   error  Unnecessary escape character: \"  no-useless-escape
+  301:88   error  Unnecessary escape character: \"  no-useless-escape
+  301:99   error  Unnecessary escape character: \"  no-useless-escape
+  301:110  error  Unnecessary escape character: \"  no-useless-escape
+  301:119  error  Unnecessary escape character: \"  no-useless-escape
+  301:147  error  Unnecessary escape character: \"  no-useless-escape
+  301:162  error  Unnecessary escape character: \"  no-useless-escape
+  301:168  error  Unnecessary escape character: \"  no-useless-escape
+  301:181  error  Unnecessary escape character: \"  no-useless-escape
+  301:190  error  Unnecessary escape character: \"  no-useless-escape
+  301:205  error  Unnecessary escape character: \"  no-useless-escape
+  301:216  error  Unnecessary escape character: \"  no-useless-escape
+  301:232  error  Unnecessary escape character: \"  no-useless-escape
+  301:235  error  Unnecessary escape character: \"  no-useless-escape
+  301:250  error  Unnecessary escape character: \"  no-useless-escape
+  301:384  error  Unnecessary escape character: \"  no-useless-escape
+
+✖ 244 problems (225 errors, 19 warnings)
+

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -55,6 +56,7 @@ const TRANSLATIONS = {
 
 // ── SHARED TEMPLATE COMPONENT FOR DRY ──
 function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
+  const sig = formData?.issuerSignature || globalSettings?.authorizedSignature;
   return (
     <div
       id={id}
@@ -160,9 +162,9 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         {/* Signature / Issued By Section */}
         <div className="flex flex-col items-center">
           {formData?.issuerSignature || globalSettings?.authorizedSignature ? (
-            <img 
-              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`} 
-              alt="Signature" 
+            <img
+              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`}
+              alt="Signature"
               className="h-10 object-contain mb-1"
               crossOrigin="anonymous"
             />
@@ -253,7 +255,7 @@ export async function generateCertificateCanvas(data, theme, globalSettings = nu
       ctx.rotate(-15 * Math.PI / 180);
       ctx.drawImage(sealImg, -150, -150, 300, 300);
       ctx.restore();
-    } catch (e) {
+    } catch {
       ctx.strokeStyle = 'rgba(220, 38, 38, 0.3)';
       ctx.lineWidth = 12;
       ctx.beginPath();
@@ -299,7 +301,7 @@ export async function generateCertificateCanvas(data, theme, globalSettings = nu
       ctx.clip();
       ctx.drawImage(photoImg, photoX - photoR, photoY - photoR, photoR * 2, photoR * 2);
       ctx.restore();
-    } catch (e) { }
+    } catch { }
   }
 
   ctx.lineWidth = 12;
@@ -435,7 +437,7 @@ export async function generateCertificateCanvas(data, theme, globalSettings = nu
       const sigWidth = 240;
       const sigHeight = 60;
       ctx.drawImage(sigImg, W - 450 - sigWidth / 2, bottomY - 10, sigWidth, sigHeight);
-    } catch (e) {
+    } catch {
       // Fallback to italic text
       ctx.fillStyle = theme.primary;
       ctx.font = 'italic 63px Georgia, serif';
@@ -1619,7 +1621,7 @@ export default function AdminCertificates() {
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-[10px] text-emerald-600 font-bold uppercase">Custom Signature Added:</span>
                         <img src={formData.issuerSignature.startsWith('data:') ? formData.issuerSignature : `${API}${formData.issuerSignature}`} alt="Sig" className="h-6 object-contain" />
-                        <button type="button" onClick={() => setFormData({...formData, issuerSignature: ''})} className="text-[10px] text-red-500 hover:underline">Remove</button>
+                        <button type="button" onClick={() => setFormData({ ...formData, issuerSignature: '' })} className="text-[10px] text-red-500 hover:underline">Remove</button>
                       </div>
                     ) : globalSettings?.authorizedSignature ? (
                       <div className="flex items-center gap-2 mt-1">

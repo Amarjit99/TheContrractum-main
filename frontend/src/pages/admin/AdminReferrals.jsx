@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { Users, Search, RefreshCw, CheckCircle, Clock, XCircle, Award } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
@@ -9,7 +9,7 @@ export default function AdminReferrals() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchReferrals = async () => {
+  const fetchReferrals = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/referrals`, {
@@ -23,11 +23,13 @@ export default function AdminReferrals() {
       console.error("Failed to fetch referrals", err);
     }
     setLoading(false);
-  };
+  }, [admin]);
 
   useEffect(() => {
-    fetchReferrals();
-  }, []);
+    Promise.resolve().then(() => {
+      fetchReferrals();
+    });
+  }, [fetchReferrals]);
 
   const handleStatusChange = async (id, newStatus) => {
     try {

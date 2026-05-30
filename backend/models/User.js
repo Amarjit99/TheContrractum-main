@@ -23,11 +23,22 @@ const userSchema = new mongoose.Schema({
   country: { type: String, trim: true, default: 'India' },
   pincode: { type: String, trim: true, default: '' },
 
-  role: { type: String, enum: ['user', 'admin', 'super-admin'], default: 'user' },
+  role: { type: String, enum: ['user', 'employee', 'manager', 'admin', 'super-admin'], default: 'user' },
   isApproved: { type: Boolean, default: false },
-  adminSubRole: { type: String, enum: ['', 'HR', 'Finance', 'TR', 'Support Manager', 'Manager', 'Legal'], default: '' },
+  adminSubRole: { type: String, enum: [
+    '',
+    // Admins
+    'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator',
+    // Managers
+    'HR Manager', 'Operations Manager', 'Project Manager', 'Sales Manager', 'Marketing Manager', 'Business Development Manager', 'Support Manager', 'Technical Manager', 'Content Manager', 'Event Manager', 'CRM & Lead Manager', 'Finance Manager', 'Compliance Manager', 'Training & Development Manager',
+    // Employees
+    'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
+  ], default: '' },
   adminPermissions: { type: String, enum: ['view', 'view-delete', 'view-delete-edit'], default: 'view' },
   joiningDate: { type: String, default: '' },
+  isHeld: { type: Boolean, default: false },
+  holdUntil: { type: Date, default: null },
+  holdReason: { type: String, default: '' },
 
   // Avatar — stored as base64 data URI
   avatar: { type: String, default: '' },
@@ -62,7 +73,12 @@ userSchema.pre('save', async function (next) {
   }
 
   if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 12);
+  
+  // Check if password is already a valid bcrypt hash
+  const isBcrypt = /^\$2[ayb]\$[0-9]{2}\$[./A-Za-z0-9]{53}$/.test(this.password);
+  if (!isBcrypt) {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
   next();
 });
 

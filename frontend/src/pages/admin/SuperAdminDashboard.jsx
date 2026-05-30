@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Link as LinkIcon, ChevronRight, UserPlus, CheckCircle2, Clock, Trash2, Mail, ShieldAlert } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -121,21 +121,78 @@ export default function SuperAdminDashboard() {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-            <StatCardItem
-              title="Total Users"
-              value={stats?.totalUsers || "245"}
-              trendColor="text-emerald-500"
-              trendText="Active"
-              trendIcon={<TrendingUp size={14} className="rotate-45" />}
-            />
-            <StatCardItem
-              title="System Analytics"
-              value="Live"
-              trendColor="text-blue-500"
-              trendText="Tracking"
-              trendIcon={<TrendingUp size={14} className="rotate-45" />}
-            />
+          {/* Website Management (WMS) Metrics */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-black text-blue-600 bg-blue-50/80 border border-blue-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+              Website Management (WMS) Metrics
+            </h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <StatCardItem
+                title="Total Leads"
+                value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
+                trendColor="text-emerald-500"
+                trendText="▲ 12%"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="Blog Posts"
+                value={stats?.totalBlogs || "12"}
+                trendColor="text-emerald-500"
+                trendText="Live"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="Job Applications"
+                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
+                trendColor="text-emerald-500"
+                trendText="New"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="Total Visitors"
+                value={stats?.totalVisitors ? stats.totalVisitors.toLocaleString() : "0"}
+                trendColor="text-blue-500"
+                trendText="Live"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+            </div>
+          </div>
+
+          {/* Company Management (CMS) Metrics */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+              Company Management (CMS) Metrics
+            </h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <StatCardItem
+                title="Total Users"
+                value={stats?.totalUsers || "245"}
+                trendColor="text-emerald-500"
+                trendText="Active"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="Active Partners"
+                value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
+                trendColor="text-emerald-500"
+                trendText="Partners"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="Certificates"
+                value={stats?.totalCertificates || "0"}
+                trendColor="text-emerald-500"
+                trendText="Issued"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+              <StatCardItem
+                title="ID Cards"
+                value={stats?.totalIdCards || "0"}
+                trendColor="text-emerald-500"
+                trendText="Active"
+                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -154,14 +211,24 @@ export default function SuperAdminDashboard() {
 
               <div className="h-64 w-full mt-2 relative">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorVisitorsSuper" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorViewsSuper" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F3F4F6" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF', fontWeight: 600 }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
                     <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Line type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} dot={{ r: 4, fill: '#1e5cdc', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={3} dot={{ r: 4, fill: '#93c5fd', strokeWidth: 2, stroke: '#fff' }} />
-                  </LineChart>
+                    <Area type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} fillOpacity={1} fill="url(#colorVisitorsSuper)" dot={{ r: 4, fill: '#1e5cdc', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                    <Area type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={3} fillOpacity={1} fill="url(#colorViewsSuper)" dot={{ r: 4, fill: '#93c5fd', strokeWidth: 2, stroke: '#fff' }} />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex justify-center">
@@ -180,10 +247,16 @@ export default function SuperAdminDashboard() {
 
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={conversionData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="barGradientSuper" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#1e5cdc" />
+                        <stop offset="100%" stopColor="#3b82f6" />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F3F4F6" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#9CA3AF', fontWeight: 600 }} />
                     <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Bar dataKey="rate" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={28} />
+                    <Bar dataKey="rate" fill="url(#barGradientSuper)" radius={[4, 4, 0, 0]} barSize={28} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

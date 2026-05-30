@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Referral = require('../models/Referral');
 const { protect: auth } = require('../middleware/auth'); // Optional admin auth
+const { checkSubRole } = require('../middleware/admin');
 
 // 1. Submit a New Referral (Public / Employee)
 router.post('/', async (req, res) => {
@@ -47,7 +48,7 @@ router.get('/', async (req, res) => {
 });
 
 // 3. Update Status (Admin)
-router.put('/:id/status', auth, async (req, res) => {
+router.put('/:id/status', auth, checkSubRole(['Finance', 'HR']), async (req, res) => {
   try {
     const { status } = req.body;
     const allowedStatuses = ['Applied', 'Interview', 'Hired', 'Declined'];
@@ -66,7 +67,7 @@ router.put('/:id/status', auth, async (req, res) => {
 });
 
 // 4. Approve Reward (Admin)
-router.put('/:id/reward', auth, async (req, res) => {
+router.put('/:id/reward', auth, checkSubRole(['Finance', 'HR']), async (req, res) => {
   try {
     const updated = await Referral.findByIdAndUpdate(
         req.params.id, 

@@ -1,4 +1,5 @@
 
+/* global process */
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
@@ -8,7 +9,7 @@ const distFolder = "dist";
 function runCommand(command, options = {}) {
     try {
         execSync(command, { stdio: "inherit", ...options });
-    } catch (error) {
+    } catch {
         console.error(`Error executing command: ${command}`);
         process.exit(1);
     }

@@ -1,11 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Search, UserCheck, ShieldCheck, Edit3, Trash2, X, CheckCircle, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 import { useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const ADMIN_SUB_ROLES = [
+  'System Administrator',
+  'HR Administrator',
+  'Operations Administrator',
+  'Website Administrator',
+  'CRM Administrator',
+  'Support Administrator',
+  'Marketing Administrator',
+  'Event Administrator',
+  'Content Administrator',
+  'Finance Administrator',
+  'Compliance Administrator',
+  'User Access Administrator',
+  'Database Administrator'
+];
 
 export default function AdminAdmins() {
   const { admin, logout } = useAdminAuth();
@@ -17,7 +34,6 @@ export default function AdminAdmins() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [msg, setMsg] = useState('');
 
   // Edit Modal State
   const [editingAdmin, setEditingAdmin] = useState(null);
@@ -33,11 +49,10 @@ export default function AdminAdmins() {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => { fetchAdmins(); }, [debouncedSearch, page]);
-
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     setLoading(true);
-    const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10&role=admin`, { headers });
+    const authHeaders = { Authorization: `Bearer ${admin?.token}`, 'Content-Type': 'application/json' };
+    const res = await fetch(`${API}/api/admin/users?search=${debouncedSearch}&page=${page}&limit=10&role=admin`, { headers: authHeaders });
     if (res.status === 401) {
       if (logout) logout();
       navigate('/admin/login');
@@ -46,7 +61,13 @@ export default function AdminAdmins() {
     const d = await res.json();
     setData(d);
     setLoading(false);
-  };
+  }, [admin, debouncedSearch, page, logout, navigate]);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchAdmins();
+    });
+  }, [fetchAdmins]);
 
   const handleEdit = (u) => {
     setEditingAdmin(u);
@@ -66,24 +87,22 @@ export default function AdminAdmins() {
         body: JSON.stringify(formData)
       });
       if (res.ok) {
-        showMsg('Admin details updated successfully!');
+        toast.success('Admin details updated successfully!');
         setEditingAdmin(null);
         fetchAdmins();
       } else {
-        showMsg('Failed to update admin details');
+        toast.error('Failed to update admin details');
       }
-    } catch (err) {
-      showMsg('Error updating admin');
+    } catch {
+      toast.error('Error updating admin');
     }
   };
 
   const deleteAdmin = async (id, name) => {
     if (!confirm(`Delete admin "${name}"? This cannot be undone.`)) return;
     const res = await fetch(`${API}/api/admin/users/${id}`, { method: 'DELETE', headers });
-    if (res.ok) { showMsg('Admin deleted.'); fetchAdmins(); } else showMsg('Failed to delete admin');
+    if (res.ok) { toast.success('Admin deleted.'); fetchAdmins(); } else toast.error('Failed to delete admin');
   };
-
-  const showMsg = (text) => { setMsg(text); setTimeout(() => setMsg(''), 3000); };
 
   return (
     <AdminLayout>
@@ -105,12 +124,6 @@ export default function AdminAdmins() {
           />
         </div>
       </div>
-
-      {msg && (
-        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm text-center font-medium shadow-sm animate-fade-in">
-          {msg}
-        </div>
-      )}
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
@@ -194,7 +207,7 @@ export default function AdminAdmins() {
       {/* Edit Modal */}
       {editingAdmin && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
+          <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
             <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
               <h2 className="text-lg sm:text-xl font-bold text-gray-800">Admin Setup</h2>
               <button onClick={() => setEditingAdmin(null)} className="text-gray-400 hover:text-gray-600 p-1">
@@ -203,31 +216,31 @@ export default function AdminAdmins() {
             </div>
 
             <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-              {/* Role Dropdown */}
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Assign Role</label>
-                <select
-                  value={formData.adminSubRole}
-                  onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
-                >
-                  <option value="">Select a Role</option>
-                  <option value="HR">HR</option>
-                  <option value="Finance">Finance</option>
-                  <option value="TR">TR</option>
-                  <option value="Support Manager">Support Manager</option>
-                </select>
-              </div>
+              {/* Role and Joining Date side by side */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Assign Role</label>
+                  <select
+                    value={formData.adminSubRole}
+                    onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  >
+                    <option value="">Select a Role</option>
+                    {ADMIN_SUB_ROLES.map(roleName => (
+                      <option key={roleName} value={roleName}>{roleName}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Joining Date */}
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Joining Date</label>
-                <input
-                  type="date"
-                  value={formData.joiningDate}
-                  onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
-                />
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Joining Date</label>
+                  <input
+                    type="date"
+                    value={formData.joiningDate}
+                    onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] transition-all"
+                  />
+                </div>
               </div>
 
               {/* Permissions Radio */}

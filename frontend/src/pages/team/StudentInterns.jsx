@@ -9,34 +9,7 @@ import { useState, useEffect } from 'react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export default function StudentInterns() {
-    const [interns, setInterns] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchInterns = async () => {
-            try {
-                const res = await fetch(`${API}/api/interns?t=${Date.now()}`);
-                const data = await res.json();
-                console.log('Fetched interns from DB:', data);
-                if (data && data.length > 0) {
-                    // Combine DB interns with static ones, avoiding duplicates by name
-                    const dynamicNames = new Set(data.map(i => i.name.toLowerCase()));
-                    const filteredStatic = staticInterns.filter(i => !dynamicNames.has(i.name.toLowerCase()));
-                    setInterns([...data, ...filteredStatic]);
-                } else {
-                    setInterns(staticInterns);
-                }
-            } catch (err) {
-                console.error("Failed to fetch interns:", err);
-                setInterns(staticInterns);
-            }
-            setLoading(false);
-        };
-        fetchInterns();
-    }, []);
-
-    const staticInterns = [
+const staticInterns = [
         {
             name: "Puttoju Venkatesh",
             role: "Software Web Development Project Intern",
@@ -78,6 +51,32 @@ export default function StudentInterns() {
             tags: ["Figma", "User Research", "Prototyping"],
         },
     ];
+
+export default function StudentInterns() {
+    const [interns, setInterns] = useState([]);
+
+    useEffect(() => {
+        const fetchInterns = async () => {
+            try {
+                const res = await fetch(`${API}/api/interns?t=${Date.now()}`);
+                const data = await res.json();
+                console.log('Fetched interns from DB:', data);
+                if (data && data.length > 0) {
+                    // Combine DB interns with static ones, avoiding duplicates by name
+                    const dynamicNames = new Set(data.map(i => i.name.toLowerCase()));
+                    const filteredStatic = staticInterns.filter(i => !dynamicNames.has(i.name.toLowerCase()));
+                    setInterns([...data, ...filteredStatic]);
+                } else {
+                    setInterns(staticInterns);
+                }
+            } catch (err) {
+                console.error("Failed to fetch interns:", err);
+                setInterns(staticInterns);
+            }
+        };
+        fetchInterns();
+    }, []);
+
 
     return (
         <div className="min-h-screen">
@@ -154,7 +153,7 @@ export default function StudentInterns() {
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 mt-auto pt-4">
-                                            {intern.tags.map((tag, idx) => (
+                                            {(intern.tags || []).map((tag, idx) => (
                                                 <span
                                                     key={idx}
                                                     className="px-3 py-1 bg-slate-100 text-xs font-bold text-slate-700 rounded-full hover:bg-orange-100 hover:text-orange-700 transition"

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
-  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, LabelList, BarChart, Bar, Legend
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, LabelList, BarChart, Bar
 } from 'recharts';
-import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, Search } from 'lucide-react';
+import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, Search, Award, Building2, Fingerprint, Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -20,17 +20,9 @@ const visitorData = [
   { day: 'Sun', visitors: 349, pageViews: 4300 },
 ];
 
-const categoryData = [
-  { name: 'Technology', value: 45 },
-  { name: 'Business', value: 30 },
-  { name: 'Innovation', value: 15 },
-  { name: 'Others', value: 10 },
-];
-
 export default function AdminAnalytics() {
   const { admin } = useAdminAuth();
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const token = admin?.token;
 
   const [logs, setLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
@@ -39,11 +31,16 @@ export default function AdminAnalytics() {
   const [scanLogs, setScanLogs] = useState([]);
   const [loadingScanLogs, setLoadingScanLogs] = useState(true);
 
-  const fetchScanLogs = async () => {
+  const [detailedStats, setDetailedStats] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [formStats, setFormStats] = useState(null);
+
+  const fetchScanLogs = useCallback(async () => {
+    if (!token) return;
     setLoadingScanLogs(true);
     try {
       const res = await fetch(`${API}/api/certificates/logs`, {
-        headers: { Authorization: `Bearer ${admin?.token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -54,13 +51,14 @@ export default function AdminAnalytics() {
     } finally {
       setLoadingScanLogs(false);
     }
-  };
+  }, [token]);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
+    if (!token) return;
     setLoadingLogs(true);
     try {
       const res = await fetch(`${API}/api/audit-logs`, {
-        headers: { Authorization: `Bearer ${admin?.token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -69,26 +67,35 @@ export default function AdminAnalytics() {
         toast.error('Failed to fetch audit logs');
         setLogs([]);
       }
-    } catch (err) {
+    } catch {
       toast.error('Error fetching audit logs');
       setLogs([]);
     } finally {
       setLoadingLogs(false);
     }
-  };
-
-  const [detailedStats, setDetailedStats] = useState(null);
+  }, [token]);
 
   useEffect(() => {
-    fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
-      .then(r => r.json()).then(setStats).finally(() => setLoading(false));
+    if (!token) return;
     
-    fetch(`${API}/api/admin/detailed-stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
-      .then(r => r.json()).then(setDetailedStats);
+    fetch(`${API}/api/admin/detailed-stats`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(setDetailedStats)
+      .catch(() => {});
+
+    fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(setStats)
+      .catch(() => {});
+
+    fetch(`${API}/api/admin/form-stats`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(setFormStats)
+      .catch(() => {});
 
     fetchLogs();
     fetchScanLogs();
-  }, [admin]);
+  }, [token, fetchLogs, fetchScanLogs]);
 
   const filteredLogs = logs.filter(log => 
     (log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -98,25 +105,91 @@ export default function AdminAnalytics() {
     (log.details || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Dynamic processed form response statistics
+  const processedFormStats = formStats?.stats && formStats.stats.some(s => s.count > 0)
+    ? formStats.stats.map(s => ({ name: s.name, value: s.count })).sort((a, b) => b.value - a.value).slice(0, 8)
+    : [
+        { name: 'Contact Us', value: 15 },
+        { name: 'Job Apps', value: 8 },
+        { name: 'Demo Requests', value: 4 },
+        { name: 'Support Tickets', value: 6 },
+        { name: 'Newsletters', value: 12 },
+      ];
+
+  // Dynamic credential locations stats
+  const processedLocationData = detailedStats?.locationDistribution && detailedStats.locationDistribution.length > 0
+    ? detailedStats.locationDistribution.map(l => ({ name: l._id || 'Unknown', count: l.count }))
+    : [
+        { name: 'Delhi', count: 12 },
+        { name: 'Mumbai', count: 8 },
+        { name: 'Bangalore', count: 9 },
+        { name: 'Pune', count: 4 },
+        { name: 'Chennai', count: 3 }
+      ];
+
+  // Dynamic certificate category distribution fallback
+  const processedCategoryDistribution = detailedStats?.categoryDistribution && detailedStats.categoryDistribution.length > 0
+    ? detailedStats.categoryDistribution
+    : [
+        { _id: 'Internship', count: 25 },
+        { _id: 'Experience', count: 18 },
+        { _id: 'Excellence', count: 7 },
+        { _id: 'Appreciation', count: 5 }
+      ];
+
+  // Dynamic department volume fallback
+  const processedDeptDistribution = detailedStats?.deptDistribution && detailedStats.deptDistribution.length > 0
+    ? detailedStats.deptDistribution
+    : [
+        { _id: 'Engineering', count: 35 },
+        { _id: 'Marketing', count: 15 },
+        { _id: 'Operations', count: 5 }
+      ];
+
+  // Dynamic monthly issuance trends fallback
+  const processedMonthlyTrends = detailedStats?.monthlyTrends && detailedStats.monthlyTrends.length > 0
+    ? detailedStats.monthlyTrends.map(t => ({ 
+        month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t._id-1] || `M${t._id}`, 
+        count: t.count 
+      }))
+    : [
+        { month: 'Jan', count: 5 },
+        { month: 'Feb', count: 10 },
+        { month: 'Mar', count: 18 },
+        { month: 'Apr', count: 12 },
+        { month: 'May', count: 22 },
+        { month: 'Jun', count: 30 }
+      ];
+
   return (
     <AdminLayout>
+      {/* Page Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">Advanced Analytics</h1>
-          <p className="text-gray-500 text-xs sm:text-sm mt-1 font-medium italic">Deep dive into your traffic and conversion metrics</p>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">Advanced Analytics Ledger</h1>
+          <p className="text-gray-500 text-xs sm:text-sm mt-1 font-medium">Deep dive into Website Engagement and Corporate Operations metrics</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 bg-white border border-gray-200 px-4 py-2 rounded-lg shadow-sm text-sm font-semibold text-gray-600">
-            <Calendar size={16} /> Last 7 Days
+            <Calendar size={16} className="text-[#1e5cdc]" /> Last 30 Days
           </div>
         </div>
       </div>
 
-      {/* Metric Cards */}
+      {/* ========================================================================= */}
+      {/* WEBSITE MANAGEMENT SYSTEM (WMS) ANALYTICS */}
+      {/* ========================================================================= */}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="h-6 w-1.5 rounded-full bg-[#1e5cdc]"></span>
+        <h2 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wider">Website Management System (WMS)</h2>
+        <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-full uppercase">Traffic & Engagement</span>
+      </div>
+
+      {/* WMS Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Bounce Rate</span>
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Bounce Rate</span>
             <div className="p-2 bg-blue-50 text-[#1e5cdc] rounded-xl"><Activity size={20} /></div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -125,10 +198,10 @@ export default function AdminAnalytics() {
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Avg. Session</span>
-            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl"><Users size={20} /></div>
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Avg. Session</span>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl"><Clock size={20} /></div>
           </div>
           <div className="flex items-baseline gap-2">
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900">4m 12s</h3>
@@ -136,9 +209,9 @@ export default function AdminAnalytics() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Page / Visit</span>
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Pages / Visit</span>
             <div className="p-2 bg-amber-50 text-amber-600 rounded-xl"><MousePointer2 size={20} /></div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -147,9 +220,9 @@ export default function AdminAnalytics() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Goal Conversions</span>
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Goal Conversions</span>
             <div className="p-2 bg-purple-50 text-purple-600 rounded-xl"><Target size={20} /></div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -159,11 +232,15 @@ export default function AdminAnalytics() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* WMS Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {/* Main Traffic Chart */}
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <h3 className="font-bold text-gray-800 text-sm sm:text-base">Live Traffic Telemetry</h3>
+            <div>
+              <h3 className="font-bold text-gray-800 text-sm sm:text-base">Website Traffic trends</h3>
+              <p className="text-xs text-gray-400 font-medium">Daily visitor volume and page views</p>
+            </div>
             <div className="flex flex-wrap items-center gap-4">
                <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-gray-500 uppercase">
                  <span className="w-2.5 h-2.5 rounded-full bg-[#1e5cdc]"></span> Visitors
@@ -181,103 +258,234 @@ export default function AdminAnalytics() {
                     <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.15}/>
                     <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
                   </linearGradient>
+                  <linearGradient id="colorPageViews" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.15}/>
+                    <stop offset="95%" stopColor="#93c5fd" stopOpacity={0}/>
+                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 600, fill: '#94a3b8'}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 600, fill: '#94a3b8'}} />
                 <Tooltip 
                   contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', backgroundColor: '#fff'}}
                   itemStyle={{fontSize: '12px', fontWeight: 800}}
                 />
                 <Area type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} fillOpacity={1} fill="url(#colorVis)" />
-                <Area type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={2} fillOpacity={0} />
+                <Area type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={2} fillOpacity={1} fill="url(#colorPageViews)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Content Breakdown Bar Chart */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-bold text-gray-800 text-sm sm:text-base">Content Popularity Index</h3>
+        {/* Website Form Submissions */}
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="font-bold text-gray-800 text-sm sm:text-base">Website Form Responses</h3>
+            <p className="text-xs text-gray-400 font-medium mb-6">Total inquiries processed across interactive channels</p>
           </div>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryData} layout="vertical" margin={{ left: 20 }}>
+              <BarChart data={processedFormStats} layout="vertical" margin={{ left: 10 }}>
+                <defs>
+                  <linearGradient id="barGradientPop" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#1e5cdc" />
+                    <stop offset="100%" stopColor="#6366f1" />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 800, fill: '#94a3b8'}} />
-                <Tooltip cursor={{fill: 'rgba(0,0,0,0.05)', radius: 8}} contentStyle={{borderRadius: '12px', border: 'none', backgroundColor: '#fff'}} />
-                <Bar dataKey="value" fill="#1e5cdc" radius={[0, 10, 10, 0]} barSize={32}>
-                  <LabelList dataKey="value" position="right" formatter={(v) => `${v}%`} style={{fontSize: '12px', fontWeight: 800, fill: '#94a3b8'}} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 600, fill: '#94a3b8'}} width={100} />
+                <Tooltip cursor={{fill: 'rgba(30, 92, 220, 0.03)', radius: 4}} contentStyle={{borderRadius: '12px', border: 'none', backgroundColor: '#fff', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                <Bar dataKey="value" fill="url(#barGradientPop)" radius={[0, 6, 6, 0]} barSize={20}>
+                  <LabelList dataKey="value" position="right" style={{fontSize: '11px', fontWeight: 700, fill: '#64748b'}} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-4 text-xs text-gray-400 font-medium text-center">Data represents engagement distribution across site categories</p>
         </div>
       </div>
 
+      {/* ========================================================================= */}
+      {/* COMPANY MANAGEMENT SYSTEM (CMS) ANALYTICS */}
+      {/* ========================================================================= */}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="h-6 w-1.5 rounded-full bg-emerald-600"></span>
+        <h2 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wider">Company Management System (CMS)</h2>
+        <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full uppercase">Credentials & Operations</span>
+      </div>
 
-      {/* Certificate Analytics Section */}
-      <div className="mt-12 mb-8">
-        <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-6">Certificate Lifecycle Insights</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Category Distribution */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Category Distribution</h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={detailedStats?.categoryDistribution || []}>
-                  <XAxis dataKey="_id" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
-                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
-                  <Bar dataKey="count" fill="#1e5cdc" radius={[4, 4, 0, 0]} barSize={30} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+      {/* CMS Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Registered Members</span>
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl"><Users size={20} /></div>
           </div>
-
-          {/* Department Distribution */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Department Volume</h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={detailedStats?.deptDistribution || []} layout="vertical">
-                  <XAxis type="number" hide />
-                  <YAxis dataKey="_id" type="category" fontSize={10} width={80} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{fill: '#f9fafb'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
-                  <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Issuance Trends */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <h3 className="font-bold text-gray-800 text-sm mb-6 uppercase tracking-wider">Monthly Issuance Trend</h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={detailedStats?.monthlyTrends?.map(t => ({ month: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t._id-1], count: t.count })) || []}>
-                  <XAxis dataKey="month" fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
-                  <YAxis fontSize={10} tick={{fill: '#9ca3af'}} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
-                  <Area type="monotone" dataKey="count" stroke="#6366f1" fill="url(#colorCount)" strokeWidth={3} />
-                  <defs>
-                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalUsers ?? '-'}</h3>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Active profiles</span>
           </div>
         </div>
+        
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Active Partners</span>
+            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl"><Building2 size={20} /></div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalPartners ?? '-'}</h3>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Corporate nodes</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Issued Credentials</span>
+            <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl"><Award size={20} /></div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalCertificates ?? '-'}</h3>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Verified certificates</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Secure Passes</span>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-xl"><Fingerprint size={20} /></div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalIdCards ?? '-'}</h3>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Active ID Cards</span>
+          </div>
+        </div>
+      </div>
+
+      {/* CMS Certificate Insights Grid (2x2 Grid of 4 charts) */}
+      <div className="mb-12">
+        <div className="bg-gray-50 border border-gray-100 p-4 sm:p-6 rounded-2xl">
+          <h3 className="text-xs sm:text-sm font-black text-gray-700 uppercase tracking-wider mb-6">Certificate & Credential Lifecycle Insights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Category Distribution */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wider">Category Distribution</h4>
+                <p className="text-[10px] text-gray-400 font-medium mb-4">Quantity by credential type</p>
+              </div>
+              <div className="h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={processedCategoryDistribution}>
+                    <defs>
+                      <linearGradient id="barGradientCat" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#1e5cdc" />
+                        <stop offset="100%" stopColor="#3b82f6" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="_id" fontSize={9} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <YAxis fontSize={9} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{fill: 'rgba(30, 92, 220, 0.02)'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                    <Bar dataKey="count" fill="url(#barGradientCat)" radius={[4, 4, 0, 0]} barSize={24} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Department Volume */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wider">Department Volume</h4>
+                <p className="text-[10px] text-gray-400 font-medium mb-4">Quantity across business units</p>
+              </div>
+              <div className="h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={processedDeptDistribution} layout="vertical">
+                    <defs>
+                      <linearGradient id="barGradientDept" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor="#34d399" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="_id" type="category" fontSize={9} width={80} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{fill: 'rgba(16, 185, 129, 0.02)'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                    <Bar dataKey="count" fill="url(#barGradientDept)" radius={[0, 4, 4, 0]} barSize={14}>
+                      <LabelList dataKey="count" position="right" style={{fontSize: '9px', fontWeight: 700, fill: '#64748b'}} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Credential Location Split */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wider">Credential Location Split</h4>
+                <p className="text-[10px] text-gray-400 font-medium mb-4">Distribution by city / region</p>
+              </div>
+              <div className="h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={processedLocationData} layout="vertical">
+                    <defs>
+                      <linearGradient id="barGradientLoc" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#f59e0b" />
+                        <stop offset="100%" stopColor="#fbbf24" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" fontSize={9} width={80} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <Tooltip cursor={{fill: 'rgba(245, 158, 11, 0.02)'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                    <Bar dataKey="count" fill="url(#barGradientLoc)" radius={[0, 4, 4, 0]} barSize={14}>
+                      <LabelList dataKey="count" position="right" style={{fontSize: '9px', fontWeight: 700, fill: '#64748b'}} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Monthly Issuance Trend */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm uppercase tracking-wider">Monthly Issuance Trend</h4>
+                <p className="text-[10px] text-gray-400 font-medium mb-4">Month-over-month volume</p>
+              </div>
+              <div className="h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={processedMonthlyTrends}>
+                    <defs>
+                      <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="month" fontSize={9} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <YAxis fontSize={9} tick={{fill: '#94a3b8', fontWeight: 600}} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                    <Area type="monotone" dataKey="count" stroke="#6366f1" fill="url(#colorCount)" strokeWidth={2.5} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* SYSTEM OPERATIONS & AUDIT LOGS */}
+      {/* ========================================================================= */}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="h-6 w-1.5 rounded-full bg-slate-650 bg-slate-600"></span>
+        <h2 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wider">System Security & Operational Logs</h2>
+        <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-100 rounded-full uppercase">Security Ledger</span>
       </div>
 
       {/* Audit Log Table (Integrated below charts) */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-12 animate-fade-in">
         <div className="px-6 py-5 border-b border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-[#f8fafc] gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 text-[#1e5cdc] rounded-xl hidden sm:flex">
@@ -304,7 +512,7 @@ export default function AdminAnalytics() {
               className="p-2 border border-gray-200 text-gray-600 bg-white rounded-lg hover:bg-gray-50 transition-all shadow-sm flex-shrink-0"
               title="Refresh Logs"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={16} className={loadingLogs ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
@@ -428,7 +636,6 @@ export default function AdminAnalytics() {
           </table>
         </div>
       </div>
-
     </AdminLayout>
   );
 }

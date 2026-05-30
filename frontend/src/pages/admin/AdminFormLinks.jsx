@@ -35,6 +35,18 @@ const FORM_DETAILS = [
 
 const COLORS = ['#1e5cdc', '#0ea5e9', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e', '#f59e0b', '#10b981', '#6b7280', '#475569'];
 
+const SummaryCard = ({ title, value, icon, color }) => (
+  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transition-all hover:shadow-md">
+    <div className={`p-4 rounded-xl ${color} bg-opacity-10 text-${color.split('-')[1]}-600`}>
+      {icon}
+    </div>
+    <div>
+      <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">{title}</p>
+      <h3 className="text-3xl font-black text-gray-900 mt-0.5">{value}</h3>
+    </div>
+  </div>
+);
+
 export default function AdminFormLinks() {
   const { admin } = useAdminAuth();
   const [stats, setStats] = useState(null);
@@ -80,18 +92,6 @@ export default function AdminFormLinks() {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
-
-  const SummaryCard = ({ title, value, icon, color }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-5 transition-all hover:shadow-md">
-      <div className={`p-4 rounded-xl ${color} bg-opacity-10 text-${color.split('-')[1]}-600`}>
-        {icon}
-      </div>
-      <div>
-        <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">{title}</p>
-        <h3 className="text-3xl font-black text-gray-900 mt-0.5">{value}</h3>
-      </div>
-    </div>
-  );
 
   return (
     <AdminLayout>

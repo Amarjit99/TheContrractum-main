@@ -42,6 +42,7 @@ import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import { Toaster } from 'react-hot-toast';
 import { AdminAuthProvider } from './context/AdminAuthContext';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 
 /////////////////////// Company Pages//////////////////////////////////
 import AboutUs from './pages/company/AboutUs';
@@ -189,38 +190,38 @@ export default function App() {
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/registration" element={<AdminRegistrationPage />} />
-                <Route path="/admin/dashboard" element={<Dashboard />} />
-                <Route path="/admin/super-dashboard" element={<SuperAdminDashboard />} />
-                <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/admin/admins" element={<AdminAdmins />} />
-                <Route path="/admin/contacts" element={<AdminContacts />} />
-                <Route path="/admin/services" element={<AdminServices />} />
-                <Route path="/admin/blogs" element={<AdminBlogs />} />
-                <Route path="/admin/careers" element={<AdminCareers />} />
-                <Route path="/admin/partners" element={<AdminPartners />} />
-                <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                <Route path="/admin/settings" element={<AdminSettings />} />
-                <Route path="/admin/student-interns" element={<AdminStudentInterns />} />
-                <Route path="/admin/founders" element={<AdminFounders />} />
-                <Route path="/admin/form-links" element={<AdminFormLinks />} />
-                <Route path="/admin/notifications" element={<AdminNotifications />} />
-                <Route path="/admin/submissions" element={<AdminSubmissions />} />
-                <Route path="/admin/surveys" element={<AdminSurveys />} />
-                <Route path="/admin/profile" element={<AdminProfile />} />
-                <Route path="/admin/news" element={<AdminNews />} />
-                <Route path="/admin/id-cards" element={<AdminIdCards />} />
-                <Route path="/admin/referrals" element={<AdminReferrals />} />
-                <Route path="/admin/projects" element={<AdminProjects />} />
-                <Route path="/admin/affiliates" element={<AdminAffiliates />} />
-                <Route path="/admin/contracts" element={<AdminContracts />} />
-                <Route path="/admin/certificates" element={<AdminCertificates />} />
-                <Route path="/admin/events" element={<AdminEvents />} />
-                <Route path="/admin/event-registrations" element={<AdminEventRegistrations />} />
-                <Route path="/admin/tasks" element={<AdminTasks />} />
-                <Route path="/admin/contracts/create" element={<ContractEditor />} />
-                <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
-                <Route path="/admin/contracts/templates" element={<AdminContractTemplates />} />
+                <Route path="/admin/registration" element={<AdminProtectedRoute><AdminRegistrationPage /></AdminProtectedRoute>} />
+                <Route path="/admin/dashboard" element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
+                <Route path="/admin/super-dashboard" element={<AdminProtectedRoute superAdminOnly><SuperAdminDashboard /></AdminProtectedRoute>} />
+                <Route path="/admin/users" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'System Administrator', 'User Access Administrator', 'Compliance Administrator']}><AdminUsers /></AdminProtectedRoute>} />
+                <Route path="/admin/admins" element={<AdminProtectedRoute superAdminOnly><AdminAdmins /></AdminProtectedRoute>} />
+                <Route path="/admin/contacts" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'CRM & Lead Manager', 'CRM Administrator', 'CRM Executive', 'Manager', 'Sales Manager', 'Sales Executive']}><AdminContacts /></AdminProtectedRoute>} />
+                <Route path="/admin/services" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Website Administrator', 'Technical Support Executive', 'TR']}><AdminServices /></AdminProtectedRoute>} />
+                <Route path="/admin/blogs" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminBlogs /></AdminProtectedRoute>} />
+                <Route path="/admin/careers" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive']}><AdminCareers /></AdminProtectedRoute>} />
+                <Route path="/admin/partners" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive', 'Business Development Manager', 'Business Development Executive', 'Manager']}><AdminPartners /></AdminProtectedRoute>} />
+                <Route path="/admin/analytics" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'System Administrator', 'Marketing Manager', 'Marketing Administrator', 'Marketing Executive']}><AdminAnalytics /></AdminProtectedRoute>} />
+                <Route path="/admin/settings" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'System Administrator', 'Database Administrator', 'Technical Manager']}><AdminSettings /></AdminProtectedRoute>} />
+                <Route path="/admin/student-interns" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Training Coordinator', 'Training & Development Manager']}><AdminStudentInterns /></AdminProtectedRoute>} />
+                <Route path="/admin/founders" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive']}><AdminFounders /></AdminProtectedRoute>} />
+                <Route path="/admin/form-links" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Support Manager', 'Support Administrator', 'CRM & Lead Manager', 'CRM Administrator', 'Customer Support Executive']}><AdminFormLinks /></AdminProtectedRoute>} />
+                <Route path="/admin/notifications" element={<AdminProtectedRoute><AdminNotifications /></AdminProtectedRoute>} />
+                <Route path="/admin/submissions" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'CRM & Lead Manager', 'CRM Administrator', 'Data Entry & Documentation Executive']}><AdminSubmissions /></AdminProtectedRoute>} />
+                <Route path="/admin/surveys" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'Data Entry & Documentation Executive']}><AdminSurveys /></AdminProtectedRoute>} />
+                <Route path="/admin/profile" element={<AdminProtectedRoute><AdminProfile /></AdminProtectedRoute>} />
+                <Route path="/admin/news" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminNews /></AdminProtectedRoute>} />
+                <Route path="/admin/id-cards" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive']}><AdminIdCards /></AdminProtectedRoute>} />
+                <Route path="/admin/referrals" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive', 'HR', 'HR Administrator', 'HR Manager']}><AdminReferrals /></AdminProtectedRoute>} />
+                <Route path="/admin/projects" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Project Manager', 'Project Coordinator', 'TR']}><AdminProjects /></AdminProtectedRoute>} />
+                <Route path="/admin/affiliates" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive']}><AdminAffiliates /></AdminProtectedRoute>} />
+                <Route path="/admin/contracts" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><AdminContracts /></AdminProtectedRoute>} />
+                <Route path="/admin/certificates" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive']}><AdminCertificates /></AdminProtectedRoute>} />
+                <Route path="/admin/events" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Event Manager', 'Event Administrator', 'Event Coordinator', 'Manager']}><AdminEvents /></AdminProtectedRoute>} />
+                <Route path="/admin/event-registrations" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Event Manager', 'Event Administrator', 'Event Coordinator', 'Manager']}><AdminEventRegistrations /></AdminProtectedRoute>} />
+                <Route path="/admin/tasks" element={<AdminProtectedRoute><AdminTasks /></AdminProtectedRoute>} />
+                <Route path="/admin/contracts/create" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><ContractEditor /></AdminProtectedRoute>} />
+                <Route path="/admin/contracts/view/:id" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><ContractEditor /></AdminProtectedRoute>} />
+                <Route path="/admin/contracts/templates" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager']}><AdminContractTemplates /></AdminProtectedRoute>} />
 
                 {/* ///////////////////////// Company Routes///////////////////////// */}
                 <Route path="/company/about-us" element={<AboutUs />} />

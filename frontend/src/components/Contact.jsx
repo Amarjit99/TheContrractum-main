@@ -40,7 +40,7 @@ const Registration = () => {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
       }
-    } catch (err) {
+    } catch {
       setStatus("error");
       setErrorMsg("Could not reach the server. Please try again later.");
     }
