@@ -9,7 +9,7 @@ const certificateSchema = new mongoose.Schema({
   },
   issueDate: { type: Date, required: true },
   certificateId: { type: String, unique: true, required: true },
-  fileUrl: { type: String, required: true },
+  fileUrl: { type: String, default: '' },
   themeId: { type: String, default: 'classic' },
   designation: { type: String },
   department: { type: String },
@@ -18,6 +18,8 @@ const certificateSchema = new mongoose.Schema({
   recipientPhone: { type: String },
   location: { type: String, default: 'India' },
   issuedBy: { type: String, default: 'The Contractum' },
+  issuerDesignation: { type: String },
+  issuerSignature: { type: String },
   // ── Approval Workflow Fields ──
   status: {
     type: String,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Linkedin,
@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import VisitorCounter from "./VisitorCounter";
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const navLinkClass =
   "hover:text-red-400 cursor-pointer transition-colors hover:translate-x-2 transform duration-200 flex items-center gap-2 group text-gray-300";
 
@@ -19,6 +21,41 @@ const Dot = () => (
 );
 
 const Footer = () => {
+  const [socialLinks, setSocialLinks] = useState({
+    linkedin: 'https://www.linkedin.com/company/contractum-integral-solution-pvt-ltd/posts/?feedView=all',
+    twitter: '#',
+    facebook: '#',
+    youtube: '#'
+  });
+  const [contact, setContact] = useState({
+    email: 'info@thecontractum.com',
+    phone: '+91 96805-34740',
+    address: 'Plot No 169, Ground Floor, Rangbari Road, Kota, Rajasthan 324005'
+  });
+
+  useEffect(() => {
+    fetch(`${API}/api/settings`)
+      .then(r => r.json())
+      .then(data => {
+        if (data?.socialLinks) {
+          setSocialLinks(prev => ({
+            linkedin: data.socialLinks.linkedin || prev.linkedin,
+            twitter: data.socialLinks.twitter || prev.twitter,
+            facebook: data.socialLinks.facebook || prev.facebook,
+            youtube: data.socialLinks.youtube || prev.youtube,
+          }));
+        }
+        if (data?.contactDetails) {
+          setContact(prev => ({
+            email: data.contactDetails.email || prev.email,
+            phone: data.contactDetails.phone || prev.phone,
+            address: data.contactDetails.address || prev.address,
+          }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <footer className="relative print:hidden">
 
@@ -71,9 +108,9 @@ const Footer = () => {
             </h4>
 
             <div className="flex flex-wrap gap-3">
-              {/* LinkedIn — real URL */}
+              {/* LinkedIn */}
               <a
-                href="https://www.linkedin.com/company/contractum-integral-solution-pvt-ltd/posts/?feedView=all"
+                href={socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white/5 p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 hover:text-white cursor-pointer transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 border border-white/10"
@@ -81,22 +118,31 @@ const Footer = () => {
               >
                 <Linkedin size={20} />
               </a>
+              {/* Twitter */}
               <a
-                href="#"
+                href={socialLinks.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-white/5 p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-400 hover:to-cyan-500 hover:text-white cursor-pointer transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 border border-white/10"
                 aria-label="Twitter"
               >
                 <Twitter size={20} />
               </a>
+              {/* Facebook */}
               <a
-                href="#"
+                href={socialLinks.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-white/5 p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white cursor-pointer transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 border border-white/10"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
               </a>
+              {/* YouTube */}
               <a
-                href="#"
+                href={socialLinks.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="bg-white/5 p-3 rounded-lg hover:bg-gradient-to-r hover:from-red-600 hover:to-red-700 hover:text-white cursor-pointer transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 border border-white/10"
                 aria-label="YouTube"
               >
@@ -178,11 +224,8 @@ const Footer = () => {
                 <Mail size={20} className="text-red-500 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-xs text-gray-300 mb-1">Email</p>
-                  <a
-                    href="mailto:info@thecontractum.com"
-                    className="text-white hover:text-red-400 transition-colors font-medium"
-                  >
-                    info@thecontractum.com
+                  <a href={`mailto:${contact.email}`} className="text-white hover:text-red-400 transition-colors font-medium">
+                    {contact.email}
                   </a>
                 </div>
               </div>
@@ -191,11 +234,8 @@ const Footer = () => {
                 <Phone size={20} className="text-red-500 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-xs text-gray-300 mb-1">Phone</p>
-                  <a
-                    href="tel:+919680534740"
-                    className="text-white hover:text-red-400 transition-colors font-medium"
-                  >
-                    +91 96805-34740
+                  <a href={`tel:${contact.phone.replace(/\s/g,'')}`} className="text-white hover:text-red-400 transition-colors font-medium">
+                    {contact.phone}
                   </a>
                 </div>
               </div>
@@ -204,11 +244,7 @@ const Footer = () => {
                 <MapPin size={20} className="text-red-500 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-xs text-gray-300 mb-1">Address</p>
-                  <p className="text-white leading-relaxed text-sm">
-                    Plot No 169, Ground Floor<br />
-                    Rangbari Road<br />
-                    Kota, Rajasthan 324005
-                  </p>
+                  <p className="text-white leading-relaxed text-sm">{contact.address}</p>
                 </div>
               </div>
             </div>

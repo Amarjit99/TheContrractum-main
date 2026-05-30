@@ -24,6 +24,8 @@ import AdminFounders from './pages/admin/AdminFounders';
 import AdminFormLinks from './pages/admin/AdminFormLinks';
 import AdminSubmissions from './pages/admin/AdminSubmissions';
 import AdminSurveys from './pages/admin/AdminSurveys';
+import AdminProfile from './pages/admin/AdminProfile';
+import AdminTasks from './pages/admin/AdminTasks';
 import AdminNews from './pages/admin/AdminNews';
 import AdminIdCards from './pages/admin/AdminIdCards';
 import AdminReferrals from './pages/admin/AdminReferrals';
@@ -34,6 +36,7 @@ import AdminEvents from './pages/admin/AdminEvents';
 import AdminEventRegistrations from './pages/admin/AdminEventRegistrations';
 import VerifyCertificate from './pages/VerifyCertificate';
 import ContractEditor from './pages/admin/ContractEditor';
+import AdminContractTemplates from './pages/admin/AdminContractTemplates';
 import AdminAffiliates from './pages/admin/AdminAffiliates';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import AdminNotifications from './pages/admin/AdminNotifications';
@@ -204,6 +207,7 @@ export default function App() {
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/submissions" element={<AdminSubmissions />} />
                 <Route path="/admin/surveys" element={<AdminSurveys />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/news" element={<AdminNews />} />
                 <Route path="/admin/id-cards" element={<AdminIdCards />} />
                 <Route path="/admin/referrals" element={<AdminReferrals />} />
@@ -213,8 +217,10 @@ export default function App() {
                 <Route path="/admin/certificates" element={<AdminCertificates />} />
                 <Route path="/admin/events" element={<AdminEvents />} />
                 <Route path="/admin/event-registrations" element={<AdminEventRegistrations />} />
+                <Route path="/admin/tasks" element={<AdminTasks />} />
                 <Route path="/admin/contracts/create" element={<ContractEditor />} />
                 <Route path="/admin/contracts/view/:id" element={<ContractEditor />} />
+                <Route path="/admin/contracts/templates" element={<AdminContractTemplates />} />
 
                 {/* ///////////////////////// Company Routes///////////////////////// */}
                 <Route path="/company/about-us" element={<AboutUs />} />

@@ -19,7 +19,14 @@ const upload = multer({
 // GET /api/users — List users (Admin only)
 router.get('/', protect, adminOnly, async (req, res) => {
   try {
-    const users = await User.find({ role: 'user' }).select('firstName lastName email');
+    const { jobTitle, department } = req.query;
+    let query = {}; // No longer restrict by role: 'user' so admins can be contracted too
+    if (jobTitle) query.jobTitle = { $regex: jobTitle, $options: 'i' };
+    if (department) query.department = { $regex: department, $options: 'i' };
+
+    const users = await User.find(query).select(
+      'name firstName lastName email mobile jobTitle department city state country pincode dob joiningDate bio skills gender'
+    );
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch users' });

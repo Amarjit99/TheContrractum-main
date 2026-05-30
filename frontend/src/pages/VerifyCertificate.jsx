@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Award, CheckCircle, Smartphone, Download, Share2, ArrowLeft, X, FileText, ShieldCheck, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { THEME_COLORS } from '../constants/certificateConstants';
+import { generateCertificateCanvas } from './admin/AdminCertificates';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -57,7 +58,7 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         ) : (
           <>
             <h4 className="text-[10px] font-black uppercase tracking-[0.5em] mb-1" style={{ color: selectedTheme.primary }}>Official Recognition</h4>
-            <div className="text-2xl font-black italic tracking-[-0.2em] uppercase" style={{ color: selectedTheme.primary }}>
+            <div className="text-2xl font-black italic tracking-normal uppercase" style={{ color: selectedTheme.primary }}>
               {globalSettings?.companyName || 'The Contractum'}
             </div>
           </>
@@ -109,10 +110,19 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         </div>
 
         <div className="flex flex-col items-center">
-          <span className="text-[18px] font-serif font-bold italic text-gray-800">Amit Verma</span>
+          {formData?.issuerSignature || globalSettings?.authorizedSignature ? (
+            <img 
+              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`} 
+              alt="Signature" 
+              className="h-10 object-contain mb-1"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <span className="text-[18px] font-serif font-bold italic text-gray-800">{formData.issuedBy || 'The Contractum'}</span>
+          )}
           <div className="w-32 h-[1px] my-1" style={{ backgroundColor: selectedTheme.primary + '66' }}></div>
-          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Authorized Signature</span>
-          <span className="text-[7px] font-bold text-gray-400 uppercase">Director • The Contractum</span>
+          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Issued By</span>
+          <span className="text-[7px] font-bold text-gray-400 uppercase">{formData?.issuerDesignation || globalSettings?.signatoryDesignation || 'Authorized Authority'}</span>
         </div>
       </div>
     </div>
@@ -126,6 +136,7 @@ export default function VerifyCertificate() {
   const [globalSettings, setGlobalSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     fetchCertificate();
@@ -151,6 +162,39 @@ export default function VerifyCertificate() {
       setLoading(false);
     }
   };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const theme = THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0];
+      const canvas = await generateCertificateCanvas(cert, theme, globalSettings);
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.download = `Certificate_${cert.certificateId}.png`;
+      link.href = imgData;
+      link.click();
+    } catch (err) {
+      console.error('Download error:', err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const [scale, setScale] = useState(1);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const newScale = Math.min(1, (containerWidth - 32) / 800);
+        setScale(newScale);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   if (loading) {
     return (
@@ -205,32 +249,41 @@ export default function VerifyCertificate() {
       <main className="flex-1 w-full max-w-6xl p-4 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
          {/* Certificate Display Area */}
          <div className="lg:col-span-2 space-y-6">
-            <div className="w-full bg-white rounded-2xl shadow-2xl shadow-blue-500/10 overflow-hidden border border-gray-100 p-4 md:p-8 animate-in fade-in zoom-in duration-500 flex justify-center">
-                <div className="relative group max-w-full overflow-auto">
+            <div ref={containerRef} className="w-full bg-white rounded-2xl shadow-2xl shadow-blue-500/10 overflow-hidden border border-gray-100 p-4 md:p-8 animate-in fade-in zoom-in duration-500 flex justify-center items-start">
+                <div 
+                  className="relative group shadow-lg border border-gray-100 rounded-sm origin-top transition-transform duration-200"
+                  style={{
+                    transform: `scale(${scale})`,
+                    width: '800px',
+                    height: '580px',
+                    marginBottom: `-${580 * (1 - scale)}px`
+                  }}
+                >
                     {/* Live Rendered Template from Secure Metadata */}
-                    <div className="shadow-lg border border-gray-100 rounded-sm scale-[0.6] sm:scale-[0.8] md:scale-100 origin-center">
-                        <CertificateTemplate 
-                            formData={cert} 
-                            selectedTheme={THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0]} 
-                            globalSettings={globalSettings}
-                            id="verified-cert-canvas" 
-                        />
-                    </div>
+                    <CertificateTemplate 
+                        formData={cert} 
+                        selectedTheme={THEME_COLORS.find(t => t.id === cert.themeId) || THEME_COLORS[0]} 
+                        globalSettings={globalSettings}
+                        id="verified-cert-canvas" 
+                    />
                     
                     <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 transition-colors pointer-events-none rounded-sm border-2 border-transparent group-hover:border-emerald-500/20" />
                 </div>
             </div>
             
             <div className="flex flex-wrap items-center justify-center gap-4 py-4">
-                <a 
-                    href={`${API}${cert.fileUrl}`} 
-                    download 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 bg-[#1e5cdc] text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/30 leading-none"
+                <button 
+                    onClick={handleDownload}
+                    disabled={downloading}
+                    className="flex items-center justify-center gap-2 bg-[#1e5cdc] text-white px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:shadow-blue-500/40 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    <Download size={18} /> Download Copy
-                </a>
+                    {downloading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <Download size={18} />
+                    )}
+                    DOWNLOAD COPY
+                </button>
                 <button 
                   onClick={() => window.print()}
                   className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 bg-white text-gray-600 border border-gray-200 px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm leading-none"
