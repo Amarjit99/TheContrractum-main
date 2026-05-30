@@ -25,6 +25,20 @@ router.post('/feedback', async (req, res) => {
 router.post('/volunteer', async (req, res) => {
   try {
     const application = await VolunteerApplication.create(req.body);
+
+    // Create Admin Notification
+    const Notification = require("../models/Notification");
+    try {
+      await Notification.create({
+        type: 'Volunteer Application',
+        title: 'New Volunteer Application',
+        message: `${req.body.fullName} has applied as a Volunteer.`,
+        link: '/admin/submissions'
+      });
+    } catch (notifErr) {
+      console.error('Error creating volunteer notification:', notifErr.message);
+    }
+
     res.status(201).json(application);
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -84,7 +84,14 @@ router.post('/applications', upload.single('resume'), async (req, res) => {
     console.log("Body:", req.body);
     console.log("File:", req.file);
     const resumeUrl = req.file ? `/uploads/resumes/${req.file.filename}` : '';
-    const app = new JobApplication({ ...req.body, resume: resumeUrl });
+    const jobTitle = req.body.positionApplied || req.body.jobTitle || '';
+    const positionApplied = req.body.positionApplied || req.body.jobTitle || '';
+    const app = new JobApplication({
+      ...req.body,
+      jobTitle,
+      positionApplied,
+      resume: resumeUrl
+    });
     await app.save();
 
     // Create Notification
@@ -92,7 +99,7 @@ router.post('/applications', upload.single('resume'), async (req, res) => {
     await Notification.create({
       type: 'Job Application',
       title: 'New Job Application',
-      message: `${req.body.fullName} has applied for the position of "${req.body.jobTitle}".`,
+      message: `${req.body.fullName} has applied for the position of "${positionApplied}".`,
       link: '/admin/careers'
     });
 

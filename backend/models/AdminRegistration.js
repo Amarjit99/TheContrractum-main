@@ -1,14 +1,18 @@
 const mongoose = require('mongoose');
 
 const adminRegistrationSchema = new mongoose.Schema({
-  firstName: { type: String, required: true, trim: true },
-  lastName: { type: String, required: true, trim: true },
+  fullName: { type: String, trim: true },
+  firstName: { type: String, trim: true },
+  lastName: { type: String, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
-  mobile: { type: String, required: true, trim: true },
-  adminSubRole: { type: String, enum: ['HR', 'Finance', 'TR', 'Support Manager', 'Manager', 'Legal'], required: true },
+  employeeId: { type: String, trim: true },
+  role: { type: String, trim: true },
+  department: { type: String, trim: true },
+  mobile: { type: String, trim: true },
+  adminSubRole: { type: String, trim: true },
   adminPermissions: { type: String, enum: ['view', 'view-delete', 'view-delete-edit'], default: 'view' },
-  joiningDate: { type: String, required: true },
+  joiningDate: { type: String },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 

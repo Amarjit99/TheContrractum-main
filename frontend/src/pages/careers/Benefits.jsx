@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Employee from "../../assets/employee.png"
 export default function Benefits() {
     const benefits = [
@@ -242,12 +243,11 @@ export default function Benefits() {
                     <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto">
                         Our HR team is here to help. Reach out to learn more about our comprehensive benefits package.
                     </p>
-                    <a
-                        href="#/contact/touch"
+                    <Link
+                        to="/contact/touch"
                         className="inline-block px-10 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
-                    
                      Contact HR Team
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

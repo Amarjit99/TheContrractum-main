@@ -16,7 +16,18 @@ const Getintouch = () => {
     "https://www.thecontractum.com/img/02.png"
   ];
 
-  const [form, setForm] = useState({ name: "", email: "", phone: "", countryIndex: 0, subject: "", otherSubject: "", message: "" });
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    countryIndex: 0,
+    companyName: "",
+    subject: "",
+    otherSubject: "",
+    message: "",
+    country: "",
+    preferredContactMethod: "",
+  });
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -32,7 +43,18 @@ const Getintouch = () => {
   };
 
   const handleReset = () => {
-    setForm({ name: "", email: "", phone: "", countryIndex: 0, subject: "", otherSubject: "", message: "" });
+    setForm({
+      fullName: "",
+      email: "",
+      phone: "",
+      countryIndex: 0,
+      companyName: "",
+      subject: "",
+      otherSubject: "",
+      message: "",
+      country: "",
+      preferredContactMethod: "",
+    });
     setStatus(null);
     setErrorMsg("");
   };
@@ -43,9 +65,14 @@ const Getintouch = () => {
     setErrorMsg("");
 
     const submissionData = {
-      ...form,
+      fullName: form.fullName,
+      email: form.email,
       phone: `${COUNTRIES[form.countryIndex].code} ${form.phone}`,
+      companyName: form.companyName,
       subject: form.subject === "Others" ? form.otherSubject : form.subject,
+      message: form.message,
+      country: form.country,
+      preferredContactMethod: form.preferredContactMethod,
     };
 
     try {
@@ -59,7 +86,21 @@ const Getintouch = () => {
 
       if (res.ok) {
         setStatus("success");
-        setForm({ name: "", email: "", phone: "", countryIndex: 0, subject: "", otherSubject: "", message: "" });
+        setForm({
+          fullName: "",
+          email: "",
+          phone: "",
+          countryIndex: 0,
+          companyName: "",
+          subject: "",
+          otherSubject: "",
+          message: "",
+          country: "",
+          preferredContactMethod: "",
+        });
+        setTimeout(() => {
+          setStatus(null);
+        }, 3000);
       } else {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
@@ -117,7 +158,7 @@ const Getintouch = () => {
           <div className="space-y-12">
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-gray-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16"></div>
-              <h2 className="text-4xl font-black text-slate-900 mb-4 italic">Send us a Message</h2>
+              <h2 className="text-4xl font-black text-slate-900 mb-4 italic">Contact Us Form</h2>
               <p className="text-slate-500 text-lg mb-8 font-medium">We'd love to hear from you. Fill out the form below and we'll get back to you shortly.</p>
 
               <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
@@ -126,11 +167,11 @@ const Getintouch = () => {
                     <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Full Name *</label>
                     <input
                       type="text"
-                      name="name"
-                      value={form.name}
+                      name="fullName"
+                      value={form.fullName}
                       onChange={handleChange}
                       className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="Your Name"
+                      placeholder="Your Full Name"
                       required
                     />
                   </div>
@@ -148,27 +189,73 @@ const Getintouch = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Phone Number</label>
-                  <div className="flex gap-2">
-                    <select
-                      name="countryIndex"
-                      value={form.countryIndex}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Phone Number</label>
+                    <div className="flex gap-2">
+                      <select
+                        name="countryIndex"
+                        value={form.countryIndex}
+                        onChange={handleChange}
+                        className="w-32 px-3 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                      >
+                        {COUNTRIES.map((c, i) => (
+                          <option key={i} value={i}>{c.code} ({c.iso})</option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={form.phone}
+                        onChange={handleChange}
+                        className="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold min-w-0"
+                        placeholder="XXXXX XXXXX"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Company Name</label>
+                    <input
+                      type="text"
+                      name="companyName"
+                      value={form.companyName}
                       onChange={handleChange}
-                      className="w-32 px-3 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
+                      placeholder="Your Company Name"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Country *</label>
+                    <select
+                      name="country"
+                      value={form.country}
+                      onChange={handleChange}
+                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                      required
                     >
+                      <option value="">Select Country</option>
                       {COUNTRIES.map((c, i) => (
-                        <option key={i} value={i}>{c.code} ({c.iso})</option>
+                        <option key={i} value={c.name}>{c.name}</option>
                       ))}
                     </select>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={form.phone}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Preferred Contact Method *</label>
+                    <select
+                      name="preferredContactMethod"
+                      value={form.preferredContactMethod}
                       onChange={handleChange}
-                      className="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="XXXXX XXXXX"
-                    />
+                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="">Select Method</option>
+                      <option value="Email">Email Address</option>
+                      <option value="Phone Call">Phone Call</option>
+                      <option value="WhatsApp">WhatsApp</option>
+                    </select>
                   </div>
                 </div>
 
@@ -178,7 +265,7 @@ const Getintouch = () => {
                     name="subject"
                     value={form.subject}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none"
+                    className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
                     required
                   >
                     <option value="">Select Subject</option>
@@ -220,7 +307,7 @@ const Getintouch = () => {
 
                 {/* Status feedback */}
                 {status === "success" && (
-                  <p className="p-4 bg-green-100 text-green-700 rounded-xl font-bold">✅ Message sent successfully! We'll get back to you soon.</p>
+                  <p className="p-4 bg-green-100 text-green-700 rounded-xl font-bold">✅ Your form is submitted successfully.</p>
                 )}
                 {status === "error" && (
                   <p className="p-4 bg-red-100 text-red-700 rounded-xl font-bold">❌ {errorMsg}</p>

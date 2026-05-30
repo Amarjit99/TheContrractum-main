@@ -1,12 +1,18 @@
 const mongoose = require('mongoose');
 
 const quoteApplicationSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
+  fullName: { type: String },
+  name: { type: String },
   email: { type: String, required: true },
-  phone: { type: String, required: true },
-  service: { type: String, required: true },
-  budget: { type: String, required: true },
-  description: { type: String, required: true }
+  phone: { type: String },
+  company: { type: String },
+  service: { type: String },
+  serviceRequired: { type: String },
+  budget: { type: String },
+  budgetEstimate: { type: String },
+  description: { type: String },
+  projectScope: { type: String },
+  timeline: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('QuoteApplication', quoteApplicationSchema);
