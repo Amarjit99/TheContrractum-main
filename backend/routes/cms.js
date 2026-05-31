@@ -78,6 +78,28 @@ router.get('/applications', protect, adminOnly, async (req, res) => {
   res.json(apps);
 });
 
+// Update Job Application (SaaS Dashboard Actions)
+router.put('/applications/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const app = await JobApplication.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!app) return res.status(404).json({ message: 'Application not found' });
+    res.json(app);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete Job Application
+router.delete('/applications/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const app = await JobApplication.findByIdAndDelete(req.params.id);
+    if (!app) return res.status(404).json({ message: 'Application not found' });
+    res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 router.post('/applications', upload.single('resume'), async (req, res) => {
   try {
     console.log("RECEIVED APPLICATION!");

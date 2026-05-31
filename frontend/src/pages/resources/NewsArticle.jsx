@@ -170,7 +170,7 @@ export default function NewsArticle() {
                                         if (content.startsWith('{') || content.startsWith('[')) {
                                             content = JSON.parse(content);
                                         }
-                                    } catch (e) {
+                                    } catch (_) {
                                         content = article.description;
                                     }
                                 }

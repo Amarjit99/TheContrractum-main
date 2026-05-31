@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Calendar, Users, Eye, Loader2, Mail, Phone, Building, Plus, X, Tag, Image as ImageIcon, MapPin, Type, DollarSign, MessageSquare, User } from 'lucide-react';
@@ -28,11 +28,7 @@ export default function AdminEventRegistrations() {
         tags: ''
     });
 
-    useEffect(() => {
-        fetchRegistrations();
-    }, []);
-
-    const fetchRegistrations = async () => {
+    const fetchRegistrations = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API}/api/event-registrations`);
@@ -42,7 +38,15 @@ export default function AdminEventRegistrations() {
             console.error(err);
         }
         setLoading(false);
-    };
+    }, []);
+
+    useEffect(() => {
+        Promise.resolve().then(() => {
+            fetchRegistrations();
+        });
+    }, [fetchRegistrations]);
+
+
 
     const handleEventSubmit = async (e) => {
         e.preventDefault();
@@ -89,6 +93,16 @@ export default function AdminEventRegistrations() {
         r.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (r.organization && r.organization.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const [recentCount, setRecentCount] = useState(0);
+
+    useEffect(() => {
+        const limit = Date.now() - 24 * 60 * 60 * 1000;
+        const count = registrations.filter(r => new Date(r.createdAt).getTime() > limit).length;
+        Promise.resolve().then(() => {
+            setRecentCount(count);
+        });
+    }, [registrations]);
 
     return (
         <AdminLayout>

@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
-const { adminOnly } = require('../middleware/admin');
+const { adminOnly, checkSubRole } = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ const upload = multer({
 });
 
 // GET /api/users — List users (Admin only)
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', protect, checkSubRole(['HR']), async (req, res) => {
   try {
     const { jobTitle, department } = req.query;
     let query = {}; // No longer restrict by role: 'user' so admins can be contracted too

@@ -1,21 +1,23 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Load stored user on mount
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('contractum_user');
     if (stored) {
-      try { setUser(JSON.parse(stored)); } catch (_) {}
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
     }
-    setLoading(false);
-  }, []);
+    return null;
+  });
+  const [loading] = useState(false);
 
   const saveUser = (userData) => {
     localStorage.setItem('contractum_user', JSON.stringify(userData));

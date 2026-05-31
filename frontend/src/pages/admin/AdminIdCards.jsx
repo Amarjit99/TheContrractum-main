@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Trash2, X, CheckCircle, CheckCircle2, Upload, Eye, IdCard as IdCardIcon, Download, Share2, Edit2, Mail, Linkedin, MessageCircle, Loader2, FileSpreadsheet, FileText, Filter, RefreshCw, ShieldCheck } from 'lucide-react';
@@ -548,7 +548,6 @@ export default function AdminIdCards() {
   const [filterDepartment, setFilterDepartment] = useState('');
   const [bulkLoading, setBulkLoading] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
-  const cardRef = useRef(null);
 
   // Helper to get the admin's display name for "Issued By"
   const getAdminDisplayName = () => {
@@ -574,19 +573,7 @@ export default function AdminIdCards() {
     issuedBy: ''
   });
 
-  useEffect(() => {
-    fetchIdCards();
-  }, []);
-
-  // Auto-set "Issued By" with the logged-in admin's name
-  useEffect(() => {
-    if (admin && !formData.issuedBy) {
-      setFormData(prev => ({ ...prev, issuedBy: getAdminDisplayName() }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [admin]);
-
-  const fetchIdCards = async () => {
+  const fetchIdCards = useCallback(async () => {
     setLoading(true);
     try {
       const [cardsRes, logsRes] = await Promise.all([
@@ -606,16 +593,22 @@ export default function AdminIdCards() {
       console.error('Failed to fetch data:', err);
     }
     setLoading(false);
-  };
+  }, [admin?.token]);
 
   // ── Auto-Generate ID Logic ──
   useEffect(() => {
-    if (isModalOpen && !editingId && formData.category && formData.department) {
-      generateNextId();
-    }
-  }, [formData.category, formData.department, isModalOpen, editingId, idCards]);
+    fetchIdCards();
+  }, [fetchIdCards]);
 
-  const generateNextId = () => {
+  // Auto-set "Issued By" with the logged-in admin's name
+  useEffect(() => {
+    if (admin && !formData.issuedBy) {
+      setFormData(prev => ({ ...prev, issuedBy: getAdminDisplayName() }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [admin]);
+
+  const generateNextId = useCallback(() => {
     const prefix = PREFIX_MAP[formData.category] || 'OTH';
     const year = new Date().getFullYear();
     const deptCode = formData.department.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 3);
@@ -637,7 +630,7 @@ export default function AdminIdCards() {
 
     const nextId = `${idPrefix}${nextSeq.toString().padStart(3, '0')}`;
     setFormData(prev => ({ ...prev, employeeId: nextId }));
-  };
+  }, [idCards, formData.category, formData.department]);
 
   // ── Bulk Onboarding Logic ──
   const handleBulkOnboarding = async (e) => {

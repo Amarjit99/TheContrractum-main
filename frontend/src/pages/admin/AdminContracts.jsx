@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
@@ -50,39 +50,51 @@ export default function AdminContracts() {
   const headers = { Authorization: `Bearer ${token}` };
   const jsonHeaders = { ...headers, 'Content-Type': 'application/json' };
 
-  const fetchContracts = async () => {
+  const fetchContracts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/contracts`, { headers });
+      const authHeaders = { Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` };
+      const res = await fetch(`${API}/api/contracts`, { headers: authHeaders });
       const data = await res.json();
       if (Array.isArray(data)) setContracts(data);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load contracts');
     }
     setLoading(false);
-  };
+  }, [admin]);
 
-  const fetchExpiryAlerts = async () => {
+  const fetchExpiryAlerts = useCallback(async () => {
     try {
-      const res = await fetch(`${API}/api/contracts/expiry-alerts?days=30`, { headers });
+      const authHeaders = { Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` };
+      const res = await fetch(`${API}/api/contracts/expiry-alerts?days=30`, { headers: authHeaders });
       const data = await res.json();
       if (data.expiring) setExpiryAlerts(data.expiring);
-    } catch {}
-  };
+    } catch (e) {
+      console.error(e);
+    }
+  }, [admin]);
 
-  const fetchTemplatesAndUsers = async () => {
+  const fetchTemplatesAndUsers = useCallback(async () => {
     try {
+      const authHeaders = { Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` };
       const [tRes, uRes] = await Promise.all([
-        fetch(`${API}/api/contracts/templates`, { headers }),
-        fetch(`${API}/api/users?t=${Date.now()}`, { headers, cache: 'no-cache' })
+        fetch(`${API}/api/contracts/templates`, { headers: authHeaders }),
+        fetch(`${API}/api/users`, { headers: authHeaders, cache: 'no-cache' })
       ]);
       const [tData, uData] = await Promise.all([tRes.json(), uRes.json()]);
       if (Array.isArray(tData)) setTemplates(tData);
       if (Array.isArray(uData)) setAllUsers(uData);
-    } catch {}
-  };
+    } catch (e) {
+      console.error(e);
+    }
+  }, [admin]);
 
-  useEffect(() => { fetchContracts(); fetchExpiryAlerts(); }, []);
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchContracts();
+      fetchExpiryAlerts();
+    });
+  }, [fetchContracts, fetchExpiryAlerts]);
 
   const handleApprove = async (id) => {
     try {
@@ -139,7 +151,7 @@ export default function AdminContracts() {
       }
       pdf.save(`${(c.title || 'Contract').replace(/[^a-z0-9]/gi, '_')}.pdf`);
       toast.success('PDF downloaded!', { id: toastId });
-    } catch (err) {
+    } catch {
       toast.error('PDF generation failed', { id: toastId });
     }
   };

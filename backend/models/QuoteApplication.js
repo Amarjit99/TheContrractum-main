@@ -12,7 +12,10 @@ const quoteApplicationSchema = new mongoose.Schema({
   budgetEstimate: { type: String },
   description: { type: String },
   projectScope: { type: String },
-  timeline: { type: String }
+  timeline: { type: String },
+  status: { type: String, enum: ['New', 'Under Review', 'Quote Sent', 'Accepted', 'Rejected'], default: 'New' },
+  notes: { type: String, default: '' },
+  assignedStaff: { type: String, default: '' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('QuoteApplication', quoteApplicationSchema);

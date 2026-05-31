@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-react';
@@ -9,7 +9,6 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminContacts() {
   const { admin } = useAdminAuth();
-  const headers = { Authorization: `Bearer ${admin?.token}` };
 
   const [data, setData] = useState({ items: [], total: 0, pages: 1 });
   const [loading, setLoading] = useState(true);
@@ -25,6 +24,11 @@ export default function AdminContacts() {
     ['general', 'demo', 'quote', 'support'].includes(tabParam) ? tabParam : 'general'
   );
 
+  const headers = useMemo(() => ({
+    Authorization: `Bearer ${admin?.token}`,
+    'Content-Type': 'application/json'
+  }), [admin?.token]);
+
   // Sync tab active state with changes to window search location
   useEffect(() => {
     const qParams = new URLSearchParams(window.location.search);
@@ -34,9 +38,8 @@ export default function AdminContacts() {
     }
   }, [window.location.search]);
 
-  useEffect(() => { fetchItems(); }, [page, activeTab]);
-
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
+    if (!admin?.token) return;
     setLoading(true);
     let endpoint = 'contacts';
     if (activeTab === 'demo') endpoint = 'demo-requests';
@@ -61,9 +64,14 @@ export default function AdminContacts() {
     } catch (err) {
       console.error("Error fetching admin items:", err);
       setData({ items: [], total: 0, pages: 1 });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }, [page, activeTab, admin?.token, headers]);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   const totalCount = data.total || 0;
 

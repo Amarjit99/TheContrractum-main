@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Trash2, X, Edit, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -9,7 +9,10 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminPartners() {
   const { admin } = useAdminAuth();
-  const headers = { Authorization: `Bearer ${admin?.token}`, 'Content-Type': 'application/json' };
+  const headers = useMemo(() => ({
+    Authorization: `Bearer ${admin?.token}`,
+    'Content-Type': 'application/json'
+  }), [admin?.token]);
 
   const [partners, setPartners] = useState([]);
   const [search, setSearch] = useState('');
@@ -26,9 +29,7 @@ export default function AdminPartners() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  useEffect(() => { fetchPartners(); }, []);
-
-  const fetchPartners = async () => {
+  const fetchPartners = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/cms/partners`);
@@ -38,7 +39,13 @@ export default function AdminPartners() {
       console.error(err);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchPartners();
+    });
+  }, [fetchPartners]);
 
   const filteredPartners = partners.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.pointOfContact?.toLowerCase().includes(search.toLowerCase()));
 

@@ -245,10 +245,73 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// PUT /api/admin/users/:id/role — Promote / demote & change password & update details
+// POST /api/admin/users — Create a new user (Super Admin only)
+router.post('/users', async (req, res) => {
+  if (req.user.role !== 'super-admin') {
+    return res.status(403).json({ message: 'Access denied. Only Super Admin can create accounts.' });
+  }
+  try {
+    const { 
+      firstName, lastName, email, password, mobile, role, 
+      adminSubRole, adminPermissions, joiningDate, isApproved,
+      isHeld, holdUntil, holdReason, company, industry, jobTitle 
+    } = req.body;
+
+    if (!firstName || !lastName || !email || !password || !mobile) {
+      return res.status(400).json({ message: 'Required fields are missing' });
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    const name = `${firstName} ${lastName}`;
+    const user = await User.create({
+      name,
+      firstName,
+      lastName,
+      email,
+      password, // Hashes automatically via userSchema.pre('save')
+      mobile,
+      role: role || 'user',
+      isApproved: isApproved !== undefined ? isApproved : true,
+      adminSubRole: ['admin', 'manager', 'employee'].includes(role) ? (adminSubRole || 'System Administrator') : '',
+      adminPermissions: ['admin', 'manager', 'employee'].includes(role) ? (adminPermissions || 'view') : 'view',
+      joiningDate: joiningDate || new Date().toISOString().split('T')[0],
+      isHeld: isHeld || false,
+      holdUntil: holdUntil || null,
+      holdReason: holdReason || '',
+      company: company || '',
+      industry: industry || '',
+      jobTitle: jobTitle || ''
+    });
+
+    if (['admin', 'manager', 'employee'].includes(user.role)) {
+      await AdminDetail.create({
+        userId: user._id,
+        name,
+        email,
+        adminSubRole: user.adminSubRole || 'System Administrator',
+        adminPermissions: user.adminPermissions || 'view',
+        joiningDate: user.joiningDate
+      });
+    }
+
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to create user', error: err.message });
+  }
+});
+
+// PUT /api/admin/users/:id/role — Promote / demote & change password & update details & hold
 router.put('/users/:id/role', async (req, res) => {
   try {
-    const { role, isApproved, joiningDate, password, name, email, mobile } = req.body;
+    const { 
+      role, isApproved, joiningDate, password, name, email, mobile,
+      isHeld, holdUntil, holdReason, adminSubRole, adminPermissions,
+      company, industry, jobTitle
+    } = req.body;
     
     const targetUser = await User.findById(req.params.id);
     if (!targetUser) return res.status(404).json({ message: 'User not found' });
@@ -257,13 +320,31 @@ router.put('/users/:id/role', async (req, res) => {
       return res.status(403).json({ message: 'Cannot downgrade a super admin' });
     }
 
-    if (role && !['user', 'admin', 'super-admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
+    if (role && !['user', 'employee', 'manager', 'admin', 'super-admin'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
     if (req.params.id === req.user._id.toString() && role && role !== req.user.role) return res.status(400).json({ message: 'Cannot change your own role' });
+
+    // Restrict promoting to Admin, Manager, Employee or Super Admin to Super Admins only
+    if (role && (role === 'admin' || role === 'super-admin' || role === 'manager' || role === 'employee') && req.user.role !== 'super-admin') {
+      return res.status(403).json({ message: 'Only Super Admins can promote users to Admin, Manager, Employee or Super Admin roles.' });
+    }
+
+    // Restrict hold options to Super Admins only
+    if ((isHeld !== undefined || holdUntil !== undefined || holdReason !== undefined) && req.user.role !== 'super-admin') {
+      return res.status(403).json({ message: 'Access denied. Only Super Admin can put accounts on hold.' });
+    }
     
     const update = {};
     if (role) update.role = role;
     if (isApproved !== undefined) update.isApproved = isApproved;
     if (joiningDate !== undefined) update.joiningDate = joiningDate;
+    if (isHeld !== undefined) update.isHeld = isHeld;
+    if (holdUntil !== undefined) update.holdUntil = holdUntil;
+    if (holdReason !== undefined) update.holdReason = holdReason;
+    if (adminSubRole !== undefined) update.adminSubRole = adminSubRole;
+    if (adminPermissions !== undefined) update.adminPermissions = adminPermissions;
+    if (company !== undefined) update.company = company;
+    if (industry !== undefined) update.industry = industry;
+    if (jobTitle !== undefined) update.jobTitle = jobTitle;
 
     if (name) {
       update.name = name;
@@ -281,15 +362,23 @@ router.put('/users/:id/role', async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Sync changes to AdminDetail if this user is an admin
-    if (name || email) {
-      const adminUpdate = {};
-      if (name) adminUpdate.name = name;
-      if (email) adminUpdate.email = email;
+    // Sync changes to AdminDetail if this user is or becomes an admin, manager, or employee
+    if (['admin', 'manager', 'employee'].includes(user.role)) {
+      const adminUpdate = {
+        name: user.name,
+        email: user.email,
+        adminSubRole: user.adminSubRole || 'System Administrator',
+        adminPermissions: user.adminPermissions || 'view',
+        joiningDate: user.joiningDate || new Date().toISOString()
+      };
       await AdminDetail.findOneAndUpdate(
-        { $or: [{ userId: targetUser._id }, { email: targetUser.email }] },
-        adminUpdate
+        { $or: [{ userId: user._id }, { email: user.email }] },
+        adminUpdate,
+        { upsert: true, new: true }
       );
+    } else {
+      // Remove AdminDetail if they were demoted to 'user'
+      await AdminDetail.findOneAndDelete({ $or: [{ userId: user._id }, { email: user.email }] });
     }
 
     res.json(user);
@@ -300,6 +389,9 @@ router.put('/users/:id/role', async (req, res) => {
 
 // PUT /api/admin/users/:id/admin-details — Update admin-specific metadata
 router.put('/users/:id/admin-details', async (req, res) => {
+  if (req.user.role !== 'super-admin') {
+    return res.status(403).json({ message: 'Access denied. Only Super Admin can modify admin sub-roles and permissions.' });
+  }
   try {
     const { adminSubRole, adminPermissions, joiningDate, isApproved } = req.body;
     
@@ -320,12 +412,12 @@ router.put('/users/:id/admin-details', async (req, res) => {
       if (adminPermissions !== undefined) adminDetail.adminPermissions = adminPermissions;
       if (joiningDate !== undefined) adminDetail.joiningDate = joiningDate;
       await adminDetail.save();
-    } else if (user.role === 'admin') {
+    } else if (['admin', 'manager', 'employee'].includes(user.role)) {
       await AdminDetail.create({
         userId: user._id,
         name: user.name || 'Admin',
         email: user.email,
-        adminSubRole: adminSubRole || 'HR', // Provide default
+        adminSubRole: adminSubRole || 'System Administrator', // Provide default
         adminPermissions: adminPermissions || 'view',
         joiningDate: joiningDate || new Date().toISOString()
       });
@@ -341,6 +433,12 @@ router.put('/users/:id/admin-details', async (req, res) => {
 router.delete('/users/:id', async (req, res) => {
   try {
     if (req.params.id === req.user._id.toString()) return res.status(400).json({ message: 'Cannot delete your own account' });
+
+    const targetUser = await User.findById(req.params.id);
+    if (targetUser && targetUser.role === 'admin' && req.user.role !== 'super-admin') {
+      return res.status(403).json({ message: 'Access denied. Only Super Admin can delete admin accounts.' });
+    }
+
     const user = await User.findOneAndDelete({ _id: req.params.id, role: { $ne: 'super-admin' } });
     if (!user) {
       const existing = await User.findById(req.params.id);
@@ -473,6 +571,9 @@ router.get('/pending-registrations', async (req, res) => {
 
 // POST /api/admin/approve-registration/:id — Approve an admin registration
 router.post('/approve-registration/:id', async (req, res) => {
+  if (req.user.role !== 'super-admin') {
+    return res.status(403).json({ message: 'Access denied. Only Super Admin can approve admin registrations.' });
+  }
   try {
     const reg = await AdminRegistration.findById(req.params.id);
     if (!reg) return res.status(404).json({ message: 'Registration not found' });
@@ -483,13 +584,28 @@ router.post('/approve-registration/:id', async (req, res) => {
     const lastName = reg.lastName || reg.name?.split(' ').slice(1).join(' ') || 'Staff';
     const mobile = reg.mobile || '0000000000';
 
+    const adminSubRoles = [
+      'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator'
+    ];
+    const managerSubRoles = [
+      'HR Manager', 'Operations Manager', 'Project Manager', 'Sales Manager', 'Marketing Manager', 'Business Development Manager', 'Support Manager', 'Technical Manager', 'Content Manager', 'Event Manager', 'CRM & Lead Manager', 'Finance Manager', 'Compliance Manager', 'Training & Development Manager'
+    ];
+    const employeeSubRoles = [
+      'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
+    ];
+
+    let derivedRole = 'admin';
+    if (adminSubRoles.includes(reg.adminSubRole)) derivedRole = 'admin';
+    else if (managerSubRoles.includes(reg.adminSubRole)) derivedRole = 'manager';
+    else if (employeeSubRoles.includes(reg.adminSubRole)) derivedRole = 'employee';
+
     // 1. Create the User (authentication)
     const user = await User.create({
       firstName,
       lastName,
       email: reg.email,
       password: reg.password, // Plain password; will be hashed by User model pre-save
-      role: 'admin',
+      role: derivedRole,
       isApproved: true,
       mobile: mobile,
       adminSubRole: reg.adminSubRole,
@@ -517,7 +633,6 @@ router.post('/approve-registration/:id', async (req, res) => {
     res.status(500).json({ message: 'Failed to approve registration', error: err.message });
   }
 });
-
 // GET /api/admin/submissions-dashboard — Comprehensive dashboard endpoint
 router.get('/submissions-dashboard', async (req, res) => {
   try {
@@ -862,6 +977,65 @@ router.get('/submissions-dashboard', async (req, res) => {
   } catch (err) {
     console.error("Dashboard Endpoint Error:", err);
     res.status(500).json({ message: 'Failed to generate submissions dashboard data', error: err.message });
+  }
+});
+
+// Helper to resolve formType to Mongoose models
+const getModelByFormType = (formType) => {
+  switch (formType) {
+    case 'contact': return Contact;
+    case 'demo': return DemoRequest;
+    case 'expert': return ExpertConsultation;
+    case 'quote': return QuoteApplication;
+    case 'support': return SupportTicket;
+    case 'advisor': return AdvisorApplication;
+    case 'volunteer': return VolunteerApplication;
+    case 'partner': return PartnerApplication;
+    case 'newsletter': return NewsletterSubscription;
+    case 'survey': return Survey;
+    case 'referral': return Referral;
+    case 'intern': return Intern;
+    case 'event-registration': return EventRegistration;
+    case 'feedback': return Feedback;
+    default: return null;
+  }
+};
+
+// GET /api/admin/submissions/:formType - Retrieve list of submissions
+router.get('/submissions/:formType', protect, adminOnly, async (req, res) => {
+  try {
+    const Model = getModelByFormType(req.params.formType);
+    if (!Model) return res.status(400).json({ message: 'Invalid form type' });
+    const items = await Model.find().sort({ createdAt: -1 });
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch submissions', error: err.message });
+  }
+});
+
+// PUT /api/admin/submissions/:formType/:id - Update status / notes / assignedStaff
+router.put('/submissions/:formType/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const Model = getModelByFormType(req.params.formType);
+    if (!Model) return res.status(400).json({ message: 'Invalid form type' });
+    const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!item) return res.status(404).json({ message: 'Submission not found' });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update submission', error: err.message });
+  }
+});
+
+// DELETE /api/admin/submissions/:formType/:id - Delete a submission
+router.delete('/submissions/:formType/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const Model = getModelByFormType(req.params.formType);
+    if (!Model) return res.status(400).json({ message: 'Invalid form type' });
+    const item = await Model.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: 'Submission not found' });
+    res.json({ message: 'Submission deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete submission', error: err.message });
   }
 });
 

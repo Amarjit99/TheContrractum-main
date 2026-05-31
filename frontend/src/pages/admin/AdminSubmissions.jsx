@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
   FileText, Users, Eye, ExternalLink, Copy, Check, Search, ClipboardList, Filter,
   ArrowUpRight, ArrowDownRight, Download, Plus, MoreHorizontal, Calendar, Mail, Phone,
-  Activity, Clock, ChevronLeft, ChevronRight, BarChart2, PieChart as PieIcon, MapPin, Globe, Sparkles, Building
+  Activity, Clock, ChevronLeft, ChevronRight, BarChart2, PieChart as PieIcon, MapPin, Globe, Sparkles, Building,
+  Trash2, X, BookOpen, Edit, LayoutDashboard, CheckCircle, Send, UserCheck, Star,
+  Award, ShieldAlert, MessageSquare, RefreshCw, FileSpreadsheet, UserPlus, Bell, ChevronDown, CheckSquare, Settings, HelpCircle
 } from 'lucide-react';
 import {
-  ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid
+  ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid, AreaChart, Area, BarChart, Bar
 } from 'recharts';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -24,6 +26,23 @@ const CATEGORIES = [
   { id: 'Marketing & Engagement', name: 'Marketing & Engagement', color: '#ec4899' },
   { id: 'Events & Participation', name: 'Events & Participation', color: '#ef4444' },
   { id: 'CSR & Community Programs', name: 'CSR & Community Programs', color: '#06b6d4' }
+];
+
+const FORM_CATEGORIES = [
+  { id: 'contact', name: 'Contact Inquiries', endpoint: 'contact', category: 'General' },
+  { id: 'demo', name: 'Demo Requests', endpoint: 'demo', category: 'Sales' },
+  { id: 'expert', name: 'Expert Consults', endpoint: 'expert', category: 'Sales' },
+  { id: 'quote', name: 'Quote Requests', endpoint: 'quote', category: 'Sales' },
+  { id: 'support', name: 'Support Tickets', endpoint: 'support', category: 'Support' },
+  { id: 'partner', name: 'Partner Applications', endpoint: 'partner', category: 'Business' },
+  { id: 'advisor', name: 'Advisor Applications', endpoint: 'advisor', category: 'Business' },
+  { id: 'volunteer', name: 'Volunteer Applications', endpoint: 'volunteer', category: 'Community' },
+  { id: 'newsletter', name: 'Newsletter Opt-ins', endpoint: 'newsletter', category: 'Marketing' },
+  { id: 'survey', name: 'Awareness Surveys', endpoint: 'survey', category: 'Marketing' },
+  { id: 'referral', name: 'Employee Referrals', endpoint: 'referral', category: 'HR' },
+  { id: 'intern', name: 'Internship Applications', endpoint: 'intern', category: 'HR' },
+  { id: 'event-registration', name: 'Event Registrations', endpoint: 'event-registration', category: 'Community' },
+  { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support' }
 ];
 
 // Mapping Forms to Categories
@@ -80,30 +99,65 @@ export default function AdminSubmissions() {
   const { admin } = useAdminAuth();
   const navigate = useNavigate();
 
-  // Filters State
+  // Auth Headers
+  const headers = useMemo(() => ({
+    Authorization: `Bearer ${admin?.token}`,
+    'Content-Type': 'application/json'
+  }), [admin?.token]);
+
+  // Sub-Navigation Tabs: 'overview' | 'contact' | 'demo' | etc.
+  const [activeSubTab, setActiveSubTab] = useState('overview');
+
+  // Filters State for aggregated Overview Dashboard
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedFormType, setSelectedFormType] = useState('all');
-  const [dateRange, setDateRange] = useState('7days');
+  const [dateRange, setDateRange] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilterHead, setStatusFilterHead] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assignedFilter, setAssignedFilter] = useState('all');
 
-  // Data States
+  // Overview Data States
   const [dashboardData, setDashboardData] = useState(null);
-  const [filteredSubmissions, setFilteredSubmissions] = useState([]);
+  const [filteredSubmissionsHead, setFilteredSubmissionsHead] = useState([]);
+
+  // Individual Form CRUD Data States
+  const [submissions, setSubmissions] = useState([]);
+  const [formStats, setFormStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  // Filters for Individual Form CRUD List
+  const [globalSearch, setGlobalSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('All');
+
+  // Detail Modal State (Individual CRUD)
+  const [selectedSub, setSelectedSub] = useState(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [notesInput, setNotesInput] = useState('');
+  const [statusInput, setStatusInput] = useState('');
+  const [staffInput, setStaffInput] = useState('');
+
+  // Copy helper state
   const [copiedId, setCopiedId] = useState(null);
 
-  // Pagination State
+  // Pagination for aggregated Overview Dashboard List
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Selected Submission Modal Detail View
+  // Selected Aggregated Submission Modal Detail View (Overview Dashboard)
   const [selectedSubDetail, setSelectedSubDetail] = useState(null);
 
-  // Fetch all aggregated submissions & dashboard metrics
-  const fetchDashboardData = () => {
+  // Show Toast
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Fetch aggregated submissions & dashboard metrics
+  const fetchDashboardData = useCallback(() => {
     if (!admin?.token) return;
     setLoading(true);
 
@@ -112,7 +166,7 @@ export default function AdminSubmissions() {
     })
       .then(async r => {
         if (!r.ok) {
-          throw new Error('Failed to fetch submissions');
+          throw new Error('Failed to fetch dashboard submissions data');
         }
         return r.json();
       })
@@ -123,13 +177,50 @@ export default function AdminSubmissions() {
         console.error('Error fetching dashboard submissions data:', err);
       })
       .finally(() => setLoading(false));
-  };
+  }, [admin?.token]);
 
+  // Fetch Form Stats
+  const fetchFormStats = useCallback(async () => {
+    if (!admin?.token) return;
+    try {
+      const res = await fetch(`${API}/api/admin/form-stats`, { headers });
+      const data = await res.json();
+      if (data.stats) {
+        setFormStats(data.stats);
+      }
+    } catch (err) {
+      console.error("Failed to fetch form stats:", err);
+    }
+  }, [admin?.token, headers]);
+
+  // Fetch submissions for a specific active category
+  const fetchSubmissions = useCallback(async (formType) => {
+    if (formType === 'overview' || !admin?.token) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/submissions/${formType}`, { headers });
+      const data = await res.json();
+      setSubmissions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(`Failed to fetch ${formType} submissions:`, err);
+      setSubmissions([]);
+    }
+    setLoading(false);
+  }, [admin?.token, headers]);
+
+  // Orchestrate data fetching based on active tab
   useEffect(() => {
-    fetchDashboardData();
-  }, [admin]);
+    if (admin?.token) {
+      fetchFormStats();
+      if (activeSubTab === 'overview') {
+        fetchDashboardData();
+      } else {
+        fetchSubmissions(activeSubTab);
+      }
+    }
+  }, [admin, activeSubTab, fetchDashboardData, fetchFormStats, fetchSubmissions]);
 
-  // Apply filters on submissions list
+  // Apply filters on aggregated dashboard submissions list
   useEffect(() => {
     if (!dashboardData?.submissions) return;
     let list = [...dashboardData.submissions];
@@ -148,17 +239,17 @@ export default function AdminSubmissions() {
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       list = list.filter(s =>
-        s.id.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.phone.toLowerCase().includes(q) ||
-        s.companyName.toLowerCase().includes(q)
+        (s.id && s.id.toLowerCase().includes(q)) ||
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.email && s.email.toLowerCase().includes(q)) ||
+        (s.phone && s.phone.toLowerCase().includes(q)) ||
+        (s.companyName && s.companyName.toLowerCase().includes(q))
       );
     }
 
     // Status Filter
-    if (statusFilter !== 'all') {
-      list = list.filter(s => s.status === statusFilter);
+    if (statusFilterHead !== 'all') {
+      list = list.filter(s => s.status === statusFilterHead);
     }
 
     // Priority Filter
@@ -174,41 +265,162 @@ export default function AdminSubmissions() {
     // Date Range Filter
     const now = new Date();
     if (dateRange === '7days') {
-      const limitDate = new Date(now.setDate(now.getDate() - 7));
+      const limitDate = new Date();
+      limitDate.setDate(now.getDate() - 7);
       list = list.filter(s => new Date(s.createdAt) >= limitDate);
     } else if (dateRange === '30days') {
-      const limitDate = new Date(now.setDate(now.getDate() - 30));
+      const limitDate = new Date();
+      limitDate.setDate(now.getDate() - 30);
       list = list.filter(s => new Date(s.createdAt) >= limitDate);
     }
 
-    setFilteredSubmissions(list);
+    setFilteredSubmissionsHead(list);
     setCurrentPage(1); // reset to first page when filtering
-  }, [dashboardData, selectedCategory, selectedFormType, searchTerm, statusFilter, priorityFilter, assignedFilter, dateRange]);
+  }, [dashboardData, selectedCategory, selectedFormType, searchTerm, statusFilterHead, priorityFilter, assignedFilter, dateRange]);
 
   // Copy details helper
   const handleCopy = (id, text) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+    showToast("Data copied to clipboard!");
   };
 
-  // CSV Exporter
-  const handleExport = () => {
-    if (filteredSubmissions.length === 0) return;
-    const headers = ['Submission ID', 'Applicant Name', 'Email', 'Phone', 'Company Name', 'Form Type', 'Category', 'Assigned To', 'Status', 'Priority', 'Submitted Date'];
+  // Get Mapped status colors
+  const getStatusBadgeClass = (status) => {
+    const s = (status || '').toLowerCase();
+    if (s === 'new' || s === 'open' || s === 'pending') {
+      return 'bg-blue-50 text-blue-600 border border-blue-100';
+    } else if (s === 'reviewed' || s === 'in progress' || s === 'under review') {
+      return 'bg-amber-50 text-amber-600 border border-amber-100';
+    } else if (s === 'followed up' || s === 'quote sent' || s === 'demo scheduled') {
+      return 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+    } else if (s === 'resolved' || s === 'completed' || s === 'accepted' || s === 'hired' || s === 'approved') {
+      return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+    } else if (s === 'rejected' || s === 'closed') {
+      return 'bg-red-50 text-red-600 border border-red-100';
+    }
+    return 'bg-gray-50 text-gray-600 border border-gray-100';
+  };
+
+  // Get status options based on form category
+  const getStatusOptions = (catId) => {
+    switch (catId) {
+      case 'contact':
+      case 'expert':
+        return ['New', 'Reviewed', 'Followed Up', 'Resolved'];
+      case 'demo':
+        return ['New', 'Reviewed', 'Demo Scheduled', 'Completed', 'Rejected'];
+      case 'quote':
+        return ['New', 'Under Review', 'Quote Sent', 'Accepted', 'Rejected'];
+      case 'support':
+        return ['Open', 'In Progress', 'Resolved', 'Closed'];
+      case 'partner':
+      case 'advisor':
+      case 'volunteer':
+      case 'intern':
+        return ['Pending', 'Reviewed', 'Contacted', 'Accepted', 'Rejected'];
+      default:
+        return ['New', 'Reviewed', 'Resolved'];
+    }
+  };
+
+  // Unified submission updates
+  const handleUpdateSubmission = async (id, updatedFields) => {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API}/api/admin/submissions/${activeSubTab}/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updatedFields)
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setSubmissions(prev => prev.map(s => s._id === id ? updated : s));
+        if (selectedSub && selectedSub._id === id) {
+          setSelectedSub(updated);
+        }
+        showToast("Submission details updated successfully.");
+        fetchFormStats();
+      } else {
+        showToast("Failed to update submission.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Server connection error.", "error");
+    }
+    setSubmitting(false);
+  };
+
+  // Unified submission deletions
+  const handleDeleteSubmission = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this submission record?")) return;
+    try {
+      const res = await fetch(`${API}/api/admin/submissions/${activeSubTab}/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (res.ok) {
+        showToast("Submission deleted successfully.");
+        setSubmissions(prev => prev.filter(s => s._id !== id));
+        if (selectedSub && selectedSub._id === id) {
+          setDetailModalOpen(false);
+        }
+        fetchFormStats();
+      } else {
+        showToast("Failed to delete submission record.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Open detail view modal
+  const openDetailModal = (sub) => {
+    setSelectedSub(sub);
+    setNotesInput(sub.notes || '');
+    setStatusInput(sub.status || 'New');
+    setStaffInput(sub.assignedStaff || '');
+    setDetailModalOpen(true);
+  };
+
+  // Save Notes and state
+  const saveDetailNotes = async () => {
+    if (!selectedSub) return;
+    await handleUpdateSubmission(selectedSub._id, {
+      notes: notesInput,
+      status: statusInput,
+      assignedStaff: staffInput
+    });
+    setDetailModalOpen(false);
+  };
+
+  // Copy public form link helper
+  const handleCopyLink = (path, id) => {
+    const fullUrl = `${window.location.origin}${path}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+    showToast("Form link copied to clipboard!");
+  };
+
+  // Aggregated Overview Dashboard CSV Exporter
+  const handleExportOverview = () => {
+    if (filteredSubmissionsHead.length === 0) return;
+    const headersCsv = ['Submission ID', 'Applicant Name', 'Email', 'Phone', 'Company Name', 'Form Type', 'Category', 'Assigned To', 'Status', 'Priority', 'Submitted Date'];
     const csvRows = [
-      headers.join(','),
-      ...filteredSubmissions.map(s => [
-        s.id,
-        `"${s.name.replace(/"/g, '""')}"`,
-        s.email,
-        s.phone,
-        `"${s.companyName.replace(/"/g, '""')}"`,
-        `"${s.formType}"`,
-        `"${s.category}"`,
-        `"${s.assignedTo}"`,
-        s.status,
-        s.priority,
+      headersCsv.join(','),
+      ...filteredSubmissionsHead.map(s => [
+        s.id || '',
+        `"${(s.name || '').replace(/"/g, '""')}"`,
+        s.email || '',
+        s.phone || '',
+        `"${(s.companyName || '').replace(/"/g, '""')}"`,
+        `"${s.formType || ''}"`,
+        `"${s.category || ''}"`,
+        `"${s.assignedTo || ''}"`,
+        s.status || '',
+        s.priority || '',
         new Date(s.createdAt).toLocaleDateString()
       ].join(','))
     ].join('\n');
@@ -217,855 +429,909 @@ export default function AdminSubmissions() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Submissions_Export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Aggregated_Submissions_Export_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  // Pagination calculations
+  // Export current active CRUD list to CSV
+  const exportCsvReport = () => {
+    const filteredCRUD = submissions.filter(sub => {
+      const name = sub.name || sub.fullName || sub.firstName || '';
+      const email = sub.email || '';
+      const subject = sub.subject || sub.service || sub.jobTitle || '';
+      const matchesSearch =
+        name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        email.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        subject.toLowerCase().includes(globalSearch.toLowerCase());
+      if (!matchesSearch) return false;
+
+      if (statusFilter !== 'All') {
+        if ((sub.status || 'New') !== statusFilter) return false;
+      }
+
+      if (dateFilter !== 'All') {
+        const subDate = new Date(sub.createdAt);
+        const now = new Date();
+        if (dateFilter === 'Today') {
+          if (subDate.toDateString() !== now.toDateString()) return false;
+        } else if (dateFilter === 'Week') {
+          const diffTime = Math.abs(now - subDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays > 7) return false;
+        } else if (dateFilter === 'Month') {
+          if (subDate.getMonth() !== now.getMonth() || subDate.getFullYear() !== now.getFullYear()) return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (filteredCRUD.length === 0) {
+      return showToast("No records to export.", "error");
+    }
+    const headersCsv = ["ID", "Name/Inquirer", "Email", "Subject/Service", "Assigned Staff", "Status", "Created Date"];
+    const rows = filteredCRUD.map(sub => [
+      sub._id,
+      sub.name || sub.fullName || `${sub.firstName || ''} ${sub.lastName || ''}`,
+      sub.email || 'N/A',
+      sub.subject || sub.service || sub.jobTitle || 'N/A',
+      sub.assignedStaff || 'Unassigned',
+      sub.status || 'New',
+      new Date(sub.createdAt).toLocaleDateString()
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + [headersCsv.join(","), ...rows.map(e => e.map(val => `"${val}"`).join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Submissions_${activeSubTab}_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("CSV report generated successfully!");
+  };
+
+  // Recharts Computed Stats
+  const statsOverview = useMemo(() => {
+    const total = formStats.reduce((acc, curr) => acc + curr.count, 0);
+    return { total };
+  }, [formStats]);
+
+  const trendsData = [
+    { date: 'Mon', Inquiries: 12 },
+    { date: 'Tue', Inquiries: 19 },
+    { date: 'Wed', Inquiries: 15 },
+    { date: 'Thu', Inquiries: 22 },
+    { date: 'Fri', Inquiries: 30 },
+    { date: 'Sat', Inquiries: 14 },
+    { date: 'Sun', Inquiries: statsOverview.total ? Math.min(statsOverview.total, 8) : 5 }
+  ];
+
+  const chartData = useMemo(() => {
+    return formStats.map(stat => ({
+      name: stat.name,
+      Count: stat.count
+    })).sort((a, b) => b.Count - a.Count);
+  }, [formStats]);
+
+  const COLORS = ['#1e5cdc', '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'];
+
+  // Pagination calculations for Aggregated Dashboard List
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentSubmissions = filteredSubmissions.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage) || 1;
+  const currentSubmissions = filteredSubmissionsHead.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredSubmissionsHead.length / itemsPerPage) || 1;
 
   // Filter dynamic subcategories when a category is selected
   const availableSubcategories = selectedCategory === 'all'
     ? FORM_DETAILS
     : FORM_DETAILS.filter(f => f.category === selectedCategory);
 
-  // Quick statistics specifically computed for the CURRENT filtered subset of submissions
+  // Quick statistics computed for the CURRENT filtered subset of aggregated dashboard submissions
   const currentStats = {
-    total: filteredSubmissions.length,
-    active: filteredSubmissions.filter(s => ['New Submission', 'Under Review', 'Assigned to Department', 'Processing'].includes(s.status)).length,
-    pending: filteredSubmissions.filter(s => ['Under Review', 'Assigned to Department'].includes(s.status)).length,
-    responsesSent: filteredSubmissions.filter(s => ['Approved / Rejected / Completed', 'Notification Sent', 'Archived & Report Generated'].includes(s.status)).length,
-    staffCount: new Set(filteredSubmissions.map(s => s.assignedTo)).size * 8 || 12,
-    conversionRate: filteredSubmissions.length > 0
-      ? ((filteredSubmissions.filter(s => ['Approved / Rejected / Completed', 'Notification Sent', 'Archived & Report Generated'].includes(s.status)).length / filteredSubmissions.length) * 100).toFixed(1)
+    total: filteredSubmissionsHead.length,
+    active: filteredSubmissionsHead.filter(s => ['New Submission', 'Under Review', 'Assigned to Department', 'Processing', 'New', 'Open', 'Pending'].includes(s.status)).length,
+    pending: filteredSubmissionsHead.filter(s => ['Under Review', 'Assigned to Department', 'In Progress'].includes(s.status)).length,
+    responsesSent: filteredSubmissionsHead.filter(s => ['Approved / Rejected / Completed', 'Notification Sent', 'Archived & Report Generated', 'Completed', 'Resolved', 'Approved'].includes(s.status)).length,
+    staffCount: new Set(filteredSubmissionsHead.map(s => s.assignedTo)).size || 4,
+    conversionRate: filteredSubmissionsHead.length > 0
+      ? ((filteredSubmissionsHead.filter(s => ['Approved / Rejected / Completed', 'Notification Sent', 'Archived & Report Generated', 'Completed', 'Resolved', 'Approved'].includes(s.status)).length / filteredSubmissionsHead.length) * 100).toFixed(1)
       : '0.0'
   };
 
-  // Pie chart COLORS
+  // Pie Chart COLORS
   const PIE_COLORS = ['#1e5cdc', '#10b981', '#8b5cf6', '#3b82f6', '#f59e0b', '#ec4899', '#ef4444', '#06b6d4'];
-  const STATUS_COLORS = {
-    'New Submission': '#3b82f6',
-    'Under Review': '#f59e0b',
-    'Assigned to Department': '#8b5cf6',
-    'Processing': '#f97316',
-    'Approved / Rejected / Completed': '#10b981',
-    'Notification Sent': '#06b6d4',
-    'Archived & Report Generated': '#64748b'
-  };
 
-  // Dynamic Pie / Donut distributions
   const categoryChartData = dashboardData?.categoryDistribution || [];
-  const statusChartData = dashboardData?.statusDistribution || [];
-  const trendLineData = dashboardData?.trendOverview || [];
 
-  // Contact analytics reports (available when Contact Us form filtered)
-  const contactReports = dashboardData?.contactReports || {
-    countryReport: [],
-    contactMethodReport: [],
-    subjectReport: [],
-    domainReport: []
-  };
+  // Filtered submissions computed lists (CRUD Table)
+  const filteredSubmissionsCRUD = useMemo(() => {
+    return submissions.filter(sub => {
+      // Search
+      const name = sub.name || sub.fullName || sub.firstName || '';
+      const email = sub.email || '';
+      const subject = sub.subject || sub.service || sub.jobTitle || '';
+      const matchesSearch =
+        name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        email.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        subject.toLowerCase().includes(globalSearch.toLowerCase());
+      if (!matchesSearch) return false;
+
+      // Status
+      if (statusFilter !== 'All') {
+        if ((sub.status || 'New') !== statusFilter) return false;
+      }
+
+      // Date
+      if (dateFilter !== 'All') {
+        const subDate = new Date(sub.createdAt);
+        const now = new Date();
+        if (dateFilter === 'Today') {
+          if (subDate.toDateString() !== now.toDateString()) return false;
+        } else if (dateFilter === 'Week') {
+          const diffTime = Math.abs(now - subDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays > 7) return false;
+        } else if (dateFilter === 'Month') {
+          if (subDate.getMonth() !== now.getMonth() || subDate.getFullYear() !== now.getFullYear()) return false;
+        }
+      }
+
+      return true;
+    });
+  }, [submissions, globalSearch, statusFilter, dateFilter]);
 
   return (
     <AdminLayout>
-      {/* Outer Flex Container for Dashboard Grid + Local Subsidebar */}
-      <div className="flex flex-col xl:flex-row gap-6 mt-4 pb-16 min-h-screen">
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`fixed top-6 right-6 z-[100] px-5 py-3.5 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-3 animate-in slide-in-from-top-4 duration-300 ${
+          toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+        }`}>
+          <span>{toast.type === 'success' ? '✓' : '✗'}</span>
+          {toast.message}
+        </div>
+      )}
 
-        {/* Left Side Category Sub-Sidebar */}
-        <div className="w-full xl:w-64 shrink-0 bg-white border border-gray-150 rounded-2xl p-4 shadow-sm h-fit">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-            <ClipboardList className="text-[#1e5cdc]" size={18} />
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider text-xs">Submission Categories</h3>
+      {/* Outer Flex Container for Sidebar + Workspace */}
+      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50/50 -m-6 rounded-2xl overflow-hidden border border-gray-150 shadow-sm mt-1">
+        
+        {/* Left Side Subcategory Sub-Sidebar */}
+        <aside className="w-full lg:w-72 bg-white flex flex-col p-5 shrink-0 border-r border-gray-150">
+          <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+            <div className="p-2.5 bg-[#1e5cdc]/10 text-[#1e5cdc] rounded-xl">
+              <ClipboardList size={22} />
+            </div>
+            <div>
+              <h2 className="font-extrabold text-gray-800 text-sm tracking-tight leading-none">Submissions</h2>
+              <span className="text-[9px] text-[#1e5cdc] font-black tracking-widest uppercase block mt-1">Contractum CRM</span>
+            </div>
           </div>
-          <div className="space-y-1.5">
-            {CATEGORIES.map(cat => {
-              const isActive = selectedCategory === cat.id;
+
+          <nav className="flex-1 space-y-1 overflow-y-auto max-h-[65vh] pr-1 custom-scrollbar">
+            <button
+              onClick={() => setActiveSubTab('overview')}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
+                activeSubTab === 'overview'
+                  ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+            >
+              <LayoutDashboard size={16} />
+              Overview Dashboard
+            </button>
+
+            <div className="pt-4 pb-1 text-[9px] font-black text-gray-400 uppercase tracking-widest px-2">Forms List</div>
+
+            {FORM_CATEGORIES.map(cat => {
+              const stat = formStats.find(s => 
+                s.name.toLowerCase().includes(cat.id) || 
+                (cat.id === 'contact' && s.name === 'Contact Us') ||
+                (cat.id === 'demo' && s.name === 'Demo Requests') ||
+                (cat.id === 'expert' && s.name === 'Expert Consults') ||
+                (cat.id === 'quote' && s.name === 'Quote Requests') ||
+                (cat.id === 'support' && s.name === 'Support Tickets') ||
+                (cat.id === 'newsletter' && s.name === 'Newsletter Opt-ins') ||
+                (cat.id === 'survey' && s.name === 'User Surveys') ||
+                (cat.id === 'referral' && s.name === 'Referrals') ||
+                (cat.id === 'intern' && s.name === 'Intern Apps') ||
+                (cat.id === 'event-registration' && s.name === 'Event Registrations') ||
+                (cat.id === 'volunteer' && s.name === 'Volunteer Apps')
+              );
+              const count = stat ? stat.count : 0;
+
               return (
                 <button
                   key={cat.id}
-                  onClick={() => {
-                    setSelectedCategory(cat.id);
-                    setSelectedFormType('all'); // reset subcategory on category change
-                  }}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${isActive
-                      ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100 font-bold scale-[1.02]'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-transparent'
-                    }`}
+                  onClick={() => setActiveSubTab(cat.id)}
+                  className={`w-full flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                    activeSubTab === cat.id
+                      ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: isActive ? '#fff' : cat.color }}
-                    />
+                    <FileText size={15} className={`shrink-0 ${activeSubTab === cat.id ? 'text-white' : 'text-gray-400'}`} />
                     <span className="truncate">{cat.name}</span>
                   </div>
-                  {dashboardData?.submissions && (
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                      {cat.id === 'all'
-                        ? dashboardData.submissions.length
-                        : dashboardData.submissions.filter(s => s.category === cat.id).length
-                      }
+                  {count > 0 && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                      activeSubTab === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      {count}
                     </span>
                   )}
                 </button>
               );
             })}
+          </nav>
+
+          <div className="mt-6 pt-4 border-t border-gray-100 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+            Total Responses:
+            <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
           </div>
-        </div>
+        </aside>
 
-        {/* Right Content Area (Main Dashboard Layout) */}
-        <div className="flex-1 space-y-6 min-w-0">
+        {/* Right Content Workspace Area */}
+        <main className="flex-1 flex flex-col min-w-0 bg-white">
+          
+          {/* Top Header Row */}
+          <header className="border-b border-gray-100 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-20">
+            <div className="flex flex-wrap items-center gap-2 max-w-lg flex-1">
+              {activeSubTab !== 'overview' ? (
+                <>
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                    <input
+                      type="text"
+                      placeholder="Search submissions..."
+                      value={globalSearch}
+                      onChange={(e) => setGlobalSearch(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] focus:bg-white transition-all font-semibold"
+                    />
+                  </div>
 
-          {/* Top Control Filter Row */}
-          <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Subcategory/Form Selector */}
-              <div>
-                <select
-                  value={selectedFormType}
-                  onChange={(e) => setSelectedFormType(e.target.value)}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] cursor-pointer"
-                >
-                  <option value="all">All Form Sources</option>
-                  {availableSubcategories.map(form => (
-                    <option key={form.id} value={form.name}>{form.name}</option>
-                  ))}
-                </select>
-              </div>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-600"
+                  >
+                    <option value="All">All Statuses</option>
+                    {getStatusOptions(activeSubTab).map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
 
-              {/* Date Filter selector */}
-              <div>
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] cursor-pointer"
-                >
-                  <option value="7days">Last 7 Days</option>
-                  <option value="30days">Last 30 Days</option>
-                  <option value="all">All Time</option>
-                </select>
-              </div>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-600"
+                  >
+                    <option value="All">All Time</option>
+                    <option value="Today">Received Today</option>
+                    <option value="Week">Received This Week</option>
+                    <option value="Month">Received This Month</option>
+                  </select>
+                </>
+              ) : (
+                <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1.5">
+                  <LayoutDashboard size={18} className="text-[#1e5cdc]" /> Submissions Dashboard
+                </h2>
+              )}
+            </div>
 
-              {/* Filters Clear Button */}
-              {(selectedCategory !== 'all' || selectedFormType !== 'all' || statusFilter !== 'all' || priorityFilter !== 'all' || assignedFilter !== 'all' || searchTerm) && (
+            <div className="flex items-center gap-3">
+              {activeSubTab !== 'overview' ? (
                 <button
-                  onClick={() => {
-                    setSelectedCategory('all');
-                    setSelectedFormType('all');
-                    setStatusFilter('all');
-                    setPriorityFilter('all');
-                    setAssignedFilter('all');
-                    setSearchTerm('');
-                  }}
-                  className="text-xs font-bold text-[#1e5cdc] hover:underline"
+                  onClick={exportCsvReport}
+                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  Clear Filters
+                  <FileSpreadsheet size={15} /> Export Category
+                </button>
+              ) : (
+                <button
+                  onClick={handleExportOverview}
+                  className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                  <Download size={15} /> Export Dashboard List
                 </button>
               )}
-            </div>
 
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              {/* Search input field */}
-              <div className="relative flex-1 md:flex-none">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                <input
-                  type="text"
-                  placeholder="Search applicants, emails..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full md:w-64 font-medium"
-                />
-              </div>
-
-              {/* Add Task Button */}
               <button
-                onClick={() => navigate('/admin/tasks')}
-                className="bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-100 transition-all shrink-0 cursor-pointer"
+                onClick={() => {
+                  fetchFormStats();
+                  if (activeSubTab !== 'overview') {
+                    fetchSubmissions(activeSubTab);
+                  } else {
+                    fetchDashboardData();
+                  }
+                }}
+                className="p-2 border border-gray-200 text-gray-500 hover:text-[#1e5cdc] rounded-xl transition-colors hover:bg-gray-50 cursor-pointer"
+                title="Refresh Data"
               >
-                <Plus size={14} /> Add / Create Task
+                <RefreshCw size={15} />
               </button>
             </div>
-          </div>
+          </header>
 
-          {/* loading animation */}
-          {loading ? (
-            <div className="bg-white border border-gray-100 rounded-2xl h-96 flex items-center justify-center shadow-sm">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-gray-500 font-bold text-sm tracking-wide">Aggregating live platform leads...</span>
+          {/* Content Body */}
+          <div className="p-6 flex-1 overflow-y-auto">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-500 gap-3">
+                <div className="w-10 h-10 border-4 border-[#1e5cdc] border-t-transparent rounded-full animate-spin"></div>
+                <p className="font-bold text-xs text-gray-400 uppercase tracking-wider">Syncing database records...</p>
               </div>
-            </div>
-          ) : (
-            <>
-              {/* High-Fidelity Dynamic Metric Cards Row */}
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-
-                {/* Metric Card 1: Total Submissions */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-blue-200 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-blue-50 text-[#1e5cdc] rounded-xl group-hover:scale-105 transition-transform">
-                      <FileText size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowUpRight size={10} /> 18.6%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.total}</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Total Submissions</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[12, 19, 3, 5, 2, 3, 10, 15, 20]} color="#1e5cdc" />
-                  </div>
-                </div>
-
-                {/* Metric Card 2: Active Requests */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-emerald-200 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl group-hover:scale-105 transition-transform">
-                      <Users size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowUpRight size={10} /> 16.3%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.active}</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Active Requests</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[5, 10, 15, 12, 20, 25, 22, 30, 28]} color="#10b981" />
-                  </div>
-                </div>
-
-                {/* Metric Card 3: Pending Follow-Ups */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-amber-250 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-amber-50 text-amber-500 rounded-xl group-hover:scale-105 transition-transform">
-                      <Clock size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowUpRight size={10} /> 9.2%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.pending}</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Pending Follow-Ups</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[10, 8, 12, 14, 11, 15, 13, 16, 15]} color="#f59e0b" />
-                  </div>
-                </div>
-
-                {/* Metric Card 4: Assigned Staff */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-purple-200 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-purple-50 text-purple-500 rounded-xl group-hover:scale-105 transition-transform">
-                      <Activity size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowUpRight size={10} /> 12.5%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.staffCount}</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Assigned Staff</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[2, 3, 5, 5, 8, 10, 12, 12, 15]} color="#8b5cf6" />
-                  </div>
-                </div>
-
-                {/* Metric Card 5: Responses Sent */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-cyan-200 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-cyan-50 text-cyan-500 rounded-xl group-hover:scale-105 transition-transform">
-                      <Mail size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowUpRight size={10} /> 20.8%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.responsesSent}</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Responses Sent</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[15, 20, 25, 30, 28, 35, 42, 40, 48]} color="#06b6d4" />
-                  </div>
-                </div>
-
-                {/* Metric Card 6: Conversion Rate */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-rose-200 transition-all group">
-                  <div className="flex items-start justify-between">
-                    <div className="p-2 bg-rose-50 text-rose-500 rounded-xl group-hover:scale-105 transition-transform">
-                      <Sparkles size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-rose-500 flex items-center gap-0.5 bg-rose-50 px-1.5 py-0.5 rounded-full">
-                      <ArrowDownRight size={10} /> 5.4%
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.conversionRate}%</span>
-                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Conversion Rate</span>
-                  </div>
-                  <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
-                    <Sparkline data={[25, 26, 24, 23, 25, 26, 28, 26, 23.6]} color="#f43f5e" />
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Dynamic Recharts Charts Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                {/* 1. Submissions by Category (Pie/Donut Chart) */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm flex flex-col h-[340px]">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-gray-800 text-sm">Submissions by Category</h4>
-                  </div>
-                  <div className="flex-1 relative h-48">
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
-                      <span className="text-2xl font-black text-gray-800">{currentStats.total}</span>
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Total Leads</span>
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={categoryChartData}
-                          innerRadius={65}
-                          outerRadius={85}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {categoryChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`${value} Leads`]} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Legend listing */}
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 mt-3 text-[10px] font-semibold text-gray-500 max-h-[70px] overflow-y-auto custom-scrollbar">
-                    {categoryChartData.slice(0, 8).map((cat, idx) => (
-                      <div key={cat.name} className="flex items-center gap-1.5 truncate">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}></span>
-                        <span className="truncate">{cat.name}</span>
-                        <span className="text-gray-400 ml-auto font-bold shrink-0">{cat.percentage}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 2. Submission Trend Overview (Line Chart) */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm flex flex-col h-[340px]">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="font-bold text-gray-800 text-sm">Submission Trend Overview</h4>
-                    </div>
-                    <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <span className="w-2.5 h-0.5 bg-[#1e5cdc]"></span>
-                        <span>This Week</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="w-2.5 h-0.5 border-t border-dashed border-gray-300"></span>
-                        <span>Last Week</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1 w-full text-[10px] font-semibold">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={trendLineData} margin={{ top: 5, right: 5, left: -25, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#9CA3AF' }} />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="This Week" stroke="#1e5cdc" strokeWidth={3} dot={{ r: 3, fill: '#1e5cdc' }} activeDot={{ r: 5 }} />
-                        <Line type="monotone" dataKey="Last Week" stroke="#94a3b8" strokeDasharray="5 5" strokeWidth={2} dot={{ r: 2 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* 3. Submissions by Status (Pie/Donut Chart) */}
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm flex flex-col h-[340px]">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-gray-800 text-sm">Submissions by Status</h4>
-                  </div>
-                  <div className="flex-1 relative h-48">
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
-                      <span className="text-2xl font-black text-gray-800">{currentStats.total}</span>
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Total</span>
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={statusChartData}
-                          innerRadius={65}
-                          outerRadius={85}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {statusChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name] || '#64748b'} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`${value} Submissions`]} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-
-                  {/* Legend listing */}
-                  <div className="grid grid-cols-3 gap-2 mt-3 text-[10px] font-semibold text-gray-500 max-h-[70px] overflow-y-auto custom-scrollbar">
-                    {statusChartData.map((entry, idx) => (
-                      <div key={entry.name} className="flex items-center gap-1 truncate">
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_COLORS[entry.name] || '#64748b' }}></span>
-                        <span className="truncate">{entry.name}</span>
-                        <span className="text-gray-400 font-bold shrink-0">({entry.value})</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-              </div>
-
-              {/* SPECIAL CONTACT US DEDICATED USER REPORTING PANEL */}
-              {/* Only shown if General Communication (category) or Contact Us Form (subcategory) is selected */}
-              {(selectedCategory === 'General Communication' || selectedFormType === 'Contact Us Form') && (
-                <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/30 border border-blue-100 rounded-3xl p-6 shadow-sm space-y-6">
-
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-blue-100/50 pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-blue-100 text-[#1e5cdc] rounded-2xl shadow-sm">
-                        <BarChart2 size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-extrabold text-gray-900 text-lg flex items-center gap-2">
-                          Contact Us Form Lead Reports
-                          <span className="text-[10px] font-black bg-blue-500 text-white uppercase tracking-widest px-2 py-0.5 rounded-full">User Inputs Insights</span>
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">Dynamic analytical reports compiled directly from user-submitted form details.</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-black text-[#1e5cdc] uppercase tracking-wider bg-blue-50 border border-blue-100 px-3.5 py-1.5 rounded-full shrink-0">
-                      {contactReports.totalContacts} Submissions Loaded
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                    {/* Country distribution */}
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col h-[280px]">
-                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <MapPin size={14} className="text-[#1e5cdc]" /> Geographical Sources
-                      </h4>
-                      <div className="flex-1 overflow-y-auto space-y-3.5 custom-scrollbar pr-1 pt-1">
-                        {contactReports.countryReport.map((c, idx) => {
-                          const maxVal = Math.max(...contactReports.countryReport.map(r => r.value));
-                          const percent = maxVal > 0 ? (c.value / maxVal) * 100 : 0;
-                          return (
-                            <div key={c.name} className="space-y-1">
-                              <div className="flex justify-between text-[11px] font-bold text-gray-600">
-                                <span>{c.name}</span>
-                                <span>{c.value} Leads</span>
-                              </div>
-                              <div className="w-full bg-gray-50 rounded-full h-1.5 border border-gray-100">
-                                <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-500" style={{ width: `${percent}%` }}></div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Preferred Contact Method */}
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col h-[280px]">
-                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <Globe size={14} className="text-emerald-500" /> Preferred Contact Method
-                      </h4>
-                      <div className="flex-1 relative h-36">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={contactReports.contactMethodReport}
-                              innerRadius={45}
-                              outerRadius={65}
-                              paddingAngle={3}
-                              dataKey="value"
-                            >
-                              {contactReports.contactMethodReport.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={index === 0 ? '#1e5cdc' : '#10b981'} />
-                              ))}
-                            </Pie>
-                            <Tooltip />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                      <div className="flex justify-center gap-6 mt-2 text-[10px] font-bold text-gray-500">
-                        {contactReports.contactMethodReport.map((entry, idx) => (
-                          <div key={entry.name} className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: idx === 0 ? '#1e5cdc' : '#10b981' }}></span>
-                            <span>{entry.name} ({entry.value})</span>
+            ) : (
+              <>
+                {/* 1. Tab: OVERVIEW (Aggregated analytical dashboard) */}
+                {activeSubTab === 'overview' && (
+                  <div className="space-y-6">
+                    
+                    {/* High-Fidelity Metric Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                      
+                      {/* Metric Card 1: Total Submissions */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-blue-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-blue-50 text-[#1e5cdc] rounded-xl group-hover:scale-105 transition-transform">
+                            <FileText size={16} />
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Top Subjects */}
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col h-[280px]">
-                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <Sparkles size={14} className="text-purple-500" /> Lead Subjects (Top 5)
-                      </h4>
-                      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
-                        {contactReports.subjectReport.slice(0, 5).map((s, idx) => (
-                          <div key={s.name} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-xl transition-colors border border-gray-50">
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="text-[10px] font-black bg-purple-50 text-purple-600 w-5 h-5 flex items-center justify-center rounded-lg">{idx + 1}</span>
-                              <span className="text-[11px] font-bold text-gray-700 truncate max-w-[120px]">{s.name}</span>
-                            </div>
-                            <span className="text-[10px] font-extrabold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">{s.value} Leads</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Email Domains / Companies */}
-                    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex flex-col h-[280px]">
-                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <Building size={14} className="text-cyan-500" /> Key Corporate Leads
-                      </h4>
-                      <div className="flex-1 overflow-y-auto space-y-2.5 custom-scrollbar pr-1">
-                        {contactReports.domainReport.map((d, idx) => (
-                          <div key={d.name} className="flex items-center justify-between p-2 hover:bg-cyan-50/50 rounded-xl transition-colors border border-cyan-50">
-                            <div className="flex items-center gap-2 truncate">
-                              <div className="w-6 h-6 rounded-lg bg-cyan-50 text-cyan-600 text-xs font-black flex items-center justify-center shrink-0">@</div>
-                              <span className="text-[11px] font-bold text-gray-700 truncate">{d.name}</span>
-                            </div>
-                            <span className="text-[10px] font-extrabold text-cyan-600 shrink-0">{d.value} Leads</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
-              )}
-
-              {/* Main Content Split Area: Submissions Table (Left) + Sidebar (Right) */}
-              <div className="flex flex-col lg:flex-row gap-6">
-
-                {/* 1. Recent Submissions Table Area (Width 3/4) */}
-                <div className="flex-1 bg-white border border-gray-150 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-
-                  {/* Table Control Header */}
-                  <div className="p-4 sm:p-5 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/30">
-                    <div>
-                      <h3 className="font-extrabold text-gray-800 text-sm uppercase tracking-wider">Recent Submissions</h3>
-                      <p className="text-xs text-gray-400 mt-0.5">Showing {currentSubmissions.length} of {filteredSubmissions.length} matching entries.</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-
-                      {/* Priority selector */}
-                      <select
-                        value={priorityFilter}
-                        onChange={e => setPriorityFilter(e.target.value)}
-                        className="bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-[10px] font-extrabold text-gray-500 uppercase focus:outline-none cursor-pointer"
-                      >
-                        <option value="all">Priority</option>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                      </select>
-
-                      {/* Status Selector */}
-                      <select
-                        value={statusFilter}
-                        onChange={e => setStatusFilter(e.target.value)}
-                        className="bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-[10px] font-extrabold text-gray-500 uppercase focus:outline-none cursor-pointer"
-                      >
-                        <option value="all">Status</option>
-                        <option value="New Submission">New Submission</option>
-                        <option value="Under Review">Under Review</option>
-                        <option value="Assigned to Department">Assigned to Department</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Approved / Rejected / Completed">Approved / Rejected / Completed</option>
-                        <option value="Notification Sent">Notification Sent</option>
-                        <option value="Archived & Report Generated">Archived & Report Generated</option>
-                      </select>
-
-                      {/* Export Button */}
-                      <button
-                        onClick={handleExport}
-                        disabled={filteredSubmissions.length === 0}
-                        className="flex items-center justify-center gap-1.5 bg-white border border-gray-200 hover:text-[#1e5cdc] hover:border-[#1e5cdc] px-3.5 py-1.5 rounded-lg text-[10px] font-bold text-gray-500 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        <Download size={12} /> Export CSV
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Table Element wrapper */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50">
-                          <th className="py-3 px-5">ID</th>
-                          <th className="py-3 px-4">Applicant Name</th>
-                          <th className="py-3 px-4">Form Type (Subcat)</th>
-                          <th className="py-3 px-4">Category</th>
-                          <th className="py-3 px-4">Contact</th>
-                          <th className="py-3 px-4">Assigned To</th>
-                          <th className="py-3 px-4">Status</th>
-                          <th className="py-3 px-4 text-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-50 text-xs font-semibold text-gray-600">
-                        {currentSubmissions.length === 0 ? (
-                          <tr>
-                            <td colSpan={8} className="py-12 text-center text-gray-400 font-medium bg-white">
-                              No matching form submissions found. Try adjusting filters.
-                            </td>
-                          </tr>
-                        ) : (
-                          currentSubmissions.map((sub) => {
-                            const isContactForm = sub.formType === 'Contact Us Form';
-                            return (
-                              <tr key={sub._id} className="hover:bg-blue-50/10 transition-colors">
-                                <td className="py-3.5 px-5">
-                                  <span className="font-bold text-[#1e5cdc]">{sub.id}</span>
-                                </td>
-                                <td className="py-3.5 px-4 font-bold text-gray-800">
-                                  <div className="truncate max-w-[130px]" title={sub.name}>{sub.name}</div>
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <span className="text-gray-500 truncate max-w-[140px] block" title={sub.formType}>{sub.formType}</span>
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full ${sub.category === 'Careers & Recruitment' ? 'bg-emerald-50 text-emerald-600' :
-                                      sub.category === 'Client Acquisition & Sales' ? 'bg-blue-50 text-blue-600' :
-                                        sub.category === 'Partnerships & Business Network' ? 'bg-purple-50 text-purple-600' :
-                                          sub.category === 'Customer Support Services' ? 'bg-amber-50 text-amber-600' :
-                                            'bg-gray-100 text-gray-500'
-                                    }`}>
-                                    {sub.category}
-                                  </span>
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <div className="text-[10px] space-y-0.5 font-medium">
-                                    <div className="text-gray-700 truncate max-w-[140px] flex items-center gap-1">
-                                      <Mail size={10} className="text-gray-300" /> {sub.email}
-                                    </div>
-                                    <div className="text-gray-400 flex items-center gap-1">
-                                      <Phone size={10} className="text-gray-300" /> {sub.phone}
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#1e5cdc]"></span>
-                                    <span className="text-gray-700 font-bold">{sub.assignedTo}</span>
-                                  </div>
-                                </td>
-                                <td className="py-3.5 px-4">
-                                  <span className="inline-block px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-md" style={{
-                                    backgroundColor:
-                                      sub.status === 'New Submission' ? '#eff6ff' :
-                                        sub.status === 'Under Review' ? '#fef3c7' :
-                                          sub.status === 'Assigned to Department' ? '#f3e8ff' :
-                                            sub.status === 'Processing' ? '#ffedd5' :
-                                              sub.status === 'Approved / Rejected / Completed' ? '#ecfdf5' :
-                                                sub.status === 'Notification Sent' ? '#ecfeff' :
-                                                  '#f1f5f9',
-                                    color:
-                                      sub.status === 'New Submission' ? '#2563eb' :
-                                        sub.status === 'Under Review' ? '#d97706' :
-                                          sub.status === 'Assigned to Department' ? '#7c3aed' :
-                                            sub.status === 'Processing' ? '#ea580c' :
-                                              sub.status === 'Approved / Rejected / Completed' ? '#059669' :
-                                                sub.status === 'Notification Sent' ? '#0891b2' :
-                                                  '#475569',
-                                    border: `1px solid ${sub.status === 'New Submission' ? '#dbeafe' :
-                                        sub.status === 'Under Review' ? '#fde68a' :
-                                          sub.status === 'Assigned to Department' ? '#e9d5ff' :
-                                            sub.status === 'Processing' ? '#fed7aa' :
-                                              sub.status === 'Approved / Rejected / Completed' ? '#a7f3d0' :
-                                                sub.status === 'Notification Sent' ? '#cffafe' :
-                                                  '#e2e8f0'
-                                      }`
-                                  }}>
-                                    {sub.status}
-                                  </span>
-                                </td>
-                                <td className="py-3.5 px-4 text-center">
-                                  <div className="flex items-center justify-center gap-1">
-                                    <button
-                                      onClick={() => setSelectedSubDetail(sub)}
-                                      className="p-1.5 text-gray-400 hover:text-[#1e5cdc] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                                      title="View Submission Details"
-                                    >
-                                      <Eye size={14} />
-                                    </button>
-                                    <button
-                                      onClick={() => handleCopy(sub._id, `${sub.id} - ${sub.name} (${sub.email})`)}
-                                      className={`p-1.5 rounded-lg transition-colors cursor-pointer ${copiedId === sub._id ? 'text-emerald-500 bg-emerald-50' : 'text-gray-400 hover:bg-gray-100'
-                                        }`}
-                                      title="Copy Quick Info"
-                                    >
-                                      {copiedId === sub._id ? <Check size={14} /> : <Copy size={14} />}
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Pagination control footer bar */}
-                  {totalPages > 1 && (
-                    <div className="px-5 py-4 border-t border-gray-150 flex items-center justify-between bg-gray-50/50 mt-auto">
-                      <button
-                        onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition-all cursor-pointer"
-                      >
-                        <ChevronLeft size={14} className="inline mr-1" /> Previous
-                      </button>
-                      <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <button
-                        onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition-all cursor-pointer"
-                      >
-                        Next <ChevronRight size={14} className="inline ml-1" />
-                      </button>
-                    </div>
-                  )}
-
-                </div>
-
-                {/* 2. Side Panel Cards (Width 1/4) */}
-                <div className="w-full lg:w-80 shrink-0 space-y-6">
-
-                  {/* Widget A: Upcoming Follow-Ups */}
-                  <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between border-b border-gray-50 pb-2">
-                      <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                        <Clock size={14} className="text-amber-500" /> Upcoming Follow-Ups
-                      </h4>
-                      <span className="text-[10px] font-bold text-[#1e5cdc] hover:underline cursor-pointer">View All</span>
-                    </div>
-                    <div className="space-y-3">
-                      {filteredSubmissions.filter(s => ['In Progress', 'Under Review', 'New'].includes(s.status) && s.priority === 'High').slice(0, 4).map(sub => (
-                        <div key={sub._id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-200 transition-all cursor-pointer" onClick={() => setSelectedSubDetail(sub)}>
-                          <div className="flex justify-between items-start">
-                            <span className="text-[10px] font-bold text-[#1e5cdc]">{sub.id}</span>
-                            <span className="text-[9px] font-black uppercase text-red-500 bg-red-50 px-2 py-0.5 rounded-md">High</span>
-                          </div>
-                          <h5 className="font-bold text-gray-800 text-xs mt-1 truncate">{sub.name}</h5>
-                          <span className="text-[10px] text-gray-500 block truncate mt-0.5">{sub.formType}</span>
-                          <span className="text-[9px] text-gray-400 font-medium block mt-1.5 flex items-center gap-1">
-                            <Calendar size={10} /> {new Date(sub.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowUpRight size={10} /> 18.6%
                           </span>
                         </div>
-                      ))}
-                      {filteredSubmissions.filter(s => ['In Progress', 'Under Review', 'New'].includes(s.status) && s.priority === 'High').length === 0 && (
-                        <div className="py-6 text-center text-xs text-gray-400 font-semibold bg-gray-50/50 rounded-xl border border-dashed border-gray-150">
-                          No pending follow-ups found.
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.total}</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Total Submissions</span>
                         </div>
-                      )}
-                    </div>
-                  </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[12, 19, 3, 5, 2, 3, 10, 15, 20]} color="#1e5cdc" />
+                        </div>
+                      </div>
 
-                  {/* Widget B: Recent Activities */}
-                  <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between border-b border-gray-50 pb-2">
-                      <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                        <Activity size={14} className="text-[#1e5cdc]" /> Recent Activities
-                      </h4>
-                      <span className="text-[10px] font-bold text-[#1e5cdc] hover:underline cursor-pointer">View All</span>
+                      {/* Metric Card 2: Active Requests */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-emerald-50 text-emerald-500 rounded-xl group-hover:scale-105 transition-transform">
+                            <Users size={16} />
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowUpRight size={10} /> 16.3%
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.active}</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Active Requests</span>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[5, 10, 15, 12, 20, 25, 22, 30, 28]} color="#10b981" />
+                        </div>
+                      </div>
+
+                      {/* Metric Card 3: Pending Follow-Ups */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-amber-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-amber-50 text-amber-500 rounded-xl group-hover:scale-105 transition-transform">
+                            <Clock size={16} />
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowUpRight size={10} /> 9.2%
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.pending}</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Pending Follow-Ups</span>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[10, 8, 12, 14, 11, 15, 13, 16, 15]} color="#f59e0b" />
+                        </div>
+                      </div>
+
+                      {/* Metric Card 4: Assigned Staff */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-purple-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-purple-50 text-purple-500 rounded-xl group-hover:scale-105 transition-transform">
+                            <Activity size={16} />
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowUpRight size={10} /> 12.5%
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.staffCount}</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Staff Owners</span>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[2, 3, 5, 5, 8, 10, 12, 12, 15]} color="#8b5cf6" />
+                        </div>
+                      </div>
+
+                      {/* Metric Card 5: Responses Sent */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-cyan-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-cyan-50 text-cyan-500 rounded-xl group-hover:scale-105 transition-transform">
+                            <Mail size={16} />
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowUpRight size={10} /> 20.8%
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.responsesSent}</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Responses Sent</span>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[15, 20, 25, 30, 28, 35, 42, 40, 48]} color="#06b6d4" />
+                        </div>
+                      </div>
+
+                      {/* Metric Card 6: Conversion Rate */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-rose-200 transition-all group">
+                        <div className="flex items-start justify-between">
+                          <div className="p-2 bg-rose-50 text-rose-500 rounded-xl group-hover:scale-105 transition-transform">
+                            <Sparkles size={16} />
+                          </div>
+                          <span className="text-[10px] font-bold text-rose-500 flex items-center gap-0.5 bg-rose-50 px-1.5 py-0.5 rounded-full">
+                            <ArrowDownRight size={10} /> 5.4%
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <span className="text-2xl font-bold text-gray-800 block leading-tight">{currentStats.conversionRate}%</span>
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mt-0.5">Conversion Rate</span>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-gray-50 flex items-center justify-between">
+                          <Sparkline data={[25, 26, 24, 23, 25, 26, 28, 26, 23.6]} color="#f43f5e" />
+                        </div>
+                      </div>
+
                     </div>
-                    <div className="space-y-4">
-                      {filteredSubmissions.slice(0, 4).map((sub, idx) => {
-                        const activities = [
-                          `assigned ${sub.id} to ${sub.assignedTo}`,
-                          `updated status for ${sub.id} to ${sub.status}`,
-                          `replied to ${sub.id} query`,
-                          `submitted new form for ${sub.formType}`
-                        ];
-                        const logTime = [`10 mins ago`, `25 mins ago`, `1 hour ago`, `2 hours ago`][idx];
-                        const operator = [`John Admin`, `${sub.assignedTo}`, `Support Team`, `User Guest`][idx];
-                        return (
-                          <div key={`act-${idx}`} className="flex gap-2.5 text-[11px] font-semibold text-gray-600 leading-tight">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#1e5cdc] shrink-0 mt-1.5"></div>
-                            <div>
-                              <span>
-                                <strong className="text-gray-800 font-bold">{operator}</strong> {activities[idx]}
-                              </span>
-                              <span className="text-[9px] text-gray-400 block mt-1">{logTime}</span>
+
+                    {/* Recharts Analytics Row */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      
+                      {/* Submissions by Category Donut Chart */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col h-[340px]">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider">Submissions by Category</h4>
+                        </div>
+                        <div className="flex-1 relative h-48">
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                            <span className="text-2xl font-extrabold text-gray-800">{currentStats.total}</span>
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Total Leads</span>
+                          </div>
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={categoryChartData}
+                                innerRadius={65}
+                                outerRadius={85}
+                                paddingAngle={3}
+                                dataKey="value"
+                              >
+                                {categoryChartData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip formatter={(value) => [`${value} Entries`]} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 mt-3 text-[10px] font-semibold text-gray-500 max-h-[70px] overflow-y-auto custom-scrollbar">
+                          {categoryChartData.slice(0, 8).map((cat, idx) => (
+                            <div key={cat.name} className="flex items-center gap-1.5 truncate">
+                              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}></span>
+                              <span className="truncate">{cat.name}</span>
+                              <span className="text-gray-400 ml-auto font-bold shrink-0">{cat.percentage}%</span>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                          ))}
+                        </div>
+                      </div>
 
-                  {/* Widget C: Top Performing Categories */}
-                  <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between border-b border-gray-50 pb-2">
-                      <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                        <BarChart2 size={14} className="text-emerald-500" /> Top Performing Categories
-                      </h4>
+                      {/* Daily Volume Trends Line Chart */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col h-[340px]">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider">Daily Submission Trends</h4>
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Weekly Overview</span>
+                        </div>
+                        <div className="flex-1">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={trendsData} margin={{ left: -20, right: 10, top: 10, bottom: 5 }}>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                              <XAxis dataKey="date" stroke="#9ca3af" fontSize={10} fontStyle="medium" />
+                              <YAxis stroke="#9ca3af" fontSize={10} fontStyle="medium" />
+                              <Tooltip />
+                              <Line type="monotone" dataKey="Inquiries" stroke="#1e5cdc" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      {/* Form Categories Performance */}
+                      <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col h-[340px]">
+                        <div className="flex items-center justify-between mb-4 border-b border-gray-50 pb-2">
+                          <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider">Top Form Sources</h4>
+                        </div>
+                        <div className="space-y-3.5 overflow-y-auto custom-scrollbar flex-1 pr-1">
+                          {chartData.slice(0, 6).map((cat, idx) => {
+                            const percent = statsOverview.total ? ((cat.Count / statsOverview.total) * 100).toFixed(1) : 0;
+                            return (
+                              <div key={cat.name} className="space-y-1">
+                                <div className="flex justify-between text-[11px] font-bold text-gray-600">
+                                  <span className="truncate max-w-[180px]">{cat.name}</span>
+                                  <span>{cat.Count} Leads ({percent}%)</span>
+                                </div>
+                                <div className="w-full bg-gray-50 rounded-full h-1.5 border border-gray-100">
+                                  <div className="h-1.5 rounded-full" style={{ width: `${percent}%`, backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
                     </div>
-                    <div className="space-y-3.5 pt-1">
-                      {categoryChartData.slice(0, 5).map((cat, idx) => (
-                        <div key={cat.name} className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-gray-600">
-                            <span className="truncate max-w-[180px]">{cat.name}</span>
-                            <span>{cat.value} Leads</span>
+
+                    {/* Aggregated Interactive Submission Database Table & Operations Widgets */}
+                    <div className="flex flex-col xl:flex-row gap-6 mt-4">
+                      
+                      {/* Left Side: Filterable Submission List Table */}
+                      <div className="flex-1 bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col min-w-0">
+                        
+                        {/* Interactive Aggregated Filters Box */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <select
+                              value={selectedCategory}
+                              onChange={(e) => {
+                                setSelectedCategory(e.target.value);
+                                setSelectedFormType('all');
+                              }}
+                              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-600 cursor-pointer"
+                            >
+                              <option value="all">All Category Areas</option>
+                              {CATEGORIES.slice(1).map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                              ))}
+                            </select>
+
+                            <select
+                              value={selectedFormType}
+                              onChange={(e) => setSelectedFormType(e.target.value)}
+                              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-600 cursor-pointer"
+                            >
+                              <option value="all">All Form Types</option>
+                              {availableSubcategories.map(form => (
+                                <option key={form.id} value={form.name}>{form.name}</option>
+                              ))}
+                            </select>
+
+                            <select
+                              value={dateRange}
+                              onChange={(e) => setDateRange(e.target.value)}
+                              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-600 cursor-pointer"
+                            >
+                              <option value="all">All Time</option>
+                              <option value="7days">Last 7 Days</option>
+                              <option value="30days">Last 30 Days</option>
+                            </select>
+
+                            {(selectedCategory !== 'all' || selectedFormType !== 'all' || statusFilterHead !== 'all' || priorityFilter !== 'all' || assignedFilter !== 'all' || searchTerm) && (
+                              <button
+                                onClick={() => {
+                                  setSelectedCategory('all');
+                                  setSelectedFormType('all');
+                                  setStatusFilterHead('all');
+                                  setPriorityFilter('all');
+                                  setAssignedFilter('all');
+                                  setSearchTerm('');
+                                }}
+                                className="text-xs font-extrabold text-[#1e5cdc] hover:underline transition"
+                              >
+                                Clear
+                              </button>
+                            )}
                           </div>
-                          <div className="w-full bg-gray-50 rounded-full h-1.5 border border-gray-100">
-                            <div className="bg-[#1e5cdc] h-1.5 rounded-full" style={{ width: `${cat.percentage}%` }}></div>
+
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                            <input
+                              type="text"
+                              placeholder="Quick filter dashboard..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                              className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-60 font-semibold text-gray-700"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Submissions Aggregated Table */}
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse text-xs">
+                            <thead>
+                              <tr className="bg-gray-50 border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider">
+                                <th className="py-3.5 px-4">Record ID</th>
+                                <th className="py-3.5 px-4">User Contact</th>
+                                <th className="py-3.5 px-4">Contact Info</th>
+                                <th className="py-3.5 px-4">Form Source</th>
+                                <th className="py-3.5 px-4">Status</th>
+                                <th className="py-3.5 px-4 text-center">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 font-semibold text-gray-600">
+                              {currentSubmissions.length > 0 ? (
+                                currentSubmissions.map((sub) => (
+                                  <tr key={sub._id} className="hover:bg-gray-50/50 transition duration-150">
+                                    <td className="py-4 px-4 font-mono text-[10px] text-gray-400 uppercase">
+                                      {sub.id || sub._id.slice(-8).toUpperCase()}
+                                    </td>
+                                    <td className="py-4 px-4">
+                                      <div className="font-extrabold text-gray-800 text-xs">{sub.name}</div>
+                                      <div className="text-[10px] text-gray-400 font-medium mt-0.5">{sub.companyName || 'No Company'}</div>
+                                    </td>
+                                    <td className="py-4 px-4 space-y-0.5">
+                                      <div className="text-gray-700">{sub.email}</div>
+                                      {sub.phone && <div className="text-[10px] text-gray-400 font-medium">{sub.phone}</div>}
+                                    </td>
+                                    <td className="py-4 px-4">
+                                      <span className="text-[10px] font-bold text-gray-700 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">
+                                        {sub.formType}
+                                      </span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                      <span className={`inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-md ${getStatusBadgeClass(sub.status)}`}>
+                                        {sub.status || 'New Submission'}
+                                      </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-center">
+                                      <div className="flex items-center justify-center gap-1">
+                                        <button
+                                          onClick={() => setSelectedSubDetail(sub)}
+                                          className="p-1.5 text-gray-400 hover:text-[#1e5cdc] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                                          title="View Submission Details"
+                                        >
+                                          <Eye size={14} />
+                                        </button>
+                                        <button
+                                          onClick={() => handleCopy(sub._id, `${sub.id || sub._id} - ${sub.name} (${sub.email})`)}
+                                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${copiedId === sub._id ? 'text-emerald-500 bg-emerald-50' : 'text-gray-400 hover:bg-gray-100'}`}
+                                          title="Copy Quick Info"
+                                        >
+                                          {copiedId === sub._id ? <Check size={14} /> : <Copy size={14} />}
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan="6" className="py-12 text-center text-gray-400 font-bold text-sm">
+                                    No matching dashboard records found.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination Footer */}
+                        {totalPages > 1 && (
+                          <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/30 mt-auto pt-4">
+                            <button
+                              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                              disabled={currentPage === 1}
+                              className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs transition cursor-pointer"
+                            >
+                              <ChevronLeft size={14} className="inline mr-1" /> Previous
+                            </button>
+                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                              Page {currentPage} of {totalPages}
+                            </span>
+                            <button
+                              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                              disabled={currentPage === totalPages}
+                              className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs transition cursor-pointer"
+                            >
+                              Next <ChevronRight size={14} className="inline ml-1" />
+                            </button>
+                          </div>
+                        )}
+
+                      </div>
+
+                      {/* Right Side Widget Box */}
+                      <div className="w-full xl:w-80 shrink-0 space-y-6">
+                        
+                        {/* Widget A: High Priority Follow-Ups */}
+                        <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs space-y-4">
+                          <div className="flex items-center justify-between border-b border-gray-50 pb-2">
+                            <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                              <Clock size={14} className="text-amber-500" /> Action Items
+                            </h4>
+                          </div>
+                          <div className="space-y-3">
+                            {filteredSubmissionsHead.filter(s => ['In Progress', 'Under Review', 'New', 'Open', 'Pending'].includes(s.status) && s.priority === 'High').slice(0, 4).map(sub => (
+                              <div key={sub._id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-200 transition cursor-pointer" onClick={() => setSelectedSubDetail(sub)}>
+                                <div className="flex justify-between items-start">
+                                  <span className="text-[10px] font-bold text-[#1e5cdc]">{sub.id || 'LEAD'}</span>
+                                  <span className="text-[9px] font-black uppercase text-red-500 bg-red-50 px-2 py-0.5 rounded-md">High</span>
+                                </div>
+                                <h5 className="font-bold text-gray-850 text-xs mt-1 truncate">{sub.name}</h5>
+                                <span className="text-[10px] text-gray-500 block truncate mt-0.5">{sub.formType}</span>
+                                <span className="text-[9px] text-gray-400 font-medium block mt-1.5 flex items-center gap-1">
+                                  <Calendar size={10} /> {new Date(sub.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            ))}
+                            {filteredSubmissionsHead.filter(s => ['In Progress', 'Under Review', 'New', 'Open', 'Pending'].includes(s.status) && s.priority === 'High').length === 0 && (
+                              <div className="py-6 text-center text-xs text-gray-400 font-semibold bg-gray-50/50 rounded-xl border border-dashed border-gray-150">
+                                No critical follow-ups pending.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Widget B: Recent Submissions Feed */}
+                        <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs space-y-4">
+                          <div className="flex items-center justify-between border-b border-gray-50 pb-2">
+                            <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                              <Activity size={14} className="text-[#1e5cdc]" /> Submissions Log
+                            </h4>
+                          </div>
+                          <div className="space-y-4">
+                            {filteredSubmissionsHead.slice(0, 4).map((sub, idx) => {
+                              const operators = ["Super Admin", "Operations Team", "Sales CRM Bot", "System Manager"];
+                              return (
+                                <div key={idx} className="flex gap-2.5 text-[11px] font-semibold text-gray-600 leading-tight">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-[#1e5cdc] shrink-0 mt-1.5"></div>
+                                  <div>
+                                    <span>
+                                      <strong className="text-gray-850 font-bold">{sub.name}</strong> submitted a new request via {sub.formType}.
+                                    </span>
+                                    <span className="text-[9px] text-gray-400 block mt-1">{new Date(sub.createdAt).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                )}
+
+                {/* 2. Tab: Specific Form CRUD list */}
+                {activeSubTab !== 'overview' && (
+                  <div className="space-y-6">
+                    
+                    {/* Shareable Form Link Quick Share Widget */}
+                    <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1.5">
+                          <CheckCircle size={15} className="text-[#1e5cdc]" /> Public Share Link
+                        </h3>
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active API Endpoint</span>
+                      </div>
+                      
+                      {FORM_CATEGORIES.filter(f => f.id === activeSubTab).map(form => (
+                        <div key={form.id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-between gap-4 max-w-2xl">
+                          <div className="flex items-center gap-3">
+                            <span className="font-bold text-xs text-gray-800">{form.name}</span>
+                            <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{form.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2 bg-white border border-gray-150 p-1.5 rounded-lg text-[10px] font-mono text-gray-500 w-80">
+                            <span className="truncate flex-1">{`/forms/${form.id}`}</span>
+                            <button
+                              onClick={() => handleCopyLink(`/forms/${form.id}`, form.id)}
+                              className={`p-1 rounded shrink-0 cursor-pointer ${copiedId === form.id ? 'bg-emerald-500 text-white' : 'hover:bg-gray-100 text-gray-400'}`}
+                            >
+                              {copiedId === form.id ? <Check size={11} /> : <Copy size={11} />}
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
+
+                    {/* submissions Table */}
+                    <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse text-xs">
+                          <thead>
+                            <tr className="bg-gray-50 border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider">
+                              <th className="py-3.5 px-4">Submission ID</th>
+                              <th className="py-3.5 px-4">Contact / Name</th>
+                              <th className="py-3.5 px-4">Email Address</th>
+                              <th className="py-3.5 px-4">Service / Area</th>
+                              <th className="py-3.5 px-4">Assigned Staff</th>
+                              <th className="py-3.5 px-4">Status</th>
+                              <th className="py-3.5 px-4">Submitted Date</th>
+                              <th className="py-3.5 px-4 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100 font-semibold text-gray-600">
+                            {filteredSubmissionsCRUD.length > 0 ? (
+                              filteredSubmissionsCRUD.map((sub) => {
+                                const name = sub.name || sub.fullName || `${sub.firstName || ''} ${sub.lastName || ''}`;
+                                const subject = sub.subject || sub.service || sub.jobTitle || sub.interestArea || 'Form Entry';
+
+                                return (
+                                  <tr key={sub._id} className="hover:bg-gray-50/50 transition duration-150">
+                                    <td className="py-4 px-4 font-mono text-[10px] text-gray-400">
+                                      {sub._id.slice(-8).toUpperCase()}
+                                    </td>
+                                    <td className="py-4 px-4 font-extrabold text-gray-800 text-xs">{name}</td>
+                                    <td className="py-4 px-4 text-xs font-semibold text-gray-500">{sub.email}</td>
+                                    <td className="py-4 px-4 font-bold text-gray-700 max-w-[200px] truncate" title={subject}>
+                                      {subject}
+                                    </td>
+                                    <td className="py-4 px-4 text-xs font-bold text-blue-600">
+                                      {sub.assignedStaff || <span className="text-gray-400">Unassigned</span>}
+                                    </td>
+                                    <td className="py-4 px-4">
+                                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getStatusBadgeClass(sub.status)}`}>
+                                        {sub.status || 'New'}
+                                      </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-xs text-gray-500 whitespace-nowrap">
+                                      {new Date(sub.createdAt).toLocaleDateString()}
+                                    </td>
+                                    <td className="py-4 px-4 text-right">
+                                      <div className="flex justify-end gap-1">
+                                        <button
+                                          onClick={() => openDetailModal(sub)}
+                                          className="text-xs font-bold bg-blue-50 text-[#1e5cdc] hover:bg-blue-100 px-2.5 py-1 rounded transition duration-150 cursor-pointer"
+                                        >
+                                          Manage
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteSubmission(sub._id)}
+                                          className="text-gray-400 hover:text-red-500 p-1.5 rounded transition cursor-pointer"
+                                          title="Delete Record"
+                                        >
+                                          <Trash2 size={13} />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan="8" className="py-12 text-center text-gray-400 font-bold text-sm">
+                                  No submissions found matching the current filters.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
                   </div>
-
-                </div>
-
-              </div>
-            </>
-          )}
-
-        </div>
-
+                )}
+              </>
+            )}
+          </div>
+        </main>
       </div>
 
-      {/* DETAILED VIEW SUBMISSION DETAILS MODAL */}
+      {/* ─── AGGREGATED DETAIL VIEW MODAL (Dashboard Overview) ─── */}
       {selectedSubDetail && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl border border-gray-150 flex flex-col">
-
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl border border-gray-150 flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            
             {/* Modal Header */}
             <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-white bg-[#1e5cdc] px-3 py-1 rounded-xl shadow-md shadow-blue-100">
-                  {selectedSubDetail.id}
+                <span className="text-xs font-black text-white bg-[#1e5cdc] px-3 py-1 rounded-xl shadow-md">
+                  {selectedSubDetail.id || 'LEAD'}
                 </span>
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest bg-white px-2 py-1 rounded-lg border border-gray-100">
                   {selectedSubDetail.formType}
@@ -1073,7 +1339,7 @@ export default function AdminSubmissions() {
               </div>
               <button
                 onClick={() => setSelectedSubDetail(null)}
-                className="w-8 h-8 rounded-full hover:bg-gray-150 flex items-center justify-center text-gray-400 hover:text-gray-800 transition cursor-pointer"
+                className="w-8 h-8 rounded-full hover:bg-gray-150 flex items-center justify-center text-gray-400 hover:text-gray-800 transition cursor-pointer font-bold"
               >
                 ✕
               </button>
@@ -1082,43 +1348,45 @@ export default function AdminSubmissions() {
             {/* Modal Content */}
             <div className="p-6 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
 
-              {/* Profile Block */}
+              {/* Profile Card */}
               <div className="flex items-center gap-4 p-4 bg-blue-50/40 rounded-2xl border border-blue-100/50">
                 <img
                   src={`https://ui-avatars.com/api/?name=${selectedSubDetail.name}&background=1e5cdc&color=fff&size=80`}
                   alt={selectedSubDetail.name}
-                  className="w-16 h-16 rounded-2xl border border-white shadow-sm shrink-0"
+                  className="w-16 h-16 rounded-2xl border border-white shadow-xs shrink-0"
                 />
                 <div>
-                  <h4 className="font-extrabold text-gray-900 text-lg leading-tight">{selectedSubDetail.name}</h4>
-                  <p className="text-xs text-gray-500 font-semibold mt-1 flex items-center gap-1"><Mail size={12} /> {selectedSubDetail.email}</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 flex items-center gap-1"><Phone size={12} /> {selectedSubDetail.phone}</p>
+                  <h4 className="font-extrabold text-gray-900 text-lg leading-none">{selectedSubDetail.name}</h4>
+                  <p className="text-xs text-gray-500 font-semibold mt-2 flex items-center gap-1.5"><Mail size={12} /> {selectedSubDetail.email}</p>
+                  {selectedSubDetail.phone && (
+                    <p className="text-xs text-gray-500 font-semibold mt-1 flex items-center gap-1.5"><Phone size={12} /> {selectedSubDetail.phone}</p>
+                  )}
                 </div>
               </div>
 
-              {/* Submission Metadata Details */}
+              {/* Submission Metadata */}
               <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-gray-600">
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Category</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Category Area</span>
                   <span className="text-gray-800 font-bold block">{selectedSubDetail.category}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Assigned To</span>
-                  <span className="text-gray-800 font-bold block">{selectedSubDetail.assignedTo}</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Assigned Lead Owner</span>
+                  <span className="text-gray-800 font-bold block">{selectedSubDetail.assignedTo || 'Unassigned'}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Status</span>
-                  <span className="text-gray-800 font-bold block">{selectedSubDetail.status}</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Workflow Status</span>
+                  <span className="text-gray-850 font-extrabold block capitalize">{selectedSubDetail.status}</span>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Priority</span>
-                  <span className="text-gray-800 font-bold block">{selectedSubDetail.priority}</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider block mb-0.5">Priority Flag</span>
+                  <span className="text-gray-800 font-bold block">{selectedSubDetail.priority || 'Medium'}</span>
                 </div>
               </div>
 
-              {/* Dynamic User Input Fields Loop */}
-              <div className="space-y-4">
-                <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider border-b border-gray-100 pb-2">Submitted User Inputs</h4>
+              {/* Dynamic User Inputs Details Loop */}
+              <div className="space-y-3">
+                <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider border-b border-gray-100 pb-2">Submitted Content Inputs</h4>
                 <div className="bg-white rounded-2xl border border-gray-150 p-5 space-y-4 text-xs font-semibold text-gray-600">
                   {Object.keys(selectedSubDetail.details || {}).map((key) => {
                     const val = selectedSubDetail.details[key];
@@ -1152,9 +1420,163 @@ export default function AdminSubmissions() {
               </button>
               <button
                 onClick={() => handleCopy(selectedSubDetail._id, JSON.stringify(selectedSubDetail.details, null, 2))}
-                className="px-4 py-2 bg-[#1e5cdc] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition cursor-pointer"
+                className="px-4 py-2 bg-[#1e5cdc] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition cursor-pointer shadow-sm"
               >
-                Copy Full Data
+                Copy Full Raw Data
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ─── INDIVIDUAL SUBMISSION DETAIL MODAL (Form CRUD) ─── */}
+      {detailModalOpen && selectedSub && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+            <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-blue-50/30">
+              <div>
+                <h2 className="text-base font-bold text-gray-800">Manage Submission Record</h2>
+                <p className="text-xs text-blue-600 mt-1 font-bold uppercase tracking-wider">
+                  Type: {activeSubTab} &nbsp;|&nbsp; ID: {selectedSub._id.slice(-8).toUpperCase()}
+                </p>
+              </div>
+              <button onClick={() => setDetailModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+              
+              {/* Form Details Grid */}
+              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs font-semibold text-gray-500">
+                <div className="col-span-2 sm:col-span-1">
+                  <span className="font-bold text-gray-400 block uppercase">Name / Contact</span>
+                  <span className="font-extrabold text-gray-850 text-sm block mt-0.5">
+                    {selectedSub.name || selectedSub.fullName || `${selectedSub.firstName || ''} ${selectedSub.lastName || ''}`}
+                  </span>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <span className="font-bold text-gray-400 block uppercase">Email Address</span>
+                  <span className="font-extrabold text-gray-800 text-sm block mt-0.5">{selectedSub.email}</span>
+                </div>
+
+                {selectedSub.phone && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Phone Number</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.phone}</span>
+                  </div>
+                )}
+                {selectedSub.company && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Company / Organization</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.company}</span>
+                  </div>
+                )}
+
+                {selectedSub.jobTitle && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Desired Job Title</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.jobTitle}</span>
+                  </div>
+                )}
+                {selectedSub.employeeCount && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Employee Count</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.employeeCount}</span>
+                  </div>
+                )}
+
+                {selectedSub.service && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Service Interest</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.service}</span>
+                  </div>
+                )}
+                {selectedSub.budget && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Project Budget</span>
+                    <span className="font-extrabold text-blue-600 block mt-0.5">{selectedSub.budget}</span>
+                  </div>
+                )}
+
+                {selectedSub.subject && (
+                  <div className="col-span-2">
+                    <span className="font-bold text-gray-400 block uppercase">Subject Context</span>
+                    <span className="font-extrabold text-gray-800 block mt-0.5">{selectedSub.subject}</span>
+                  </div>
+                )}
+
+                {selectedSub.message && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3 mt-1">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">User Message Content</span>
+                    <p className="text-gray-750 font-bold whitespace-pre-wrap leading-relaxed bg-white p-3 rounded-xl border border-gray-100">{selectedSub.message}</p>
+                  </div>
+                )}
+
+                {selectedSub.description && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3 mt-1">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">Description Description</span>
+                    <p className="text-gray-750 font-bold whitespace-pre-wrap leading-relaxed bg-white p-3 rounded-xl border border-gray-100">{selectedSub.description}</p>
+                  </div>
+                )}
+
+                {selectedSub.coverLetter && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3 mt-1">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">Cover Letter Message</span>
+                    <p className="text-gray-750 font-bold whitespace-pre-wrap leading-relaxed bg-white p-3 rounded-xl border border-gray-100">{selectedSub.coverLetter}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Recruiter operations & updates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-wider">Assign Lead Owner</label>
+                  <select
+                    value={staffInput}
+                    onChange={(e) => setStaffInput(e.target.value)}
+                    className="w-full p-2.5 bg-gray-50 border border-gray-250 rounded-xl text-xs font-semibold text-gray-700 focus:bg-white"
+                  >
+                    <option value="">Unassigned</option>
+                    <option value="System Administrator">System Administrator</option>
+                    <option value="HR Manager">HR Manager</option>
+                    <option value="Operations Administrator">Operations Coordinator</option>
+                    <option value="CRM Executive">CRM Executive</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-wider">Lead Status State</label>
+                  <select
+                    value={statusInput}
+                    onChange={(e) => setStatusInput(e.target.value)}
+                    className="w-full p-2.5 bg-gray-50 border border-gray-255 rounded-xl text-xs font-extrabold text-gray-800 focus:bg-white"
+                  >
+                    {getStatusOptions(activeSubTab).map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 tracking-wider">Internal Operation Notes</label>
+                <textarea
+                  rows={4}
+                  value={notesInput}
+                  onChange={(e) => setNotesInput(e.target.value)}
+                  placeholder="Enter details of candidate callback, audit notes, next steps or comments..."
+                  className="w-full p-3 border border-gray-250 bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 outline-none focus:ring-1 focus:ring-[#1e5cdc] focus:bg-white"
+                />
+              </div>
+
+            </div>
+
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3 font-semibold">
+              <button type="button" onClick={() => setDetailModalOpen(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition">Close</button>
+              <button type="button" onClick={saveDetailNotes} disabled={submitting} className="px-5 py-2 bg-[#1e5cdc] hover:bg-blue-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 transition shadow-xs">
+                {submitting ? 'Saving...' : 'Save Record Changes'}
               </button>
             </div>
 

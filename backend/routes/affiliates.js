@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Affiliate = require('../models/Affiliate');
 const { protect } = require('../middleware/auth');
-const { adminOnly } = require('../middleware/admin');
+const { adminOnly, checkSubRole } = require('../middleware/admin');
 
 // @route   POST api/affiliate-applications
 // @desc    Submit an affiliate application
@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
 // @route   GET api/affiliate-applications
 // @desc    Get all affiliate applications
 // @access  Private (Admin Only)
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', protect, checkSubRole(['Finance']), async (req, res) => {
     try {
         const applications = await Affiliate.find().sort({ createdAt: -1 });
         res.json(applications);

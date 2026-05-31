@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { FolderKanban, Plus, Search, RefreshCw, X, Image as ImageIcon, Briefcase, Calendar, CheckSquare, Settings2, Trash2 } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
@@ -70,7 +70,7 @@ export default function AdminProjects() {
   const [formData, setFormData] = useState(emptyForm);
   const [newMilestone, setNewMilestone] = useState({ name: "", status: "Pending", date: "" });
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/projects`, {
@@ -84,11 +84,13 @@ export default function AdminProjects() {
       console.error("Failed to fetch projects", err);
     }
     setLoading(false);
-  };
+  }, [admin]);
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    Promise.resolve().then(() => {
+      fetchProjects();
+    });
+  }, [fetchProjects]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -77,11 +77,7 @@ export default function AdminAffiliates() {
         setTimeout(() => setToast(null), 3500);
     };
 
-    useEffect(() => {
-        if (token) fetchApplications();
-    }, [token, location]);
-
-    const fetchApplications = async () => {
+    const fetchApplications = useCallback(async () => {
         if (!token) return;
         setLoading(true);
         try {
@@ -100,7 +96,11 @@ export default function AdminAffiliates() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        if (token) fetchApplications();
+    }, [token, fetchApplications, location]);
 
     // Approved list for dropdowns
     const approvedAffiliates = applications.filter(app => app.status === 'accepted' || app.status === 'reviewed');

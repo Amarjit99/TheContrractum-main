@@ -11,6 +11,9 @@ const contactSchema = new mongoose.Schema(
     message: { type: String, required: true, trim: true },
     country: { type: String, trim: true },
     preferredContactMethod: { type: String, trim: true },
+    status: { type: String, enum: ['New', 'Reviewed', 'Followed Up', 'Resolved'], default: 'New' },
+    notes: { type: String, default: '' },
+    assignedStaff: { type: String, default: '' }
   },
   { timestamps: true }
 );
