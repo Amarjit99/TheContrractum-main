@@ -89,7 +89,7 @@ const sections = [
   },
 ];
 
-const LegalPolicy = () => {
+const DataProtection = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
 
@@ -193,7 +193,7 @@ const LegalPolicy = () => {
               </h2>
             </div>
             <p className="text-slate-300 leading-relaxed mb-6">
-              If you have any questions, concerns, or requests regarding this Privacy Policy or how we handle your personal data, please do not hesitate to reach out. Our dedicated privacy team is committed to addressing your inquiries promptly and transparently.
+              If you have any questions, concerns, or requests regarding this Privacy Policy or how we handle your personal data, please do not hesitate to reach out. Our privacy team is committed to addressing your inquiries promptly and transparently.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -218,4 +218,4 @@ const LegalPolicy = () => {
   );
 };
 
-export default LegalPolicy;
+export default DataProtection;

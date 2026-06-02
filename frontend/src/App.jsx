@@ -70,7 +70,7 @@ import EmployeeId from './pages/company/EmployeeId';
 import CompanyContracts from './pages/company/CompanyContracts';
 import ReferralDashboard from './pages/company/ReferralDashboard';
 import CookieUsage from './pages/company/CookieUsage';
-import LegalPolicy from './pages/company/LegalPolicy';
+import DataProtection from './pages/company/DataProtection';
 import TermsOfService from './pages/company/TermsOfService';
 
 // //////////////////Team Pages///////////////////////////////////
@@ -167,7 +167,7 @@ import Support from './pages/contact/Support';
 import RequestDemo from './pages/contact/RequestDemo';
 import Feedback from './pages/contact/FeedbackModal';
 import Location from './pages/contact/Location';
-import ConsentPopup from './components/ConsentPopup';
+import ConsentNotice from './components/ConsentNotice';
 import GoogleForm from './pages/contact/GoogleForm';
 
 export default function App() {
@@ -177,7 +177,7 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
-          <ConsentPopup />
+          <ConsentNotice />
           <Navbar />
           <main className="flex-grow">
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
@@ -254,7 +254,7 @@ export default function App() {
                 <Route path="/company/contracts" element={<CompanyContracts />} />
                 <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
                 <Route path="/company/cookie-policy" element={<CookieUsage />} />
-                <Route path="/company/privacy-policy" element={<LegalPolicy />} />
+                <Route path="/company/privacy-policy" element={<DataProtection />} />
                 <Route path="/company/terms-of-service" element={<TermsOfService />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}

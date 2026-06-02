@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Briefcase, Trophy, BarChart3 } from "lucide-react";
+import { Users, Briefcase, Trophy, BarChart3, Calendar } from "lucide-react";
 
 export default function WhyChooseUs() {
   const features = [
@@ -32,6 +32,13 @@ export default function WhyChooseUs() {
       icon: <BarChart3 size={60} strokeWidth={1.5} />,
       bgImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=600&fit=crop",
     },
+    {
+      number: "1",
+      title: "Mini Event Platform",
+      desc: "A real-time interactive application showcasing RSVP flow, concurrency, and attendee management.",
+      icon: <Calendar size={60} strokeWidth={1.5} />,
+      bgImage: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=600&fit=crop",
+    },
   ];
 
   return (
@@ -52,7 +59,7 @@ export default function WhyChooseUs() {
         </h2>
 
         {/* Feature Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-16 relative">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12 xl:gap-8 justify-center relative">
 
           {features.map((item, index) => (
             <div key={index} className="group relative flex flex-col items-center cursor-pointer">

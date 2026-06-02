@@ -3,7 +3,7 @@ import { Shield, Mail, CheckCircle, AlertTriangle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-const ConsentPopup = () => {
+const ConsentNotice = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [manageCount, setManageCount] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
@@ -227,4 +227,4 @@ const ConsentPopup = () => {
     );
 };
 
-export default ConsentPopup;
+export default ConsentNotice;
