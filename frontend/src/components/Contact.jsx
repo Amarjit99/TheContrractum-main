@@ -135,16 +135,23 @@ const Registration = () => {
             </div>
 
             <div className="flex gap-2">
-              <select
-                name="countryIndex"
-                value={form.countryIndex}
-                onChange={handleChange}
-                className="w-28 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 cursor-pointer font-medium"
-              >
-                {COUNTRIES.map((c, i) => (
-                  <option key={i} value={i} className="bg-gray-900">{c.code} ({c.iso})</option>
-                ))}
-              </select>
+              <div className="relative group">
+                <select
+                  name="countryIndex"
+                  value={form.countryIndex}
+                  onChange={handleChange}
+                  title={COUNTRIES[form.countryIndex] ? COUNTRIES[form.countryIndex].name : ''}
+                  className="w-28 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 cursor-pointer font-medium"
+                >
+                  {COUNTRIES.map((c, i) => (
+                    <option key={i} value={i} className="bg-gray-900" title={c.name}>{c.code} ({c.iso})</option>
+                  ))}
+                </select>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                  {COUNTRIES[form.countryIndex] ? `${COUNTRIES[form.countryIndex].flag} ${COUNTRIES[form.countryIndex].name}` : ''}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                </div>
+              </div>
               <input
                 type="tel"
                 name="phone"

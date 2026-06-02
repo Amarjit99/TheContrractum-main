@@ -116,6 +116,7 @@ app.get("/api/health", (req, res) => {
 
 // Feature routes
 app.use("/api/contact", require("./routes/contact"));
+app.use("/api/vendor", require("./routes/vendor"));
 app.use("/api/expert-consultations", require("./routes/expertConsultation"));
 app.use("/api/advisor-applications", require("./routes/advisorApplication"));
 app.use("/api/visitors", require("./routes/visitors"));

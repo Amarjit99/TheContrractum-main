@@ -8,11 +8,25 @@ const VolunteerApplication = require('../models/VolunteerApplication');
 // @access  Public
 router.post('/feedback', async (req, res) => {
   try {
-    const { rating, message } = req.body;
+    const { rating, message, name, email } = req.body;
     if (!rating || !message) {
       return res.status(400).json({ message: 'Rating and message are required' });
     }
-    const feedback = await Feedback.create({ rating, message });
+    const feedback = await Feedback.create({ rating, message, name, email });
+
+    // Create Admin Notification
+    const Notification = require("../models/Notification");
+    try {
+      await Notification.create({
+        type: 'User Feedback',
+        title: 'New User Feedback Received',
+        message: `${name || 'Someone'} rated: ${rating}/5. Message: "${message.substring(0, 40)}..."`,
+        link: `/admin/submissions?tab=feedback&id=${feedback._id}`
+      });
+    } catch (notifErr) {
+      console.error('Error creating feedback notification:', notifErr.message);
+    }
+
     res.status(201).json(feedback);
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -25,6 +25,7 @@ const EventRegistration = require('../models/EventRegistration');
 const AdminDetail = require('../models/Admin');
 const Certificate = require('../models/Certificate');
 const IdCard = require('../models/IdCard');
+const Vendor = require('../models/Vendor');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -642,7 +643,7 @@ router.get('/submissions-dashboard', async (req, res) => {
       demoRequests, expertConsults, quoteApps,
       supportTickets, newsletters, interns,
       affiliates, surveys, referrals,
-      feedbacks, volunteers, eventRegs
+      feedbacks, volunteers, eventRegs, vendors
     ] = await Promise.all([
       Contact.find().sort({ createdAt: -1 }).limit(100),
       JobApplication.find().sort({ createdAt: -1 }).limit(100),
@@ -659,7 +660,8 @@ router.get('/submissions-dashboard', async (req, res) => {
       Referral.find().sort({ createdAt: -1 }).limit(100),
       Feedback.find().sort({ createdAt: -1 }).limit(100),
       VolunteerApplication.find().sort({ createdAt: -1 }).limit(100),
-      EventRegistration.find().sort({ createdAt: -1 }).limit(100)
+      EventRegistration.find().sort({ createdAt: -1 }).limit(100),
+      Vendor.find().sort({ createdAt: -1 }).limit(100)
     ]);
 
     // Helper map of forms
@@ -670,9 +672,9 @@ router.get('/submissions-dashboard', async (req, res) => {
         const doc = item.toObject ? item.toObject() : item;
         
         // Dynamic name mapping
-        let name = doc.name || doc.fullName || doc.name || 'Anonymous';
+        let name = doc.contactPerson || doc.name || doc.fullName || 'Anonymous';
         if (formType === 'Newsletter Subscription') {
-          name = doc.email ? doc.email.split('@')[0] : 'Subscriber';
+          name = doc.fullName || (doc.email ? doc.email.split('@')[0] : 'Subscriber');
         }
 
         // Contact info
@@ -738,6 +740,7 @@ router.get('/submissions-dashboard', async (req, res) => {
     addSubmissions(feedbacks, 'User Feedback', 'Customer Support Services', 'Support Team', 'Low');
     addSubmissions(volunteers, 'Volunteer Application', 'CSR & Community Programs', 'CSR Team', 'Low');
     addSubmissions(eventRegs, 'Event Registrations', 'Events & Participation', 'Events Team', 'Medium');
+    addSubmissions(vendors, 'Vendor Registration', 'Partnerships & Business Network', 'Finance Team', 'High');
 
     // Sort by Date Descending
     submissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -997,6 +1000,7 @@ const getModelByFormType = (formType) => {
     case 'intern': return Intern;
     case 'event-registration': return EventRegistration;
     case 'feedback': return Feedback;
+    case 'vendor': return Vendor;
     default: return null;
   }
 };

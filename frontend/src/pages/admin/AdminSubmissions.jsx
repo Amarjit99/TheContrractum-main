@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
@@ -42,13 +42,15 @@ const FORM_CATEGORIES = [
   { id: 'referral', name: 'Employee Referrals', endpoint: 'referral', category: 'HR' },
   { id: 'intern', name: 'Internship Applications', endpoint: 'intern', category: 'HR' },
   { id: 'event-registration', name: 'Event Registrations', endpoint: 'event-registration', category: 'Community' },
-  { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support' }
+  { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support' },
+  { id: 'vendor', name: 'Vendor Registrations', endpoint: 'vendor', category: 'Business' }
 ];
 
 // Mapping Forms to Categories
 const FORM_DETAILS = [
   { id: 'contact', name: 'Contact Us Form', category: 'General Communication' },
   { id: 'jobs', name: 'Job Application', category: 'Careers & Recruitment' },
+  { id: 'vendor', name: 'Vendor Registration', category: 'Partnerships & Business Network' },
   { id: 'partners', name: 'Partner Application', category: 'Partnerships & Business Network' },
   { id: 'advisors', name: 'Advisor Application', category: 'Careers & Recruitment' },
   { id: 'demo', name: 'Request Demo', category: 'Client Acquisition & Sales' },
@@ -107,6 +109,16 @@ export default function AdminSubmissions() {
 
   // Sub-Navigation Tabs: 'overview' | 'contact' | 'demo' | etc.
   const [activeSubTab, setActiveSubTab] = useState('overview');
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const idParam = searchParams.get('id');
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveSubTab(tabParam);
+    }
+  }, [tabParam]);
 
   // Filters State for aggregated Overview Dashboard
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -218,7 +230,26 @@ export default function AdminSubmissions() {
         fetchSubmissions(activeSubTab);
       }
     }
-  }, [admin, activeSubTab, fetchDashboardData, fetchFormStats, fetchSubmissions]);
+  }, [admin, activeSubTab, idParam, fetchDashboardData, fetchFormStats, fetchSubmissions]);
+
+  // Auto-open specific submission detail modal if 'id' parameter is present in URL
+  useEffect(() => {
+    if (idParam) {
+      if (activeSubTab === 'overview' && dashboardData?.submissions?.length > 0) {
+        const foundSub = dashboardData.submissions.find(s => s._id === idParam);
+        if (foundSub) {
+          setSelectedSubDetail(foundSub);
+          setSearchParams({});
+        }
+      } else if (activeSubTab !== 'overview' && submissions?.length > 0) {
+        const foundSub = submissions.find(s => s._id === idParam);
+        if (foundSub) {
+          openDetailModal(foundSub);
+          setSearchParams({});
+        }
+      }
+    }
+  }, [idParam, activeSubTab, dashboardData, submissions, setSearchParams]);
 
   // Apply filters on aggregated dashboard submissions list
   useEffect(() => {
@@ -309,6 +340,8 @@ export default function AdminSubmissions() {
       case 'contact':
       case 'expert':
         return ['New', 'Reviewed', 'Followed Up', 'Resolved'];
+      case 'vendor':
+        return ['Pending', 'Approved', 'Rejected'];
       case 'demo':
         return ['New', 'Reviewed', 'Demo Scheduled', 'Completed', 'Rejected'];
       case 'quote':
@@ -1396,6 +1429,21 @@ export default function AdminSubmissions() {
                       !val
                     ) return null;
 
+                    if (key === 'errorScreenshot') {
+                      return (
+                        <div key={key} className="space-y-1">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block capitalize">Error Screenshot</span>
+                          {val.startsWith('data:image/') ? (
+                            <img src={val} alt="Error Screenshot" className="max-w-full max-h-48 rounded-xl border border-gray-200 shadow-sm" />
+                          ) : (
+                            <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 text-gray-700 text-xs font-mono break-all">
+                              {val}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
                     return (
                       <div key={key} className="space-y-1">
                         <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
@@ -1467,10 +1515,82 @@ export default function AdminSubmissions() {
                     <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.phone}</span>
                   </div>
                 )}
+                {selectedSub.rating && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Service Rating</span>
+                    <span className="font-extrabold text-amber-500 text-sm block mt-0.5">
+                      {selectedSub.rating} / 5 ⭐
+                    </span>
+                  </div>
+                )}
                 {selectedSub.company && (
                   <div className="col-span-2 sm:col-span-1">
                     <span className="font-bold text-gray-400 block uppercase">Company / Organization</span>
                     <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.company}</span>
+                  </div>
+                )}
+
+                {selectedSub.industryPreference && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Industry Preference</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">{selectedSub.industryPreference}</span>
+                  </div>
+                )}
+
+                {selectedSub.consultationTopic && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Consultation Topic</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.consultationTopic}</span>
+                  </div>
+                )}
+                {selectedSub.preferredSchedule && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Preferred Schedule</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.preferredSchedule}</span>
+                  </div>
+                )}
+
+                {/* Technical Assistance Form fields */}
+                {selectedSub.systemProductName && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">System/Product Name</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.systemProductName}</span>
+                  </div>
+                )}
+                {selectedSub.deviceInformation && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Device Information</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.deviceInformation}</span>
+                  </div>
+                )}
+                {selectedSub.contactDetails && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Contact Details</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.contactDetails}</span>
+                  </div>
+                )}
+                {selectedSub.phone && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Phone Number</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">{selectedSub.phone}</span>
+                  </div>
+                )}
+                {selectedSub.technicalIssue && (
+                  <div className="col-span-2">
+                    <span className="font-bold text-gray-400 block uppercase">Technical Issue</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5 bg-white p-2.5 rounded-xl border border-gray-150 whitespace-pre-wrap leading-relaxed">{selectedSub.technicalIssue}</span>
+                  </div>
+                )}
+                {selectedSub.errorScreenshot && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3">
+                    <span className="font-bold text-gray-400 block uppercase mb-2">Error Screenshot</span>
+                    {selectedSub.errorScreenshot.startsWith('data:image/') ? (
+                      <img src={selectedSub.errorScreenshot} alt="Error Screenshot" className="max-w-full max-h-64 rounded-xl border border-gray-200 shadow-md" />
+                    ) : (
+                      <div className="bg-white p-3 rounded-xl border border-gray-100 font-mono text-xs text-gray-500 break-all">
+                        {selectedSub.errorScreenshot}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1504,6 +1624,210 @@ export default function AdminSubmissions() {
                   <div className="col-span-2">
                     <span className="font-bold text-gray-400 block uppercase">Subject Context</span>
                     <span className="font-extrabold text-gray-800 block mt-0.5">{selectedSub.subject}</span>
+                  </div>
+                )}
+
+                {/* Vendor Company Name */}
+                {(selectedSub.companyName || (selectedSub.details && selectedSub.details.companyName)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Vendor Company Name</span>
+                    <span className="font-extrabold text-gray-850 text-sm block mt-0.5">
+                      {selectedSub.companyName || selectedSub.details.companyName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Vendor Name */}
+                {(selectedSub.vendorName || (selectedSub.details && selectedSub.details.vendorName)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Vendor Name</span>
+                    <span className="font-extrabold text-gray-850 text-sm block mt-0.5">
+                      {selectedSub.vendorName || selectedSub.details.vendorName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Vendor Contact Number */}
+                {(selectedSub.vendorContact || (selectedSub.details && selectedSub.details.vendorContact)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Vendor Contact Number</span>
+                    <span className="font-extrabold text-gray-800 text-sm block mt-0.5">
+                      {selectedSub.vendorContact || selectedSub.details.vendorContact}
+                    </span>
+                  </div>
+                )}
+
+                {/* GST Number */}
+                {(selectedSub.gstNumber || (selectedSub.details && selectedSub.details.gstNumber)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">GST Number</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5 uppercase font-mono">
+                      {selectedSub.gstNumber || selectedSub.details.gstNumber}
+                    </span>
+                  </div>
+                )}
+
+                {/* PAN Number */}
+                {(selectedSub.panNumber || (selectedSub.details && selectedSub.details.panNumber)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">PAN Number</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5 uppercase font-mono">
+                      {selectedSub.panNumber || selectedSub.details.panNumber}
+                    </span>
+                  </div>
+                )}
+
+                {/* Contact Person */}
+                {(selectedSub.contactPerson || (selectedSub.details && selectedSub.details.contactPerson)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Contact Person</span>
+                    <span className="font-extrabold text-gray-700 block mt-0.5">
+                      {selectedSub.contactPerson || selectedSub.details.contactPerson}
+                    </span>
+                  </div>
+                )}
+
+                {/* Company Type */}
+                {(selectedSub.companyType || (selectedSub.details && selectedSub.details.companyType)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Company Type</span>
+                    <span className="font-extrabold text-violet-700 text-sm block mt-0.5">
+                      {selectedSub.companyType || selectedSub.details.companyType}
+                    </span>
+                  </div>
+                )}
+
+                {/* Authorized Signatory */}
+                {(selectedSub.authorizedDirectorName || (selectedSub.details && selectedSub.details.authorizedDirectorName)) && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="font-bold text-gray-400 block uppercase">Authorized Signatory</span>
+                    <span className="font-extrabold text-gray-800 text-sm block mt-0.5">
+                      {selectedSub.authorizedDirectorName || selectedSub.details.authorizedDirectorName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Authorization Details */}
+                {(selectedSub.authorizationDetails || (selectedSub.details && selectedSub.details.authorizationDetails)) && (
+                  <div className="col-span-2">
+                    <span className="font-bold text-gray-400 block uppercase">Authorization Details</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">
+                      {selectedSub.authorizationDetails || selectedSub.details.authorizationDetails}
+                    </span>
+                  </div>
+                )}
+
+                {/* Directors/Owners Details List */}
+                {((selectedSub.directors && selectedSub.directors.length > 0) || (selectedSub.details && selectedSub.details.directors && selectedSub.details.directors.length > 0)) && (
+                  <div className="col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <span className="font-bold text-gray-400 block uppercase text-[10px] tracking-wider mb-2">Directors & Owners List</span>
+                    <div className="space-y-2">
+                      {((selectedSub.directors || selectedSub.details.directors)).map((dir, idx) => (
+                        <div key={idx} className="flex justify-between items-center text-xs border-b border-gray-200/50 pb-1.5 last:border-b-0 last:pb-0">
+                          <span className="font-extrabold text-gray-800">{dir.name}</span>
+                          <span className="text-gray-500 font-semibold">{dir.contactNumber} | {dir.email}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Services / Products Offered */}
+                {(selectedSub.servicesOffered || (selectedSub.details && selectedSub.details.servicesOffered)) && (
+                  <div className="col-span-2">
+                    <span className="font-bold text-gray-400 block uppercase">Services Offered</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">
+                      {selectedSub.servicesOffered || selectedSub.details.servicesOffered}
+                    </span>
+                  </div>
+                )}
+
+                {/* Business Address */}
+                {(selectedSub.businessAddress || (selectedSub.details && selectedSub.details.businessAddress)) && (
+                  <div className="col-span-2">
+                    <span className="font-bold text-gray-400 block uppercase">Business Address</span>
+                    <span className="font-extrabold text-gray-750 block mt-0.5">
+                      {selectedSub.businessAddress || selectedSub.details.businessAddress}
+                    </span>
+                  </div>
+                )}
+
+                {/* Bank Details */}
+                {(selectedSub.bankDetails || (selectedSub.details && selectedSub.details.bankDetails)) && (
+                  <div className="col-span-2 bg-violet-50/50 p-3 rounded-xl border border-violet-100/50">
+                    <span className="font-bold text-violet-700 block uppercase text-[10px] tracking-wider mb-1">Bank payout Details</span>
+                    <div className="grid grid-cols-3 gap-2 text-xs font-semibold text-gray-700">
+                      <div>
+                        <span className="text-[10px] text-gray-400 block">BANK NAME</span>
+                        <span className="font-extrabold">{(selectedSub.bankDetails?.bankName || selectedSub.details?.bankDetails?.bankName) || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-gray-400 block">ACCOUNT NUMBER</span>
+                        <span className="font-extrabold font-mono">{(selectedSub.bankDetails?.accountNumber || selectedSub.details?.bankDetails?.accountNumber) || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-gray-400 block">IFSC CODE</span>
+                        <span className="font-extrabold font-mono">{(selectedSub.bankDetails?.ifscCode || selectedSub.details?.bankDetails?.ifscCode) || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Document Download Link */}
+                {((selectedSub.documents && typeof selectedSub.documents === 'object') || (selectedSub.details && selectedSub.details.documents && typeof selectedSub.details.documents === 'object')) && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3">
+                    <span className="font-bold text-gray-400 block uppercase mb-2">Uploaded Business Documents (Multi-Files)</span>
+                    <div className="flex flex-wrap gap-2">
+                      {((selectedSub.documents?.gstCertificate || selectedSub.details?.documents?.gstCertificate)) && (
+                        <a
+                          href={selectedSub.documents?.gstCertificate || selectedSub.details?.documents?.gstCertificate}
+                          download={`gst-certificate-${selectedSub._id || 'file'}`}
+                          className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-755 text-white font-bold py-2 px-3 rounded-lg text-xs transition"
+                        >
+                          <Download size={12} /> GST Certificate
+                        </a>
+                      )}
+                      {((selectedSub.documents?.panCard || selectedSub.details?.documents?.panCard)) && (
+                        <a
+                          href={selectedSub.documents?.panCard || selectedSub.details?.documents?.panCard}
+                          download={`pan-card-${selectedSub._id || 'file'}`}
+                          className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-755 text-white font-bold py-2 px-3 rounded-lg text-xs transition"
+                        >
+                          <Download size={12} /> PAN Card
+                        </a>
+                      )}
+                      {((selectedSub.documents?.cancelledCheque || selectedSub.details?.documents?.cancelledCheque)) && (
+                        <a
+                          href={selectedSub.documents?.cancelledCheque || selectedSub.details?.documents?.cancelledCheque}
+                          download={`cancelled-cheque-${selectedSub._id || 'file'}`}
+                          className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-755 text-white font-bold py-2 px-3 rounded-lg text-xs transition"
+                        >
+                          <Download size={12} /> Cancelled Cheque
+                        </a>
+                      )}
+                      {((selectedSub.documents?.authorizationLetter || selectedSub.details?.documents?.authorizationLetter)) && (
+                        <a
+                          href={selectedSub.documents?.authorizationLetter || selectedSub.details?.documents?.authorizationLetter}
+                          download={`authorization-letter-${selectedSub._id || 'file'}`}
+                          className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-755 text-white font-bold py-2 px-3 rounded-lg text-xs transition"
+                        >
+                          <Download size={12} /> Authorization Letter
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {(selectedSub.documents && typeof selectedSub.documents === 'string') && (
+                  <div className="col-span-2 border-t border-gray-150 pt-3">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">Uploaded Business Documents</span>
+                    <a
+                      href={selectedSub.documents}
+                      download={`vendor-documents-${selectedSub._id || 'file'}`}
+                      className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-755 text-white font-bold py-2 px-4 rounded-lg text-xs transition"
+                    >
+                      <Download size={14} /> Download Document Attachment
+                    </a>
                   </div>
                 )}
 

@@ -8,6 +8,16 @@ const NewsletterSubscriptionSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   },
+  fullName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  industryPreference: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   source: {
     type: String,
     required: true

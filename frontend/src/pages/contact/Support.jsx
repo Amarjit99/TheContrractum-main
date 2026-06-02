@@ -156,15 +156,21 @@ const Support = () => {
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
                   Ticket Subject
                 </label>
-                <input
-                  type="text"
+                <select
                   name="ticketSubject"
                   value={formData.ticketSubject}
                   onChange={handleChange}
-                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
-                  placeholder="e.g., Unable to login to my account"
+                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all cursor-pointer appearance-none"
                   required
-                />
+                >
+                  <option value="">Select Ticket Subject</option>
+                  <option value="Cloud Hosted osTicket">Cloud Hosted osTicket</option>
+                  <option value="Training and Onboarding">Training and Onboarding</option>
+                  <option value="Commercial Support">Commercial Support</option>
+                  <option value="Security Vulnerability">Security Vulnerability</option>
+                  <option value="Feedbacks/Comments">Feedbacks/Comments</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,17 +210,24 @@ const Support = () => {
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
                     Phone Number
                   </label>
-                  <div className="flex gap-2">
-                    <select
-                      name="countryIndex"
-                      value={formData.countryIndex}
-                      onChange={handleChange}
-                      className="w-28 px-2 py-4 border border-slate-200 bg-slate-50/50 rounded-xl focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all font-semibold cursor-pointer"
-                    >
-                      {COUNTRIES.map((c, i) => (
-                        <option key={i} value={i}>{c.code} ({c.iso})</option>
-                      ))}
-                    </select>
+                   <div className="flex gap-2">
+                     <div className="relative group">
+                       <select
+                         name="countryIndex"
+                         value={formData.countryIndex}
+                         onChange={handleChange}
+                         title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                         className="w-28 px-2 py-4 border border-slate-200 bg-slate-50/50 rounded-xl focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all font-semibold cursor-pointer"
+                       >
+                         {COUNTRIES.map((c, i) => (
+                           <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                         ))}
+                       </select>
+                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                         {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                       </div>
+                     </div>
                     <input
                       type="tel"
                       name="phoneNumber"

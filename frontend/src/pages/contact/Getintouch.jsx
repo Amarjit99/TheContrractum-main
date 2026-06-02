@@ -193,16 +193,23 @@ const Getintouch = () => {
                   <div>
                     <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Phone Number</label>
                     <div className="flex gap-2">
-                      <select
-                        name="countryIndex"
-                        value={form.countryIndex}
-                        onChange={handleChange}
-                        className="w-32 px-3 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
-                      >
-                        {COUNTRIES.map((c, i) => (
-                          <option key={i} value={i}>{c.code} ({c.iso})</option>
-                        ))}
-                      </select>
+                      <div className="relative group">
+                        <select
+                          name="countryIndex"
+                          value={form.countryIndex}
+                          onChange={handleChange}
+                          title={COUNTRIES[form.countryIndex] ? COUNTRIES[form.countryIndex].name : ''}
+                          className="w-32 px-3 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                        >
+                          {COUNTRIES.map((c, i) => (
+                            <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                          ))}
+                        </select>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                          {COUNTRIES[form.countryIndex] ? `${COUNTRIES[form.countryIndex].flag} ${COUNTRIES[form.countryIndex].name}` : ''}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                        </div>
+                      </div>
                       <input
                         type="tel"
                         name="phone"
