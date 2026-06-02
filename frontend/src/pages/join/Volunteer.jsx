@@ -16,8 +16,9 @@ export default function Volunteer() {
         email: '',
         phone: '',
         countryIndex: 0,
-        skills: [],
-        interests: ''
+        skills: '',
+        availability: '',
+        interestArea: ''
     });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
@@ -40,7 +41,18 @@ export default function Volunteer() {
             });
             if (resp.ok) {
                 setStatus({ loading: false, success: true, error: null });
-                setFormData({ fullName: '', email: '', phone: '', countryIndex: 0, skills: [], interests: '' });
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    countryIndex: 0,
+                    skills: '',
+                    availability: '',
+                    interestArea: ''
+                });
+                setTimeout(() => {
+                    setStatus(prev => ({ ...prev, success: false }));
+                }, 3000);
             } else {
                 throw new Error("Failed to submit application");
             }
@@ -279,7 +291,7 @@ export default function Volunteer() {
                             <h3 className="text-3xl font-black text-slate-900 mb-2">Volunteer Application Form</h3>
                             <p className="text-slate-500 mb-8 font-medium italic uppercase tracking-widest text-xs">Join our global network of change-makers</p>
 
-                            <form onSubmit={handleSubmit} className="space-y-6 text-left">
+                             <form onSubmit={handleSubmit} className="space-y-6 text-left">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
@@ -294,7 +306,7 @@ export default function Volunteer() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">Email</label>
                                         <input
                                             type="email"
                                             name="email"
@@ -307,66 +319,77 @@ export default function Volunteer() {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
-                                    <div className="flex gap-2">
-                                        <select
-                                            name="countryIndex"
-                                            value={formData.countryIndex}
-                                            onChange={handleChange}
-                                            className="w-32 border-2 border-slate-200 rounded-xl px-2 py-4 focus:border-teal-600 transition-all bg-white font-bold appearance-none cursor-pointer"
-                                        >
-                                            {COUNTRIES.map((c, i) => (
-                                                <option key={i} value={i}>{c.code} ({c.iso})</option>
-                                            ))}
-                                        </select>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
+                                        <div className="flex gap-2">
+                                            <div className="relative group">
+                                                <select
+                                                    name="countryIndex"
+                                                    value={formData.countryIndex}
+                                                    onChange={handleChange}
+                                                    title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                                                    className="w-32 border-2 border-slate-200 rounded-xl px-2 py-4 focus:border-teal-600 transition-all bg-white font-bold appearance-none cursor-pointer text-gray-800"
+                                                >
+                                                    {COUNTRIES.map((c, i) => (
+                                                        <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                                                    ))}
+                                                </select>
+                                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                                                    {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                required
+                                                value={formData.phone}
+                                                onChange={handleChange}
+                                                placeholder="XXXXX XXXXX"
+                                                className="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">Skills</label>
                                         <input
-                                            type="tel"
-                                            name="phone"
+                                            type="text"
+                                            name="skills"
                                             required
-                                            value={formData.phone}
+                                            value={formData.skills}
                                             onChange={handleChange}
-                                            placeholder="XXXXX XXXXX"
-                                            className="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none"
+                                            placeholder="e.g. Web Development, Project Management"
+                                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none"
                                         />
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-3">Target Opportunity</label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {["Technical Volunteering", "Mentoring & Training", "Community Outreach", "Education Programs"].map((skill) => (
-                                            <label key={skill} className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.skills.includes(skill) ? 'border-teal-600 bg-teal-50' : 'border-slate-100 bg-slate-50 hover:border-teal-200'}`}>
-                                                <input
-                                                    type="checkbox"
-                                                    className="hidden"
-                                                    checked={formData.skills.includes(skill)}
-                                                    onChange={() => {
-                                                        const newSkills = formData.skills.includes(skill)
-                                                            ? formData.skills.filter(s => s !== skill)
-                                                            : [...formData.skills, skill];
-                                                        setFormData({ ...formData, skills: newSkills });
-                                                    }}
-                                                />
-                                                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${formData.skills.includes(skill) ? 'bg-teal-600 border-teal-600' : 'border-slate-300 bg-white'}`}>
-                                                    {formData.skills.includes(skill) && <CheckCircle size={14} className="text-white" />}
-                                                </div>
-                                                <span className={`text-sm font-bold ${formData.skills.includes(skill) ? 'text-teal-900' : 'text-slate-600'}`}>{skill}</span>
-                                            </label>
-                                        ))}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">Availability</label>
+                                        <input
+                                            type="text"
+                                            name="availability"
+                                            required
+                                            value={formData.availability}
+                                            onChange={handleChange}
+                                            placeholder="e.g. Weekends, 5 hours/week"
+                                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none"
+                                        />
                                     </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-2">Why do you want to volunteer? (Availability & Interests)</label>
-                                    <textarea
-                                        name="interests"
-                                        rows="4"
-                                        value={formData.interests}
-                                        onChange={handleChange}
-                                        placeholder="Tell us about your background and how many hours you can commit..."
-                                        className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none resize-none"
-                                    ></textarea>
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">Interest Area</label>
+                                        <input
+                                            type="text"
+                                            name="interestArea"
+                                            required
+                                            value={formData.interestArea}
+                                            onChange={handleChange}
+                                            placeholder="e.g. STEM Education, Digital Inclusion"
+                                            className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-600 transition-all outline-none"
+                                        />
+                                    </div>
                                 </div>
 
                                 {status.error && <p className="text-red-500 text-sm font-bold">{status.error}</p>}
@@ -381,7 +404,7 @@ export default function Volunteer() {
                                 >
                                     {status.loading ? 'Processing...' : status.success ? 'Application Sent ✓' : 'Submit Volunteer Application'}
                                 </button>
-                                {status.success && <p className="text-center text-emerald-600 font-bold text-xs mt-4 animate-pulse">Application received! We will contact you shortly.</p>}
+                                {status.success && <p className="text-center text-emerald-600 font-bold text-xs mt-4 animate-pulse">Your form is submitted successfully.</p>}
                             </form>
                         </div>
                     </div>

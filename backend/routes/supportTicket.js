@@ -15,8 +15,8 @@ router.post('/', async (req, res) => {
     await Notification.create({
       type: 'Support Ticket',
       title: 'New Support Ticket',
-      message: `${req.body.name || 'A user'} has submitted a support ticket regarding "${req.body.subject || 'Support'}".`,
-      link: '/admin/dashboard'
+      message: `${req.body.name || req.body.fullName || 'A user'} has submitted a support ticket regarding "${req.body.ticketSubject || req.body.subject || 'Support'}".`,
+      link: '/admin/contacts?tab=support'
     });
 
     res.status(201).json(savedTicket);

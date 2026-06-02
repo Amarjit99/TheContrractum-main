@@ -116,27 +116,27 @@ const sections = [
 
 const TermsOfService = () => {
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-white text-slate-900">
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-28 pb-20 px-6">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-6 py-2 mb-8">
-            <Scale size={16} className="text-amber-400" />
-            <span className="text-amber-400 text-sm font-bold uppercase tracking-widest">Legal & Compliance</span>
+          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-full px-6 py-2 mb-8">
+            <Scale size={16} className="text-amber-600" />
+            <span className="text-amber-700 text-sm font-bold uppercase tracking-widest">Legal & Compliance</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tight mb-6">
-            Terms of <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Service</span>
+            Terms of <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-700">Service</span>
           </h1>
 
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
             Please read these Terms of Service carefully before using the services offered by The Contractum. These terms govern your access to and use of our website, platform, and professional services.
           </p>
 
@@ -152,21 +152,21 @@ const TermsOfService = () => {
           {sections.map((section, idx) => (
             <div
               key={idx}
-              className="bg-slate-900/80 border border-white/5 rounded-2xl p-8 hover:border-white/10 transition-all duration-300"
+              className="bg-slate-50/70 border border-slate-100 rounded-2xl p-8 hover:bg-white hover:shadow-xl hover:shadow-slate-100/50 hover:border-slate-200 transition-all duration-300"
             >
               {/* Section Header */}
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-amber-500/10 text-amber-400 rounded-xl">
+                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
                   {section.icon}
                 </div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">
+                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-800">
                   {section.title}
                 </h2>
               </div>
 
               {/* Content */}
               {section.content && (
-                <p className="text-slate-300 leading-relaxed mb-4">{section.content}</p>
+                <p className="text-slate-700 leading-relaxed mb-4">{section.content}</p>
               )}
 
               {/* List */}
@@ -174,8 +174,8 @@ const TermsOfService = () => {
                 <ul className="space-y-3 mt-4">
                   {section.list.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle size={18} className="text-amber-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                      <CheckCircle size={18} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-600 text-sm leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -186,18 +186,18 @@ const TermsOfService = () => {
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-white/10">
-                        <th className="text-left py-3 px-4 text-amber-400 font-bold uppercase tracking-wider text-xs">Type</th>
-                        <th className="text-left py-3 px-4 text-amber-400 font-bold uppercase tracking-wider text-xs">Duration</th>
-                        <th className="text-left py-3 px-4 text-amber-400 font-bold uppercase tracking-wider text-xs">Purpose</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 text-amber-600 font-bold uppercase tracking-wider text-xs">Type</th>
+                        <th className="text-left py-3 px-4 text-amber-600 font-bold uppercase tracking-wider text-xs">Duration</th>
+                        <th className="text-left py-3 px-4 text-amber-600 font-bold uppercase tracking-wider text-xs">Purpose</th>
                       </tr>
                     </thead>
                     <tbody>
                       {section.table.map((row, i) => (
-                        <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                          <td className="py-3 px-4 text-white font-semibold">{row.type}</td>
-                          <td className="py-3 px-4 text-slate-400">{row.duration}</td>
-                          <td className="py-3 px-4 text-slate-300">{row.purpose}</td>
+                        <tr key={i} className="border-b border-slate-100 hover:bg-slate-100/50 transition-colors">
+                          <td className="py-3 px-4 text-slate-900 font-semibold">{row.type}</td>
+                          <td className="py-3 px-4 text-slate-500">{row.duration}</td>
+                          <td className="py-3 px-4 text-slate-600">{row.purpose}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -208,29 +208,29 @@ const TermsOfService = () => {
           ))}
 
           {/* Contact Section */}
-          <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-8">
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-8">
             <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-amber-500/20 text-amber-400 rounded-xl">
+              <div className="p-3 bg-amber-100 text-amber-600 rounded-xl">
                 <Mail size={24} />
               </div>
-              <h2 className="text-xl font-black uppercase tracking-tight text-white">
+              <h2 className="text-xl font-black uppercase tracking-tight text-slate-900">
                 Questions About Our Terms?
               </h2>
             </div>
-            <p className="text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-700 leading-relaxed mb-6">
               If you have any questions or need clarification regarding these Terms of Service, please feel free to contact our legal team. We are committed to ensuring transparency and clarity in all our engagements.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/contact/touch"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl transition-all uppercase tracking-widest text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-xl transition-all uppercase tracking-widest text-sm"
               >
                 <Mail size={16} />
                 Contact Us
               </Link>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 hover:bg-white/5 text-white font-bold rounded-xl transition-all uppercase tracking-widest text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-all uppercase tracking-widest text-sm"
               >
                 <ArrowLeft size={16} />
                 Back to Home

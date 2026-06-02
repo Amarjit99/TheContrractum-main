@@ -56,21 +56,28 @@ router.post('/register', async (req, res) => {
 // POST /api/auth/admin-register
 router.post('/admin-register', async (req, res) => {
   try {
-    const { firstName, lastName, email, password, mobile, adminSubRole, joiningDate } = req.body;
+    const { fullName, email, password, employeeId, role, department } = req.body;
     
-    if (!firstName || !lastName || !email || !password || !mobile || !adminSubRole || !joiningDate) {
-      return res.status(400).json({ message: 'All fields are required' });
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: 'Full Name, Email, and Password are required' });
     }
 
     const existingUser = await User.findOne({ email });
     const existingRegistration = await AdminRegistration.findOne({ email });
 
     if (existingUser || existingRegistration) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: 'Email already registered' });
     }
 
     const registration = await AdminRegistration.create({
-      firstName, lastName, email, password, mobile, adminSubRole, joiningDate
+      fullName,
+      email,
+      password,
+      employeeId,
+      role,
+      department,
+      adminSubRole: role || 'HR', // fallback map for legacy compatibility
+      joiningDate: new Date().toISOString() // default mapping
     });
 
     res.status(201).json({ message: 'Registration submitted. Awaiting Super Admin approval.' });

@@ -7,21 +7,19 @@ const DemoRequest = require("../models/DemoRequest");
 // @access  Public
 router.post("/", async (req, res) => {
   try {
-    const { firstName, lastName, email, company, jobTitle, employeeCount, interestArea, message } = req.body;
+    const { name, companyName, email, phoneNumber, productInterested, preferredDate } = req.body;
 
-    if (!firstName || !lastName || !email || !company) {
+    if (!name || !companyName || !email || !phoneNumber || !productInterested || !preferredDate) {
       return res.status(400).json({ message: "Please enter all required fields" });
     }
 
     const newDemoRequest = new DemoRequest({
-      firstName,
-      lastName,
+      name,
+      companyName,
       email,
-      company,
-      jobTitle,
-      employeeCount,
-      interestArea,
-      message,
+      phoneNumber,
+      productInterested,
+      preferredDate,
     });
 
     await newDemoRequest.save();
@@ -31,8 +29,8 @@ router.post("/", async (req, res) => {
     await Notification.create({
       type: 'Demo Request',
       title: 'New Demo Requested',
-      message: `${firstName} ${lastName} from ${company} requested a live demo for "${interestArea}".`,
-      link: '/admin/dashboard'
+      message: `${name} from ${companyName} requested a live demo for "${productInterested}" on ${new Date(preferredDate).toLocaleDateString()}.`,
+      link: '/admin/contacts?tab=demo'
     });
 
     res.status(201).json({

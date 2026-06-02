@@ -1,6 +1,53 @@
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { CheckCircle, Shield, Globe, Cpu, Lightbulb, Zap, TrendingUp, Layers } from "lucide-react";
 
 export default function ConnectExperts() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [company, setCompany] = useState("");
+    const [consultationTopic, setConsultationTopic] = useState("");
+    const [preferredSchedule, setPreferredSchedule] = useState("");
+    const [contactDetails, setContactDetails] = useState("");
+    const [loading, setLoading] = useState(false);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+            const response = await fetch(`${API}/api/expert-consultations`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    company,
+                    consultationTopic,
+                    preferredSchedule,
+                    contactDetails
+                }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("Consultation request submitted successfully!");
+                setName("");
+                setEmail("");
+                setCompany("");
+                setConsultationTopic("");
+                setPreferredSchedule("");
+                setContactDetails("");
+            } else {
+                toast.error(data.error || "Submission failed. Please try again.");
+            }
+        } catch (err) {
+            console.error("Expert consultation submission error:", err);
+            toast.error("Failed to connect to server. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50">
             {/* Hero Section with Background */}
@@ -170,35 +217,138 @@ export default function ConnectExperts() {
                 </div>
             </section>
 
-            {/* Content Section - specifically with no buttons as requested */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-                <div className="max-w-4xl mx-auto text-center">
-                    <span className="inline-block px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold uppercase tracking-wider mb-4 border border-indigo-200">Start the Conversation</span>
-                    <h2 className="text-4xl font-black text-slate-900 mb-6">We're Ready to Help</h2>
-                    <p className="text-slate-600 text-xl mb-12">
-                        Get in touch with our technical team today. We look forward to exploring how we can drive your success with cutting-edge expertise and strategic guidance.
-                    </p>
+            {/* Content Section with Expert Consultation Form */}
+            <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-100">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+                        {/* Left Side: Contact Information */}
+                        <div className="lg:col-span-5 space-y-8 text-left">
+                            <div>
+                                <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-4 border border-blue-200">
+                                    Start the Conversation
+                                </span>
+                                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-6">We're Ready to Help</h2>
+                                <p className="text-slate-650 text-lg leading-relaxed">
+                                    Get in touch with our technical team today. We look forward to exploring how we can drive your success with cutting-edge expertise and strategic guidance.
+                                </p>
+                            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="bg-slate-50 p-12 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center hover:shadow-lg transition-shadow">
-                            <h3 className="text-3xl font-black text-blue-600 mb-6">Direct Email</h3>
-                            <p className="text-slate-800 text-xl font-medium mb-2">experts@thecontractum.com</p>
-                            <p className="text-slate-500 text-base">We typically respond within 24 hours to all business inquiries.</p>
-                        </div>
-                        <div className="bg-slate-50 p-12 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center hover:shadow-lg transition-shadow">
-                            <h3 className="text-3xl font-black text-blue-600 mb-6">Direct Phone</h3>
-                            <p className="text-slate-800 text-xl font-medium mb-2">+1 (555) 123-4567</p>
-                            <p className="text-slate-500 text-base">Available Mon-Fri, 9am - 5pm EST for immediate assistance.</p>
-                        </div>
-                    </div>
+                            <div className="space-y-6">
+                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                                    <h3 className="text-2xl font-bold text-blue-600 mb-2">Direct Email</h3>
+                                    <p className="text-slate-800 text-lg font-medium mb-1">experts@thecontractum.com</p>
+                                    <p className="text-slate-500 text-sm">We typically respond within 24 hours to all business inquiries.</p>
+                                </div>
+                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                                    <h3 className="text-2xl font-bold text-blue-600 mb-2">Direct Phone</h3>
+                                    <p className="text-slate-800 text-lg font-medium mb-1">+1 (555) 123-4567</p>
+                                    <p className="text-slate-500 text-sm">Available Mon-Fri, 9am - 5pm EST for immediate assistance.</p>
+                                </div>
+                            </div>
 
-                    <div className="mt-16 bg-slate-900 text-white p-12 rounded-3xl shadow-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="text-left">
-                            <h3 className="text-2xl font-bold mb-2">Global Headquarters</h3>
-                            <p className="text-slate-400 text-lg">123 Innovation Drive, Tech District<br />San Francisco, CA 94105</p>
+                            <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-xl flex items-center justify-between gap-6">
+                                <div>
+                                    <h3 className="text-xl font-bold mb-2">Global Headquarters</h3>
+                                    <p className="text-slate-400 text-sm leading-relaxed">123 Innovation Drive, Tech District<br />San Francisco, CA 94105</p>
+                                </div>
+                                <Globe className="w-12 h-12 text-blue-400 opacity-80 shrink-0" />
+                            </div>
                         </div>
-                        <div className="flex-shrink-0">
-                            <Globe className="w-16 h-16 text-blue-400 opacity-80" />
+
+                        {/* Right Side: Expert Consultation Form */}
+                        <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-2xl relative animate-fade-in">
+                            <div className="mb-6">
+                                <h3 className="text-2xl sm:text-3xl font-black text-slate-950 mb-2">Expert Consultation Form</h3>
+                                <p className="text-slate-500 text-sm font-medium">Please supply your details below and an expert will follow up within 24 hours.</p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-5 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Name</label>
+                                        <input
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            required
+                                            placeholder="Your Name"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Email Address</label>
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            placeholder="you@example.com"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Organization</label>
+                                        <input
+                                            type="text"
+                                            value={company}
+                                            onChange={(e) => setCompany(e.target.value)}
+                                            required
+                                            placeholder="Company Name"
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Preferred Schedule</label>
+                                        <select
+                                            value={preferredSchedule}
+                                            onChange={(e) => setPreferredSchedule(e.target.value)}
+                                            required
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs cursor-pointer"
+                                        >
+                                            <option value="" disabled>Select Date/Time Window</option>
+                                            <option value="Morning (9am - 12pm EST)">Morning (9am - 12pm EST)</option>
+                                            <option value="Afternoon (12pm - 3pm EST)">Afternoon (12pm - 3pm EST)</option>
+                                            <option value="Late Afternoon (3pm - 5pm EST)">Late Afternoon (3pm - 5pm EST)</option>
+                                            <option value="Flexible Weekdays">Flexible Weekdays</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Consultation Topic</label>
+                                    <input
+                                        type="text"
+                                        value={consultationTopic}
+                                        onChange={(e) => setConsultationTopic(e.target.value)}
+                                        required
+                                        placeholder="e.g. Zero-Trust Cloud Architecture Migration"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Contact Details & Inquiry Details</label>
+                                    <textarea
+                                        value={contactDetails}
+                                        onChange={(e) => setContactDetails(e.target.value)}
+                                        required
+                                        rows={4}
+                                        placeholder="Provide your phone number or any relevant project specs for the experts..."
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs resize-none"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 active:scale-98 transition-all shadow-md text-sm cursor-pointer disabled:opacity-50"
+                                >
+                                    {loading ? "Scheduling..." : "Submit Consultation Request"}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

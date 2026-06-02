@@ -9,13 +9,15 @@ import { toast } from 'react-hot-toast';
 
 const RequestQuote = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     phone: "",
     countryIndex: 0,
-    service: "",
-    budget: "",
-    description: "",
+    company: "",
+    serviceRequired: "",
+    budgetEstimate: "",
+    projectScope: "",
+    timeline: "",
   });
 
   const [status, setStatus] = useState({ loading: false, error: null });
@@ -26,13 +28,15 @@ const RequestQuote = () => {
 
   const handleReset = () => {
     setFormData({
-      fullName: "",
+      name: "",
       email: "",
       phone: "",
       countryIndex: 0,
-      service: "",
-      budget: "",
-      description: "",
+      company: "",
+      serviceRequired: "",
+      budgetEstimate: "",
+      projectScope: "",
+      timeline: "",
     });
     setStatus({ loading: false, error: null });
   };
@@ -42,8 +46,14 @@ const RequestQuote = () => {
     setStatus({ loading: true, error: null });
 
     const submissionData = {
-      ...formData,
+      name: formData.name,
+      email: formData.email,
       phone: `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`,
+      company: formData.company,
+      serviceRequired: formData.serviceRequired,
+      budgetEstimate: formData.budgetEstimate,
+      projectScope: formData.projectScope,
+      timeline: formData.timeline,
     };
 
     try {
@@ -82,21 +92,37 @@ const RequestQuote = () => {
 
         {/* Left Side - Form */}
         <div className="bg-white shadow-xl rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Quote Details</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Request a Quote Form</h2>
           <p className="text-gray-600 mb-8 text-sm">Please provide accurate information for a detailed quote</p>
 
           <form onSubmit={handleSubmit} className="space-y-5 mt-6">
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Full Name <span className="text-primary">*</span>
+                Name <span className="text-primary">*</span>
               </label>
               <input
                 type="text"
-                name="fullName"
-                value={formData.fullName}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder="Enter your name"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            {/* Company */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Company <span className="text-primary">*</span>
+              </label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                placeholder="Enter your company name"
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
                 required
               />
@@ -124,38 +150,45 @@ const RequestQuote = () => {
                 Phone Number <span className="text-primary">*</span>
               </label>
               <div className="flex gap-2">
-                <select
-                  name="countryIndex"
-                  value={formData.countryIndex}
-                  onChange={handleChange}
-                  className="w-32 border border-gray-300 rounded-lg px-2 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white font-bold appearance-none cursor-pointer"
-                >
-                  {COUNTRIES.map((c, i) => (
-                    <option key={i} value={i}>{c.code} ({c.iso})</option>
-                  ))}
-                </select>
+                <div className="relative group">
+                  <select
+                    name="countryIndex"
+                    value={formData.countryIndex}
+                    onChange={handleChange}
+                    title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                    className="w-32 border border-gray-300 rounded-lg px-2 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white font-bold appearance-none cursor-pointer"
+                  >
+                    {COUNTRIES.map((c, i) => (
+                      <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                    ))}
+                  </select>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                    {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                  </div>
+                </div>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="XXXXX XXXXX"
-                  className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all"
+                  className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all min-w-0"
                   required
                 />
               </div>
             </div>
 
-            {/* Service Type */}
+            {/* Service Required */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select Service <span className="text-primary">*</span>
+                Service Required <span className="text-primary">*</span>
               </label>
               <select
-                name="service"
-                value={formData.service}
+                name="serviceRequired"
+                value={formData.serviceRequired}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white cursor-pointer"
                 required
               >
                 <option value="">Choose a service</option>
@@ -173,16 +206,16 @@ const RequestQuote = () => {
               </select>
             </div>
 
-            {/* Budget */}
+            {/* Budget Estimate */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Estimated Budget <span className="text-primary">*</span>
+                Budget Estimate <span className="text-primary">*</span>
               </label>
               <select
-                name="budget"
-                value={formData.budget}
+                name="budgetEstimate"
+                value={formData.budgetEstimate}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white cursor-pointer"
                 required
               >
                 <option value="">Select budget range</option>
@@ -194,14 +227,35 @@ const RequestQuote = () => {
               </select>
             </div>
 
-            {/* Description */}
+            {/* Timeline */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Project Description <span className="text-primary">*</span>
+                Timeline <span className="text-primary">*</span>
+              </label>
+              <select
+                name="timeline"
+                value={formData.timeline}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-gray-800 focus:ring-2 focus:ring-gray-200 focus:outline-none transition-all bg-white cursor-pointer"
+                required
+              >
+                <option value="">Select project timeline</option>
+                <option value="Immediate (Within 1 month)">Immediate (Within 1 month)</option>
+                <option value="1 to 3 Months">1 to 3 Months</option>
+                <option value="3 to 6 Months">3 to 6 Months</option>
+                <option value="6+ Months">6+ Months</option>
+                <option value="Flexible / Ongoing">Flexible / Ongoing</option>
+              </select>
+            </div>
+
+            {/* Project Scope */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Project Scope <span className="text-primary">*</span>
               </label>
               <textarea
-                name="description"
-                value={formData.description}
+                name="projectScope"
+                value={formData.projectScope}
                 onChange={handleChange}
                 rows="5"
                 placeholder="Please describe your project requirements, goals, and any specific features you need..."
