@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -39,26 +39,43 @@ export default function Profile() {
   const [pwForm, setPwForm] = useState({ currentPassword:'', newPassword:'', confirmNew:'' });
   const [pwMsg, setPwMsg] = useState({ text:'', ok:true });
 
-  useEffect(() => {
-    if (!user) { navigate('/login'); return; }
-    fetchProfile();
-    fetchContracts();
-  }, [user]);
+  const headers = useMemo(() => ({ Authorization: `Bearer ${user?.token}` }), [user?.token]);
 
-  useEffect(() => {
-    const q = new URLSearchParams(location.search);
-    const t = q.get('tab');
-    if (t && t !== tab) setTab(t);
-  }, [location.search]);
+  const fetchProfile = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/api/users/profile`, { headers });
+      const data = await res.json();
+      setProfile(data);
+      setForm({
+        name: data.name||'', phone: data.phone||'', dateOfBirth: data.dateOfBirth||'',
+        gender: data.gender||'', location: data.location||'', bio: data.bio||'',
+        jobTitle: data.jobTitle||'', department: data.department||'', company: data.company||'',
+        industry: data.industry||'', experience: data.experience||'', skills: data.skills||[],
+        website: data.website||'', linkedin: data.linkedin||'', twitter: data.twitter||'', github: data.github||'',
+      });
+    } finally { setLoading(false); }
+  }, [headers]);
 
-  const fetchContracts = async () => {
+  const fetchContracts = useCallback(async () => {
     setLoadingContracts(true);
     try {
       const res = await fetch(`${API}/api/contracts/my-contracts`, { headers });
       const data = await res.json();
       if (Array.isArray(data)) setContracts(data);
     } finally { setLoadingContracts(false); }
-  };
+  }, [headers]);
+
+  useEffect(() => {
+    if (!user) { navigate('/login'); return; }
+    fetchProfile();
+    fetchContracts();
+  }, [user, navigate, fetchProfile, fetchContracts]);
+
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const t = q.get('tab');
+    if (t && t !== tab) setTab(t);
+  }, [location.search, tab]);
 
   const handleSign = async (e) => {
     e.preventDefault();
@@ -74,23 +91,6 @@ export default function Profile() {
         fetchContracts();
       }
     } catch (err) { console.error(err); }
-  };
-
-  const headers = { Authorization: `Bearer ${user?.token}` };
-
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch(`${API}/api/users/profile`, { headers });
-      const data = await res.json();
-      setProfile(data);
-      setForm({
-        name: data.name||'', phone: data.phone||'', dateOfBirth: data.dateOfBirth||'',
-        gender: data.gender||'', location: data.location||'', bio: data.bio||'',
-        jobTitle: data.jobTitle||'', department: data.department||'', company: data.company||'',
-        industry: data.industry||'', experience: data.experience||'', skills: data.skills||[],
-        website: data.website||'', linkedin: data.linkedin||'', twitter: data.twitter||'', github: data.github||'',
-      });
-    } finally { setLoading(false); }
   };
 
   // Avatar upload

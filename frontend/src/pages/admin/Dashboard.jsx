@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, TrendingDown, ChevronRight, Link as LinkIcon } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
+import { TrendingUp, TrendingDown, ChevronRight, Link as LinkIcon, Plus, CheckCircle2, Clock, AlertCircle, Calendar, Flag, X, Bell, Users, Check, FileText, Mail } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -62,11 +62,82 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [formStats, setFormStats] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [quickTaskTitle, setQuickTaskTitle] = useState('');
+
+  const fetchDashboardData = async () => {
+    if (!admin?.token) return;
+    try {
+      const [statsData, tasksData, formStatsData, notificationsData] = await Promise.all([
+        fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin.token}` } }).then(r => r.json()),
+        fetch(`${API}/api/tasks`, { headers: { Authorization: `Bearer ${admin.token}` } }).then(r => r.json()),
+        fetch(`${API}/api/admin/form-stats`, { headers: { Authorization: `Bearer ${admin.token}` } }).then(r => r.json()),
+        fetch(`${API}/api/admin/notifications?limit=8`, { headers: { Authorization: `Bearer ${admin.token}` } }).then(r => r.json())
+      ]);
+      setStats(statsData);
+      setTasks(Array.isArray(tasksData) ? tasksData : []);
+      setFormStats(formStatsData);
+      setNotifications(Array.isArray(notificationsData) ? notificationsData : []);
+    } catch (err) {
+      console.error("Failed to load dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${admin?.token}` } })
-      .then(r => r.json()).then(setStats).finally(() => setLoading(false));
-  }, []);
+    if (admin?.role === 'super-admin') {
+      navigate('/admin/super-dashboard', { replace: true });
+      return;
+    }
+    fetchDashboardData();
+  }, [admin, navigate]);
+
+  const handleToggleTask = async (id, currentStatus) => {
+    try {
+      const res = await fetch(`${API}/api/tasks/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`
+        },
+        body: JSON.stringify({ status: currentStatus === 'Completed' ? 'Pending' : 'Completed' })
+      });
+      if (res.ok) {
+        fetchDashboardData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddQuickTask = async (e) => {
+    e.preventDefault();
+    if (!quickTaskTitle.trim()) return;
+    try {
+      const res = await fetch(`${API}/api/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${admin?.token}`
+        },
+        body: JSON.stringify({
+          title: quickTaskTitle.trim(),
+          assignedTo: admin._id || admin.id,
+          priority: 'Medium',
+          dueDate: new Date(Date.now() + 86400000).toISOString()
+        })
+      });
+      if (res.ok) {
+        setQuickTaskTitle('');
+        fetchDashboardData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -91,50 +162,78 @@ export default function Dashboard() {
       ) : (
         <div className="space-y-6">
 
-          {/* Top Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
-            <StatCardItem
-              title="Total Leads"
-              value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
-              trendColor="text-emerald-500"
-              trendText="▲ 12%"
-              trendIcon={<TrendingUp size={16} />}
-            />
-            <StatCardItem
-              title="Active Partners"
-              value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
-              trendColor="text-emerald-500"
-              trendText="1 Pending"
-              trendIcon={<TrendingUp size={16} />}
-            />
-            <StatCardItem
-              title="Job Applications"
-              value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
-              trendColor="text-emerald-500"
-              trendText={`${stats?.totalApplications || 0} New`}
-              trendIcon={<TrendingUp size={16} />}
-            />
-            <StatCardItem
-              title="Blog Posts"
-              value={stats?.totalBlogs || "12"}
-              trendColor="text-emerald-500"
-              trendText="Live"
-              trendIcon={<TrendingUp size={16} />}
-            />
-            <StatCardItem
-              title="Certificates"
-              value={stats?.totalCertificates || "0"}
-              trendColor="text-emerald-500"
-              trendText="Issued"
-              trendIcon={<TrendingUp size={16} />}
-            />
-            <StatCardItem
-              title="ID Cards"
-              value={stats?.totalIdCards || "0"}
-              trendColor="text-emerald-500"
-              trendText="Active"
-              trendIcon={<TrendingUp size={16} />}
-            />
+          {/* Website Management (WMS) Metrics */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-black text-blue-600 bg-blue-50/80 border border-blue-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+              Website Management (WMS) Metrics
+            </h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <StatCardItem
+                title="Total Leads"
+                value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
+                trendColor="text-emerald-500"
+                trendText="▲ 12%"
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="Blog Posts"
+                value={stats?.totalBlogs || "12"}
+                trendColor="text-emerald-500"
+                trendText="Live"
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="Job Applications"
+                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
+                trendColor="text-emerald-500"
+                trendText={`${stats?.totalApplications || 0} New`}
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="Total Visitors"
+                value={stats?.totalVisitors ? stats.totalVisitors.toLocaleString() : "0"}
+                trendColor="text-blue-500"
+                trendText="Live"
+                trendIcon={<TrendingUp size={16} />}
+              />
+            </div>
+          </div>
+
+          {/* Company Management (CMS) Metrics */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+              Company Management (CMS) Metrics
+            </h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <StatCardItem
+                title="Total Users"
+                value={stats?.totalUsers ? stats.totalUsers.toLocaleString() : "0"}
+                trendColor="text-emerald-500"
+                trendText="Active"
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="Active Partners"
+                value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
+                trendColor="text-emerald-500"
+                trendText="1 Pending"
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="Certificates"
+                value={stats?.totalCertificates || "0"}
+                trendColor="text-emerald-500"
+                trendText="Issued"
+                trendIcon={<TrendingUp size={16} />}
+              />
+              <StatCardItem
+                title="ID Cards"
+                value={stats?.totalIdCards || "0"}
+                trendColor="text-emerald-500"
+                trendText="Active"
+                trendIcon={<TrendingUp size={16} />}
+              />
+            </div>
           </div>
 
           {/* Charts Row */}
@@ -156,14 +255,24 @@ export default function Dashboard() {
 
               <div className="h-48 sm:h-64 w-full mt-2 relative">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                    <Line type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} dot={{ r: 4, fill: '#1e5cdc', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={3} dot={{ r: 4, fill: '#93c5fd', strokeWidth: 2, stroke: '#fff' }} />
-                  </LineChart>
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Area type="monotone" dataKey="visitors" stroke="#1e5cdc" strokeWidth={3} fillOpacity={1} fill="url(#colorVisitors)" dot={{ r: 4, fill: '#1e5cdc', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                    <Area type="monotone" dataKey="pageViews" stroke="#93c5fd" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" dot={{ r: 4, fill: '#93c5fd', strokeWidth: 2, stroke: '#fff' }} />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex justify-center">
@@ -184,10 +293,16 @@ export default function Dashboard() {
 
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={conversionData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#1e5cdc" />
+                        <stop offset="100%" stopColor="#3b82f6" />
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6B7280' }} />
-                    <Tooltip cursor={{ fill: '#f3f4f6' }} />
-                    <Bar dataKey="rate" fill="#3b82f6" radius={[2, 2, 0, 0]} barSize={24} />
+                    <Tooltip cursor={{ fill: '#f8fafc' }} />
+                    <Bar dataKey="rate" fill="url(#barGradient)" radius={[4, 4, 0, 0]} barSize={24} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -198,86 +313,249 @@ export default function Dashboard() {
 
           </div>
 
-          {/* Bottom Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Bottom Activities Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
-            {/* Recent Leads */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">Live Feedback Loops</h3>
-                <span className="text-xs font-bold text-gray-400">CONTACTS & APPS</span>
-              </div>
-              <div className="p-2 flex-1 overflow-y-auto max-h-[300px] custom-scrollbar">
-                {/* Applications first then contacts */}
-                {stats?.recentApplications?.map((app, i) => (
-                  <div key={`app-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
-                    <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{app.fullName}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
+            {/* WMS Operations Column */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-black text-blue-600 bg-blue-50/80 border border-blue-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+                WMS Operations & Activity
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* Live Feedback Loops */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
+                  <div className="p-4 border-b border-gray-50 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800 text-sm">Live Feedback Loops</h3>
+                    <span className="text-[10px] font-bold text-gray-400">CONTACTS & APPS</span>
                   </div>
-                ))}
-                {[...(stats?.recentContacts || []), ...mockContacts].slice(0, 5).map((c, i) => (
-                  <div key={`contact-${i}`} className="flex flex-col py-2.5 px-3 hover:bg-blue-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-[#1e5cdc] truncate max-w-[200px]">{c.name}</span>
-                      <span className="text-xs text-gray-400 shrink-0">{new Date(c.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <span className="text-xs text-gray-500 truncate italic">{c.subject}</span>
+                  <div className="p-2 flex-1 overflow-y-auto max-h-[200px] custom-scrollbar">
+                    {stats?.recentApplications?.map((app, i) => (
+                      <div key={`app-${i}`} className="flex flex-col py-2 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
+                        <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-bold text-gray-900 truncate max-w-[180px]">{app.fullName}</span>
+                          <span className="text-[9px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
+                      </div>
+                    ))}
+                    {[...(stats?.recentContacts || []), ...mockContacts].slice(0, 5).map((c, i) => (
+                      <div key={`contact-${i}`} className="flex flex-col py-2 px-3 hover:bg-blue-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-[#1e5cdc] truncate max-w-[180px]">{c.name}</span>
+                          <span className="text-[9px] text-gray-400 shrink-0">{new Date(c.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <span className="text-xs text-gray-500 truncate italic">{c.subject}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Latest Blog Posts */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">Latest Blog Posts</h3>
-                <button onClick={() => navigate('/admin/blogs')} className="text-[#1e5cdc] hover:text-blue-700 text-xs font-semibold flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-md">
-                  View All <ChevronRight size={12} />
-                </button>
-              </div>
-              <div className="px-5 py-3 border-b border-gray-50 flex justify-between text-xs text-gray-500 font-medium tracking-wide">
-                <span>Title</span>
-                <span>Status</span>
-              </div>
-              <div className="p-2 flex-1">
-                {mockBlogs.map(b => (
-                  <div key={b.id} className="flex justify-between items-center py-2.5 px-3 hover:bg-gray-50 rounded-lg transition-colors">
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                      <span className="text-sm text-[#1e5cdc] font-medium truncate max-w-[200px] sm:max-w-[300px]">{b.title}</span>
-                    </div>
-                    <span className={`text-xs font-semibold px-2 py-1 rounded ${b.status === 'Published' ? 'bg-teal-100 text-teal-700' : 'bg-orange-100 text-orange-700'}`}>{b.status}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Open Positions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="font-semibold text-gray-800">Open Positions</h3>
-                <div className="flex flex-col gap-2">
-                  {mockJobs.map((job, idx) => (
-                    <span key={job.id} className={`text-xs font-semibold px-3 py-1.5 rounded ${idx === 0 ? 'bg-[#1e5cdc] text-white' : 'bg-blue-50 text-[#1e5cdc] border border-blue-100'}`}>{job.title}</span>
-                  ))}
                 </div>
-              </div>
-              <div className="flex items-center gap-1 mt-auto">
-                <div className="w-6 h-6 rounded bg-gray-100"></div>
-                <div className="w-6 h-6 rounded bg-gray-100"></div>
+
+                {/* Latest Blog Posts */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                  <div className="p-4 border-b border-gray-50 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800 text-sm">Latest Blog Posts</h3>
+                    <button onClick={() => navigate('/admin/blogs')} className="text-[#1e5cdc] hover:text-blue-700 text-[10px] font-semibold flex items-center gap-0.5 bg-blue-50 px-2 py-1 rounded">
+                      View All <ChevronRight size={10} />
+                    </button>
+                  </div>
+                  <div className="p-2 flex-1">
+                    {mockBlogs.map(b => (
+                      <div key={b.id} className="flex justify-between items-center py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0"></span>
+                          <span className="text-xs text-[#1e5cdc] font-medium truncate max-w-[100px] sm:max-w-[140px]">{b.title}</span>
+                        </div>
+                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${b.status === 'Published' ? 'bg-teal-100 text-teal-700' : 'bg-orange-100 text-orange-700'}`}>{b.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Open Positions */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm">Open Positions</h3>
+                  </div>
+                  <div className="flex flex-col gap-1.5 my-2">
+                    {mockJobs.map((job) => (
+                      <span key={job.id} className="text-[10px] font-semibold px-2 py-1 rounded bg-blue-50 text-[#1e5cdc] border border-blue-100 truncate">{job.title}</span>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => navigate('/admin/careers')}
+                    className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors mt-auto text-left"
+                  >
+                    Manage Openings →
+                  </button>
+                </div>
+
+                {/* Form Submissions Quick Stats */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col md:col-span-2">
+                  <div className="flex justify-between items-center mb-3 border-b border-gray-50 pb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
+                      <FileText size={16} className="text-blue-600" /> Web Requests Overview
+                    </h3>
+                    <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {formStats?.totalResponses || 0} Submissions
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 overflow-y-auto max-h-[140px] custom-scrollbar pr-1">
+                    {formStats?.stats ? (
+                      formStats.stats.slice(0, 9).map((form, i) => (
+                        <div key={i} className="p-2 bg-gray-50/50 hover:bg-gray-50 rounded-lg border border-gray-100 transition-colors flex flex-col">
+                          <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider truncate block">{form.name}</span>
+                          <span className="text-sm font-black text-gray-800 mt-0.5 block">{form.count}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-400 text-xs text-center py-6 italic col-span-3">No stats loaded</p>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Partner Requests */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <h3 className="font-semibold text-gray-800 mb-6">Partner Requests</h3>
-              <div className="flex items-end gap-2">
-                <span className="text-3xl font-bold text-amber-500">1</span>
-                <span className="text-sm font-medium text-gray-600 mb-1">Pending Approval</span>
+            {/* CMS Operations Column */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
+                CMS Operations & Activity
+              </h2>
+              <div className="grid grid-cols-1 gap-4">
+
+                {/* My Tasks Manager Widget */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col">
+                  <div className="flex justify-between items-center mb-3 border-b border-gray-50 pb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
+                      <CheckCircle2 size={16} className="text-indigo-600" /> Active Tasks
+                    </h3>
+                    <button 
+                      onClick={() => navigate('/admin/tasks')} 
+                      className="text-[10px] font-bold text-indigo-600 hover:underline bg-indigo-50 px-2 py-0.5 rounded"
+                    >
+                      Kanban Board →
+                    </button>
+                  </div>
+                  
+                  {/* Quick Add Form */}
+                  <form onSubmit={handleAddQuickTask} className="flex gap-2 mb-2">
+                    <input 
+                      value={quickTaskTitle}
+                      onChange={e => setQuickTaskTitle(e.target.value)}
+                      type="text" 
+                      placeholder="Quick add task..." 
+                      className="flex-1 px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white text-xs outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all"
+                    />
+                    <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center justify-center gap-1 transition-colors shrink-0">
+                      <Plus size={12} /> Add
+                    </button>
+                  </form>
+
+                  <div className="space-y-1.5 overflow-y-auto max-h-[140px] custom-scrollbar pr-1">
+                    {tasks.length === 0 ? (
+                      <p className="text-gray-400 text-xs text-center py-6 italic">No active tasks</p>
+                    ) : (
+                      tasks.filter(t => t.status !== 'Completed').slice(0, 4).map(task => {
+                        return (
+                          <div key={task._id} className="flex items-start gap-2 p-1.5 bg-gray-50/50 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100/50">
+                            <button 
+                              type="button"
+                              onClick={() => handleToggleTask(task._id, task.status)}
+                              className="w-3.5 h-3.5 rounded border border-gray-300 hover:border-gray-400 bg-white flex items-center justify-center transition-all mt-0.5 shrink-0"
+                            >
+                              <Check size={10} className="text-white hover:text-gray-200" strokeWidth={3} />
+                            </button>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-800 truncate">
+                                {task.title}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+
+                {/* Partner Requests */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm">Partner Requests</h3>
+                    <button onClick={() => navigate('/admin/partners')} className="text-indigo-600 hover:text-indigo-700 text-[10px] font-semibold bg-indigo-50 px-2 py-0.5 rounded">
+                      Manage Partners
+                    </button>
+                  </div>
+                  <div className="flex items-end gap-2 mt-1">
+                    <span className="text-2xl font-bold text-amber-500 leading-none">1</span>
+                    <span className="text-xs font-medium text-gray-600 mb-0.5">Application Pending Approval</span>
+                  </div>
+                </div>
+
+                {/* Staff Registration Panel */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-800 text-sm">Corporate Registrations</h3>
+                    <p className="text-[10px] text-gray-400 mt-0.5">Configure user accounts and staff access permissions.</p>
+                  </div>
+                  <button 
+                    onClick={() => navigate('/admin/registration')} 
+                    className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-indigo-700 transition shrink-0"
+                  >
+                    Add Staff
+                  </button>
+                </div>
+
+                {/* Active Credentials Summary */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 grid grid-cols-2 gap-4">
+                  <div className="border-r border-gray-100 pr-2">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">ID Cards Created</span>
+                    <span className="text-xl font-black text-gray-800 mt-1 block">{stats?.totalIdCards || 0}</span>
+                  </div>
+                  <div className="pl-2">
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Certificates Issued</span>
+                    <span className="text-xl font-black text-gray-800 mt-1 block">{stats?.totalCertificates || 0}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Recent Activity Feed */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col md:col-span-2">
+              <div className="flex justify-between items-center mb-4 border-b border-gray-50 pb-3">
+                <h3 className="font-semibold text-gray-800 text-sm flex items-center gap-2">
+                  <Bell size={16} className="text-blue-600" /> Recent System Activities
+                </h3>
+                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Live Notifications
+                </span>
+              </div>
+              <div className="space-y-2.5 overflow-y-auto max-h-[220px] custom-scrollbar pr-1">
+                {notifications.length === 0 ? (
+                  <p className="text-gray-400 text-xs text-center py-8 italic">No recent system activities</p>
+                ) : (
+                  notifications.map((notif) => (
+                    <div key={notif._id} className="flex gap-3 p-3 bg-gray-50/50 hover:bg-gray-50 rounded-xl transition-all border border-gray-100">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-white font-bold text-xs ${
+                        notif.type === 'auth' || notif.type === 'admin' ? 'bg-red-500' :
+                        notif.type === 'submission' || notif.type === 'contact' ? 'bg-blue-500' :
+                        notif.type === 'certificate' ? 'bg-teal-500' : 'bg-indigo-500'
+                      }`}>
+                        {(notif.type || 'S').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{notif.type || 'System'}</span>
+                          <span className="text-[9px] text-gray-400 font-bold">{new Date(notif.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <h4 className="font-bold text-gray-950 text-xs truncate">{notif.title}</h4>
+                        <p className="text-[11px] text-gray-500 line-clamp-1 leading-relaxed">{notif.message}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 

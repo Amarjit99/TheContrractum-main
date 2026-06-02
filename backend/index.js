@@ -11,6 +11,10 @@ const { initializeExpiryCron } = require("./utils/expiryNotifier");
 const app = express();
 const PORT = process.env.PORT || 5000; // Updated to resolve port conflict
 
+// Trust proxy — required for Hostinger (runs behind Nginx reverse proxy)
+// Without this, express-rate-limit throws ValidationError on X-Forwarded-For headers
+app.set("trust proxy", 1);
+
 // Middleware (Must be before Rate Limiters for CORS to work on 429 responses)
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
@@ -63,8 +67,27 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
           });
           console.log("✅ Default admin user created: admin@thecontractum.com");
         }
+
+        const defaultCustomerEmail = "customer@thecontractum.com";
+        const customerExists = await User.findOne({ email: defaultCustomerEmail });
+        if (!customerExists) {
+          await User.create({
+            firstName: "John",
+            lastName: "Doe",
+            name: "John Doe",
+            email: defaultCustomerEmail,
+            password: "customer12345",
+            mobile: "9876543210",
+            role: "user",
+            isApproved: true,
+            company: "Contractum Corp",
+            industry: "Legal Tech",
+            jobTitle: "Operations Director"
+          });
+          console.log("✅ Default customer user created: customer@thecontractum.com");
+        }
       } catch (err) {
-        console.error("❌ Failed to seed default admin user:", err);
+        console.error("❌ Failed to seed default users:", err);
       }
     })
     .catch((err) => console.error("❌ MongoDB connection error:", err));

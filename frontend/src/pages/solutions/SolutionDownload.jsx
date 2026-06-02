@@ -48,7 +48,7 @@ const SolutionDownload = () => {
         
         try {
             // 1. Capture the lead in the backend
-            const response = await fetch(`${API}/api/contact`, {
+            await fetch(`${API}/api/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

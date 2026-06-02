@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload, GraduationCap } from 'lucide-react';
@@ -26,11 +26,7 @@ export default function AdminStudentInterns() {
     tags: ''
   });
 
-  useEffect(() => {
-    fetchInterns();
-  }, []);
-
-  const fetchInterns = async () => {
+  const fetchInterns = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/interns?t=${Date.now()}`);
@@ -40,7 +36,13 @@ export default function AdminStudentInterns() {
       console.error('Failed to fetch interns:', err);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchInterns();
+    });
+  }, [fetchInterns]);
 
   const filteredInterns = interns.filter(i =>
     i.name.toLowerCase().includes(search.toLowerCase()) ||

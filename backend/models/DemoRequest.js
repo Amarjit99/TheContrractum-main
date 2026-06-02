@@ -10,6 +10,9 @@ const demoRequestSchema = new mongoose.Schema(
     employeeCount: { type: String, trim: true },
     interestArea: { type: String, trim: true },
     message: { type: String, trim: true },
+    status: { type: String, enum: ['New', 'Reviewed', 'Demo Scheduled', 'Completed', 'Rejected'], default: 'New' },
+    notes: { type: String, default: '' },
+    assignedStaff: { type: String, default: '' }
   },
   { timestamps: true }
 );

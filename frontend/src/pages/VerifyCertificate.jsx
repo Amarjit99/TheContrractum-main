@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Award, CheckCircle, Smartphone, Download, Share2, ArrowLeft, X, FileText, ShieldCheck, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -9,6 +9,7 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ── SHARED TEMPLATE COMPONENT (Copied for Public Page) ──
 function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
+  const sig = formData?.issuerSignature || globalSettings?.authorizedSignature;
   return (
     <div
       id={id}
@@ -110,9 +111,9 @@ function CertificateTemplate({ formData, selectedTheme, globalSettings, id }) {
         </div>
 
         <div className="flex flex-col items-center">
-          {formData?.issuerSignature || globalSettings?.authorizedSignature ? (
+          {sig ? (
             <img 
-              src={(formData?.issuerSignature || globalSettings?.authorizedSignature).startsWith('data:') ? (formData?.issuerSignature || globalSettings?.authorizedSignature) : `${API}${formData?.issuerSignature || globalSettings?.authorizedSignature}`} 
+              src={sig.startsWith('data:') ? sig : `${API}${sig}`} 
               alt="Signature" 
               className="h-10 object-contain mb-1"
               crossOrigin="anonymous"
@@ -138,11 +139,7 @@ export default function VerifyCertificate() {
   const [error, setError] = useState(null);
   const [downloading, setDownloading] = useState(false);
 
-  useEffect(() => {
-    fetchCertificate();
-  }, [id]);
-
-  const fetchCertificate = async () => {
+  const fetchCertificate = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/certificates/public/verify/${id}`);
       if (!res.ok) {
@@ -161,7 +158,11 @@ export default function VerifyCertificate() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchCertificate();
+  }, [fetchCertificate]);
 
   const handleDownload = async () => {
     setDownloading(true);

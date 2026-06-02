@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
@@ -35,7 +35,7 @@ export default function AdminContractTemplates() {
 
   const token = localStorage.getItem('adminToken') || admin?.token;
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API}/api/contracts/templates`, {
@@ -45,9 +45,13 @@ export default function AdminContractTemplates() {
       if (Array.isArray(data)) setTemplates(data);
     } catch { toast.error('Failed to load templates'); }
     setLoading(false);
-  };
+  }, [token]);
 
-  useEffect(() => { fetchTemplates(); }, []);
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchTemplates();
+    });
+  }, [fetchTemplates]);
 
   const openCreate = () => { setForm(EMPTY); setModal('create'); };
   
@@ -237,8 +241,8 @@ export default function AdminContractTemplates() {
 
   return (
     <AdminLayout>
-      {(modal === 'create' || modal === 'edit') && <FormPanel />}
-      {modal === 'preview' && selected && <PreviewPanel />}
+      {(modal === 'create' || modal === 'edit') && FormPanel()}
+      {modal === 'preview' && selected && PreviewPanel()}
 
       {/* Header */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -340,7 +344,7 @@ export default function AdminContractTemplates() {
                   </span>
                   <span className="flex items-center gap-1 ml-auto">
                     <Tag size={11} />
-                    {new Date(t.createdAt || Date.now()).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
                   </span>
                 </div>
 

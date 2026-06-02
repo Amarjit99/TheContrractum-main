@@ -13,7 +13,8 @@ const ConsentPopup = () => {
 
     useEffect(() => {
         const accepted = localStorage.getItem('cookiesAccepted');
-        if (!accepted) {
+        const dismissed = sessionStorage.getItem('cookiesDismissed');
+        if (!accepted && !dismissed) {
             // Initial delay
             const timer = setTimeout(() => setIsVisible(true), 1500);
             return () => clearTimeout(timer);

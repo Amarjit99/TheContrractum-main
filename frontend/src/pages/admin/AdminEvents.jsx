@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, Calendar, MapPin, Users, Eye, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -15,15 +15,10 @@ export default function AdminEvents() {
     const [editingEvent, setEditingEvent] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [loadingParticipants, setLoadingParticipants] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
     const [formData, setFormData] = useState({ title: '', description: '', dateTime: '', location: '', capacity: 10, imageUrl: '' });
     const [processing, setProcessing] = useState(false);
 
-    useEffect(() => {
-        fetchEvents();
-    }, []);
-
-    const fetchEvents = async () => {
+    const fetchEvents = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch(`${API}/api/mini-events`);
@@ -33,7 +28,15 @@ export default function AdminEvents() {
             console.error(err);
         }
         setLoading(false);
-    };
+    }, []);
+
+    useEffect(() => {
+        Promise.resolve().then(() => {
+            fetchEvents();
+        });
+    }, [fetchEvents]);
+
+
 
     const fetchParticipants = async (eventId) => {
         setLoadingParticipants(true);

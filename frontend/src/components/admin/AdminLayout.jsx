@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import logo from '../../assets/main-logo.jpg';
@@ -10,44 +10,264 @@ import {
 
 const MENU_ITEMS = [
   { id: 'dashboard', to: '/admin/dashboard', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-  { id: 'services', to: '/admin/services', icon: <FileText size={20} />, label: 'Services' },
-  { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={20} />, label: 'Blog Posts' },
-  { id: 'news', to: '/admin/news', icon: <Newspaper size={20} />, label: 'News' },
-  { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={20} />, label: 'Projects' },
-  { id: 'careers', to: '/admin/careers', icon: <Briefcase size={20} />, label: 'Careers' },
-  { id: 'founders', to: '/admin/founders', icon: <Users size={20} />, label: 'Founders & Directors' },
-  { id: 'partners', to: '/admin/partners', icon: <Handshake size={20} />, label: 'Partners' },
-  { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={20} />, label: 'Affiliate Program' },
-  { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={20} />, label: 'Student Interns' },
-  { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={20} />, label: 'Leads' },
-  { id: 'users', to: '/admin/users', icon: <Users size={20} />, label: 'Users' },
-  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-  { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={20} />, label: 'Form Links' },
-  { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={20} />, label: 'Submissions' },
-  { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={20} />, label: 'Surveys' },
-  { id: 'contracts', to: '/admin/contracts', icon: <FileText size={20} />, label: 'Contract Management' },
-  { id: 'certificates', to: '/admin/certificates', icon: <Award size={20} />, label: 'Certificates' },
-  { id: 'events', to: '/admin/events', icon: <Calendar size={20} />, label: 'Events Management' },
-  { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={20} />, label: 'Event Registrations' },
-  { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={20} />, label: 'ID Cards' },
-  { id: 'referrals', to: '/admin/referrals', icon: <Gift size={20} />, label: 'Referrals' },
+  {
+    id: 'wms',
+    label: 'Website Management (WMS)',
+    icon: <Newspaper size={20} />,
+    hasSubmenu: true,
+    subItems: [
+      { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
+      { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
+      { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
+      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
+      { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
+      { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
+      { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
+      { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
+      { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={18} />, label: 'Student Interns' },
+      { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={18} />, label: 'Form Links' },
+      { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={18} />, label: 'Submissions' },
+      { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
+      { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
+    ]
+  },
+  {
+    id: 'cms',
+    label: 'Company Management (CMS)',
+    icon: <Users size={20} />,
+    hasSubmenu: true,
+    subItems: [
+      { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
+      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
+      { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
+      { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
+      { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
+      { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={18} />, label: 'ID Cards' },
+      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' },
+    ]
+  },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
+  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
   { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
+
+const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout }) => {
+  // Helper to check if item is allowed for current sub-role
+  const isItemAllowed = (itemId) => {
+    if (!admin) return false;
+    if (admin.role === 'super-admin') return true;
+    
+    const subRole = admin.adminSubRole;
+    if (!subRole) return false;
+    
+    const rolePermissions = {
+      // Admins
+      'System Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings', 'analytics', 'users', 'admins'],
+      'HR Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'careers', 'interns', 'users', 'certificates', 'id-cards', 'referrals'],
+      'Operations Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'projects', 'form-links', 'submissions', 'surveys'],
+      'Website Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'blogs', 'news', 'projects', 'founders', 'form-links', 'settings'],
+      'CRM Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'form-links', 'submissions', 'surveys'],
+      'Support Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'submissions', 'surveys'],
+      'Marketing Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news', 'analytics', 'leads', 'referrals'],
+      'Event Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'events', 'event-registrations'],
+      'Content Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news'],
+      'Finance Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'affiliates', 'referrals', 'contracts'],
+      'Compliance Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates'],
+      'User Access Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'users', 'admins'],
+      'Database Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings'],
+
+      // Managers
+      'HR Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'careers', 'interns', 'users', 'certificates', 'id-cards', 'referrals'],
+      'Operations Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'projects', 'form-links', 'submissions', 'surveys'],
+      'Project Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'projects', 'tasks'],
+      'Sales Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'form-links', 'submissions'],
+      'Marketing Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news', 'analytics', 'leads', 'referrals'],
+      'Business Development Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'referrals'],
+      'Support Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'submissions', 'surveys'],
+      'Technical Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'projects', 'settings'],
+      'Content Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news'],
+      'Event Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'events', 'event-registrations'],
+      'CRM & Lead Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'submissions'],
+      'Finance Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'affiliates', 'referrals'],
+      'Compliance Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates'],
+      'Training & Development Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'interns', 'certificates'],
+
+      // Employees
+      'HR Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'careers', 'interns', 'certificates', 'id-cards'],
+      'Operations Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'projects', 'submissions'],
+      'Project Coordinator': ['dashboard', 'tasks', 'profile', 'notifications', 'projects'],
+      'Sales Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'submissions'],
+      'Marketing Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news', 'leads'],
+      'Business Development Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'partners'],
+      'Customer Support Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'leads', 'submissions'],
+      'Technical Support Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'services'],
+      'Content Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news'],
+      'Event Coordinator': ['dashboard', 'tasks', 'profile', 'notifications', 'events', 'event-registrations'],
+      'CRM Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'leads'],
+      'Finance Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'referrals'],
+      'Compliance Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'contracts', 'certificates'],
+      'Training Coordinator': ['dashboard', 'tasks', 'profile', 'notifications', 'interns'],
+      'Data Entry & Documentation Executive': ['dashboard', 'tasks', 'profile', 'notifications', 'submissions', 'surveys'],
+
+      // Compatibility for legacy seeded subroles
+      'HR': ['dashboard', 'tasks', 'profile', 'notifications', 'careers', 'events', 'event-registrations', 'interns', 'users', 'certificates', 'id-cards', 'referrals'],
+      'Finance': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'affiliates', 'referrals'],
+      'TR': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'projects'],
+      'Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'blogs', 'news', 'projects', 'events', 'event-registrations', 'form-links', 'partners', 'analytics', 'settings'],
+      'Legal': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates']
+    };
+    
+    const allowed = rolePermissions[subRole] || [];
+    return allowed.includes(itemId);
+  };
+
+  const filteredMenuItems = MENU_ITEMS.map(item => {
+    if (item.hasSubmenu) {
+      const allowedSubs = item.subItems.filter(sub => isItemAllowed(sub.id));
+      if (allowedSubs.length > 0) {
+        return { ...item, subItems: allowedSubs };
+      }
+      return null;
+    }
+    return isItemAllowed(item.id) ? item : null;
+  }).filter(Boolean);
+
+  return (
+    <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
+      {/* Brand area */}
+      <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
+        <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
+        <div className="z-10">
+          <p className="text-[#1e5cdc] text-xs font-bold">Admin Panel</p>
+          {admin?.adminSubRole && <p className="text-gray-500 text-[10px] font-medium leading-none mt-0.5">{admin.adminSubRole}</p>}
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+        {filteredMenuItems.map(item => {
+          const isActive = !item.hasSubmenu && (location.pathname === item.to || (item.id === 'dashboard' && location.pathname === '/admin'));
+          const isOpen = openMenus[item.id];
+
+          if (item.hasSubmenu) {
+            const isChildActive = item.subItems?.some(sub => location.pathname === sub.to);
+            return (
+              <div key={item.id} className="space-y-1">
+                <button
+                  onClick={(e) => toggleSubmenu(e, item.id)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    isChildActive
+                      ? 'bg-white/10 text-white shadow-sm'
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-blue-200">
+                      {item.icon}
+                    </span>
+                    {item.label}
+                  </div>
+                  <span className="opacity-70">
+                    {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  </span>
+                </button>
+
+                {isOpen && item.subItems && (
+                  <div className="pl-6 pr-2 py-1 space-y-1 transition-all duration-200">
+                    {item.subItems.map(subItem => {
+                      const isSubActive = location.pathname === subItem.to;
+                      return (
+                        <Link
+                          key={subItem.id}
+                          to={subItem.to}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                            isSubActive
+                              ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
+                              : 'text-blue-100 hover:bg-white/5 hover:text-white'
+                          }`}
+                        >
+                          <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
+                            {subItem.icon}
+                          </span>
+                          {subItem.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <div key={item.id}>
+              <Link
+                to={item.to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
+                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
+                  {item.icon}
+                </span>
+                {item.label}
+              </Link>
+            </div>
+          );
+        })}
+      </nav>
+
+      {/* Logout button at bottom */}
+      <div className="p-4 border-t border-blue-500/30">
+        <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20">
+          Logout
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default function AdminLayout({ children }) {
   const { admin, logout } = useAdminAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [openMenus, setOpenMenus] = useState({});
+  const [openMenus, setOpenMenus] = useState(() => {
+    const initial = {};
+    MENU_ITEMS.forEach(item => {
+      if (item.hasSubmenu && item.subItems) {
+        const isChildActive = item.subItems.some(sub => location.pathname === sub.to);
+        if (isChildActive) {
+          initial[item.id] = true;
+        }
+      }
+    });
+    return initial;
+  });
+
+  useEffect(() => {
+    MENU_ITEMS.forEach(item => {
+      if (item.hasSubmenu && item.subItems) {
+        const isChildActive = item.subItems.some(sub => location.pathname === sub.to);
+        if (isChildActive) {
+          setOpenMenus(prev => ({ ...prev, [item.id]: true }));
+        }
+      }
+    });
+  }, [location.pathname]);
+
   const [globalSearch, setGlobalSearch] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const fetchUnreadCount = async () => {
+  const fetchUnreadCount = useCallback(async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/unread-count`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
@@ -62,9 +282,9 @@ export default function AdminLayout({ children }) {
     } catch (err) {
       console.error("Failed to fetch unread count:", err);
     }
-  };
+  }, [admin, logout, navigate]);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications?limit=5`, {
         headers: { Authorization: `Bearer ${admin?.token}` }
@@ -79,15 +299,17 @@ export default function AdminLayout({ children }) {
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
     }
-  };
+  }, [admin, logout, navigate]);
 
   useEffect(() => {
     if (!admin) return;
-    fetchUnreadCount();
+    Promise.resolve().then(() => {
+      fetchUnreadCount();
+    });
     // Poll every 60 seconds
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
-  }, [admin]);
+  }, [admin, fetchUnreadCount]);
 
   useEffect(() => {
     if (!admin) navigate('/admin/login', { replace: true });
@@ -122,74 +344,12 @@ export default function AdminLayout({ children }) {
     }
   };
 
-  const Sidebar = () => (
-    <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
-      {/* Brand area */}
-      <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
-        <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
-        <div className="z-10">
-          <p className="text-[#1e5cdc] text-xs font-bold">Admin Panel</p>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
-        {MENU_ITEMS.map(item => {
-          const isActive = location.pathname === item.to || (item.id === 'dashboard' && location.pathname === '/admin');
-          const isOpen = openMenus[item.id];
-
-          return (
-            <div key={item.id}>
-              <Link
-                to={item.to}
-                onClick={(e) => {
-                  if (item.hasSubmenu) toggleSubmenu(e, item.id);
-                  else setSidebarOpen(false);
-                }}
-                className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-white text-[#1e5cdc]' : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                  }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
-                    {item.icon}
-                  </span>
-                  {item.label}
-                </div>
-                {item.hasSubmenu && (
-                  <span className="opacity-70">
-                    {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                  </span>
-                )}
-              </Link>
-
-              {/* Fake Submenu contents for visual purpose */}
-              {item.hasSubmenu && isOpen && (
-                <div className="pl-12 pr-4 py-2 space-y-3 mt-1 text-sm text-blue-200">
-                  <div className="hover:text-white cursor-pointer transition-colors">Overview</div>
-                  <div className="hover:text-white cursor-pointer transition-colors">Manage</div>
-                  <div className="hover:text-white cursor-pointer transition-colors">Add New</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </nav>
-
-      {/* Logout button at bottom */}
-      <div className="p-4 border-t border-blue-500/30">
-        <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20">
-          Logout
-        </button>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block w-64 shrink-0 h-full shadow-xl z-20">
-        <Sidebar />
+        <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
       </div>
 
       {/* Mobile Sidebar Overlay */}
@@ -197,7 +357,7 @@ export default function AdminLayout({ children }) {
         <>
           <div className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-64 z-50 lg:hidden shadow-2xl transition-transform transform translate-x-0">
-            <Sidebar />
+            <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
           </div>
         </>
       )}

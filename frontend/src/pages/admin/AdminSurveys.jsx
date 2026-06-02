@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search, ClipboardCheck, User, Plus, X, Save, Edit2 } from 'lucide-react';
@@ -21,27 +21,31 @@ export default function AdminSurveys() {
     const [isEditing, setIsEditing] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState({ question: '', options: ['', ''], answer: '' });
 
-    useEffect(() => {
-        fetchSurveys();
-        fetchQuestions();
-    }, []);
-
-    const fetchSurveys = async () => {
+    const fetchSurveys = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/api/survey`, { headers });
+            const authHeaders = { Authorization: `Bearer ${admin?.token}`, 'Content-Type': 'application/json' };
+            const res = await fetch(`${API}/api/survey`, { headers: authHeaders });
             const d = await res.json();
             setSurveys(Array.isArray(d) ? d : []);
         } catch (err) { console.error(err); }
-    };
+    }, [admin]);
 
-    const fetchQuestions = async () => {
+    const fetchQuestions = useCallback(async () => {
         try {
-            const res = await fetch(`${API}/api/survey/questions`, { headers });
+            const authHeaders = { Authorization: `Bearer ${admin?.token}`, 'Content-Type': 'application/json' };
+            const res = await fetch(`${API}/api/survey/questions`, { headers: authHeaders });
             const d = await res.json();
             setQuestions(Array.isArray(d) ? d : []);
             setLoading(false);
         } catch (err) { console.error(err); setLoading(false); }
-    };
+    }, [admin]);
+
+    useEffect(() => {
+        Promise.resolve().then(() => {
+            fetchSurveys();
+            fetchQuestions();
+        });
+    }, [fetchSurveys, fetchQuestions]);
 
     const deleteSurvey = async (id) => {
         if (!confirm('Delete this survey response?')) return;

@@ -99,11 +99,30 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Check if account is on hold
+    if (user.isHeld) {
+      if (user.holdUntil && new Date() >= new Date(user.holdUntil)) {
+        user.isHeld = false;
+        user.holdUntil = null;
+        user.holdReason = '';
+        await user.save();
+      } else {
+        const formattedDate = user.holdUntil 
+          ? `until ${new Date(user.holdUntil).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}`
+          : 'indefinitely';
+        return res.status(403).json({
+          message: `Your account is currently on hold ${formattedDate}. Reason: ${user.holdReason || 'No reason specified'}`
+        });
+      }
+    }
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      adminSubRole: user.adminSubRole,
+      adminPermissions: user.adminPermissions,
       avatar: user.avatar,
       token: generateToken(user._id),
     });

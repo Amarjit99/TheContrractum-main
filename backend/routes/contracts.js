@@ -4,7 +4,7 @@ const Contract = require('../models/Contract');
 const ContractTemplate = require('../models/ContractTemplate');
 const Notification = require('../models/Notification');
 const { protect } = require('../middleware/auth');
-const { adminOnly } = require('../middleware/admin');
+const { adminOnly, checkSubRole } = require('../middleware/admin');
 
 // ---------- Templates ----------
 
@@ -361,7 +361,7 @@ const PROFESSIONAL_TEMPLATES = [
 // ---------- Templates ----------
 
 // Get all templates (returns all for admin, seeds professional ones if DB is empty)
-router.get('/templates', protect, async (req, res) => {
+router.get('/templates', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         let templates = await ContractTemplate.find({ isActive: true });
         if (templates.length < PROFESSIONAL_TEMPLATES.length) {
@@ -386,7 +386,7 @@ router.get('/templates', protect, async (req, res) => {
 });
 
 // Create a template
-router.post('/templates', protect, adminOnly, async (req, res) => {
+router.post('/templates', protect, checkSubRole(['Legal']), async (req, res) => {
     try {
         const template = await ContractTemplate.create(req.body);
         res.status(201).json(template);
@@ -396,7 +396,7 @@ router.post('/templates', protect, adminOnly, async (req, res) => {
 });
 
 // Update a template
-router.put('/templates/:id', protect, adminOnly, async (req, res) => {
+router.put('/templates/:id', protect, checkSubRole(['Legal']), async (req, res) => {
     try {
         const template = await ContractTemplate.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!template) return res.status(404).json({ message: 'Template not found' });
@@ -407,7 +407,7 @@ router.put('/templates/:id', protect, adminOnly, async (req, res) => {
 });
 
 // Delete a template
-router.delete('/templates/:id', protect, adminOnly, async (req, res) => {
+router.delete('/templates/:id', protect, checkSubRole(['Legal']), async (req, res) => {
     try {
         const template = await ContractTemplate.findByIdAndDelete(req.params.id);
         if (!template) return res.status(404).json({ message: 'Template not found' });
@@ -420,7 +420,7 @@ router.delete('/templates/:id', protect, adminOnly, async (req, res) => {
 // ---------- Contracts ----------
 
 // Create a new contract instance (HR/Admin)
-router.post('/', protect, adminOnly, async (req, res) => {
+router.post('/', protect, checkSubRole(['HR', 'Legal', 'Manager']), async (req, res) => {
     try {
         // Handle empty date strings to prevent Mongoose validation errors
         const contractData = { ...req.body };
@@ -454,7 +454,7 @@ router.post('/', protect, adminOnly, async (req, res) => {
 });
 
 // Get all contracts (Admin list with filtering)
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get('/', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         let query = {};
         const role = req.user.adminSubRole;
@@ -491,7 +491,7 @@ router.get('/my-contracts', protect, async (req, res) => {
 });
 
 // Approve a contract
-router.put('/:id/approve', protect, adminOnly, async (req, res) => {
+router.put('/:id/approve', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
@@ -547,7 +547,7 @@ router.put('/:id/approve', protect, adminOnly, async (req, res) => {
 });
 
 // Reject a contract
-router.put('/:id/reject', protect, adminOnly, async (req, res) => {
+router.put('/:id/reject', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
@@ -594,7 +594,7 @@ router.put('/:id/sign', protect, async (req, res) => {
 });
 
 // Get a single contract by ID
-router.get('/:id', protect, adminOnly, async (req, res) => {
+router.get('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id)
             .populate('employeeId', 'firstName lastName email');
@@ -606,7 +606,7 @@ router.get('/:id', protect, adminOnly, async (req, res) => {
 });
 
 // Update a contract (edit draft)
-router.put('/:id', protect, adminOnly, async (req, res) => {
+router.put('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
@@ -625,7 +625,7 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
 });
 
 // Delete a contract (only Draft or Rejected)
-router.delete('/:id', protect, adminOnly, async (req, res) => {
+router.delete('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
@@ -641,7 +641,7 @@ router.delete('/:id', protect, adminOnly, async (req, res) => {
 
 
 // ── Email a contract to the employee ────────────────────────────
-router.post('/:id/send-email', protect, adminOnly, async (req, res) => {
+router.post('/:id/send-email', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const nodemailer = require('nodemailer');
         const contract = await Contract.findById(req.params.id)
@@ -697,7 +697,7 @@ router.post('/:id/send-email', protect, adminOnly, async (req, res) => {
 });
 
 // ── Bulk Generate contracts ──────────────────────────────────────
-router.post('/bulk-generate', protect, adminOnly, async (req, res) => {
+router.post('/bulk-generate', protect, checkSubRole(['HR', 'Legal', 'Manager']), async (req, res) => {
     try {
         const { templateId, employeeIds, validFrom, validUntil, type } = req.body;
         if (!templateId || !employeeIds?.length) {
@@ -753,7 +753,7 @@ router.post('/bulk-generate', protect, adminOnly, async (req, res) => {
 });
 
 // ── Expiry alerts ────────────────────────────────────────────────
-router.get('/expiry-alerts', protect, adminOnly, async (req, res) => {
+router.get('/expiry-alerts', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const days = parseInt(req.query.days) || 30;
         const now = new Date();

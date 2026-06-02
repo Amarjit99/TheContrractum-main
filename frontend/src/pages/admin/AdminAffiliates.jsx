@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Trash2, Mail, ExternalLink, Globe, Layout } from 'lucide-react';
@@ -19,11 +19,7 @@ export default function AdminAffiliates() {
         setTimeout(() => setToast(null), 3500);
     };
 
-    useEffect(() => {
-        if (token) fetchApplications();
-    }, [token]);
-
-    const fetchApplications = async () => {
+    const fetchApplications = useCallback(async () => {
         if (!token) return;
         setLoading(true);
         try {
@@ -42,7 +38,11 @@ export default function AdminAffiliates() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        if (token) fetchApplications();
+    }, [token, fetchApplications]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this application?')) {

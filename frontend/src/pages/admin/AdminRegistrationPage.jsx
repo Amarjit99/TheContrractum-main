@@ -4,6 +4,18 @@ import { ShieldCheck, ArrowRight, User, Mail, Lock, Briefcase, Calendar, Phone }
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+const ADMIN_SUB_ROLES = [
+  'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator'
+];
+
+const MANAGER_SUB_ROLES = [
+  'HR Manager', 'Operations Manager', 'Project Manager', 'Sales Manager', 'Marketing Manager', 'Business Development Manager', 'Support Manager', 'Technical Manager', 'Content Manager', 'Event Manager', 'CRM & Lead Manager', 'Finance Manager', 'Compliance Manager', 'Training & Development Manager'
+];
+
+const EMPLOYEE_SUB_ROLES = [
+  'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
+];
+
 export default function AdminRegistrationPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -117,10 +129,21 @@ export default function AdminRegistrationPage() {
                     onChange={e => setFormData({...formData, adminSubRole: e.target.value})}
                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 sm:py-4 pl-12 pr-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-[#1e5cdc] outline-none appearance-none transition-all">
                     <option value="">Assign Role</option>
-                    <option value="HR">HR</option>
-                    <option value="Finance">Finance</option>
-                    <option value="TR">TR</option>
-                    <option value="Support Manager">Support Manager</option>
+                    <optgroup label="Admins">
+                      {ADMIN_SUB_ROLES.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Managers">
+                      {MANAGER_SUB_ROLES.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Staff / Employees">
+                      {EMPLOYEE_SUB_ROLES.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
                 <div className="relative group">

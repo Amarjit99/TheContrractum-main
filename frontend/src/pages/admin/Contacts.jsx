@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { ChevronDown, ChevronUp, Trash2, Mail, Calendar, Search } from 'lucide-react';
@@ -9,7 +9,6 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminContacts() {
   const { admin } = useAdminAuth();
-  const headers = { Authorization: `Bearer ${admin?.token}` };
 
   const [data, setData] = useState({ contacts: [], total: 0 });
   const [loading, setLoading] = useState(true);
@@ -18,15 +17,20 @@ export default function AdminContacts() {
   const [msg, setMsg] = useState('');
   const [search, setSearch] = useState('');
 
-  useEffect(() => { fetchContacts(); }, [page]);
-
-  const fetchContacts = async () => {
+  const fetchContacts = useCallback(async () => {
     setLoading(true);
+    const headers = { Authorization: `Bearer ${admin?.token}` };
     const res = await fetch(`${API}/api/admin/contacts?page=${page}&limit=10`, { headers });
     const d = await res.json();
     setData(d);
     setLoading(false);
-  };
+  }, [page, admin?.token]);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchContacts();
+    });
+  }, [fetchContacts]);
 
   const allContacts = data.contacts || [];
   const totalCount = data.total || 0;
@@ -40,6 +44,7 @@ export default function AdminContacts() {
   const deleteContact = async (id) => {
     if (typeof id === 'string' && id.startsWith('mock-')) return toast.success("Cannot delete demo data.");
     if (!confirm('Delete this contact submission?')) return;
+    const headers = { Authorization: `Bearer ${admin?.token}` };
     const res = await fetch(`${API}/api/admin/contacts/${id}`, { method: 'DELETE', headers });
     if (res.ok) { setMsg('Lead deleted successfully.'); setTimeout(() => setMsg(''), 3000); fetchContacts(); }
   };

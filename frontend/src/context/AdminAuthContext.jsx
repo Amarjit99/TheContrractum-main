@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react';
 
 const AdminAuthContext = createContext();
 
@@ -17,7 +18,7 @@ export function AdminAuthProvider({ children }) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Login failed');
-    if (data.role !== 'admin' && data.role !== 'super-admin') throw new Error('Access denied. Not an admin account.');
+    if (!['admin', 'super-admin', 'manager', 'employee'].includes(data.role)) throw new Error('Access denied. Not an authorized account.');
     localStorage.setItem('adminUser', JSON.stringify(data));
     setAdmin(data);
     return data;

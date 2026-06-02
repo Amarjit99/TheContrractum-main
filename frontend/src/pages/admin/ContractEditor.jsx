@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
@@ -46,13 +46,7 @@ export default function ContractEditor() {
 
   const token = localStorage.getItem('adminToken') || admin?.token;
 
-  useEffect(() => {
-    fetchUsers();
-    fetchTemplates();
-    if (isEdit) fetchContract();
-  }, [id]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/users?t=${new Date().getTime()}`, { 
         headers: { Authorization: `Bearer ${token}` },
@@ -61,17 +55,17 @@ export default function ContractEditor() {
       const data = await res.json();
       if (Array.isArray(data)) setUsers(data);
     } catch { console.error('Failed to fetch users'); }
-  };
+  }, [token]);
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/contracts/templates`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (Array.isArray(data)) setTemplates(data);
     } catch { console.error('Failed to fetch templates'); }
-  };
+  }, [token]);
 
-  const fetchContract = async () => {
+  const fetchContract = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/contracts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
@@ -88,7 +82,15 @@ export default function ContractEditor() {
         });
       }
     } catch { console.error('Failed to fetch contract'); }
-  };
+  }, [id, token]);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchUsers();
+      fetchTemplates();
+      if (isEdit) fetchContract();
+    });
+  }, [fetchUsers, fetchTemplates, fetchContract, isEdit]);
 
   const replacePlaceholders = (contentText, userId) => {
     if (!contentText) return '';

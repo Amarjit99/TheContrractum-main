@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Search, Plus, Edit, Trash2, X, CheckCircle, Upload } from 'lucide-react';
@@ -38,7 +38,23 @@ export default function AdminBlogs() {
     isProfessional: false // Flag to toggle view
   });
 
-  useEffect(() => { fetchBlogs(); }, []);
+  const fetchBlogs = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/cms/blogs`);
+      const data = await res.json();
+      setBlogs(data);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      fetchBlogs();
+    });
+  }, [fetchBlogs]);
 
   const handleImageUpload = async (e, sectionIndex = null) => {
     const file = e.target.files[0];
@@ -70,18 +86,6 @@ export default function AdminBlogs() {
       toast.error('Image upload failed');
     }
     setUploading(false);
-  };
-
-  const fetchBlogs = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/api/cms/blogs`);
-      const data = await res.json();
-      setBlogs(data);
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
   };
 
   const filteredBlogs = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()) || b.author.toLowerCase().includes(search.toLowerCase()));
