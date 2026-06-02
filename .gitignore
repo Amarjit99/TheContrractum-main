@@ -33,3 +33,7 @@ frontend/dist
 *.zip
 *.backup
 test.json
+
+# Uploaded Files
+backend/uploads/
+

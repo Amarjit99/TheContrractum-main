@@ -19,7 +19,14 @@ import ecoImg from "../../assets/eco.jpg";
 
 export default function TechnicalExperts() {
     const [openCard, setOpenCard] = useState(null);
-    const [form, setForm] = useState({ name: "", email: "", company: "" });
+    const [form, setForm] = useState({
+        systemProductName: "",
+        technicalIssue: "",
+        errorScreenshot: "",
+        deviceInformation: "",
+        email: "",
+        phone: ""
+    });
     const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -31,8 +38,28 @@ export default function TechnicalExperts() {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setForm((prev) => ({ ...prev, errorScreenshot: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setForm((prev) => ({ ...prev, errorScreenshot: "" }));
+        }
+    };
+
     const handleReset = () => {
-        setForm({ name: "", email: "", company: "" });
+        setForm({
+            systemProductName: "",
+            technicalIssue: "",
+            errorScreenshot: "",
+            deviceInformation: "",
+            email: "",
+            phone: ""
+        });
         setStatus(null);
         setErrorMsg("");
     };
@@ -46,14 +73,27 @@ export default function TechnicalExperts() {
             const res = await fetch(`${API_URL}/api/expert-consultations`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                body: JSON.stringify({
+                    ...form,
+                    contactDetails: `Email: ${form.email} | Phone: ${form.phone}`
+                }),
             });
 
             const data = await res.json();
 
             if (res.ok) {
                 setStatus("success");
-                setForm({ name: "", email: "", company: "" });
+                setForm({
+                    systemProductName: "",
+                    technicalIssue: "",
+                    errorScreenshot: "",
+                    deviceInformation: "",
+                    email: "",
+                    phone: ""
+                });
+                // Reset file input element if any
+                const fileInput = document.getElementById("errorScreenshotInput");
+                if (fileInput) fileInput.value = "";
             } else {
                 setStatus("error");
                 setErrorMsg(data.error || "Something went wrong.");
@@ -360,35 +400,47 @@ export default function TechnicalExperts() {
                                     <Users className="w-6 h-6 text-white" />
                                 </div>
                             </div>
-                            <h3 className="text-4xl font-black mb-4 text-white">Talk to an Expert</h3>
+                            <h3 className="text-4xl font-black mb-4 text-white">Technical Assistance Form</h3>
                             <p className="text-slate-300 mb-10 text-lg leading-relaxed">
                                 Connect with our technical experts to discuss your specific challenges and discover tailored solutions for your business.
                             </p>
-                            <form className="space-y-5" onSubmit={handleSubmit}>
-                                <div>
-                                    <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Your Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
-                                </div>
-                                <div>
-                                    <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Your Email" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
-                                </div>
-                                <div>
-                                    <input type="text" name="company" value={form.company} onChange={handleChange} placeholder="Company Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500" required />
-                                </div>
-                                {status === "success" && (
-                                    <p className="p-4 bg-green-500/20 text-green-300 rounded-xl font-bold border border-green-500/30">✅ Request sent successfully! We'll get back to you soon.</p>
-                                )}
-                                {status === "error" && (
-                                    <p className="p-4 bg-red-500/20 text-red-300 rounded-xl font-bold border border-red-500/30">❌ {errorMsg}</p>
-                                )}
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <button type="submit" disabled={status === "loading"} className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 rounded-xl transition transform hover:scale-105 shadow-2xl disabled:opacity-50">
-                                        {status === "loading" ? "SENDING..." : "Request Expert Consultation"}
-                                    </button>
-                                    <button type="button" onClick={handleReset} className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all font-black">
-                                        Reset
-                                    </button>
-                                </div>
-                            </form>
+                            <div className="bg-white/5 border border-white/10 p-8 sm:p-10 rounded-3xl shadow-2xl backdrop-blur-sm mt-8">
+                                <form className="space-y-5" onSubmit={handleSubmit}>
+                                    <div>
+                                        <input type="text" name="systemProductName" value={form.systemProductName} onChange={handleChange} placeholder="System/Product Name" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
+                                    </div>
+                                    <div>
+                                        <textarea name="technicalIssue" value={form.technicalIssue} onChange={handleChange} placeholder="Technical Issue" rows="4" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white resize-none" required></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-300 mb-2">Error Screenshot</label>
+                                        <input type="file" id="errorScreenshotInput" accept="image/*" onChange={handleFileChange} className="w-full px-5 py-3 rounded-xl text-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 bg-white/10 border border-white/10" />
+                                    </div>
+                                    <div>
+                                        <input type="text" name="deviceInformation" value={form.deviceInformation} onChange={handleChange} placeholder="Device Information" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
+                                    </div>
+                                    <div>
+                                        <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
+                                    </div>
+                                    <div>
+                                        <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
+                                    </div>
+                                    {status === "success" && (
+                                        <p className="p-4 bg-green-500/20 text-green-300 rounded-xl font-bold border border-green-500/30">✅ Request sent successfully! We'll get back to you soon.</p>
+                                    )}
+                                    {status === "error" && (
+                                        <p className="p-4 bg-red-500/20 text-red-300 rounded-xl font-bold border border-red-500/30">❌ {errorMsg}</p>
+                                    )}
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <button type="submit" disabled={status === "loading"} className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-4 rounded-xl transition transform hover:scale-105 shadow-2xl disabled:opacity-50">
+                                            {status === "loading" ? "SENDING..." : "Request Expert Consultation"}
+                                        </button>
+                                        <button type="button" onClick={handleReset} className="px-8 py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all font-black">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         {/* FAQ Section */}

@@ -327,18 +327,40 @@ export default function AdminLayout({ children }) {
   const handleGlobalSearch = (e) => {
     if (e.key === 'Enter' && globalSearch.trim()) {
       const query = globalSearch.trim().toLowerCase();
-      // Intelligent redirection based on keywords
-      if (query.includes('blog') || query.includes('post') || query.includes('article')) navigate(`/admin/blogs`);
-      else if (query.includes('job') || query.includes('career') || query.includes('hire')) navigate(`/admin/careers`);
-      else if (query.includes('partner')) navigate(`/admin/partners`);
-      else if (query.includes('lead') || query.includes('contact')) navigate(`/admin/contacts`);
-      else if (query.includes('user')) navigate(`/admin/users`);
-      else if (query.includes('analyt') || query.includes('stat') || query.includes('chart')) navigate(`/admin/analytics`);
-      else if (query.includes('set') || query.includes('config')) navigate(`/admin/settings`);
-      else if (query.includes('serv')) navigate(`/admin/services`);
-      else {
-        // Default to dashboard or just keep the value
-        navigate(`/admin/dashboard`);
+
+      // 1. Fuzzy match against MENU_ITEMS labels and IDs
+      const match = MENU_ITEMS.find(item =>
+        item.label.toLowerCase().includes(query) ||
+        item.id.toLowerCase().includes(query) ||
+        query.includes(item.id.toLowerCase()) ||
+        query.includes(item.label.toLowerCase().replace('&', 'and'))
+      );
+
+      if (match) {
+        navigate(match.to);
+      } else {
+        // 2. Intelligent redirection fallback based on synonyms
+        if (query.includes('blog') || query.includes('post') || query.includes('article')) navigate(`/admin/blogs`);
+        else if (query.includes('job') || query.includes('career') || query.includes('hire') || query.includes('recru')) navigate(`/admin/careers`);
+        else if (query.includes('partner')) navigate(`/admin/partners`);
+        else if (query.includes('lead') || query.includes('contact')) navigate(`/admin/contacts`);
+        else if (query.includes('user')) navigate(`/admin/users`);
+        else if (query.includes('analyt') || query.includes('stat') || query.includes('chart')) navigate(`/admin/analytics`);
+        else if (query.includes('set') || query.includes('config')) navigate(`/admin/settings`);
+        else if (query.includes('serv')) navigate(`/admin/services`);
+        else if (query.includes('news')) navigate(`/admin/news`);
+        else if (query.includes('proj')) navigate(`/admin/projects`);
+        else if (query.includes('submis')) navigate(`/admin/submissions`);
+        else if (query.includes('survey')) navigate(`/admin/surveys`);
+        else if (query.includes('task')) navigate(`/admin/tasks`);
+        else if (query.includes('event')) navigate(`/admin/events`);
+        else if (query.includes('certif')) navigate(`/admin/certificates`);
+        else if (query.includes('id') || query.includes('card')) navigate(`/admin/id-cards`);
+        else if (query.includes('ref')) navigate(`/admin/referrals`);
+        else {
+          // Default to dashboard
+          navigate(`/admin/dashboard`);
+        }
       }
       setGlobalSearch('');
     }
@@ -372,111 +394,135 @@ export default function AdminLayout({ children }) {
               <Menu size={20} />
             </button>
 
-            {/* Search Bar - hidden on very small screens, shown as icon, but let's do standard */}
-            <div className="hidden md:flex items-center bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 min-w-[350px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 transition-all">
-              <Search size={18} className="text-gray-400 mr-2" />
-              <input
-                value={globalSearch}
-                onChange={e => setGlobalSearch(e.target.value)}
-                onKeyDown={handleGlobalSearch}
-                type="text"
-                placeholder="Search menu or data (press Enter)..."
-                className="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder-gray-400 font-medium"
-              />
-            </div>
+            {location.pathname === '/admin/submissions' ? (
+              <h2 className="text-sm md:text-base font-black text-gray-800 ml-2 block tracking-tight uppercase">
+                Submission Management Dashboard
+              </h2>
+            ) : (
+              /* Search Bar - hidden on very small screens, shown as icon, but let's do standard */
+              <div className="hidden md:flex items-center bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 min-w-[350px] focus-within:ring-2 focus-within:ring-[#1e5cdc]/20 transition-all">
+                <Search size={18} className="text-gray-400 mr-2" />
+                <input
+                  value={globalSearch}
+                  onChange={e => setGlobalSearch(e.target.value)}
+                  onKeyDown={handleGlobalSearch}
+                  type="text"
+                  placeholder="Search menu or data (press Enter)..."
+                  className="bg-transparent border-none outline-none text-sm w-full text-gray-700 placeholder-gray-400 font-medium"
+                />
+              </div>
+            )}
           </div>
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-4 md:gap-6">
-            <button className="text-gray-400 hover:text-gray-600">
-              <Search size={20} className="md:hidden" />
-            </button>
+            {location.pathname !== '/admin/submissions' && (
+              <>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <Search size={20} className="md:hidden" />
+                </button>
 
+                <div className="relative">
+                  <button
+                    onClick={async () => {
+                      setShowNotifications(!showNotifications);
+                      if (!showNotifications) fetchNotifications();
 
-            <div className="relative">
-              <button
-                onClick={async () => {
-                  setShowNotifications(!showNotifications);
-                  if (!showNotifications) fetchNotifications();
-
-                  if (unreadCount > 0) {
-                    setUnreadCount(0);
-                    try {
-                      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/mark-read`, {
-                        method: 'PUT',
-                        headers: { Authorization: `Bearer ${admin.token}` }
-                      });
-                    } catch (err) { console.error(err); }
-                  }
-                }}
-                className={`text-gray-500 hover:text-[#1e5cdc] transition-colors relative p-2 rounded-full ${showNotifications ? 'bg-gray-100 text-[#1e5cdc]' : ''}`}
-              >
-                <Bell size={22} />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#f0f4f8]">
-                    {unreadCount > 10 ? '10+' : unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Notifications Dropdown */}
-              {showNotifications && (
-                <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
-                    <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
-                    <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                    {notifications.length > 0 ? (
-                      notifications.map((notif) => (
-                        <div
-                          key={notif._id}
-                          onClick={() => {
-                            setShowNotifications(false);
-                            if (notif.link) navigate(notif.link);
-                          }}
-                          className="px-5 py-4 hover:bg-blue-50/50 border-b border-gray-50 last:border-0 cursor-pointer transition-colors group"
-                        >
-                          <div className="flex justify-between items-start mb-1">
-                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">{notif.type}</span>
-                            <span className="text-[9px] font-bold text-gray-400">{new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          </div>
-                          <h4 className="font-bold text-gray-900 text-sm mb-0.5 group-hover:text-[#1e5cdc] transition-colors">{notif.title}</h4>
-                          <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{notif.message}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="py-12 text-center">
-                        <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
-                          <Bell size={20} />
-                        </div>
-                        <p className="text-gray-400 text-sm font-medium">No recent notifications</p>
-                      </div>
+                      if (unreadCount > 0) {
+                        setUnreadCount(0);
+                        try {
+                          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/notifications/mark-read`, {
+                            method: 'PUT',
+                            headers: { Authorization: `Bearer ${admin.token}` }
+                          });
+                        } catch (err) { console.error(err); }
+                      }
+                    }}
+                    className={`text-gray-500 hover:text-[#1e5cdc] transition-colors relative p-2 rounded-full ${showNotifications ? 'bg-gray-100 text-[#1e5cdc]' : ''}`}
+                  >
+                    <Bell size={22} />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white border-2 border-[#f0f4f8]">
+                        {unreadCount > 10 ? '10+' : unreadCount}
+                      </span>
                     )}
-                  </div>
-                  <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
-                    <button
-                      onClick={() => { setShowNotifications(false); navigate('/admin/notifications'); }}
-                      className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors"
-                    >
-                      View All Activity
-                    </button>
-                  </div>
+                  </button>
+
+                  {/* Notifications Dropdown */}
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50">
+                        <h3 className="font-bold text-gray-800 text-sm">Notifications</h3>
+                        <span className="text-[10px] font-black text-[#1e5cdc] uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full">Recent Activity</span>
+                      </div>
+                      <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                        {notifications.length > 0 ? (
+                          notifications.map((notif) => (
+                            <div
+                              key={notif._id}
+                              onClick={() => {
+                                setShowNotifications(false);
+                                if (notif.link) navigate(notif.link);
+                              }}
+                              className="px-5 py-4 hover:bg-blue-50/50 border-b border-gray-50 last:border-0 cursor-pointer transition-colors group"
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">{notif.type}</span>
+                                <span className="text-[9px] font-bold text-gray-400">{new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                              <h4 className="font-bold text-gray-900 text-sm mb-0.5 group-hover:text-[#1e5cdc] transition-colors">{notif.title}</h4>
+                              <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{notif.message}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="py-12 text-center">
+                            <div className="bg-gray-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400">
+                              <Bell size={20} />
+                            </div>
+                            <p className="text-gray-400 text-sm font-medium">No recent notifications</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                        <button
+                          onClick={() => { setShowNotifications(false); navigate('/admin/notifications'); }}
+                          className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors"
+                        >
+                          View All Activity
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
 
             <div className="relative">
               <div 
-                className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group"
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
                   setShowNotifications(false); // Close notifications if open
                 }}
               >
-                <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-                <div className="hidden sm:flex items-center gap-1 font-medium text-gray-700 text-sm">
-                  {admin?.name || 'Admin'} <ChevronDown size={14} className={`text-gray-400 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+                <div className="relative">
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}&background=1e5cdc&color=fff&bold=true`}
+                    alt="Admin"
+                    className="w-9 h-9 rounded-full border border-gray-200 object-cover"
+                  />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <div className="text-left font-medium">
+                    <div className="text-xs font-black text-gray-800 leading-tight">
+                      {admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}
+                    </div>
+                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                      {location.pathname === '/admin/submissions' ? 'Submission Reviewer' : (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}
+                    </div>
+                  </div>
+                  <ChevronDown size={14} className={`text-gray-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
                 </div>
               </div>
 
@@ -484,9 +530,9 @@ export default function AdminLayout({ children }) {
               {showProfileMenu && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/80">
-                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
+                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
                     <div className="flex flex-col min-w-0">
-                      <span className="font-bold text-gray-900 text-sm truncate">{admin?.name || 'Admin'}</span>
+                      <span className="font-bold text-gray-900 text-sm truncate">{admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}</span>
                       <span className="text-xs text-gray-500 truncate">{admin?.email || 'admin@thecontractum.com'}</span>
                     </div>
                   </div>

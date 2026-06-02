@@ -53,8 +53,8 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
       try {
         const User = require("./models/User");
         const defaultEmail = "admin@thecontractum.com";
-        const adminExists = await User.findOne({ email: defaultEmail });
-        if (!adminExists) {
+        let adminUser = await User.findOne({ email: defaultEmail });
+        if (!adminUser) {
           await User.create({
             firstName: "Admin",
             lastName: "User",
@@ -66,6 +66,18 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
             isApproved: true,
           });
           console.log("✅ Default admin user created: admin@thecontractum.com");
+        } else {
+          // Check if password and role are already correct to prevent redundant saves / double-hashing on hot reload restarts
+          const isPasswordCorrect = await adminUser.matchPassword("admin12345");
+          if (!isPasswordCorrect || adminUser.role !== "super-admin" || !adminUser.isApproved) {
+            adminUser.password = "admin12345";
+            adminUser.role = "super-admin";
+            adminUser.isApproved = true;
+            await adminUser.save();
+            console.log("✅ Default admin user credentials synced to admin12345 / super-admin");
+          } else {
+            console.log("✅ Default admin user already has correct password and role (skipping save)");
+          }
         }
 
         const defaultCustomerEmail = "customer@thecontractum.com";
@@ -104,6 +116,7 @@ app.get("/api/health", (req, res) => {
 
 // Feature routes
 app.use("/api/contact", require("./routes/contact"));
+app.use("/api/vendor", require("./routes/vendor"));
 app.use("/api/expert-consultations", require("./routes/expertConsultation"));
 app.use("/api/advisor-applications", require("./routes/advisorApplication"));
 app.use("/api/visitors", require("./routes/visitors"));

@@ -4,8 +4,9 @@ const volunteerApplicationSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
-  skills: [String],
+  skills: { type: mongoose.Schema.Types.Mixed },
   interests: String,
+  interestArea: String,
   availability: String,
   status: { type: String, enum: ['pending', 'reviewed', 'contacted', 'accepted', 'rejected'], default: 'pending' }
 }, { timestamps: true });

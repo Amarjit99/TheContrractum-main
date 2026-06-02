@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MessageCircle, Book, Clock, Headphones, Search, AlertCircle, CheckCircle, RefreshCcw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { COUNTRIES } from "../../constants/countries";
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Support = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    ticketSubject: '',
+    name: '',
     email: '',
+    phoneNumber: '',
+    countryIndex: 0,
     category: '',
     priority: '',
-    subject: '',
-    otherSubject: '',
+    attachment: '',
     description: ''
   });
 
@@ -21,26 +24,53 @@ const Support = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({
+          ...prev,
+          attachment: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleReset = () => {
     setFormData({
-      fullName: '',
+      ticketSubject: '',
+      name: '',
       email: '',
+      phoneNumber: '',
+      countryIndex: 0,
       category: '',
       priority: '',
-      subject: '',
-      otherSubject: '',
+      attachment: '',
       description: ''
     });
     setStatus({ loading: false, error: null });
+    const fileInput = document.getElementById('attachment-upload');
+    if (fileInput) fileInput.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ loading: true, error: null });
 
+    const selectedCountry = COUNTRIES[formData.countryIndex];
+    const fullPhoneNumber = `${selectedCountry.code} ${formData.phoneNumber}`;
+
     const submissionData = {
-      ...formData,
-      subject: formData.subject === "Others" ? formData.otherSubject : formData.subject,
+      ticketSubject: formData.ticketSubject,
+      name: formData.name,
+      email: formData.email,
+      phoneNumber: fullPhoneNumber,
+      category: formData.category,
+      priority: formData.priority,
+      attachment: formData.attachment,
+      description: formData.description
     };
 
     try {
@@ -117,20 +147,41 @@ const Support = () => {
           {/* Left Side - Submit Ticket Form */}
           <div className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl border border-slate-50 p-10 lg:p-12 relative overflow-hidden">
             <div className="mb-10">
-              <h2 className="text-4xl font-black text-gray-900 mb-2 italic">Submit a Support Ticket</h2>
+              <h2 className="text-4xl font-black text-gray-900 mb-2 italic">Support Ticket Form</h2>
               <p className="text-slate-500 font-light text-lg">Our team typically responds within 2-4 business hours.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                  Ticket Subject
+                </label>
+                <select
+                  name="ticketSubject"
+                  value={formData.ticketSubject}
+                  onChange={handleChange}
+                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all cursor-pointer appearance-none"
+                  required
+                >
+                  <option value="">Select Ticket Subject</option>
+                  <option value="Cloud Hosted osTicket">Cloud Hosted osTicket</option>
+                  <option value="Training and Onboarding">Training and Onboarding</option>
+                  <option value="Commercial Support">Commercial Support</option>
+                  <option value="Security Vulnerability">Security Vulnerability</option>
+                  <option value="Feedbacks/Comments">Feedbacks/Comments</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                </select>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Full Name
+                    Name
                   </label>
                   <input
                     type="text"
-                    name="fullName"
-                    value={formData.fullName}
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
                     placeholder="Enter your name"
@@ -157,13 +208,47 @@ const Support = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Phone Number
+                  </label>
+                   <div className="flex gap-2">
+                     <div className="relative group">
+                       <select
+                         name="countryIndex"
+                         value={formData.countryIndex}
+                         onChange={handleChange}
+                         title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                         className="w-28 px-2 py-4 border border-slate-200 bg-slate-50/50 rounded-xl focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all font-semibold cursor-pointer"
+                       >
+                         {COUNTRIES.map((c, i) => (
+                           <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                         ))}
+                       </select>
+                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                         {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                       </div>
+                     </div>
+                    <input
+                      type="tel"
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                      className="flex-1 min-w-0 border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all placeholder-slate-400"
+                      placeholder="XXXXX XXXXX"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
                     Issue Category
                   </label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none cursor-pointer"
                     required
                   >
                     <option value="">Select a category</option>
@@ -175,7 +260,9 @@ const Support = () => {
                     <option value="General Inquiry">General Inquiry</option>
                   </select>
                 </div>
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
                     Priority Level
@@ -184,7 +271,7 @@ const Support = () => {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none cursor-pointer"
                     required
                   >
                     <option value="">Select priority</option>
@@ -194,44 +281,19 @@ const Support = () => {
                     <option value="Critical - System down">Critical - System down</option>
                   </select>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                  Subject
-                </label>
-                <select
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all appearance-none"
-                  required
-                >
-                  <option value="">Select Subject</option>
-                  <option value="Internship">Internship</option>
-                  <option value="Mentorship">Mentorship</option>
-                  <option value="Counseling">Counseling</option>
-                  <option value="Job">Job</option>
-                  <option value="Others">Others</option>
-                </select>
-              </div>
-
-              {formData.subject === "Others" && (
-                <div className="animate-fadeIn">
+                <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Specify Subject
+                    Attachment Upload
                   </label>
                   <input
-                    type="text"
-                    name="otherSubject"
-                    value={formData.otherSubject}
-                    onChange={handleChange}
-                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-4 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
-                    placeholder="Enter your subject"
-                    required
+                    id="attachment-upload"
+                    type="file"
+                    onChange={handleFileChange}
+                    className="w-full border border-slate-200 bg-slate-50/50 rounded-xl px-5 py-3 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer text-slate-500"
                   />
                 </div>
-              )}
+              </div>
 
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">

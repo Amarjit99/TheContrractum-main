@@ -4,19 +4,15 @@ import { CheckCircle, DollarSign, Share2, UserPlus, HelpCircle, ChevronDown, Che
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-import { COUNTRIES } from '../../constants/countries';
 import { toast } from 'react-hot-toast';
 
 export default function Affiliate() {
     const [formData, setFormData] = useState({
         name: '',
-        countryIndex: 0,
-        contact: '',
-        email: '',
         website: '',
-        audience: '',
-        experience: '',
-        promotionalMethods: ''
+        audienceCategory: '',
+        paymentDetails: '',
+        promotionMethod: ''
     });
 
     const [status, setStatus] = useState({ loading: false, error: null });
@@ -29,13 +25,10 @@ export default function Affiliate() {
     const handleReset = () => {
         setFormData({
             name: '',
-            countryIndex: 0,
-            contact: '',
-            email: '',
             website: '',
-            audience: '',
-            experience: '',
-            promotionalMethods: ''
+            audienceCategory: '',
+            paymentDetails: '',
+            promotionMethod: ''
         });
         setStatus({ loading: false, error: null });
     };
@@ -45,20 +38,15 @@ export default function Affiliate() {
         setStatus({ loading: true, error: null });
 
         try {
-            const submissionData = {
-                ...formData,
-                contact: `${COUNTRIES[formData.countryIndex].code} ${formData.contact}`
-            };
-            
             const res = await fetch(`${API}/api/affiliate-applications`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(submissionData)
+                body: JSON.stringify(formData)
             });
 
             if (!res.ok) throw new Error('Failed to store application');
 
-            toast.success('Affiliate application submitted successfully! We will review your entry and contact you soon.');
+            toast.success('Your form is submitted successfully.');
             handleReset();
         } catch (err) {
             setStatus({ loading: false, error: err.message });
@@ -226,85 +214,73 @@ export default function Affiliate() {
             <div id="apply-form" className="py-24 px-6">
                 <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 md:p-12">
                     <div className="text-center mb-10">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-2">Join the Program</h2>
+                        <h2 className="text-3xl font-bold text-slate-800 mb-2">Affiliate Registration Form</h2>
                         <p className="text-slate-500">Apply today and start earning within 48 hours.</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    required
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
-                                    placeholder="your name"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Contact Number</label>
-                                <div className="flex gap-2">
-                                    <select
-                                        name="countryIndex"
-                                        value={formData.countryIndex}
-                                        onChange={handleChange}
-                                        className="w-32 px-3 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all text-sm font-bold text-slate-700 appearance-none cursor-pointer"
-                                    >
-                                        {COUNTRIES.map((c, i) => (
-                                            <option key={i} value={i}>{c.code} ({c.iso})</option>
-                                        ))}
-                                    </select>
-                                    <input
-                                        type="tel"
-                                        name="contact"
-                                        required
-                                        value={formData.contact}
-                                        onChange={handleChange}
-                                        className="flex-1 px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
-                                        placeholder="000-000-0000"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
+                            <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
                             <input
-                                type="email"
-                                name="email"
+                                type="text"
+                                name="name"
                                 required
-                                value={formData.email}
+                                value={formData.name}
                                 onChange={handleChange}
                                 className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
-                                placeholder="name@example.com"
+                                placeholder="Full Name"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">Website / Profile Link (Optional)</label>
+                            <label className="text-sm font-bold text-slate-700 ml-1">Website/Social Media Links</label>
                             <input
                                 type="url"
                                 name="website"
+                                required
                                 value={formData.website}
                                 onChange={handleChange}
                                 className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
-                                placeholder="https://yourblog.com"
+                                placeholder="https://..."
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">Tell us about your audience & promotional methods</label>
+                            <label className="text-sm font-bold text-slate-700 ml-1">Audience Category</label>
+                            <input
+                                type="text"
+                                name="audienceCategory"
+                                required
+                                value={formData.audienceCategory}
+                                onChange={handleChange}
+                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
+                                placeholder="Audience Category"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Payment Details</label>
+                            <input
+                                type="text"
+                                name="paymentDetails"
+                                required
+                                value={formData.paymentDetails}
+                                onChange={handleChange}
+                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all"
+                                placeholder="Payment Details"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Promotion Method</label>
                             <textarea
-                                name="promotionalMethods"
+                                name="promotionMethod"
                                 rows="4"
                                 required
-                                value={formData.promotionalMethods}
+                                value={formData.promotionMethod}
                                 onChange={handleChange}
                                 className="w-full px-5 py-3.5 rounded-2xl border-2 border-slate-100 focus:border-blue-500 bg-slate-50 outline-none transition-all resize-none"
-                                placeholder="How do you plan to promote our services? (e.g. Blog posts, Social Media, Newsletter)"
+                                placeholder="Promotion Method"
                             ></textarea>
                         </div>
 

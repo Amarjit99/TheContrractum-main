@@ -7,6 +7,8 @@ export default function News() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [industryPreference, setIndustryPreference] = useState("");
   const [visibleNews, setVisibleNews] = useState(8);
   const [showNavbar, setShowNavbar] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -76,12 +78,14 @@ export default function News() {
         const response = await fetch(`${API}/api/subscription/newsletter`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, source: "News" }),
+          body: JSON.stringify({ email, source: "News", fullName, industryPreference }),
         });
 
         if (response.ok) {
           setShowSuccessPopup(true);
           setEmail("");
+          setFullName("");
+          setIndustryPreference("");
           setTimeout(() => setShowSuccessPopup(false), 5000);
         } else {
           const data = await response.json();
@@ -357,16 +361,39 @@ export default function News() {
             </p>
             <form onSubmit={handleSubscribe} className="space-y-3">
               <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="w-full px-4 py-2 rounded bg-white/10 text-white border border-white/20 placeholder-white/70 focus:border-white focus:ring-0 focus:outline-none transition-all text-sm font-medium"
+              />
+              <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 rounded text-black border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all"
+                className="w-full px-4 py-2 rounded bg-white/10 text-white border border-white/20 placeholder-white/70 focus:border-white focus:ring-0 focus:outline-none transition-all text-sm font-medium"
               />
+              <select
+                value={industryPreference}
+                onChange={(e) => setIndustryPreference(e.target.value)}
+                required
+                className="w-full px-4 py-2 rounded bg-white/10 text-white border border-white/20 focus:border-white focus:ring-0 focus:outline-none transition-all text-sm font-medium"
+              >
+                <option value="" disabled className="text-black bg-white">Select Industry Preference</option>
+                <option value="Technology" className="text-black bg-white">Technology</option>
+                <option value="Healthcare" className="text-black bg-white">Healthcare</option>
+                <option value="Finance" className="text-black bg-white">Finance</option>
+                <option value="Telecom" className="text-black bg-white">Telecom</option>
+                <option value="Energy" className="text-black bg-white">Energy</option>
+                <option value="Retail" className="text-black bg-white">Retail</option>
+                <option value="Other" className="text-black bg-white">Other</option>
+              </select>
               <button
                 type="submit"
-                className="w-full bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-100 transition-colors shadow"
+                className="w-full bg-white text-blue-900 px-5 py-2 rounded font-semibold hover:bg-gray-100 transition-colors shadow text-sm"
               >
                 Subscribe Now
               </button>

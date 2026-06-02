@@ -12,6 +12,8 @@ const ratings = [
 
 const FeedbackModal = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [selected, setSelected] = useState(3);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState({ loading: false, success: false, error: null });
@@ -19,17 +21,16 @@ const FeedbackModal = () => {
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
  
   const handleSubmit = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !name.trim() || !email.trim()) return;
     setStatus({ loading: true, success: false, error: null });
     try {
       const resp = await fetch(`${API}/api/public/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating: selected, message }),
+        body: JSON.stringify({ rating: selected, message, name, email }),
       });
       if (resp.ok) {
         setStatus({ loading: false, success: true, error: null });
-        setTimeout(() => navigate(-1), 2000);
       } else {
         throw new Error("Failed to submit feedback");
       }
@@ -39,22 +40,51 @@ const FeedbackModal = () => {
   };
  
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="w-[500px] bg-white shadow-2xl border border-gray-400">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50">
+      <div className="w-[520px] bg-white rounded-3xl border-2 border-blue-500/10 shadow-2xl overflow-hidden transition-all duration-300">
  
         {/* Header */}
-        <div className="bg-primary text-white px-6 py-4 flex justify-between items-center">
-          <h2 className="text-lg font-semibold">
-            We want to hear your feedback!
-          </h2>
-          <button onClick={() => navigate(-1)} className="hover:bg-primary-dark p-1 rounded transition-colors">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-6 flex justify-between items-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-6 -mr-6 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-200 bg-blue-800/40 px-2.5 py-1 rounded-full">Public System</span>
+            <h2 className="text-xl font-black tracking-tight mt-1.5">User Feedback Form</h2>
+            <p className="text-xs text-blue-100 font-semibold mt-1">We want to hear your feedback!</p>
+          </div>
+          <button onClick={() => navigate("/contact/touch")} className="hover:bg-blue-800 p-2 rounded-xl transition-colors cursor-pointer">
             <X size={20} />
           </button>
         </div>
  
         {/* Content */}
-        <div className="p-6">
+        <div className="p-8">
  
+          {/* Name & Email inputs */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <label className="block text-xs font-black text-gray-800 uppercase tracking-wider mb-2">Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Your Name"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-gray-800 uppercase tracking-wider mb-2">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="you@example.com"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 bg-white placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all text-sm font-semibold shadow-xs"
+              />
+            </div>
+          </div>
+
           {/* Rating Question */}
           <p className="text-gray-700 mb-6 font-medium text-center">
             How would you rate your experience on our website today?
@@ -105,19 +135,19 @@ const FeedbackModal = () => {
           ></textarea>
  
           {status.error && <p className="text-red-500 text-xs mt-2 font-bold ml-1">{status.error}</p>}
-          {status.success && <p className="text-emerald-500 text-xs mt-2 font-black ml-1 uppercase tracking-widest">✅ Thank you! Redirecting...</p>}
+          {status.success && <p className="text-emerald-500 text-xs mt-2 font-black ml-1 uppercase tracking-widest">✅ Thank you for your feedback!</p>}
  
           {/* Send Button Group */}
           <div className="flex justify-end items-center gap-4 mt-8">
             <button
-              onClick={() => navigate(-1)}
-              className="px-6 py-2.5 text-slate-500 font-bold text-xs uppercase tracking-widest hover:text-slate-900 transition-colors"
+              onClick={() => navigate("/contact/touch")}
+              className="px-6 py-2.5 text-slate-500 hover:text-white hover:bg-blue-600 rounded-xl transition-all duration-200 font-bold text-xs uppercase tracking-widest cursor-pointer"
             >
               Close
             </button>
             <button 
               onClick={handleSubmit}
-              disabled={status.loading || status.success || !message.trim()}
+              disabled={status.loading || status.success || !message.trim() || !name.trim() || !email.trim()}
               className={`bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {status.loading ? "Sending..." : status.success ? "Sent!" : (

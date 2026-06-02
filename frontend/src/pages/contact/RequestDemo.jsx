@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { CheckCircle, Calendar, Users, Zap, Shield, Globe } from "lucide-react";
+import { COUNTRIES } from "../../constants/countries";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function RequestDemo() {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
+        companyName: "",
         email: "",
-        company: "",
-        jobTitle: "",
-        employeeCount: "1-50",
-        interestArea: "digital-transformation",
-        message: ""
+        phoneNumber: "",
+        countryIndex: 0,
+        productInterested: "",
+        preferredDate: ""
     });
 
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
+    const [errorMsg, setErrorMsg] = useState("");
 
     const handleChange = (e) => {
         setFormData({
@@ -22,11 +26,44 @@ export default function RequestDemo() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here we would normally send the data to a backend
-        console.log("Form submitted:", formData);
-        setIsSubmitted(true);
+        setStatus("loading");
+        setErrorMsg("");
+
+        const selectedCountry = COUNTRIES[formData.countryIndex];
+        const fullPhoneNumber = `${selectedCountry.code} ${formData.phoneNumber}`;
+
+        const submissionData = {
+            name: formData.name,
+            companyName: formData.companyName,
+            email: formData.email,
+            phoneNumber: fullPhoneNumber,
+            productInterested: formData.productInterested,
+            preferredDate: formData.preferredDate
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/api/demo-requests`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(submissionData),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setStatus("success");
+                setIsSubmitted(true);
+            } else {
+                setStatus("error");
+                setErrorMsg(data.message || "Failed to submit demo request.");
+            }
+        } catch (err) {
+            console.error("Submission error:", err);
+            setStatus("error");
+            setErrorMsg("Could not reach the server. Please try again later.");
+        }
     };
 
     const benefits = [
@@ -98,64 +135,73 @@ export default function RequestDemo() {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
-                                <h3 className="text-2xl font-bold text-slate-900 mb-8 border-b pb-4">Tell us about yourself</h3>
-
-                                <div className="grid sm:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700">First Name *</label>
-                                        <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="John" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700">Last Name *</label>
-                                        <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="Doe" />
-                                    </div>
-                                </div>
+                                <h3 className="text-2xl font-bold text-slate-900 mb-8 border-b pb-4">Request Demo Registration Form</h3>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">Work Email *</label>
-                                    <input required name="email" value={formData.email} onChange={handleChange} type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="john@company.com" />
+                                    <label className="text-sm font-bold text-slate-700">Name *</label>
+                                    <input required name="name" value={formData.name} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="John Doe" />
                                 </div>
 
                                 <div className="grid sm:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-slate-700">Company Name *</label>
-                                        <input required name="company" value={formData.company} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="Acme Inc." />
+                                        <input required name="companyName" value={formData.companyName} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="Acme Inc." />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700">Job Title</label>
-                                        <input name="jobTitle" value={formData.jobTitle} onChange={handleChange} type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="Director of IT" />
+                                        <label className="text-sm font-bold text-slate-700">Work Email *</label>
+                                        <input required name="email" value={formData.email} onChange={handleChange} type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" placeholder="john@company.com" />
                                     </div>
                                 </div>
 
                                 <div className="grid sm:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700">Company Size</label>
-                                        <select name="employeeCount" value={formData.employeeCount} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white">
-                                            <option value="1-50">1 - 50 employees</option>
-                                            <option value="51-200">51 - 200 employees</option>
-                                            <option value="201-1000">201 - 1,000 employees</option>
-                                            <option value="1001+">1,001+ employees</option>
-                                        </select>
+                                        <label className="text-sm font-bold text-slate-700">Phone Number *</label>
+                                        <div className="flex gap-2">
+                                            <div className="relative group">
+                                                <select
+                                                    name="countryIndex"
+                                                    value={formData.countryIndex}
+                                                    onChange={handleChange}
+                                                    title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                                                    className="w-28 px-2 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white text-slate-700 font-semibold cursor-pointer"
+                                                >
+                                                    {COUNTRIES.map((c, i) => (
+                                                        <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                                                    ))}
+                                                </select>
+                                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                                                    {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                                </div>
+                                            </div>
+                                            <input required name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} type="tel" className="flex-1 min-w-0 px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white placeholder-slate-400" placeholder="XXXXX XXXXX" />
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700">Primary Interest</label>
-                                        <select name="interestArea" value={formData.interestArea} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white">
-                                            <option value="digital-transformation">Digital Transformation</option>
-                                            <option value="cloud-computing">Cloud Infrastructure</option>
-                                            <option value="ai-ml">AI & Machine Learning</option>
-                                            <option value="cybersecurity">Cybersecurity</option>
-                                            <option value="other">Other</option>
-                                        </select>
+                                        <label className="text-sm font-bold text-slate-700">Preferred Demo Date *</label>
+                                        <input required name="preferredDate" value={formData.preferredDate} onChange={handleChange} type="date" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700">How can we help? (Optional)</label>
-                                    <textarea name="message" value={formData.message} onChange={handleChange} rows="3" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white resize-none" placeholder="Tell us about your specific use case or challenges..."></textarea>
+                                    <label className="text-sm font-bold text-slate-700">Product/Service Interested *</label>
+                                    <select required name="productInterested" value={formData.productInterested} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-slate-50 focus:bg-white">
+                                        <option value="">Select a Product/Service</option>
+                                        <option value="digital-transformation">Digital Transformation</option>
+                                        <option value="cloud-computing">Cloud Infrastructure</option>
+                                        <option value="ai-ml">AI & Machine Learning</option>
+                                        <option value="cybersecurity">Cybersecurity</option>
+                                        <option value="other">Other</option>
+                                    </select>
                                 </div>
 
-                                <button type="submit" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                    Schedule My Demo
+                                {status === "error" && (
+                                    <p className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-semibold">{errorMsg}</p>
+                                )}
+
+                                <button type="submit" disabled={status === "loading"} className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2">
+                                    {status === "loading" && <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin inline-block"></span>}
+                                    <span>Schedule My Demo</span>
                                 </button>
 
                                 <p className="text-xs text-center text-slate-500 mt-4">

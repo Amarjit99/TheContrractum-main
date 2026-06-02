@@ -16,16 +16,16 @@ const resetPassword = async () => {
             firstName: 'Super',
             lastName: 'Admin',
             email: 'admin@thecontractum.com',
-            password: 'admin123',
+            password: 'admin12345',
             mobile: '1234567890',
             gender: 'Male',
             role: 'super-admin',
             isApproved: true
         });
-        console.log('Admin created with password: admin123');
+        console.log('Admin created with password: admin12345');
     } else {
         console.log('User found. Updating password and fields...');
-        user.password = 'admin123';
+        user.password = 'admin12345';
         user.firstName = user.firstName || 'Super';
         user.lastName = user.lastName || 'Admin';
         user.mobile = user.mobile || '1234567890';
@@ -33,7 +33,7 @@ const resetPassword = async () => {
         user.role = 'super-admin';
         user.isApproved = true;
         await user.save();
-        console.log('Password reset to: admin123 and fields updated');
+        console.log('Password reset to: admin12345 and fields updated');
     }
     process.exit(0);
   } catch (err) {

@@ -444,7 +444,7 @@ export default function Startup() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link to="/contact/touch">
-                            <button className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-sm md:text-base">
+                            <button className="w-full sm:w-auto bg-primary border-2 border-white hover:bg-transparent text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-sm md:text-base">
                                 Apply to Accelerator
                             </button>
                         </Link>
