@@ -87,20 +87,20 @@ export default function Life() {
             {/* Community Section */}
             <div className="py-20 bg-gray-100">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="bg-primary rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
                         <div className="grid grid-cols-1 lg:grid-cols-2">
                             <div className="p-12 md:p-16 flex flex-col justify-center">
                                 <div className="inline-flex items-center gap-2 text-yellow-400 mb-4 font-bold uppercase tracking-wider text-sm">
                                     <Hand size={18} />
                                     <span>Giving Back</span>
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-bold text-red mb-6">
+                                <h2 className="text-3xl md:text-4xl font-black text-white mb-6">
                                     Community & Impact
                                 </h2>
-                                <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+                                <p className="text-slate-300 text-lg mb-8 leading-relaxed">
                                     We don't just work in silos. We engage with our local communities through volunteer days, coding workshops for kids, and environmental initiatives.
                                 </p>
-                                <Link to="/resources/csr-report" className="bg-primary hover:bg-primary-dark text-red-600 font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg inline-block">
+                                <Link to="/resources/csr-report" className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg inline-block text-center border-2 border-blue-400/50 hover:border-white">
                                     Download CSR Report
                                 </Link>
                             </div>

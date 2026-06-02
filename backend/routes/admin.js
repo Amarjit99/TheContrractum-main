@@ -456,6 +456,16 @@ router.delete('/users/:id', async (req, res) => {
   }
 });
 
+// GET /api/admin/contacts/stats — Fetch all contacts for analytical metrics
+router.get('/contacts/stats', async (req, res) => {
+  try {
+    const allContacts = await Contact.find().sort({ createdAt: -1 });
+    res.json(allContacts);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch contacts statistics', error: err.message });
+  }
+});
+
 // GET /api/admin/contacts — All contact submissions
 router.get('/contacts', async (req, res) => {
   try {
@@ -468,6 +478,42 @@ router.get('/contacts', async (req, res) => {
     res.json({ contacts, total, page, pages: Math.ceil(total / limit) });
   } catch {
     res.status(500).json({ message: 'Failed to fetch contacts' });
+  }
+});
+
+// PUT /api/admin/contacts/:id — Update lead workflow details (status, priority, assignedTo)
+router.put('/contacts/:id', async (req, res) => {
+  try {
+    const { status, priority, assignedTo } = req.body;
+    const update = {};
+    if (status) update.status = status;
+    if (priority) update.priority = priority;
+    if (assignedTo !== undefined) update.assignedTo = assignedTo;
+
+    const contact = await Contact.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!contact) return res.status(404).json({ message: 'Contact lead not found' });
+
+    // Save to System AuditLog for tracking
+    try {
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.create({
+        adminId: req.user._id || req.user.id,
+        adminName: req.user.name || req.user.email || 'System Admin',
+        adminRole: req.user.role || '',
+        action: 'Status Change',
+        entity: 'Contact',
+        targetType: 'Contact',
+        targetId: contact._id.toString(),
+        details: `Updated contact workflow for ${contact.name}: Status=${contact.status}, Priority=${contact.priority}, AssignedTo=${contact.assignedTo}`,
+        ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress || ''
+      });
+    } catch (e) {
+      console.error('Audit logging failed for contact update:', e);
+    }
+
+    res.json(contact);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update contact workflow details', error: err.message });
   }
 });
 

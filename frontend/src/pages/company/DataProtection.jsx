@@ -89,7 +89,7 @@ const sections = [
   },
 ];
 
-const PrivacyPolicy = () => {
+const DataProtection = () => {
   return (
     <div className="min-h-screen bg-white text-slate-900">
 
@@ -218,4 +218,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default DataProtection;

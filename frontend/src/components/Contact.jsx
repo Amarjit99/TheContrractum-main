@@ -118,7 +118,7 @@ const Registration = () => {
                 onChange={handleChange}
                 placeholder="Name"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
               />
             </div>
 
@@ -130,7 +130,7 @@ const Registration = () => {
                 onChange={handleChange}
                 placeholder="Email"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
               />
             </div>
 
@@ -168,14 +168,14 @@ const Registration = () => {
                 value={form.subject}
                 onChange={handleChange}
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium"
+                className={`w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium ${form.subject ? 'text-white' : 'text-gray-400'}`}
               >
-                <option value="" className="bg-gray-900">Select Inquiry Category</option>
-                <option value="Internship" className="bg-gray-900">Internship</option>
-                <option value="Mentorship" className="bg-gray-900">Mentorship</option>
-                <option value="Counseling" className="bg-gray-900">Counseling</option>
-                <option value="Job" className="bg-gray-900">Job</option>
-                <option value="Others" className="bg-gray-900">Others</option>
+                <option value="" className="bg-gray-900 text-gray-400">Select Inquiry Category</option>
+                <option value="Internship" className="bg-gray-900 text-white">Internship</option>
+                <option value="Mentorship" className="bg-gray-900 text-white">Mentorship</option>
+                <option value="Counseling" className="bg-gray-900 text-white">Counseling</option>
+                <option value="Job" className="bg-gray-900 text-white">Job</option>
+                <option value="Others" className="bg-gray-900 text-white">Others</option>
               </select>
             </div>
 
@@ -188,7 +188,7 @@ const Registration = () => {
                   onChange={handleChange}
                   placeholder="Specify Inquiry Category"
                   required
-                  className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                  className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
                 />
               </div>
             )}
@@ -201,7 +201,7 @@ const Registration = () => {
                 placeholder="Message"
                 rows="4"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none font-medium"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none font-medium"
               ></textarea>
             </div>
 
