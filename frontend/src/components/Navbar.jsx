@@ -58,9 +58,9 @@ export default function Navbar() {
     {
       name: 'Solutions',
       submenu: [
-        { title: 'CS & IT Services', path: '/solutions/business/csit', items: [] },
+        { title: 'CS & IT Solutions', path: '/solutions/business/csit', items: [] },
         { title: 'GIS Solutions', path: '/solutions/business/gis', items: [] },
-        { title: 'MRAS Services', path: '/solutions/business/Mras', items: [] },
+        { title: 'MRAS Solutions', path: '/solutions/business/Mras', items: [] },
         { title: 'E-Commerce Platforms', path: '/solutions/digital/e-commerce', items: [] },
         { title: 'HR Tech Solutions', path: '/solutions/digital/hrtech', items: [] },
         { title: 'Digital Marketing', path: '/solutions/digital/digital-marketing', items: [] },
@@ -178,14 +178,14 @@ export default function Navbar() {
       <div className="max-w-[1650px] mx-auto px-4 sm:px-6 lg:px-11 xl:px-14">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Company Name */}
-          <div className="shrink-0 flex items-center mr-6 lg:mr-12 xl:mr-16">
+          <div className="shrink-0 flex items-center mr-3 lg:mr-6 xl:mr-8">
             <Link to="/" className="flex items-center group transform hover:scale-[1.15] transition-all duration-500 shrink-0">
               <img src={logo} alt="The Contractum Logo" className="h-[48px] sm:h-[64px] lg:h-[76px] xl:h-[88px] w-auto object-contain transform scale-[1.2] sm:scale-[1.45] origin-left" />
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex flex-1 justify-center items-center gap-0.5 lg:gap-1 xl:gap-2 mx-2 xl:mx-4">
+          <div className="hidden lg:flex flex-1 justify-start items-center gap-0.5 lg:gap-1 xl:gap-2 ml-0 xl:ml-2">
             {menuItems.map((item, index) => (
               <div
                 key={index}
@@ -213,8 +213,8 @@ export default function Navbar() {
 
                 {/* Enhanced Mega Menu Dropdown */}
                 {item.submenu && activeDropdown === index && (
-                    <div
-                      className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn z-[110]"
+                  <div
+                    className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn z-[110]"
                     onMouseEnter={handleDropdownEnter}
                     onMouseLeave={handleDropdownLeave}
                   >
@@ -267,7 +267,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 group focus:outline-none"
                 >
                   <span className="w-10 h-10 xl:w-12 xl:h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-base xl:text-lg ring-2 ring-transparent group-hover:ring-red-300 transition-all duration-200 shadow-md">
-                    {user.role === 'super-admin' ? 'SA' : user.name?.charAt(0).toUpperCase()}
+                    {user.name?.charAt(0).toUpperCase()}
                   </span>
                   <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -288,7 +288,7 @@ export default function Navbar() {
                       {/* Menu Items */}
                       <div className="py-1">
                         {(user.role === 'admin' || user.role === 'super-admin') && (
-                          <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
+                          <Link to={user.role === 'super-admin' ? '/superadmin/SuperAdminDashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             Admin Dashboard
@@ -413,24 +413,24 @@ export default function Navbar() {
                     </svg>
                   </button>
                   {activeDropdown === index && item.submenu && (
-                    <div className="ml-4 mt-2 space-y-1 bg-gray-50 backdrop-blur-sm rounded-xl p-2">
+                    <div className="mt-2 mx-auto flex w-full max-w-[18rem] flex-col items-center space-y-1 self-center rounded-xl bg-gray-50 backdrop-blur-sm p-2 text-center">
                       {item.submenu.map((section, idx) => (
-                        <div key={idx} className="py-1">
+                        <div key={idx} className="w-full py-1 flex flex-col items-center">
                           <Link
                             to={section.path}
                             state={{ title: section.title }}
                             onClick={() => setIsOpen(false)}
-                            className="block py-2 px-3 text-sm font-bold text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                            className="block w-full py-2 px-3 text-sm font-bold text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 text-center"
                           >
                             {section.title}
                           </Link>
                           {section.items.length > 0 && (
-                            <div className="ml-10 mt-1 space-y-1">
+                            <div className="mt-1 w-full space-y-1 text-center">
                               {section.items.map((subItem, subIdx) => (
                                 <a
                                   key={subIdx}
                                   href="#"
-                                  className="flex items-center space-x-2 py-1.5 px-3 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                  className="flex items-center justify-center gap-2 py-1.5 px-3 text-xs text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                                 >
                                   <span className="text-red-400">▸</span>
                                   <span>{subItem}</span>
@@ -458,7 +458,7 @@ export default function Navbar() {
 
                 {(user.role === 'admin' || user.role === 'super-admin') && (
                   <Link
-                    to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'}
+                    to={user.role === 'super-admin' ? '/superadmin/SuperAdminDashboard' : '/admin/dashboard'}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 w-full py-3 px-5 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all duration-300"
                   >
