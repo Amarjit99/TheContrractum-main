@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 import { 
   FileText, Plus, Search, CheckCircle, Clock, XCircle, 
   Send, Eye, ArrowRight, User as UserIcon, Calendar, ClipboardList,
@@ -35,15 +36,18 @@ export default function AdminContracts() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedType, setSelectedType] = useState('All');
   const [deleting, setDeleting] = useState(null);
   const [sendingEmail, setSendingEmail] = useState(null);
   const [expiryAlerts, setExpiryAlerts] = useState([]);
   const [showExpiry, setShowExpiry] = useState(true);
   // Bulk Generate State
   const [showBulk, setShowBulk] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState('All');
   const [templates, setTemplates] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
-  const [bulkForm, setBulkForm] = useState({ templateId: '', employeeIds: [], validFrom: '', validUntil: '', type: 'Employee' });
+  const [bulkForm, setBulkForm] = useState({ templateId: '', employeeIds: [], validFrom: '', validUntil: '', type: 'Employment Agreement' });
   const [bulkLoading, setBulkLoading] = useState(false);
 
   const token = localStorage.getItem('adminToken') || admin?.token;
@@ -203,9 +207,12 @@ export default function AdminContracts() {
     const matchSearch =
       (c.title || '').toLowerCase().includes(search.toLowerCase()) ||
       empName.toLowerCase().includes(search.toLowerCase()) ||
-      (c.type || '').toLowerCase().includes(search.toLowerCase());
+      (c.type || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.category || '').toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'All' || c.status === filter;
-    return matchSearch && matchFilter;
+    const matchCategory = selectedCategory === 'All' || c.category === selectedCategory;
+    const matchType = selectedType === 'All' || c.type === selectedType;
+    return matchSearch && matchFilter && matchCategory && matchType;
   });
 
 
@@ -224,11 +231,17 @@ export default function AdminContracts() {
 
   const canApproveReject = (c) => {
     if (!admin) return false;
+    const subRole = (admin.adminSubRole || '').toLowerCase().trim();
+    const isManager = subRole.includes('manager') || admin.role === 'manager';
+    const isHR = subRole.includes('hr') || subRole.startsWith('hr ');
+    const isLegal = subRole.includes('legal') || subRole.includes('compliance');
+    const isSuper = admin.role === 'super-admin';
+
     return (
-      (c.status === 'Pending_Manager' && admin.adminSubRole === 'Manager') ||
-      (c.status === 'Pending_HR' && admin.adminSubRole === 'HR') ||
-      (c.status === 'Pending_Legal' && admin.adminSubRole === 'Legal') ||
-      (c.status === 'Pending_Final' && admin.role === 'super-admin')
+      (c.status === 'Pending_Manager' && isManager) ||
+      (c.status === 'Pending_HR' && isHR) ||
+      (c.status === 'Pending_Legal' && isLegal) ||
+      (c.status === 'Pending_Final' && isSuper)
     );
   };
 
@@ -265,11 +278,23 @@ export default function AdminContracts() {
             </div>
             <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
+                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Templates by Category</label>
+                <select value={bulkCategory} onChange={e => { setBulkCategory(e.target.value); setBulkForm({...bulkForm, templateId: ''}); }}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-700 focus:outline-none mb-3">
+                  <option value="All">All Categories</option>
+                  {Object.keys(CONTRACT_CATEGORIES).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+
                 <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Template *</label>
-                <select value={bulkForm.templateId} onChange={e => setBulkForm({...bulkForm, templateId: e.target.value})}
+                <select value={bulkForm.templateId} onChange={e => {
+                  const selectedT = templates.find(t => t._id === e.target.value);
+                  setBulkForm({...bulkForm, templateId: e.target.value, type: selectedT ? selectedT.type : 'Employment Agreement'});
+                }}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-700 focus:outline-none">
                   <option value="">Choose template…</option>
-                  {templates.map(t => <option key={t._id} value={t._id}>{t.name} ({t.type})</option>)}
+                  {templates
+                    .filter(t => bulkCategory === 'All' || t.category === bulkCategory)
+                    .map(t => <option key={t._id} value={t._id}>{t.name} ({t.type})</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -369,40 +394,86 @@ export default function AdminContracts() {
       {/* ── Main Table Card ── */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Filters Bar */}
-        <div className="p-5 border-b border-gray-50 flex flex-col md:flex-row md:items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
-              placeholder="Search by title, employee, type…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm font-medium"
-            />
+        <div className="p-5 border-b border-gray-50 flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="Search by title, employee, type…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm font-medium"
+              />
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar flex-1">
+              {FILTERS.map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border shrink-0 ${
+                    filter === f
+                      ? 'bg-[#1e5cdc] text-white border-[#1e5cdc] shadow-sm shadow-blue-200'
+                      : 'bg-white text-gray-500 border-gray-100 hover:border-blue-300 hover:text-blue-600'
+                  }`}
+                >
+                  {STATUS_CONFIG[f]?.label || f}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={fetchContracts}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-100 bg-white text-gray-500 hover:bg-gray-50 transition-all shrink-0 self-end md:self-auto"
+            >
+              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+              Refresh
+            </button>
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar flex-1">
-            {FILTERS.map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border shrink-0 ${
-                  filter === f
-                    ? 'bg-[#1e5cdc] text-white border-[#1e5cdc] shadow-sm shadow-blue-200'
-                    : 'bg-white text-gray-500 border-gray-100 hover:border-blue-300 hover:text-blue-600'
-                }`}
+          
+          {/* Advanced Category & Type Filters */}
+          <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gray-50">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category:</span>
+              <select
+                value={selectedCategory}
+                onChange={e => {
+                  setSelectedCategory(e.target.value);
+                  setSelectedType('All'); // reset subtype filter
+                }}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
-                {STATUS_CONFIG[f]?.label || f}
+                <option value="All">All Categories</option>
+                {Object.keys(CONTRACT_CATEGORIES).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Agreement Type:</span>
+              <select
+                value={selectedType}
+                onChange={e => setSelectedType(e.target.value)}
+                disabled={selectedCategory === 'All'}
+                className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
+              >
+                <option value="All">All Types</option>
+                {selectedCategory !== 'All' && CONTRACT_CATEGORIES[selectedCategory]?.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+            
+            {(selectedCategory !== 'All' || selectedType !== 'All') && (
+              <button
+                onClick={() => { setSelectedCategory('All'); setSelectedType('All'); }}
+                className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors ml-auto"
+              >
+                Clear Advanced Filters
               </button>
-            ))}
+            )}
           </div>
-          <button
-            onClick={fetchContracts}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-100 bg-white text-gray-500 hover:bg-gray-50 transition-all shrink-0"
-          >
-            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
-            Refresh
-          </button>
         </div>
 
         {/* Table */}
@@ -458,7 +529,11 @@ export default function AdminContracts() {
                           </div>
                           <div className="min-w-0">
                             <h4 className="font-bold text-gray-900 group-hover:text-[#1e5cdc] transition-colors text-sm truncate max-w-[160px] lg:max-w-xs">{c.title}</h4>
-                            <p className="text-[11px] text-gray-400 font-medium mt-0.5">{c.type} Contract</p>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                              <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">{c.category || 'Employment & HR Contracts'}</span>
+                              <span className="text-[10px] text-gray-400">•</span>
+                              <span className="text-[10px] text-gray-500 font-bold">{c.type || 'Employment Agreement'}</span>
+                            </div>
                             {/* Mobile employee */}
                             <div className="sm:hidden flex items-center gap-1.5 mt-1.5 text-gray-500">
                               <UserIcon size={10} />

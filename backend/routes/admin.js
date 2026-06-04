@@ -13,6 +13,7 @@ const QuoteApplication = require('../models/QuoteApplication');
 const SupportTicket = require('../models/SupportTicket');
 const NewsletterSubscription = require('../models/NewsletterSubscription');
 const Intern = require('../models/Intern');
+const Founder = require('../models/Founder');
 const Affiliate = require('../models/Affiliate');
 const Survey = require('../models/Survey');
 const Referral = require('../models/Referral');
@@ -40,7 +41,8 @@ router.get('/stats', async (req, res) => {
     const [
       totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
-      totalCertificates, totalIdCards
+      totalCertificates, totalIdCards,
+      totalFounders, totalInterns
     ] = await Promise.all([
       User.countDocuments(),
       Contact.countDocuments(),
@@ -49,7 +51,9 @@ router.get('/stats', async (req, res) => {
       Partner.countDocuments(),
       Blog.countDocuments(),
       Certificate.countDocuments(),
-      IdCard.countDocuments()
+      IdCard.countDocuments(),
+      Founder.countDocuments(),
+      Intern.countDocuments()
     ]);
 
     const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(10);
@@ -59,6 +63,7 @@ router.get('/stats', async (req, res) => {
       totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
       totalCertificates, totalIdCards,
+      totalFounders, totalInterns,
       recentContacts, recentApplications
     });
   } catch (err) {
@@ -630,7 +635,6 @@ router.post('/approve-registration/:id', async (req, res) => {
     const firstName = reg.firstName || reg.name?.split(' ')[0] || 'Admin';
     const lastName = reg.lastName || reg.name?.split(' ').slice(1).join(' ') || 'Staff';
     const mobile = reg.mobile || '0000000000';
-
     const adminSubRoles = [
       'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator'
     ];
@@ -641,10 +645,83 @@ router.post('/approve-registration/:id', async (req, res) => {
       'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
     ];
 
+    const allOfficialRoles = [...adminSubRoles, ...managerSubRoles, ...employeeSubRoles];
+
+    let subRole = reg.adminSubRole || 'System Administrator';
+    const cleanKey = subRole.toLowerCase().trim();
+
+    // 1. Check for exact case-insensitive match in all 42 official roles
+    const exactMatch = allOfficialRoles.find(r => r.toLowerCase() === cleanKey);
+    if (exactMatch) {
+      subRole = exactMatch;
+    } else {
+      // 2. Mappings for legacy shorthands and abbreviations
+      const legacyRoleMap = {
+        'system': 'System Administrator',
+        'system admin': 'System Administrator',
+        'sysadmin': 'System Administrator',
+        'hr': 'HR Administrator',
+        'hr admin': 'HR Administrator',
+        'operations': 'Operations Administrator',
+        'operations admin': 'Operations Administrator',
+        'ops': 'Operations Administrator',
+        'ops admin': 'Operations Administrator',
+        'website': 'Website Administrator',
+        'website admin': 'Website Administrator',
+        'web': 'Website Administrator',
+        'web admin': 'Website Administrator',
+        'crm': 'CRM Administrator',
+        'crm admin': 'CRM Administrator',
+        'support': 'Support Administrator',
+        'support admin': 'Support Administrator',
+        'marketing': 'Marketing Administrator',
+        'marketing admin': 'Marketing Administrator',
+        'event': 'Event Administrator',
+        'event admin': 'Event Administrator',
+        'content': 'Content Administrator',
+        'content admin': 'Content Administrator',
+        'finance': 'Finance Administrator',
+        'finance admin': 'Finance Administrator',
+        'compliance': 'Compliance Administrator',
+        'compliance admin': 'Compliance Administrator',
+        'user access': 'User Access Administrator',
+        'user access admin': 'User Access Administrator',
+        'database': 'Database Administrator',
+        'database admin': 'Database Administrator',
+        'db': 'Database Administrator',
+        'db admin': 'Database Administrator',
+        'dba': 'Database Administrator',
+        'tr': 'Training Coordinator'
+      };
+
+      if (legacyRoleMap[cleanKey]) {
+        subRole = legacyRoleMap[cleanKey];
+      } else {
+        // 3. Fallback partial matching
+        if (cleanKey.includes('system') || cleanKey.includes('sys')) subRole = 'System Administrator';
+        else if (cleanKey.includes('ops') || cleanKey.includes('operation')) subRole = 'Operations Administrator';
+        else if (cleanKey.includes('web') || cleanKey.includes('site')) subRole = 'Website Administrator';
+        else if (cleanKey.includes('crm')) subRole = 'CRM Administrator';
+        else if (cleanKey.includes('support')) subRole = 'Support Administrator';
+        else if (cleanKey.includes('marketing') || cleanKey.includes('mkt')) subRole = 'Marketing Administrator';
+        else if (cleanKey.includes('event')) subRole = 'Event Administrator';
+        else if (cleanKey.includes('content')) subRole = 'Content Administrator';
+        else if (cleanKey.includes('finance') || cleanKey.includes('fin')) subRole = 'Finance Administrator';
+        else if (cleanKey.includes('compliance') || cleanKey.includes('legal')) subRole = 'Compliance Administrator';
+        else if (cleanKey.includes('access') || cleanKey.includes('perm')) subRole = 'User Access Administrator';
+        else if (cleanKey.includes('database') || cleanKey.includes('db')) subRole = 'Database Administrator';
+        else if (cleanKey.includes('hr') || cleanKey.includes('recruitment')) subRole = 'HR Administrator';
+        else {
+          subRole = 'System Administrator';
+        }
+      }
+    }
+
+
     let derivedRole = 'admin';
-    if (adminSubRoles.includes(reg.adminSubRole)) derivedRole = 'admin';
-    else if (managerSubRoles.includes(reg.adminSubRole)) derivedRole = 'manager';
-    else if (employeeSubRoles.includes(reg.adminSubRole)) derivedRole = 'employee';
+    if (adminSubRoles.includes(subRole)) derivedRole = 'admin';
+    else if (managerSubRoles.includes(subRole)) derivedRole = 'manager';
+    else if (employeeSubRoles.includes(subRole)) derivedRole = 'employee';
 
     // 1. Create the User (authentication)
     const user = await User.create({
@@ -655,8 +732,8 @@ router.post('/approve-registration/:id', async (req, res) => {
       role: derivedRole,
       isApproved: true,
       mobile: mobile,
-      adminSubRole: reg.adminSubRole,
-      joiningDate: reg.joiningDate
+      adminSubRole: subRole,
+      joiningDate: reg.joiningDate || new Date().toISOString()
     });
 
     // 2. Create the Admin Detail (stored in admindb collection)
@@ -664,9 +741,9 @@ router.post('/approve-registration/:id', async (req, res) => {
       userId: user._id,
       name: `${firstName} ${lastName}`,
       email: reg.email,
-      adminSubRole: reg.adminSubRole,
-      adminPermissions: reg.adminPermissions,
-      joiningDate: reg.joiningDate,
+      adminSubRole: subRole,
+      adminPermissions: reg.adminPermissions || 'view',
+      joiningDate: reg.joiningDate || new Date().toISOString(),
       registrationId: reg._id
     });
 

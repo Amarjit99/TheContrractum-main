@@ -8,17 +8,42 @@ import {
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-const CONTRACT_TYPES = ['Employee', 'Intern', 'Freelancer', 'Vendor'];
 
 const TYPE_BADGE = {
   Employee:   'bg-blue-100 text-blue-700 border-blue-200',
   Intern:     'bg-purple-100 text-purple-700 border-purple-200',
   Freelancer: 'bg-amber-100 text-amber-700 border-amber-200',
   Vendor:     'bg-teal-100 text-teal-700 border-teal-200',
+  'Employment & HR Contracts': 'bg-blue-100 text-blue-700 border-blue-200',
+  'Business & Corporate Agreements': 'bg-purple-100 text-purple-700 border-purple-200',
+  'Software & IT Contracts': 'bg-amber-100 text-amber-700 border-amber-200',
+  'Marketing & Media Agreements': 'bg-teal-100 text-teal-700 border-teal-200',
+  'Financial & Legal Agreements': 'bg-rose-100 text-rose-700 border-rose-200',
+  'Sales & Client Agreements': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+  'Real Estate & Infrastructure Agreements': 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'Educational & Training Agreements': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  'Project Management & Operations Contracts': 'bg-violet-100 text-violet-700 border-violet-200',
+  'Intellectual Property Agreements': 'bg-sky-100 text-sky-700 border-sky-200'
 };
+
+const CLAUSES_CONFIG = [
+  { key: 'scopeOfWork',         label: 'Scope of Work',         placeholder: 'Detailed description of services, duties, and responsibilities...' },
+  { key: 'paymentTerms',        label: 'Payment Terms',        placeholder: 'Compensation details, billing cycles, invoices, and payment schedule...' },
+  { key: 'deliverables',        label: 'Deliverables',        placeholder: 'List of specific deliverables, reports, software code, or outputs...' },
+  { key: 'timelineMilestones',  label: 'Timeline & Milestones',  placeholder: 'Expected start/end dates for key stages and delivery dates...' },
+  { key: 'confidentiality',     label: 'Confidentiality',     placeholder: 'Non-disclosure obligations regarding proprietary information...' },
+  { key: 'ipRights',            label: 'Intellectual Property',  placeholder: 'Ownership of designs, code, assets, and transfer of rights...' },
+  { key: 'termination',         label: 'Termination',         placeholder: 'Notice period, grounds for termination, and post-termination actions...' },
+  { key: 'penalty',             label: 'Penalty & Damages',    placeholder: 'Late delivery penalties, breach of contract clauses, and interest fees...' },
+  { key: 'disputeResolution',   label: 'Dispute Resolution',   placeholder: 'Arbitration process, mediation, and resolution steps...' },
+  { key: 'governingLaw',        label: 'Governing Law',        placeholder: 'Jurisdiction and laws governing this contract (e.g. State of Maharashtra, India)...' },
+  { key: 'liability',           label: 'Liability & Indemnity',placeholder: 'Limitations on liability, indemnification of claims and damages...' },
+  { key: 'forceMajeure',        label: 'Force Majeure',        placeholder: 'Events beyond control (acts of God, war, pandemic) and suspension rights...' },
+  { key: 'renewal',             label: 'Renewal & Extension',  placeholder: 'Auto-renewal terms, mutual agreement for extension, and pricing review...' }
+];
 
 export default function ContractEditor() {
   const { admin } = useAdminAuth();
@@ -32,16 +57,33 @@ export default function ContractEditor() {
   const [preview, setPreview]     = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [designationFilter, setDesignationFilter] = useState('');
+  const [activeTab, setActiveTab] = useState('editor'); // 'editor' | 'clauses'
 
   const [formData, setFormData] = useState({
     employeeId: '',
     title:      '',
     description:'',
-    type:       'Employee',
+    category:   'Employment & HR Contracts',
+    type:       'Employment Agreement',
     content:    '',
     status:     'Draft',
     validFrom:  '',
-    validUntil: ''
+    validUntil: '',
+    clauses: {
+      scopeOfWork: '',
+      paymentTerms: '',
+      deliverables: '',
+      timelineMilestones: '',
+      confidentiality: '',
+      ipRights: '',
+      termination: '',
+      penalty: '',
+      disputeResolution: '',
+      governingLaw: '',
+      liability: '',
+      forceMajeure: '',
+      renewal: ''
+    }
   });
 
   const token = localStorage.getItem('adminToken') || admin?.token;
@@ -74,11 +116,27 @@ export default function ContractEditor() {
           employeeId:  data.employeeId?._id || data.employeeId || '',
           title:       data.title || '',
           description: data.description || '',
-          type:        data.type || 'Employee',
+          category:    data.category || 'Employment & HR Contracts',
+          type:        data.type || 'Employment Agreement',
           content:     data.content || '',
           status:      data.status || 'Draft',
           validFrom:   data.validFrom ? data.validFrom.slice(0, 10) : '',
           validUntil:  data.validUntil ? data.validUntil.slice(0, 10) : '',
+          clauses:     {
+            scopeOfWork: data.clauses?.scopeOfWork || '',
+            paymentTerms: data.clauses?.paymentTerms || '',
+            deliverables: data.clauses?.deliverables || '',
+            timelineMilestones: data.clauses?.timelineMilestones || '',
+            confidentiality: data.clauses?.confidentiality || '',
+            ipRights: data.clauses?.ipRights || '',
+            termination: data.clauses?.termination || '',
+            penalty: data.clauses?.penalty || '',
+            disputeResolution: data.clauses?.disputeResolution || '',
+            governingLaw: data.clauses?.governingLaw || '',
+            liability: data.clauses?.liability || '',
+            forceMajeure: data.clauses?.forceMajeure || '',
+            renewal: data.clauses?.renewal || '',
+          }
         });
       }
     } catch { console.error('Failed to fetch contract'); }
@@ -140,7 +198,12 @@ export default function ContractEditor() {
       if (formData.employeeId) {
         populatedContent = replacePlaceholders(template.content, formData.employeeId);
       }
-      setFormData(prev => ({ ...prev, content: populatedContent, type: template.type }));
+      setFormData(prev => ({ 
+        ...prev, 
+        content: populatedContent, 
+        category: template.category || 'Employment & HR Contracts',
+        type: template.type || 'Employment Agreement' 
+      }));
       setTemplateOpen(false);
       toast.success(`Template "${template.name}" applied`);
     }
@@ -154,6 +217,121 @@ export default function ContractEditor() {
     const newContent = replacePlaceholders(formData.content, formData.employeeId);
     setFormData(prev => ({ ...prev, content: newContent }));
     toast.success('Placeholders auto-filled based on selected details!');
+  };
+
+  const handleAutoGenerate = () => {
+    // 1. Gather employee and company details
+    const user = users.find(u => u._id === formData.employeeId);
+    const empName = user ? (user.name || `${user.firstName || ''} ${user.lastName || ''}`).trim() : '__________________';
+    const empEmail = user?.email || '__________________';
+    const empTitle = user?.jobTitle || '__________________';
+    const empDept = user?.department || '__________________';
+    const validFromStr = formData.validFrom ? new Date(formData.validFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '__________________';
+    const validUntilStr = formData.validUntil ? new Date(formData.validUntil).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '__________________';
+
+    // 2. Generate clauses HTML
+    let clausesHtml = '';
+    let sectionNum = 1;
+    CLAUSES_CONFIG.forEach(clause => {
+      const value = formData.clauses[clause.key]?.trim();
+      if (value) {
+        clausesHtml += `
+          <div style="margin-bottom: 24px; page-break-inside: avoid;">
+            <h3 style="color: #1e293b; font-size: 16px; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+              Section ${sectionNum}. ${clause.label}
+            </h3>
+            <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line;">${value}</p>
+          </div>
+        `;
+        sectionNum++;
+      }
+    });
+
+    if (!clausesHtml) {
+      toast.error('Please fill out at least one clause in the Agreement Clauses tab before generating.');
+      return;
+    }
+
+    // 3. Compile the full HTML document
+    const compiledHtml = `
+      <div style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: 'Inter', system-ui, sans-serif; color: #1e293b;">
+        <!-- Header Banner -->
+        <div style="text-align: center; margin-bottom: 40px; border-bottom: 3px double #1e5cdc; padding-bottom: 20px;">
+          <h1 style="color: #1e5cdc; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">
+            ${formData.title || 'MUTUAL CONTRACT AGREEMENT'}
+          </h1>
+          <p style="color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; tracking: 0.1em; margin: 0;">
+            ${formData.category} &bull; ${formData.type}
+          </p>
+        </div>
+
+        <!-- Agreement Intro Preamble -->
+        <div style="margin-bottom: 32px; font-size: 14px; line-height: 1.6; color: #334155;">
+          <p style="margin: 0 0 16px 0; text-align: justify;">
+            This ${formData.type} (hereinafter referred to as the <strong>"Agreement"</strong>) is entered into and made effective as of <strong>${validFromStr}</strong>, by and between:
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; background: #f8fafc; padding: 16px; rounded: 12px; border: 1px solid #f1f5f9;">
+            <div>
+              <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">FIRST PARTY (EMPLOYER):</h4>
+              <p style="margin: 0; font-size: 13px; color: #475569;">
+                <strong>The Contractum Private Limited</strong><br />
+                Address: India
+              </p>
+            </div>
+            <div>
+              <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">SECOND PARTY (RECIPIENT):</h4>
+              <p style="margin: 0; font-size: 13px; color: #475569;">
+                <strong>${empName}</strong><br />
+                Title: ${empTitle}<br />
+                Department: ${empDept}<br />
+                Email: ${empEmail}
+              </p>
+            </div>
+          </div>
+          <p style="margin: 0; text-align: justify;">
+            WHEREAS, the First Party desires to retain the services of the Second Party, and the Second Party agrees to perform such services under the terms and conditions set forth below.
+          </p>
+        </div>
+
+        <!-- Clauses Container -->
+        <div style="margin-bottom: 40px;">
+          ${clausesHtml}
+        </div>
+
+        <!-- Term & Expiry -->
+        <div style="margin-bottom: 40px; background: #f8fafc; padding: 16px; border-left: 4px solid #1e5cdc; font-size: 13px; color: #475569;">
+          <strong>AGREEMENT TERM:</strong> This Agreement shall commence on <strong>${validFromStr}</strong> and shall continue in full force and effect until <strong>${validUntilStr}</strong>, unless terminated earlier in accordance with the termination provision herein.
+        </div>
+
+        <!-- Signatures Blocks -->
+        <div style="margin-top: 60px; font-size: 13px; color: #334155; page-break-inside: avoid;">
+          <p style="margin-bottom: 30px; text-align: justify;">
+            IN WITNESS WHEREOF, the parties hereto have executed this Agreement as of the date first written above.
+          </p>
+          <table style="width: 100%; border-collapse: collapse; border: none;">
+            <tr>
+              <td style="width: 45%; vertical-align: top; border: none; padding: 0;">
+                <p style="margin: 0 0 40px 0; font-weight: 700;">For: The Contractum Private Limited</p>
+                <div style="border-bottom: 1px solid #94a3b8; width: 80%; margin-bottom: 6px;"></div>
+                <p style="margin: 0; font-size: 11px; color: #64748b;">Authorized Signatory</p>
+                <p style="margin: 0; font-size: 11px; color: #64748b;">Title: Compliance Officer</p>
+              </td>
+              <td style="width: 10%; border: none;"></td>
+              <td style="width: 45%; vertical-align: top; border: none; padding: 0;">
+                <p style="margin: 0 0 40px 0; font-weight: 700;">For: ${empName}</p>
+                <div style="border-bottom: 1px solid #94a3b8; width: 80%; margin-bottom: 6px;"></div>
+                <p style="margin: 0; font-size: 11px; color: #64748b;">Second Party / Recipient Signature</p>
+                <p style="margin: 0; font-size: 11px; color: #64748b;">Date: __________________</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    `;
+
+    setFormData(prev => ({ ...prev, content: compiledHtml }));
+    setActiveTab('editor'); // Switch back to editor to let them see and review the compiled document
+    toast.success('Document compiled from clauses successfully!');
   };
 
   const handleSubmit = async (submitForApproval = false) => {
@@ -251,8 +429,8 @@ export default function ContractEditor() {
               <div className="flex items-center gap-3">
                 <FileText size={18} className="text-blue-600" />
                 <span className="font-bold text-gray-700 text-sm">{preview ? 'Contract Preview' : 'Contract Editor'}</span>
-                {formData.type && (
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_BADGE[formData.type]}`}>
+                {formData.category && (
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_BADGE[formData.category]}`}>
                     {formData.type}
                   </span>
                 )}
@@ -264,64 +442,121 @@ export default function ContractEditor() {
               )}
             </div>
 
-            <div className="p-8 space-y-6">
-              {/* Title */}
-              <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
-                  Contract Title <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Employment Agreement – John Doe"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-gray-900 text-sm"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Internal Description</label>
-                <input
-                  type="text"
-                  value={formData.description}
-                  onChange={e => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Short note for internal reference (not shown in contract)"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm text-gray-700"
-                />
-              </div>
-
-              {/* Content / Preview */}
-              <div>
-                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
-                  <span>
-                    Contract Content <span className="text-red-400">*</span>
-                    {!preview && <span className="text-blue-400 font-medium normal-case tracking-normal ml-2">(HTML supported)</span>}
-                  </span>
-                  {!preview && (
-                    <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
-                      <Upload size={14} /> Upload Custom File
-                      <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
-                    </label>
-                  )}
-                </label>
-                {preview ? (
-                  <div
-                    className="w-full min-h-[500px] p-8 bg-white border border-gray-100 rounded-2xl shadow-inner prose prose-sm max-w-none"
-                    style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
-                    dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400 italic">No content to preview.</p>' }}
-                  />
-                ) : (
-                  <textarea
-                    rows={22}
-                    value={formData.content}
-                    onChange={e => setFormData({ ...formData, content: e.target.value })}
-                    placeholder={`Enter the full contract text here.\n\nYou can use HTML tags for formatting:\n  <h2>SECTION TITLE</h2>\n  <p>Paragraph text...</p>\n  <ul><li>List item</li></ul>\n\nAvailable placeholders:\n  {{employee_name}}, {{position}}, {{department}}\n  {{start_date}}, {{end_date}}, {{salary}}\n  {{company_name}}, {{company_address}}`}
-                    className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none"
-                  />
-                )}
-              </div>
+            {/* Tabs */}
+            <div className="flex border-b border-gray-100 bg-gray-50/30 px-8">
+              <button
+                onClick={() => setActiveTab('editor')}
+                className={`py-3 px-4 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeTab === 'editor' ? 'border-[#1e5cdc] text-[#1e5cdc]' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+              >
+                Contract Body
+              </button>
+              <button
+                onClick={() => setActiveTab('clauses')}
+                className={`py-3 px-4 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${activeTab === 'clauses' ? 'border-[#1e5cdc] text-[#1e5cdc]' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+              >
+                Agreement Clauses ({Object.values(formData.clauses || {}).filter(Boolean).length}/13)
+              </button>
             </div>
+
+            {activeTab === 'editor' ? (
+              <div className="p-8 space-y-6">
+                {/* Title */}
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
+                    Contract Title <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="e.g. Employment Agreement – John Doe"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-gray-900 text-sm"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Internal Description</label>
+                  <input
+                    type="text"
+                    value={formData.description}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Short note for internal reference (not shown in contract)"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm text-gray-700"
+                  />
+                </div>
+
+                {/* Content / Preview */}
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+                    <span>
+                      Contract Content <span className="text-red-400">*</span>
+                      {!preview && <span className="text-blue-400 font-medium normal-case tracking-normal ml-2">(HTML supported)</span>}
+                    </span>
+                    {!preview && (
+                      <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
+                        <Upload size={14} /> Upload Custom File
+                        <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
+                      </label>
+                    )}
+                  </label>
+                  {preview ? (
+                    <div
+                      className="w-full min-h-[500px] p-8 bg-white border border-gray-100 rounded-2xl shadow-inner prose prose-sm max-w-none"
+                      style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
+                      dangerouslySetInnerHTML={{ __html: formData.content || '<p class="text-gray-400 italic">No content to preview.</p>' }}
+                    />
+                  ) : (
+                    <textarea
+                      rows={22}
+                      value={formData.content}
+                      onChange={e => setFormData({ ...formData, content: e.target.value })}
+                      placeholder={`Enter the full contract text here.\n\nYou can use HTML tags for formatting:\n  <h2>SECTION TITLE</h2>\n  <p>Paragraph text...</p>\n  <ul><li>List item</li></ul>\n\nAvailable placeholders:\n  {{employee_name}}, {{position}}, {{department}}\n  {{start_date}}, {{end_date}}, {{salary}}\n  {{company_name}}, {{company_address}}`}
+                      className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none"
+                    />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 space-y-6">
+                <div className="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50">
+                  <div className="pr-4">
+                    <h4 className="text-sm font-bold text-blue-900">Custom Clause-Based Generator</h4>
+                    <p className="text-xs text-blue-700 mt-0.5">Fill in the clauses below, then click generate to compile a formatted document.</p>
+                  </div>
+                  <button
+                    onClick={handleAutoGenerate}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-200 shrink-0"
+                  >
+                    Auto-Generate Document
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {CLAUSES_CONFIG.map(clause => (
+                    <div key={clause.key} className="space-y-2">
+                      <label className="block text-xs font-black text-gray-400 uppercase tracking-widest">{clause.label}</label>
+                      <textarea
+                        rows={4}
+                        value={formData.clauses[clause.key] || ''}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setFormData(prev => ({
+                            ...prev,
+                            clauses: {
+                              ...prev.clauses,
+                              [clause.key]: val
+                            }
+                          }));
+                        }}
+                        placeholder={clause.placeholder}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-xs leading-relaxed text-gray-700 resize-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -426,24 +661,36 @@ export default function ContractEditor() {
               )}
             </div>
 
+            {/* Contract Category */}
+            <div>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Category *</label>
+              <select
+                value={formData.category}
+                onChange={e => {
+                  const newCat = e.target.value;
+                  const firstType = CONTRACT_CATEGORIES[newCat]?.[0] || '';
+                  setFormData(prev => ({ ...prev, category: newCat, type: firstType }));
+                }}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+              >
+                {Object.keys(CONTRACT_CATEGORIES).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Contract Type */}
             <div>
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Type</label>
-              <div className="grid grid-cols-2 gap-2">
-                {CONTRACT_TYPES.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => setFormData({ ...formData, type })}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                      formData.type === type
-                        ? `${TYPE_BADGE[type]} ring-2 ring-offset-1 ring-blue-400`
-                        : 'bg-gray-50 text-gray-500 border-gray-100 hover:border-blue-200'
-                    }`}
-                  >
-                    {type}
-                  </button>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Type *</label>
+              <select
+                value={formData.type}
+                onChange={e => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+              >
+                {(CONTRACT_CATEGORIES[formData.category] || []).map(type => (
+                  <option key={type} value={type}>{type}</option>
                 ))}
-              </div>
+              </select>
             </div>
 
             {/* Validity Period */}

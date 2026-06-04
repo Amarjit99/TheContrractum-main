@@ -93,7 +93,10 @@ export default function Navbar() {
         { title: 'Campus Hiring', path: '/careers/campus', items: [] },
         { title: 'Growth & Learning', path: '/careers/growth', items: [] },
         { title: 'Employee Benefits', path: '/careers/benefits', items: [] },
-        { title: 'Employee Certificates', path: '/careers/certificates', items: [] }
+        { title: 'Employee Certificates', path: '/careers/certificates', items: [] },
+        { title: 'CSR Initiatives', path: '/careers/csr', items: [] },
+        { title: 'Career Themes', path: '/careers/themes', items: [] },
+        { title: 'Young Talent Program (YTDP)', path: '/careers/ytdp', items: [] }
       ]
     },
     {

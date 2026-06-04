@@ -69,21 +69,103 @@ router.post('/admin-register', async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
+    const adminSubRoles = [
+      'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator'
+    ];
+    const managerSubRoles = [
+      'HR Manager', 'Operations Manager', 'Project Manager', 'Sales Manager', 'Marketing Manager', 'Business Development Manager', 'Support Manager', 'Technical Manager', 'Content Manager', 'Event Manager', 'CRM & Lead Manager', 'Finance Manager', 'Compliance Manager', 'Training & Development Manager'
+    ];
+    const employeeSubRoles = [
+      'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
+    ];
+
+    const allOfficialRoles = [...adminSubRoles, ...managerSubRoles, ...employeeSubRoles];
+
+    let subRole = role || 'System Administrator';
+    const cleanKey = subRole.toLowerCase().trim();
+
+    // 1. Check for exact case-insensitive match in all 42 official roles
+    const exactMatch = allOfficialRoles.find(r => r.toLowerCase() === cleanKey);
+    if (exactMatch) {
+      subRole = exactMatch;
+    } else {
+      // 2. Mappings for legacy shorthands and abbreviations
+      const legacyRoleMap = {
+        'system': 'System Administrator',
+        'system admin': 'System Administrator',
+        'sysadmin': 'System Administrator',
+        'hr': 'HR Administrator',
+        'hr admin': 'HR Administrator',
+        'operations': 'Operations Administrator',
+        'operations admin': 'Operations Administrator',
+        'ops': 'Operations Administrator',
+        'ops admin': 'Operations Administrator',
+        'website': 'Website Administrator',
+        'website admin': 'Website Administrator',
+        'web': 'Website Administrator',
+        'web admin': 'Website Administrator',
+        'crm': 'CRM Administrator',
+        'crm admin': 'CRM Administrator',
+        'support': 'Support Administrator',
+        'support admin': 'Support Administrator',
+        'marketing': 'Marketing Administrator',
+        'marketing admin': 'Marketing Administrator',
+        'event': 'Event Administrator',
+        'event admin': 'Event Administrator',
+        'content': 'Content Administrator',
+        'content admin': 'Content Administrator',
+        'finance': 'Finance Administrator',
+        'finance admin': 'Finance Administrator',
+        'compliance': 'Compliance Administrator',
+        'compliance admin': 'Compliance Administrator',
+        'user access': 'User Access Administrator',
+        'user access admin': 'User Access Administrator',
+        'database': 'Database Administrator',
+        'database admin': 'Database Administrator',
+        'db': 'Database Administrator',
+        'db admin': 'Database Administrator',
+        'dba': 'Database Administrator',
+        'tr': 'Training Coordinator'
+      };
+
+      if (legacyRoleMap[cleanKey]) {
+        subRole = legacyRoleMap[cleanKey];
+      } else {
+        // 3. Fallback partial matching
+        if (cleanKey.includes('system') || cleanKey.includes('sys')) subRole = 'System Administrator';
+        else if (cleanKey.includes('ops') || cleanKey.includes('operation')) subRole = 'Operations Administrator';
+        else if (cleanKey.includes('web') || cleanKey.includes('site')) subRole = 'Website Administrator';
+        else if (cleanKey.includes('crm')) subRole = 'CRM Administrator';
+        else if (cleanKey.includes('support')) subRole = 'Support Administrator';
+        else if (cleanKey.includes('marketing') || cleanKey.includes('mkt')) subRole = 'Marketing Administrator';
+        else if (cleanKey.includes('event')) subRole = 'Event Administrator';
+        else if (cleanKey.includes('content')) subRole = 'Content Administrator';
+        else if (cleanKey.includes('finance') || cleanKey.includes('fin')) subRole = 'Finance Administrator';
+        else if (cleanKey.includes('compliance') || cleanKey.includes('legal')) subRole = 'Compliance Administrator';
+        else if (cleanKey.includes('access') || cleanKey.includes('perm')) subRole = 'User Access Administrator';
+        else if (cleanKey.includes('database') || cleanKey.includes('db')) subRole = 'Database Administrator';
+        else if (cleanKey.includes('hr') || cleanKey.includes('recruitment')) subRole = 'HR Administrator';
+        else {
+          subRole = 'System Administrator';
+        }
+      }
+    }
+
     const registration = await AdminRegistration.create({
       fullName,
       email,
       password,
       employeeId,
-      role,
+      role: subRole,
       department,
-      adminSubRole: role || 'HR', // fallback map for legacy compatibility
-      joiningDate: new Date().toISOString() // default mapping
+      adminSubRole: subRole,
+      joiningDate: new Date().toISOString()
     });
 
     res.status(201).json({ message: 'Registration submitted. Awaiting Super Admin approval.' });
   } catch (err) {
     console.error('Admin Register error:', err);
-    res.status(500).json({ message: 'Server error during admin registration' });
+    res.status(500).json({ message: 'Server error during admin registration', error: err.message });
   }
 });
 

@@ -66,42 +66,42 @@ const ROLE_DETAILS = {
   'Support Administrator': {
     description: 'Directs customer support queue routing, manages SLA rules configurations, monitors chat transcripts, and evaluates customer support ratings.',
     classification: 'Admin Level',
-    permissions: ['Customer Inquiry Routing', 'SLA Monitoring', 'Support Queue Supervision', 'Ticket Escalation Control']
+    permissions: ['Support Ticket Monitoring', 'Escalation Handling', 'SLA Administration', 'Customer Support Oversight']
   },
   'Marketing Administrator': {
     description: 'Monitors brand campaigns metrics, configures outreach triggers, executes marketing email operations, and aligns customer funnel stats.',
     classification: 'Admin Level',
-    permissions: ['Campaign Supervision', 'Content Distribution Management', 'Public Relations Monitoring', 'Social Media Administration']
+    permissions: ['Campaign Administration', 'Social Media Monitoring', 'Analytics Tracking', 'Brand Management']
   },
   'Event Administrator': {
     description: 'Controls online event registrations schedules, maps participant rosters, issues event certificates, and coordinates virtual venues.',
     classification: 'Admin Level',
-    permissions: ['Event Coordination', 'Attendee Registration Management', 'Venue & Logistics Supervision', 'Event Marketing Monitoring']
+    permissions: ['Event Management', 'Registration Monitoring', 'Webinar Administration', 'Event Coordination']
   },
   'Content Administrator': {
     description: 'Moderates public facing blog posts, catalogs digital media libraries, designs landing layout templates, and monitors tag structures.',
     classification: 'Admin Level',
-    permissions: ['Content Moderation', 'Editorial Queue Supervision', 'Asset Management', 'Publisher Access Monitoring']
+    permissions: ['Blog Administration', 'Media Management', 'Publication Workflow', 'Editorial Monitoring']
   },
   'Finance Administrator': {
     description: 'Tracks vendor invoice processing, configures payment portal webhooks, reviews payroll requests, and prepares revenue forecasts.',
     classification: 'Admin Level',
-    permissions: ['Budget & Expense Monitoring', 'Billing & Invoice Management', 'Vendor Payout Administration', 'Financial Reporting Supervision']
+    permissions: ['Billing Management', 'Invoice Administration', 'Payment Monitoring', 'Financial Reporting']
   },
   'Compliance Administrator': {
     description: 'Enforces system privacy laws compliance, manages data logs retention policies, checks user terms, and tracks regulatory disclosures.',
     classification: 'Admin Level',
-    permissions: ['Regulatory Policy Enforcement', 'Contract Auditing', 'Data Privacy Monitoring', 'Audit Log Supervision']
+    permissions: ['Legal Documentation', 'Audit Administration', 'Compliance Monitoring', 'Risk Management']
   },
   'User Access Administrator': {
     description: 'Handles new account approvals, regulates security token generation, implements account locks, and decides role modifications.',
     classification: 'Admin Level',
-    permissions: ['User Onboarding & Access Provisioning', 'Password Reset & Account Recovery', 'Role Assignment Verification', 'Session Management & Access Reviews']
+    permissions: ['User Account Management', 'Roles & Permissions', 'Authentication Monitoring', 'Access Control']
   },
   'Database Administrator': {
     description: 'Maintains database engine instances, manages backup storage catalogs, resolves slow queries, and oversees schema migrations.',
     classification: 'Admin Level',
-    permissions: ['DB Backup & Restore Schedules', 'Query Performance Monitoring', 'DB Schema Management', 'Replication & Sync Verification']
+    permissions: ['Database Monitoring', 'Backup Management', 'Data Security', 'Performance Optimization']
   },
 
   // Managers
@@ -867,7 +867,7 @@ export default function AdminUsers() {
                             <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-3">Top 5 Roles by Users</h3>
                             <div className="space-y-3">
                               {topRolesData.map((item, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs p-2 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-150 transition-colors">
+                                <div key={idx} className="flex items-center justify-between text-xs p-2 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-100 transition-colors">
                                   <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${item.color}`}>{item.role}</span>
                                   <span className="font-bold text-gray-800">{item.count}</span>
                                 </div>
@@ -913,7 +913,7 @@ export default function AdminUsers() {
                               <tbody className="divide-y divide-gray-50 text-gray-600 font-medium">
                                 {recentAuthLogs.map((log, idx) => (
                                   <tr key={idx} className="hover:bg-gray-50/50">
-                                    <td className="py-2.5 px-3 font-bold text-gray-850">{log.name}</td>
+                                    <td className="py-2.5 px-3 font-bold text-gray-800">{log.name}</td>
                                     <td className="py-2.5 px-3">{log.event}</td>
                                     <td className="py-2.5 px-3 font-mono text-[10px]">{log.ip}</td>
                                     <td className="py-2.5 px-3 text-gray-400">{log.time}</td>
@@ -1234,7 +1234,7 @@ export default function AdminUsers() {
                                     <h4 className="text-sm font-black text-gray-900">{title}</h4>
                                     <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5 block">{level}</span>
                                   </div>
-                                  <span className="text-[9px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-150 rounded">
+                                  <span className="text-[9px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded">
                                     Enterprise Role Node
                                   </span>
                                 </div>
@@ -1270,7 +1270,7 @@ export default function AdminUsers() {
                                           <th className="py-2.5 px-3">Main Responsibilities</th>
                                         </tr>
                                       </thead>
-                                      <tbody className="divide-y divide-gray-105 text-gray-650 font-medium">
+                                      <tbody className="divide-y divide-gray-100 text-gray-600 font-medium">
                                         {[
                                           { role: 'Super Admin', level: 'Full Enterprise Access', desc: 'Complete system control and governance' },
                                           { role: 'Admin', level: 'Department-Level Access', desc: 'Operational administration and management' },
@@ -1324,13 +1324,13 @@ export default function AdminUsers() {
                                       <div className="h-4 w-0.5 bg-gray-300"></div>
 
                                       {/* Node 5: Client Interaction */}
-                                      <div className="px-4 py-1.5 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-850 text-center">
+                                      <div className="px-4 py-1.5 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-800 text-center">
                                         <span className="text-[10px] uppercase font-bold block">Customer & Client Interaction</span>
                                       </div>
                                       <div className="h-4 w-0.5 bg-gray-300"></div>
 
                                       {/* Node 6: Escalations Loop */}
-                                      <div className="px-4 py-1.5 rounded-lg border border-dashed border-indigo-400 bg-indigo-50/50 text-indigo-850 text-center flex items-center gap-1">
+                                      <div className="px-4 py-1.5 rounded-lg border border-dashed border-indigo-400 bg-indigo-50/50 text-indigo-800 text-center flex items-center gap-1">
                                         <Activity size={10} className="text-indigo-500 animate-pulse" />
                                         <span className="text-[9px] uppercase font-bold block">Reports & Escalations Loop Back</span>
                                       </div>
@@ -1365,7 +1365,7 @@ export default function AdminUsers() {
                                   <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 block">{roleInfo.classification}</span>
                                 </div>
                                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
-                                  roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-150' :
+                                  roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
                                   roleScope === 'view-delete' ? 'bg-amber-50 text-amber-600 border border-amber-150' :
                                   'bg-gray-100 text-gray-600'
                                 }`}>
@@ -1390,7 +1390,7 @@ export default function AdminUsers() {
                                       <label
                                         key={perm}
                                         className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                                          isChecked ? 'border-blue-150 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
+                                          isChecked ? 'border-blue-100 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
                                         } cursor-pointer`}
                                       >
                                         <div className="flex items-center gap-2.5">
@@ -1449,7 +1449,7 @@ export default function AdminUsers() {
                                           </div>
                                         </div>
                                         <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                          u.isHeld ? 'bg-red-50 text-red-650' : 'bg-emerald-50 text-emerald-650'
+                                          u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
                                         }`}>
                                           {u.isHeld ? 'Suspended' : 'Active'}
                                         </span>
@@ -1660,7 +1660,7 @@ export default function AdminUsers() {
                                       ) : (
                                         <button
                                           onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }}
-                                          className="px-2 py-1 bg-red-50 text-red-650 font-bold hover:bg-red-150 rounded text-[10px]"
+                                          className="px-2 py-1 bg-red-50 text-red-600 font-bold hover:bg-red-100 rounded text-[10px]"
                                         >
                                           Hold
                                         </button>
@@ -2168,7 +2168,7 @@ export default function AdminUsers() {
           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-red-50">
               <h2 className="text-xs font-bold text-red-700 uppercase tracking-wide">Suspend User Account</h2>
-              <button onClick={() => setHoldingUser(null)} className="text-gray-400 hover:text-gray-650 p-1 cursor-pointer">
+              <button onClick={() => setHoldingUser(null)} className="text-gray-400 hover:text-gray-600 p-1 cursor-pointer">
                 <X size={20} />
               </button>
             </div>

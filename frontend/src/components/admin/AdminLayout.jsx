@@ -20,7 +20,6 @@ const MENU_ITEMS = [
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
       { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
-      { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
       { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
@@ -38,6 +37,7 @@ const MENU_ITEMS = [
     hasSubmenu: true,
     subItems: [
       { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
+      { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
       { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
       { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
@@ -387,7 +387,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header Row */}
-        <div className="h-16 bg-[#f0f4f8] shrink-0 flex items-center justify-between px-4 lg:px-8 z-10">
+        <div className="h-16 bg-[#f0f4f8] shrink-0 flex items-center justify-between px-4 lg:px-8 relative z-30">
 
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-800 bg-white rounded-lg shadow-sm">

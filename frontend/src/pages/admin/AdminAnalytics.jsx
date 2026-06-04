@@ -5,7 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, LabelList, BarChart, Bar
 } from 'recharts';
-import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, Search, Award, Building2, Fingerprint, Clock } from 'lucide-react';
+import { Activity, Users, MousePointer2, Target, TrendingUp, Calendar, ShieldAlert, RefreshCw, Search, Award, Building2, Fingerprint, Clock, Briefcase } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -232,6 +232,25 @@ export default function AdminAnalytics() {
         </div>
       </div>
 
+      {/* WMS Content Assets Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 p-5 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition-all">
+          <p className="text-[10px] sm:text-xs font-bold text-blue-500 uppercase tracking-wider">Founders & Directors</p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-blue-900 mt-2">{stats?.totalFounders || "0"}</h3>
+          <p className="text-[10px] text-blue-700/70 font-semibold mt-1">Core Board Members</p>
+        </div>
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 p-5 rounded-2xl border border-indigo-100 shadow-sm hover:shadow-md transition-all">
+          <p className="text-[10px] sm:text-xs font-bold text-indigo-500 uppercase tracking-wider">Student Interns</p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-indigo-900 mt-2">{stats?.totalInterns || "0"}</h3>
+          <p className="text-[10px] text-indigo-700/70 font-semibold mt-1">Active Program Trainees</p>
+        </div>
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-5 rounded-2xl border border-emerald-100 shadow-sm hover:shadow-md transition-all">
+          <p className="text-[10px] sm:text-xs font-bold text-emerald-500 uppercase tracking-wider">Blog Posts</p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-emerald-900 mt-2">{stats?.totalBlogs || "0"}</h3>
+          <p className="text-[10px] text-emerald-700/70 font-semibold mt-1">Published Articles</p>
+        </div>
+      </div>
+
       {/* WMS Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {/* Main Traffic Chart */}
@@ -315,7 +334,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* CMS Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Registered Members</span>
@@ -324,6 +343,17 @@ export default function AdminAnalytics() {
           <div className="flex items-baseline gap-2">
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalUsers ?? '-'}</h3>
             <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Active profiles</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider">Careers Ingested</span>
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-xl"><Briefcase size={20} /></div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats?.totalApplications ?? '-'}</h3>
+            <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-0.5">Applications received</span>
           </div>
         </div>
         
@@ -479,7 +509,7 @@ export default function AdminAnalytics() {
       {/* SYSTEM OPERATIONS & AUDIT LOGS */}
       {/* ========================================================================= */}
       <div className="mb-6 flex items-center gap-3">
-        <span className="h-6 w-1.5 rounded-full bg-slate-650 bg-slate-600"></span>
+        <span className="h-6 w-1.5 rounded-full bg-slate-600 bg-slate-600"></span>
         <h2 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wider">System Security & Operational Logs</h2>
         <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-100 rounded-full uppercase">Security Ledger</span>
       </div>

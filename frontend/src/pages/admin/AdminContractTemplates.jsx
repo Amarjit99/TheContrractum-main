@@ -6,8 +6,8 @@ import {
   CheckCircle, RefreshCw, Tag, AlignLeft, ArrowLeft, Upload
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-
 import { useNavigate } from 'react-router-dom';
+import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -16,9 +16,32 @@ const TYPE_COLORS = {
   Intern:     'bg-purple-100 text-purple-700 border-purple-200',
   Freelancer: 'bg-amber-100 text-amber-700 border-amber-200',
   Vendor:     'bg-teal-100 text-teal-700 border-teal-200',
+  'Employment & HR Contracts': 'bg-blue-100 text-blue-700 border-blue-200',
+  'Business & Corporate Agreements': 'bg-purple-100 text-purple-700 border-purple-200',
+  'Software & IT Contracts': 'bg-amber-100 text-amber-700 border-amber-200',
+  'Marketing & Media Agreements': 'bg-teal-100 text-teal-700 border-teal-200',
+  'Financial & Legal Agreements': 'bg-rose-100 text-rose-700 border-rose-200',
+  'Sales & Client Agreements': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+  'Real Estate & Infrastructure Agreements': 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'Educational & Training Agreements': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  'Project Management & Operations Contracts': 'bg-violet-100 text-violet-700 border-violet-200',
+  'Intellectual Property Agreements': 'bg-sky-100 text-sky-700 border-sky-200'
 };
 
-const EMPTY = { name: '', description: '', type: 'Employee', content: '', isActive: true };
+const GRADIENTS = {
+  'Employment & HR Contracts': 'from-blue-500 to-indigo-500',
+  'Business & Corporate Agreements': 'from-purple-500 to-violet-500',
+  'Software & IT Contracts': 'from-amber-400 to-orange-500',
+  'Marketing & Media Agreements': 'from-teal-400 to-cyan-500',
+  'Financial & Legal Agreements': 'from-rose-500 to-red-500',
+  'Sales & Client Agreements': 'from-indigo-500 to-pink-500',
+  'Real Estate & Infrastructure Agreements': 'from-emerald-500 to-teal-500',
+  'Educational & Training Agreements': 'from-cyan-500 to-blue-500',
+  'Project Management & Operations Contracts': 'from-violet-500 to-purple-500',
+  'Intellectual Property Agreements': 'from-sky-500 to-cyan-500'
+};
+
+const EMPTY = { name: '', description: '', category: 'Employment & HR Contracts', type: 'Employment Agreement', content: '', isActive: true };
 
 export default function AdminContractTemplates() {
   const { admin } = useAdminAuth();
@@ -67,7 +90,7 @@ export default function AdminContractTemplates() {
     reader.readAsText(file);
     e.target.value = null; // Reset input
   };
-  const openEdit = (t) => { setSelected(t); setForm({ name: t.name, description: t.description || '', type: t.type, content: t.content, isActive: t.isActive }); setModal('edit'); };
+  const openEdit = (t) => { setSelected(t); setForm({ name: t.name, description: t.description || '', category: t.category || 'Employment & HR Contracts', type: t.type || 'Employment Agreement', content: t.content, isActive: t.isActive }); setModal('edit'); };
   const openPreview = (t) => { setSelected(t); setModal('preview'); };
 
   const handleSave = async () => {
@@ -115,7 +138,7 @@ export default function AdminContractTemplates() {
   const filtered = templates.filter(t => {
     const matchSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
       (t.description || '').toLowerCase().includes(search.toLowerCase());
-    const matchType = typeFilter === 'All' || t.type === typeFilter;
+    const matchType = typeFilter === 'All' || (t.category || 'Employment & HR Contracts') === typeFilter;
     return matchSearch && matchType;
   });
 
@@ -131,8 +154,8 @@ export default function AdminContractTemplates() {
           </button>
         </div>
         <div className="p-8 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="sm:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="sm:col-span-3">
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Template Name *</label>
               <input
                 type="text"
@@ -143,13 +166,27 @@ export default function AdminContractTemplates() {
               />
             </div>
             <div>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Category *</label>
+              <select
+                value={form.category}
+                onChange={e => {
+                  const newCategory = e.target.value;
+                  const firstType = CONTRACT_CATEGORIES[newCategory]?.[0] || '';
+                  setForm({ ...form, category: newCategory, type: firstType });
+                }}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-gray-700"
+              >
+                {Object.keys(CONTRACT_CATEGORIES).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+            <div>
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Type *</label>
               <select
                 value={form.type}
                 onChange={e => setForm({ ...form, type: e.target.value })}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-gray-700"
               >
-                {['Employee', 'Intern', 'Freelancer', 'Vendor'].map(t => <option key={t}>{t}</option>)}
+                {(CONTRACT_CATEGORIES[form.category] || []).map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
@@ -163,7 +200,7 @@ export default function AdminContractTemplates() {
                 <option>Inactive</option>
               </select>
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Description</label>
               <input
                 type="text"
@@ -214,7 +251,7 @@ export default function AdminContractTemplates() {
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 shrink-0">
           <div>
             <h2 className="text-xl font-black text-gray-900">{selected?.name}</h2>
-            <span className={`mt-1 inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_COLORS[selected?.type]}`}>
+            <span className={`mt-1 inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_COLORS[selected?.category || 'Employment & HR Contracts']}`}>
               {selected?.type}
             </span>
           </div>
@@ -284,18 +321,17 @@ export default function AdminContractTemplates() {
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium"
           />
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {['All', 'Employee', 'Intern', 'Freelancer', 'Vendor'].map(t => (
-            <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border ${
-                typeFilter === t ? 'bg-[#1e5cdc] text-white border-[#1e5cdc]' : 'bg-white text-gray-500 border-gray-100 hover:border-blue-300'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-1">
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          >
+            <option value="All">All Categories</option>
+            {Object.keys(CONTRACT_CATEGORIES).map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
         <button onClick={fetchTemplates} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-100 bg-white text-gray-500 hover:bg-gray-50 shrink-0">
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
@@ -323,14 +359,15 @@ export default function AdminContractTemplates() {
           {filtered.map(t => (
             <div key={t._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all group flex flex-col overflow-hidden">
               {/* Card top accent */}
-              <div className={`h-1.5 w-full ${t.type === 'Employee' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : t.type === 'Intern' ? 'bg-gradient-to-r from-purple-500 to-violet-500' : t.type === 'Freelancer' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-teal-400 to-cyan-500'}`} />
+              <div className={`h-1.5 w-full bg-gradient-to-r ${GRADIENTS[t.category || 'Employment & HR Contracts'] || 'from-gray-500 to-slate-500'}`} />
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-black text-gray-900 text-sm leading-snug line-clamp-2 group-hover:text-[#1e5cdc] transition-colors">{t.name}</h3>
-                    {t.description && <p className="text-gray-500 text-xs mt-1 line-clamp-2 leading-relaxed">{t.description}</p>}
+                    <p className="text-[9px] font-black text-gray-400 mt-1 uppercase tracking-wider">{t.category || 'Employment & HR Contracts'}</p>
+                    {t.description && <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">{t.description}</p>}
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${TYPE_COLORS[t.type]}`}>
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${TYPE_COLORS[t.category || 'Employment & HR Contracts']}`}>
                     {t.type}
                   </span>
                 </div>

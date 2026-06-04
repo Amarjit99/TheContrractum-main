@@ -6,12 +6,23 @@ const Notification = require('../models/Notification');
 const { protect } = require('../middleware/auth');
 const { adminOnly, checkSubRole } = require('../middleware/admin');
 
+function getContractRoleCategory(user) {
+    if (!user) return '';
+    if (user.role === 'super-admin') return 'SuperAdmin';
+    const subRole = (user.adminSubRole || '').toLowerCase().trim();
+    if (subRole.includes('hr') || subRole.startsWith('hr ')) return 'HR';
+    if (subRole.includes('legal') || subRole.includes('compliance')) return 'Legal';
+    if (subRole.includes('manager') || user.role === 'manager') return 'Manager';
+    return '';
+}
+
 // ---------- Templates ----------
 
 const PROFESSIONAL_TEMPLATES = [
     {
         name: 'Standard Employment Contract',
-        type: 'Employee',
+        type: 'Employment Agreement',
+        category: 'Employment & HR Contracts',
         description: 'Full-time employment agreement covering compensation, duties, and termination.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #1e5cdc;padding-bottom:12px;color:#1e5cdc;">EMPLOYMENT AGREEMENT</h1>
@@ -54,7 +65,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Internship Agreement',
-        type: 'Intern',
+        type: 'Internship Agreement',
+        category: 'Employment & HR Contracts',
         description: 'Educational internship terms covering duration, stipend, and learning objectives.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #7c3aed;padding-bottom:12px;color:#7c3aed;">INTERNSHIP AGREEMENT</h1>
@@ -92,7 +104,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Freelancer / NDA Agreement',
-        type: 'Freelancer',
+        type: 'Freelance Contract',
+        category: 'Employment & HR Contracts',
         description: 'Freelance service agreement with NDA clause, scope of work, and payment terms.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #d97706;padding-bottom:12px;color:#d97706;">FREELANCE SERVICE & NON-DISCLOSURE AGREEMENT</h1>
@@ -130,7 +143,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Vendor Service Agreement',
-        type: 'Vendor',
+        type: 'Vendor Agreement',
+        category: 'Business & Corporate Agreements',
         description: 'Vendor/supplier contract covering deliverables, SLA, payment, and liability.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #0d9488;padding-bottom:12px;color:#0d9488;">VENDOR SERVICE AGREEMENT</h1>
@@ -171,7 +185,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Consulting Agreement',
-        type: 'Freelancer',
+        type: 'Consultant Agreement',
+        category: 'Employment & HR Contracts',
         description: 'Professional consulting services agreement with deliverables and IP clauses.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #6366f1;padding-bottom:12px;color:#6366f1;">CONSULTING SERVICES AGREEMENT</h1>
@@ -209,7 +224,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Probationary Employment Contract',
-        type: 'Employee',
+        type: 'Employment Agreement',
+        category: 'Employment & HR Contracts',
         description: 'Employment contract for probation period with performance review clause.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #f59e0b;padding-bottom:12px;color:#f59e0b;">PROBATIONARY EMPLOYMENT AGREEMENT</h1>
@@ -244,7 +260,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Remote Work Agreement',
-        type: 'Employee',
+        type: 'Remote Work Agreement',
+        category: 'Employment & HR Contracts',
         description: 'Work-from-home policy agreement covering equipment, security, and productivity expectations.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #10b981;padding-bottom:12px;color:#10b981;">REMOTE WORK AGREEMENT</h1>
@@ -282,7 +299,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'MOU – Partnership Agreement',
-        type: 'Vendor',
+        type: 'Memorandum of Understanding (MoU)',
+        category: 'Business & Corporate Agreements',
         description: 'Memorandum of Understanding for institutional or business partnerships.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #ec4899;padding-bottom:12px;color:#ec4899;">MEMORANDUM OF UNDERSTANDING (MOU)</h1>
@@ -320,7 +338,8 @@ const PROFESSIONAL_TEMPLATES = [
     },
     {
         name: 'Official Offer Letter',
-        type: 'Employee',
+        type: 'Offer Letter',
+        category: 'Employment & HR Contracts',
         description: 'Standard professional offer letter with compensation, role details, and joining requirements.',
         content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
 <h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #3b82f6;padding-bottom:12px;color:#3b82f6;">OFFICIAL OFFER LETTER</h1>
@@ -354,6 +373,27 @@ const PROFESSIONAL_TEMPLATES = [
   <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized HR Signatory</p></div>
   <div><p><strong>Accepted By:</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">{{employee_name}}</p></div>
 </div>
+</div>`
+    },
+    {
+        name: 'SaaS Agreement',
+        type: 'SaaS Agreement',
+        category: 'Software & IT Contracts',
+        description: 'Software-as-a-Service subscription, hosting, service levels, and customer obligations.',
+        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
+<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #3b82f6;padding-bottom:12px;color:#3b82f6;">SOFTWARE-AS-A-SERVICE (SaaS) AGREEMENT</h1>
+<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
+<br/>
+<p>This SaaS Agreement ("Agreement") is made on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> ("Provider") and <strong>{{employee_name}}</strong> ("Customer").</p>
+
+<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">1. SERVICES & LICENSE</h2>
+<p>Provider grants Customer a non-exclusive, non-transferable right to access and use the SaaS platform for the role of <strong>{{position}}</strong>. Customer agrees to use the platform solely for internal business operations.</p>
+
+<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">2. FEES & BILLING</h2>
+<p>Customer shall pay monthly subscription fees of <strong>{{salary}}</strong>. All invoice payments are due within 30 days of the invoice date.</p>
+
+<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">3. DATA PRIVACY & SECURITY</h2>
+<p>Provider will maintain standard physical and technical security measures to protect Customer data in compliance with standard regulations.</p>
 </div>`
     }
 ];
@@ -457,13 +497,13 @@ router.post('/', protect, checkSubRole(['HR', 'Legal', 'Manager']), async (req, 
 router.get('/', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         let query = {};
-        const role = req.user.adminSubRole;
+        const category = getContractRoleCategory(req.user);
 
         // Filter based on what the role needs to see
-        if (role === 'Manager') query.status = 'Pending_Manager';
-        else if (role === 'HR') query.status = { $in: ['Pending_HR', 'Draft', 'Rejected'] };
-        else if (role === 'Legal') query.status = 'Pending_Legal';
-        else if (req.user.role === 'super-admin') {
+        if (category === 'Manager') query.status = 'Pending_Manager';
+        else if (category === 'HR') query.status = { $in: ['Pending_HR', 'Draft', 'Rejected'] };
+        else if (category === 'Legal') query.status = 'Pending_Legal';
+        else if (category === 'SuperAdmin') {
             // Super Admin sees all or specifically Pending_Final
             if (req.query.pendingFinal) query.status = 'Pending_Final';
         }
@@ -496,24 +536,23 @@ router.put('/:id/approve', protect, checkSubRole(['Legal', 'HR', 'Manager']), as
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
 
-        const role = req.user.adminSubRole;
-        const isSuper = req.user.role === 'super-admin';
+        const category = getContractRoleCategory(req.user);
 
         // Workflow state machine
-        if (contract.status === 'Pending_Manager' && role === 'Manager') {
+        if (contract.status === 'Pending_Manager' && category === 'Manager') {
             contract.status = 'Pending_HR';
-        } else if (contract.status === 'Pending_HR' && role === 'HR') {
+        } else if (contract.status === 'Pending_HR' && category === 'HR') {
             contract.status = 'Pending_Legal';
-        } else if (contract.status === 'Pending_Legal' && role === 'Legal') {
+        } else if (contract.status === 'Pending_Legal' && category === 'Legal') {
             contract.status = 'Pending_Final';
-        } else if (contract.status === 'Pending_Final' && isSuper) {
+        } else if (contract.status === 'Pending_Final' && category === 'SuperAdmin') {
             contract.status = 'Pending_Signature';
         } else {
             return res.status(403).json({ message: 'You are not authorized to approve this step.' });
         }
 
         contract.approvals.push({
-            role: isSuper ? 'SuperAdmin' : role,
+            role: category,
             userId: req.user._id,
             status: 'Approved',
             comments: req.body.comments
@@ -552,9 +591,11 @@ router.put('/:id/reject', protect, checkSubRole(['Legal', 'HR', 'Manager']), asy
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
 
+        const category = getContractRoleCategory(req.user);
+
         contract.status = 'Rejected';
         contract.approvals.push({
-            role: req.user.role === 'super-admin' ? 'SuperAdmin' : req.user.adminSubRole,
+            role: category,
             userId: req.user._id,
             status: 'Rejected',
             comments: req.body.comments
@@ -733,7 +774,8 @@ router.post('/bulk-generate', protect, checkSubRole(['HR', 'Legal', 'Manager']),
 
             const contractData = {
                 title: `${template.name} – ${empName}`,
-                type: type || template.type || 'Employee',
+                category: template.category || 'Employment & HR Contracts',
+                type: type || template.type || 'Employment Agreement',
                 content,
                 employeeId: emp._id,
                 createdBy: req.user._id,
@@ -780,6 +822,17 @@ router.get('/expiry-alerts', protect, checkSubRole(['Legal', 'HR', 'Manager']), 
         res.json({ expiring, expiredCount: expired.length, days });
     } catch (err) {
         res.status(500).json({ message: 'Failed to fetch expiry data', error: err.message });
+    }
+});
+
+// Auto-migrate contracts and templates to add default category if missing
+Promise.resolve().then(async () => {
+    try {
+        await Contract.updateMany({ category: { $exists: false } }, { $set: { category: 'Employment & HR Contracts' } });
+        await ContractTemplate.updateMany({ category: { $exists: false } }, { $set: { category: 'Employment & HR Contracts' } });
+        console.log("Contract & Template categories auto-migrated.");
+    } catch (e) {
+        console.error("Migration error:", e);
     }
 });
 

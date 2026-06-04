@@ -4,7 +4,8 @@ const contractSchema = new mongoose.Schema({
   employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
   description: { type: String },
-  type: { type: String, enum: ['Employee', 'Intern', 'Freelancer', 'Vendor'], default: 'Employee' },
+  type: { type: String, default: 'Employment Agreement' },
+  category: { type: String, default: 'Employment & HR Contracts' },
   content: { type: String, required: true }, // Contract body content (HTML or plain text)
   
   status: { 
@@ -36,6 +37,22 @@ const contractSchema = new mongoose.Schema({
     signedAt: { type: Date },
     signatureName: { type: String }, // Digital signature (typed name)
     signatureIp: { type: String }
+  },
+
+  clauses: {
+    scopeOfWork: { type: String, default: '' },
+    paymentTerms: { type: String, default: '' },
+    deliverables: { type: String, default: '' },
+    timelineMilestones: { type: String, default: '' },
+    confidentiality: { type: String, default: '' },
+    ipRights: { type: String, default: '' },
+    termination: { type: String, default: '' },
+    penalty: { type: String, default: '' },
+    disputeResolution: { type: String, default: '' },
+    governingLaw: { type: String, default: '' },
+    liability: { type: String, default: '' },
+    forceMajeure: { type: String, default: '' },
+    renewal: { type: String, default: '' }
   },
 
   validFrom: { type: Date },

@@ -103,6 +103,7 @@ function AdminCareers() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [subcategoryFilter, setSubcategoryFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All'); // 'All' | 'Today' | 'Week' | 'Month'
+  const [statusFilter, setStatusFilter] = useState('All');
 
   // Job Modal State
   const [jobModalOpen, setJobModalOpen] = useState(false);
@@ -333,9 +334,14 @@ function reverseLinkedList(head) {
         }
       }
 
+      // 5. Status filter
+      if (statusFilter !== 'All') {
+        if (app.status !== statusFilter) return false;
+      }
+
       return true;
     });
-  }, [applications, globalSearch, categoryFilter, subcategoryFilter, dateFilter]);
+  }, [applications, globalSearch, categoryFilter, subcategoryFilter, dateFilter, statusFilter]);
 
   // Job post submit (Create / Edit)
   const handleJobSubmit = async (e) => {
@@ -469,14 +475,14 @@ function reverseLinkedList(head) {
   };
 
   // Trigger modal and set active tabs
-  const openAppDetails = (app) => {
+  const openAppDetails = (app, defaultTab = 'profile') => {
     setSelectedApp(app);
     setHrNoteInput(app.hrNotes || '');
     setCandidateRating(app.rating || 0);
     setInterviewDate(app.interviewDate || '');
     setInterviewTime(app.interviewTime || '');
     setInterviewStatus(app.interviewStatus || 'Pending');
-    setActiveDetailTab('profile');
+    setActiveDetailTab(defaultTab);
     setDetailModalOpen(true);
   };
 
@@ -837,32 +843,38 @@ function reverseLinkedList(head) {
       setParsingProgress(progress);
       if (progress >= 100) {
         clearInterval(timer);
-        // Add to main applications list as a parsed mock candidate
-        const parsedName = file.name.split('.')[0].replace(/_/g, ' ').replace(/-/g, ' ');
-        const mockNewApp = {
-          _id: `APP-PARSED-${Math.floor(Math.random() * 9000) + 1000}`,
-          fullName: parsedName,
-          email: `${parsedName.toLowerCase().replace(/\s/g, '')}@example.com`,
-          phone: '+91 98765 43210',
-          jobTitle: 'Software Developer',
-          category: 'Technology',
-          subcategory: 'Software Developer',
-          rating: 4,
-          assignedHR: 'Anita Verma',
-          status: 'New',
-          interviewStatus: 'Pending',
-          documentVerificationStatus: 'Pending',
-          offerLetterStatus: 'Not Sent',
-          createdAt: new Date().toISOString(),
-          coverLetter: 'Automatically parsed and ingested via corporate resume reader index.',
-          hrNotes: 'Candidate profile extracted from PDF upload. Ready for initial recruiter screening.',
-          communicationLogs: []
-        };
+        const lastDotIndex = file.name.lastIndexOf('.');
+        const parsedName = (lastDotIndex !== -1 ? file.name.substring(0, lastDotIndex) : file.name)
+          .replace(/_/g, ' ')
+          .replace(/-/g, ' ');
 
-        setApplications(prev => [mockNewApp, ...prev]);
-        setUploadQueue(prev => prev.map(f => f.name === file.name ? { ...f, status: 'Completed' } : f));
-        setParsingProgress(null);
-        showToast(`Parsed & imported candidate: ${parsedName}`);
+        // Ingest into backend database for persistence
+        const formData = new FormData();
+        formData.append('fullName', parsedName);
+        formData.append('email', `${parsedName.toLowerCase().replace(/\s/g, '')}@example.com`);
+        formData.append('phone', '+91 98765 43210');
+        formData.append('jobTitle', 'Software Developer');
+        formData.append('category', 'Technology');
+        formData.append('subcategory', 'Software Developer');
+        formData.append('coverLetter', 'Automatically parsed and ingested via corporate resume reader index.');
+        formData.append('hrNotes', 'Candidate profile extracted from PDF upload. Ready for initial recruiter screening.');
+        formData.append('resume', file);
+
+        fetch(`${API}/api/cms/applications`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(savedApp => {
+          setApplications(prev => [savedApp, ...prev]);
+          setUploadQueue(prev => prev.map(f => f.name === file.name ? { ...f, status: 'Completed' } : f));
+          setParsingProgress(null);
+          showToast(`Parsed & imported candidate: ${parsedName}`);
+        })
+        .catch(err => {
+          console.error("Failed to persist parsed candidate:", err);
+          showToast("Failed to save parsed candidate in database.", "error");
+        });
       }
     }, 400);
   };
@@ -936,18 +948,56 @@ function reverseLinkedList(head) {
     }
   }, [selectedCandidates, staffRegistrationForm.candidateId]);
 
-  const handleStaffRegisterSubmit = (e) => {
+  const handleStaffRegisterSubmit = async (e) => {
     e.preventDefault();
     const cand = applications.find(a => a._id === staffRegistrationForm.candidateId);
     if (!cand) return showToast("Candidate selection invalid.", "error");
 
-    showToast(`Staff Registration Successful! ${cand.fullName} added to WMS workforce as ${staffRegistrationForm.roleAccess}.`);
-    // Remove from active pipeline by updating status to 'Selected' and adding a mark or deleting
-    handleUpdateApplication(cand._id, { status: 'Selected', hrNotes: `${cand.hrNotes}\n[Staff Registered] Employee Account created: ${staffRegistrationForm.employeeId}` });
+    const nameParts = cand.fullName.trim().split(' ');
+    const firstName = nameParts[0] || 'Employee';
+    const lastName = nameParts.slice(1).join(' ') || 'User';
+
+    try {
+      // Register new admin account in the backend database
+      const res = await fetch(`${API}/api/auth/admin-register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email: cand.email,
+          password: 'employee12345',
+          mobile: cand.phone || '9876543210',
+          adminSubRole: staffRegistrationForm.roleAccess,
+          joiningDate: staffRegistrationForm.joiningDate
+        })
+      });
+
+      if (res.ok) {
+        showToast(`Staff Registration Submitted! Awaiting Super Admin approval.`);
+        // Remove from active pipeline by updating status to 'Selected' and adding a mark or deleting
+        await handleUpdateApplication(cand._id, { 
+          status: 'Selected', 
+          hrNotes: `${cand.hrNotes}\n[Staff Registered] Employee account created: ${staffRegistrationForm.employeeId}. Access level: ${staffRegistrationForm.roleAccess}.` 
+        });
+      } else {
+        const err = await res.json();
+        showToast(err.message || "Failed to submit staff registration.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Network error submitting staff registration.", "error");
+    }
   };
 
   // Table pagination
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset pagination to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [globalSearch, categoryFilter, subcategoryFilter, dateFilter, statusFilter]);
+
   const itemsPerPage = 5;
   const paginatedApps = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -1474,14 +1524,18 @@ function reverseLinkedList(head) {
                     {/* Full-width Applications Table below the grid */}
                     <div className="bg-white border border-gray-200/80 rounded-2xl shadow-xs p-5 space-y-4">
                           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-gray-50">
-                            <h3 className="text-xs font-bold text-gray-850 uppercase tracking-wider">Latest Applications</h3>
+                            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Latest Applications</h3>
                             
                             <div className="flex flex-wrap items-center gap-1">
                               {['All', 'New', 'Under Review', 'Shortlisted', 'Interview Scheduled'].map(st => (
                                 <button
                                   key={st}
-                                  onClick={() => setCategoryFilter(st === 'All' ? 'All' : st)} // Mock filter toggle
-                                  className="px-2.5 py-1 text-[10px] font-bold rounded-lg bg-gray-50 text-gray-650 hover:bg-gray-100 transition-colors"
+                                  onClick={() => setStatusFilter(st)}
+                                  className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-colors cursor-pointer ${
+                                    statusFilter === st
+                                      ? 'bg-blue-600 text-white shadow-xs'
+                                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                  }`}
                                 >
                                   {st}
                                 </button>
@@ -1492,7 +1546,7 @@ function reverseLinkedList(head) {
                           <div className="overflow-x-auto">
                             <table className="w-full text-left text-xs border-collapse">
                               <thead>
-                                <tr className="text-gray-450 font-bold uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
+                                <tr className="text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
                                   <th className="py-2.5 px-3">Application ID</th>
                                   <th className="py-2.5 px-3">Candidate Name</th>
                                   <th className="py-2.5 px-3">Position Applied</th>
@@ -1509,7 +1563,7 @@ function reverseLinkedList(head) {
                               <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
                                 {paginatedApps.map((app) => (
                                   <tr key={app._id} className="hover:bg-gray-50/50 transition-colors">
-                                    <td className="py-3 px-3 font-mono text-[9px] text-gray-450">
+                                    <td className="py-3 px-3 font-mono text-[9px] text-gray-400">
                                       {String(app._id).slice(-6).toUpperCase()}
                                     </td>
                                     <td className="py-3 px-3 font-bold text-gray-900">{app.fullName}</td>
@@ -1535,7 +1589,7 @@ function reverseLinkedList(head) {
                                     <td className="py-3 px-3">
                                       <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
                                         app.status === 'New' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                                        app.status === 'Shortlisted' ? 'bg-purple-50 text-purple-650 border border-purple-100' :
+                                        app.status === 'Shortlisted' ? 'bg-purple-50 text-purple-600 border border-purple-100' :
                                         app.status === 'Interview Scheduled' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
                                         app.status === 'Selected' ? 'bg-teal-50 text-teal-600 border border-teal-100' : 'bg-amber-50 text-amber-600'
                                       }`}>
@@ -1559,7 +1613,7 @@ function reverseLinkedList(head) {
                           </div>
                           
                           {/* Pagination bar */}
-                          <div className="flex items-center justify-between pt-3 border-t border-gray-50 text-[10px] font-bold text-gray-505">
+                          <div className="flex items-center justify-between pt-3 border-t border-gray-50 text-[10px] font-bold text-gray-500">
                             <span>Showing {itemsPerPage * (currentPage - 1) + 1} to {Math.min(itemsPerPage * currentPage, filteredApps.length)} of {filteredApps.length} entries</span>
                             <div className="flex items-center gap-1">
                               <button onClick={() => setCurrentPage(c => Math.max(c - 1, 1))} disabled={currentPage === 1} className="p-1 border border-gray-200 rounded disabled:opacity-50 hover:bg-gray-50 font-black">&lt;</button>
@@ -1703,7 +1757,7 @@ function reverseLinkedList(head) {
                       {/* Candidate Communication Logs */}
                       <div className="bg-white border border-gray-100 p-5 rounded-2xl shadow-xs">
                         <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-1.5">
-                          <Mail size={16} className="text-indigo-650" /> Candidate Communication Logs
+                          <Mail size={16} className="text-indigo-600" /> Candidate Communication Logs
                         </h3>
                         <div className="space-y-3 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
                           {[
@@ -1713,7 +1767,7 @@ function reverseLinkedList(head) {
                           ].map((item, idx) => (
                             <div key={idx} className="p-2.5 bg-gray-50 rounded-xl flex justify-between items-center text-xs font-semibold">
                               <div>
-                                <span className="font-bold text-gray-805 block truncate max-w-[130px]">{item.candidate}</span>
+                                <span className="font-bold text-gray-800 block truncate max-w-[130px]">{item.candidate}</span>
                                 <span className="text-[10px] text-gray-500 block truncate max-w-[130px] font-normal">{item.subject}</span>
                               </div>
                               <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
@@ -1734,12 +1788,12 @@ function reverseLinkedList(head) {
                         <div className="space-y-4">
                           {[
                             { metric: 'Offer Acceptance Rate', value: '67%', desc: 'Hires / Offers released', color: 'bg-emerald-500' },
-                            { metric: 'Average Time-to-Hire', value: '18 Days', desc: 'Sourcing to offer accepted', color: 'bg-blue-650' },
+                            { metric: 'Average Time-to-Hire', value: '18 Days', desc: 'Sourcing to offer accepted', color: 'bg-blue-600' },
                             { metric: 'Verification Pass Rate', value: '94%', desc: 'Background check clearance', color: 'bg-indigo-600' }
                           ].map((m, idx) => (
                             <div key={idx} className="space-y-1 text-xs">
                               <div className="flex justify-between font-bold">
-                                <span className="text-gray-805">{m.metric}</span>
+                                <span className="text-gray-800">{m.metric}</span>
                                 <span className="text-gray-900">{m.value}</span>
                               </div>
                               <p className="text-[9px] text-gray-400 leading-none font-normal">{m.desc}</p>
@@ -1837,8 +1891,8 @@ function reverseLinkedList(head) {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       
                       {/* Add Form */}
-                      <div className="bg-white border border-gray-205 rounded-2xl p-5 shadow-xs h-fit space-y-4">
-                        <h3 className="text-xs font-bold text-gray-850 uppercase tracking-widest pb-2 border-b border-gray-50">Create New Subcategory</h3>
+                      <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs h-fit space-y-4">
+                        <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest pb-2 border-b border-gray-50">Create New Subcategory</h3>
                         <form onSubmit={handleAddSubcategory} className="space-y-3.5">
                           <div>
                             <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Parent Category</label>
@@ -1883,7 +1937,7 @@ function reverseLinkedList(head) {
                             {subcategoriesList.map((sub, idx) => (
                               <tr key={idx} className="hover:bg-gray-50/50">
                                 <td className="py-3 px-4 font-bold text-gray-900">{sub.name}</td>
-                                <td className="py-3 px-4 text-indigo-650">{sub.category}</td>
+                                <td className="py-3 px-4 text-indigo-600">{sub.category}</td>
                                 <td className="py-3 px-4">{sub.activeJobs} Postings</td>
                                 <td className="py-3 px-4">{sub.applicantsCount} Applicants</td>
                                 <td className="py-3 px-4 text-right">
@@ -1938,7 +1992,7 @@ function reverseLinkedList(head) {
 
                             <div className="flex flex-wrap gap-1 mb-4">
                               {(job.tags || []).slice(0, 3).map(t => (
-                                <span key={t} className="text-[9px] font-bold bg-slate-100 text-slate-650 px-2 py-0.5 rounded-full">{t}</span>
+                                <span key={t} className="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t}</span>
                               ))}
                               {(job.tags || []).length > 3 && (
                                 <span className="text-[9px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full">+{job.tags.length - 3}</span>
@@ -1986,7 +2040,7 @@ function reverseLinkedList(head) {
                                   });
                                   setBioModalOpen(true);
                                 }}
-                                className="p-2 hover:bg-gray-100 text-gray-500 hover:text-indigo-650 rounded-lg transition-colors"
+                                className="p-2 hover:bg-gray-100 text-gray-500 hover:text-indigo-600 rounded-lg transition-colors"
                                 title="Manage Job Description/Bio"
                               >
                                 <BookOpen size={14} />
@@ -1994,7 +2048,7 @@ function reverseLinkedList(head) {
 
                               <button
                                 onClick={() => handleJobDelete(job._id)}
-                                className="p-2 hover:bg-gray-100 text-gray-500 hover:text-red-650 rounded-lg transition-colors"
+                                className="p-2 hover:bg-gray-100 text-gray-500 hover:text-red-600 rounded-lg transition-colors"
                                 title="Delete Listing"
                               >
                                 <Trash2 size={14} />
@@ -2028,13 +2082,13 @@ function reverseLinkedList(head) {
                         <div key={idx} className="p-4 bg-blue-50/50 border border-blue-100 rounded-2xl">
                           <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.title}</h4>
                           <p className="text-2xl font-black text-blue-600 mt-1">{item.count}</p>
-                          <span className="text-[10px] text-gray-550 font-semibold">{item.label}</span>
+                          <span className="text-[10px] text-gray-500 font-semibold">{item.label}</span>
                         </div>
                       ))}
                     </div>
 
                     {/* Internship Applications Filtered List */}
-                    <div className="bg-white border border-gray-202 rounded-2xl shadow-xs p-5">
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-xs p-5">
                       <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">Intern Candidate Register</h3>
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs">
@@ -2053,7 +2107,7 @@ function reverseLinkedList(head) {
                               <tr key={app._id} className="hover:bg-gray-55/50">
                                 <td className="py-3 px-4 font-bold text-gray-900">{app.fullName}</td>
                                 <td className="py-3 px-4">{app.jobTitle}</td>
-                                <td className="py-3 px-4 text-indigo-650">{app.subcategory || 'General'}</td>
+                                <td className="py-3 px-4 text-indigo-600">{app.subcategory || 'General'}</td>
                                 <td className="py-3 px-4">
                                   <div className="flex gap-0.5 text-amber-400">
                                     {[1, 2, 3, 4, 5].map(s => <Star key={s} size={11} fill={s <= (app.rating || 0) ? "currentColor" : "none"} />)}
@@ -2061,7 +2115,7 @@ function reverseLinkedList(head) {
                                 </td>
                                 <td className="py-3 px-4">
                                   <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                                    app.status === 'New' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-650'
+                                    app.status === 'New' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
                                   }`}>
                                     {app.status}
                                   </span>
@@ -2142,7 +2196,7 @@ function reverseLinkedList(head) {
                                       app.interviewStatus === 'Completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
                                       app.interviewStatus === 'Scheduled' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
                                       app.interviewStatus === 'Cancelled' ? 'bg-red-50 text-red-600 border border-red-100' :
-                                      'bg-gray-50 text-gray-550 border border-gray-100'
+                                      'bg-gray-50 text-gray-500 border border-gray-100'
                                     }`}>
                                       {app.interviewStatus || 'Pending'}
                                     </span>
@@ -2212,8 +2266,8 @@ function reverseLinkedList(head) {
                             
                             {/* Column Header */}
                             <div className="flex justify-between items-center mb-3 px-1">
-                              <span className="text-[10px] font-bold text-gray-650 uppercase tracking-wider">{status}</span>
-                              <span className="text-[9px] font-bold bg-white border border-gray-200 text-gray-550 px-2 py-0.5 rounded-full shadow-xs">
+                              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">{status}</span>
+                              <span className="text-[9px] font-bold bg-white border border-gray-200 text-gray-500 px-2 py-0.5 rounded-full shadow-xs">
                                 {statusApps.length}
                               </span>
                             </div>
@@ -2223,7 +2277,7 @@ function reverseLinkedList(head) {
                               {statusApps.map(app => (
                                 <div
                                   key={app._id}
-                                  className="p-3 bg-white border border-gray-155 rounded-xl hover:border-blue-500 shadow-xs hover:shadow-sm cursor-pointer transition-all flex flex-col gap-2 group relative"
+                                  className="p-3 bg-white border border-gray-200 rounded-xl hover:border-blue-500 shadow-xs hover:shadow-sm cursor-pointer transition-all flex flex-col gap-2 group relative"
                                 >
                                   <div onClick={() => openAppDetails(app)}>
                                     <h4 className="font-bold text-xs text-gray-900 leading-tight group-hover:text-blue-600">{app.fullName}</h4>
@@ -2288,7 +2342,7 @@ function reverseLinkedList(head) {
                       
                       {/* Uploader Card */}
                       <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs h-fit space-y-4">
-                        <h3 className="text-xs font-bold text-gray-850 uppercase tracking-widest pb-1.5 border-b border-gray-50">Upload Resumes</h3>
+                        <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest pb-1.5 border-b border-gray-50">Upload Resumes</h3>
                         
                         <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition-colors relative cursor-pointer">
                           <input 
@@ -2299,7 +2353,7 @@ function reverseLinkedList(head) {
                           />
                           <Upload className="mx-auto text-gray-400 mb-2" size={24} />
                           <span className="text-xs font-bold text-gray-700 block">Drag & Drop Resume PDF</span>
-                          <span className="text-[10px] text-gray-450 block mt-1">Files up to 10MB (.pdf, .doc)</span>
+                          <span className="text-[10px] text-gray-400 block mt-1">Files up to 10MB (.pdf, .doc)</span>
                         </div>
 
                         {/* Parsing queues */}
@@ -2349,9 +2403,9 @@ function reverseLinkedList(head) {
                                 </td>
                                 <td className="py-3 px-4">
                                   <div className="flex flex-wrap gap-1 max-w-[250px]">
-                                    <span className="text-[8px] bg-slate-100 text-slate-655 px-1.5 py-0.5 rounded font-black">JS</span>
-                                    <span className="text-[8px] bg-slate-100 text-slate-655 px-1.5 py-0.5 rounded font-black">React</span>
-                                    <span className="text-[8px] bg-slate-100 text-slate-655 px-1.5 py-0.5 rounded font-black">API</span>
+                                    <span className="text-[8px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-black">JS</span>
+                                    <span className="text-[8px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-black">React</span>
+                                    <span className="text-[8px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-black">API</span>
                                   </div>
                                 </td>
                                 <td className="py-3 px-4">
@@ -2414,10 +2468,10 @@ function reverseLinkedList(head) {
                               <tr key={app._id} className="hover:bg-gray-50/50">
                                 <td className="py-3.5 px-4 font-bold text-gray-900">{app.fullName}</td>
                                 <td className="py-3.5 px-4 text-slate-800">{app.jobTitle}</td>
-                                <td className="py-3.5 px-4 text-indigo-650 font-bold">{app.interviewDate} at {app.interviewTime || 'N/A'}</td>
+                                <td className="py-3.5 px-4 text-indigo-600 font-bold">{app.interviewDate} at {app.interviewTime || 'N/A'}</td>
                                 <td className="py-3.5 px-4">{app.assignedHR || 'Anita Verma'}</td>
                                 <td className="py-3.5 px-4">
-                                  <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-purple-50 text-purple-650">Google Meet</span>
+                                  <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-purple-50 text-purple-600">Google Meet</span>
                                 </td>
                                 <td className="py-3.5 px-4 text-right">
                                   <button
@@ -2459,11 +2513,11 @@ function reverseLinkedList(head) {
                         
                         <div className="space-y-3 text-xs">
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">Select Candidate</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Select Candidate</label>
                             <select 
                               onChange={(e) => {
                                 const app = applications.find(a => a._id === e.target.value);
-                                if (app) openAppDetails(app);
+                                if (app) openAppDetails(app, 'communication');
                               }}
                               className="w-full p-2 border border-gray-200 rounded-xl bg-white font-semibold text-gray-700"
                             >
@@ -2488,16 +2542,16 @@ function reverseLinkedList(head) {
                               .map((log, idx) => (
                                 <div key={idx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl text-xs space-y-1.5 font-semibold">
                                   <div className="flex justify-between items-center text-[9px]">
-                                    <span className="font-black text-blue-650 uppercase tracking-wider">{log.type}</span>
+                                    <span className="font-black text-blue-600 uppercase tracking-wider">{log.type}</span>
                                     <span className="text-gray-400">{new Date(log.sentAt).toLocaleString()}</span>
                                   </div>
-                                  <h4 className="font-bold text-gray-850">To: {log.candidateName} <span className="font-medium text-gray-450">({log.jobTitle})</span></h4>
+                                  <h4 className="font-bold text-gray-800">To: {log.candidateName} <span className="font-medium text-gray-400">({log.jobTitle})</span></h4>
                                   <p className="text-gray-600 whitespace-pre-line bg-white p-2 rounded border border-gray-100 font-semibold">{log.message}</p>
-                                  <div className="text-[9px] text-gray-450 font-bold text-right">Transmitted By: {log.sender}</div>
+                                  <div className="text-[9px] text-gray-400 font-bold text-right">Transmitted By: {log.sender}</div>
                                 </div>
                               ))
                           ) : (
-                            <p className="text-xs text-gray-450 text-center py-12">No outbox items currently logged in the workspace.</p>
+                            <p className="text-xs text-gray-400 text-center py-12">No outbox items currently logged in the workspace.</p>
                           )}
                         </div>
                       </div>
@@ -2545,8 +2599,8 @@ function reverseLinkedList(head) {
                               </td>
                               <td className="py-3.5 px-4 text-right">
                                 <button
-                                  onClick={() => openAppDetails(app)}
-                                  className="px-3.5 py-1.5 bg-indigo-600 text-white hover:bg-indigo-755 rounded-xl text-xs font-bold cursor-pointer"
+                                  onClick={() => openAppDetails(app, 'interview')}
+                                  className="px-3.5 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-xs font-bold cursor-pointer"
                                 >
                                   Setup Interview Date
                                 </button>
@@ -2602,7 +2656,7 @@ function reverseLinkedList(head) {
                                 </td>
                                 <td className="py-3.5 px-4">
                                   <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                                    app.offerLetterStatus === 'Accepted' ? 'bg-teal-50 text-teal-650' :
+                                    app.offerLetterStatus === 'Accepted' ? 'bg-teal-50 text-teal-600' :
                                     app.offerLetterStatus === 'Sent' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-555'
                                   }`}>
                                     {app.offerLetterStatus || 'Not Sent'}
@@ -2610,7 +2664,7 @@ function reverseLinkedList(head) {
                                 </td>
                                 <td className="py-3.5 px-4 text-right">
                                   <button
-                                    onClick={() => openAppDetails(app)}
+                                    onClick={() => openAppDetails(app, 'onboarding')}
                                     className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 cursor-pointer"
                                   >
                                     Verify Documents & Release
@@ -2648,7 +2702,7 @@ function reverseLinkedList(head) {
                         
                         <form onSubmit={handleStaffRegisterSubmit} className="space-y-3.5 text-xs font-sans">
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-450 uppercase mb-1">Select Selected Candidate</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Select Selected Candidate</label>
                             <select 
                               value={staffRegistrationForm.candidateId}
                               onChange={(e) => {
@@ -2673,7 +2727,7 @@ function reverseLinkedList(head) {
                           </div>
 
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">Generated Employee ID</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Generated Employee ID</label>
                             <input 
                               type="text"
                               value={staffRegistrationForm.employeeId}
@@ -2683,7 +2737,7 @@ function reverseLinkedList(head) {
                           </div>
 
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">System Access Role</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">System Access Role</label>
                             <select 
                               value={staffRegistrationForm.roleAccess}
                               onChange={e => setStaffRegistrationForm({ ...staffRegistrationForm, roleAccess: e.target.value })}
@@ -2700,7 +2754,7 @@ function reverseLinkedList(head) {
 
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">Joining Date</label>
+                              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Joining Date</label>
                               <input 
                                 type="date" 
                                 value={staffRegistrationForm.joiningDate}
@@ -2710,7 +2764,7 @@ function reverseLinkedList(head) {
                               />
                             </div>
                             <div>
-                              <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">Work Shift</label>
+                              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Work Shift</label>
                               <select 
                                 value={staffRegistrationForm.workShift}
                                 onChange={e => setStaffRegistrationForm({ ...staffRegistrationForm, workShift: e.target.value })}
@@ -2723,7 +2777,7 @@ function reverseLinkedList(head) {
                             </div>
                           </div>
 
-                          <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all shadow-xs">
+                          <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs">
                             Commit Registration & Generate Credentials
                           </button>
                         </form>
@@ -2747,7 +2801,7 @@ function reverseLinkedList(head) {
                                 <tr key={c._id} className="hover:bg-gray-50/50">
                                   <td className="py-3 px-3 font-bold text-gray-900">{c.fullName}</td>
                                   <td className="py-3 px-3 text-slate-800">{c.jobTitle}</td>
-                                  <td className="py-3 px-3 text-gray-550">{c.category}</td>
+                                  <td className="py-3 px-3 text-gray-500">{c.category}</td>
                                   <td className="py-3 px-3">
                                     <span className="px-2 py-0.5 rounded text-[8px] font-bold bg-emerald-50 text-emerald-600 font-mono">ACCEPTED</span>
                                   </td>
@@ -2848,11 +2902,11 @@ function reverseLinkedList(head) {
                               </td>
                               <td className="py-3.5 px-4 text-sm font-bold text-gray-800">{dept.targetHeadcount} Open Roles</td>
                               <td className="py-3.5 px-4">{dept.currentFilled} Active Listings</td>
-                              <td className="py-3.5 px-4 text-indigo-650">{dept.recruiterLead}</td>
+                              <td className="py-3.5 px-4 text-indigo-600">{dept.recruiterLead}</td>
                               <td className="py-3.5 px-4">
                                 <span className={`px-2.5 py-0.5 rounded text-[9px] font-bold ${
-                                  dept.priority === 'High' ? 'bg-red-50 text-red-650' :
-                                  dept.priority === 'Medium' ? 'bg-amber-50 text-amber-650' : 'bg-gray-100 text-gray-500'
+                                  dept.priority === 'High' ? 'bg-red-50 text-red-600' :
+                                  dept.priority === 'Medium' ? 'bg-amber-50 text-amber-600' : 'bg-gray-100 text-gray-500'
                                 }`}>
                                   {dept.priority}
                                 </span>
@@ -2913,12 +2967,12 @@ function reverseLinkedList(head) {
                                 <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
                                   ref.status === 'Hired' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
                                   ref.status === 'Offered' ? 'bg-teal-50 text-teal-600 border border-teal-100' : 
-                                  ref.status === 'Rejected' ? 'bg-red-50 text-red-650' : 'bg-amber-50 text-amber-650'
+                                  ref.status === 'Rejected' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
                                 }`}>
                                   {ref.status}
                                 </span>
                               </td>
-                              <td className="py-3.5 px-4 font-black text-indigo-650">{ref.bonus}</td>
+                              <td className="py-3.5 px-4 font-black text-indigo-600">{ref.bonus}</td>
                               <td className="py-3.5 px-4 text-right">
                                 <span className={ref.payoutDate === 'Pending' ? 'text-amber-500 animate-pulse' : 'text-gray-400 font-normal'}>
                                   {ref.payoutDate}
@@ -3019,7 +3073,7 @@ function reverseLinkedList(head) {
 
                       <button
                         onClick={() => showToast("Hiring board settings saved.")}
-                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-750 text-white font-bold rounded-xl shadow-xs cursor-pointer"
+                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs cursor-pointer"
                       >
                         Save Settings
                       </button>
@@ -3047,7 +3101,7 @@ function reverseLinkedList(head) {
                             <div className="space-y-1">
                               <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Trigger</span>
                               <p className="text-gray-905 font-bold">{rule.trigger}</p>
-                              <span className="text-[9px] font-black text-indigo-650 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-wider block w-fit mt-1">Action</span>
+                              <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-wider block w-fit mt-1">Action</span>
                               <p className="text-gray-600">{rule.action}</p>
                             </div>
                             <input 
@@ -3068,7 +3122,7 @@ function reverseLinkedList(head) {
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Add Automation Rule</span>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-450 uppercase mb-1">Select Trigger Event</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Select Trigger Event</label>
                             <select 
                               value={newAutoTrigger} 
                               onChange={e => setNewAutoTrigger(e.target.value)}
@@ -3078,10 +3132,11 @@ function reverseLinkedList(head) {
                               <option>On Technical Assessment Passed</option>
                               <option>On Document Verification Verified</option>
                               <option>On Offer Accepted</option>
+                              <option>On Application Rejected</option>
                             </select>
                           </div>
                           <div>
-                            <label className="block text-[10px] font-bold text-gray-455 uppercase mb-1">Define Immediate Action Text</label>
+                            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Define Immediate Action Text</label>
                             <input 
                               type="text" 
                               required
@@ -3105,7 +3160,7 @@ function reverseLinkedList(head) {
                             setNewAutoAction('');
                             showToast("Workflow rule added.");
                           }}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-750 transition-colors shadow-xs"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs"
                         >
                           Register Automation Rule
                         </button>
@@ -3148,7 +3203,7 @@ function reverseLinkedList(head) {
                             <span className="font-bold text-gray-700 block">Download Sheet</span>
                             <button
                               onClick={exportReports}
-                              className="w-full py-2 bg-blue-600 hover:bg-blue-755 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                              className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                             >
                               <FileSpreadsheet size={15} /> Export Selected Database
                             </button>
@@ -3177,7 +3232,7 @@ function reverseLinkedList(head) {
                                 <tr key={log.id} className="hover:bg-gray-50/50">
                                   <td className="py-3 px-3 font-mono font-black text-slate-500">{log.id}</td>
                                   <td className="py-3 px-3">{log.adminName}</td>
-                                  <td className="py-3 px-3 font-black text-blue-650">{log.fileType}</td>
+                                  <td className="py-3 px-3 font-black text-blue-600">{log.fileType}</td>
                                   <td className="py-3 px-3 text-gray-500">{log.range}</td>
                                   <td className="py-3 px-3">{log.recordsCount} Rows</td>
                                   <td className="py-3 px-3 text-right text-gray-400 font-normal">{log.date}</td>
@@ -3257,7 +3312,7 @@ function reverseLinkedList(head) {
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Required Skills Chips</label>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {jobForm.tags.map(skill => (
-                    <span key={skill} className="inline-flex items-center gap-1 text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-150 px-2.5 py-0.5 rounded-full">
+                    <span key={skill} className="inline-flex items-center gap-1 text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-0.5 rounded-full">
                       {skill}
                       <button type="button" onClick={() => setJobForm({ ...jobForm, tags: jobForm.tags.filter(s => s !== skill) })} className="hover:text-red-500">×</button>
                     </span>
@@ -3290,7 +3345,7 @@ function reverseLinkedList(head) {
                         setCustomSkill('');
                       }
                     }}
-                    className="px-3 bg-gray-100 hover:bg-gray-200 text-gray-650 rounded-xl text-xs font-bold"
+                    className="px-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-xs font-bold"
                   >
                     Add
                   </button>
@@ -3315,7 +3370,7 @@ function reverseLinkedList(head) {
             <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-indigo-50/40 font-sans">
               <div>
                 <h2 className="text-base font-bold text-gray-800">Job Bio / Requirements</h2>
-                <p className="text-xs text-gray-550 mt-0.5">{bioJob.title}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{bioJob.title}</p>
               </div>
               <button onClick={() => setBioModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                 <X size={20} />
@@ -3374,7 +3429,7 @@ function reverseLinkedList(head) {
             <div className="w-full md:w-80 bg-gray-50 border-r border-gray-100 p-5 shrink-0 flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <span className="p-2.5 bg-blue-105 text-blue-600 rounded-xl">
+                  <span className="p-2.5 bg-blue-100 text-blue-600 rounded-xl">
                     <UserCheck size={24} />
                   </span>
                   
@@ -3470,7 +3525,7 @@ function reverseLinkedList(head) {
                     onClick={() => setActiveDetailTab(tab.id)}
                     className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
                       activeDetailTab === tab.id
-                        ? 'border-blue-650 text-blue-600 bg-white'
+                        ? 'border-blue-600 text-blue-600 bg-white'
                         : 'border-transparent text-gray-500 hover:text-gray-900'
                     }`}
                   >
@@ -3493,7 +3548,7 @@ function reverseLinkedList(head) {
                     {selectedApp.coverLetter && (
                       <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
                         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Cover Letter / Candidate Pitch</h4>
-                        <p className="text-xs text-slate-650 leading-relaxed font-semibold">{selectedApp.coverLetter}</p>
+                        <p className="text-xs text-slate-600 leading-relaxed font-semibold">{selectedApp.coverLetter}</p>
                       </div>
                     )}
 
@@ -3504,7 +3559,7 @@ function reverseLinkedList(head) {
                           href={selectedApp.resume.startsWith('http') ? selectedApp.resume : `${API}${selectedApp.resume.startsWith('/') ? '' : '/'}${selectedApp.resume}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl text-xs font-bold border border-blue-150 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl text-xs font-bold border border-blue-100 transition-colors"
                         >
                           <FileText size={14} /> Preview / Download Resume PDF
                         </a>
@@ -3525,7 +3580,7 @@ function reverseLinkedList(head) {
                       />
                       <button
                         onClick={saveInternalHrNotes}
-                        className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-750 transition-colors"
+                        className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors"
                       >
                         Save HR notes
                       </button>
@@ -3576,7 +3631,7 @@ function reverseLinkedList(head) {
 
                       <button
                         onClick={saveInterviewSchedule}
-                        className="px-5 py-2 bg-indigo-600 text-white hover:bg-indigo-705 rounded-xl text-xs font-bold transition-all"
+                        className="px-5 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-xs font-bold transition-all"
                       >
                         Confirm Schedule & Update Stage
                       </button>
@@ -3649,7 +3704,7 @@ function reverseLinkedList(head) {
 
                         <button
                           onClick={sendCommunication}
-                          className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-750 transition-colors shadow-xs"
+                          className="flex items-center gap-1.5 px-4.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-xs"
                         >
                           <Send size={12} /> Send Outbox Message
                         </button>
@@ -3665,18 +3720,18 @@ function reverseLinkedList(head) {
                               <div key={idx} className="p-3 bg-gray-50 border border-gray-150 rounded-xl relative text-xs">
                                 <div className="flex justify-between items-center mb-1 text-[9px]">
                                   <span className={`font-black px-1.5 py-0.5 rounded ${
-                                    log.type === 'Email' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-650'
+                                    log.type === 'Email' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
                                   }`}>
                                     {log.type}
                                   </span>
                                   <span className="text-gray-400 font-semibold">{new Date(log.sentAt).toLocaleString()}</span>
                                 </div>
-                                <p className="text-gray-655 whitespace-pre-line mt-1 font-semibold">{log.message}</p>
+                                <p className="text-gray-600 whitespace-pre-line mt-1 font-semibold">{log.message}</p>
                                 <div className="text-[9px] text-gray-400 font-bold mt-1 text-right">Sender: {log.sender}</div>
                               </div>
                             ))
                           ) : (
-                            <p className="text-xs text-gray-450 text-center py-8">No communication logged for this candidate.</p>
+                            <p className="text-xs text-gray-400 text-center py-8">No communication logged for this candidate.</p>
                           )}
                         </div>
                       </div>
@@ -3711,7 +3766,7 @@ function reverseLinkedList(head) {
                         </div>
 
                         <div className="pt-2 border-t border-gray-200 flex justify-between items-center text-xs font-bold">
-                          <span className="text-gray-550">Status:</span>
+                          <span className="text-gray-500">Status:</span>
                           <select
                             value={selectedApp.documentVerificationStatus || 'Pending'}
                             onChange={(e) => handleUpdateApplication(selectedApp._id, { documentVerificationStatus: e.target.value })}
@@ -3727,10 +3782,10 @@ function reverseLinkedList(head) {
                       {/* Offer Letter Management */}
                       <div className="bg-indigo-50/40 p-4 rounded-2xl border border-indigo-100 space-y-4">
                         <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wide flex items-center gap-1.5">
-                          <Award size={15} className="text-indigo-650" /> Offer Letter Release
+                          <Award size={15} className="text-indigo-600" /> Offer Letter Release
                         </h4>
                         
-                        <p className="text-xs text-slate-655 leading-relaxed font-semibold">
+                        <p className="text-xs text-slate-600 leading-relaxed font-semibold">
                           Release the final employment contracts and offer letters to candidates. Verify onboarding checklist is fully complete.
                         </p>
 
@@ -3780,7 +3835,7 @@ function reverseLinkedList(head) {
             <div className="px-5 py-3 border-b border-slate-800 flex justify-between items-center bg-slate-950 font-sans">
               <div className="flex items-center gap-2.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
-                <span className="font-mono text-xs font-bold tracking-wider text-slate-350">LIVE INTERVIEW STREAMING</span>
+                <span className="font-mono text-xs font-bold tracking-wider text-slate-300">LIVE INTERVIEW STREAMING</span>
               </div>
               <h2 className="text-sm font-bold truncate max-w-[400px]">Candidate: {simulatedInterviewApp.fullName} | {simulatedInterviewApp.jobTitle}</h2>
               <button 
@@ -3798,7 +3853,7 @@ function reverseLinkedList(head) {
               <div className="flex-1 flex flex-col min-h-0 p-4 gap-4">
                 
                 {/* Simulated Webcam */}
-                <div className="h-44 bg-slate-955 border border-slate-800 rounded-xl relative overflow-hidden shrink-0 flex items-center justify-center font-sans">
+                <div className="h-44 bg-slate-900 border border-slate-800 rounded-xl relative overflow-hidden shrink-0 flex items-center justify-center font-sans">
                   <div className="absolute top-3 left-3 bg-slate-900/80 px-2 py-0.5 rounded text-[9px] font-mono font-bold tracking-widest text-emerald-400 flex items-center gap-1.5 border border-slate-700">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                     CAM FEED
@@ -3851,7 +3906,7 @@ function reverseLinkedList(head) {
                         }`}>
                           {msg.sender}:
                         </span>
-                        <p className="text-slate-350">{msg.text}</p>
+                        <p className="text-slate-300">{msg.text}</p>
                       </div>
                     ))}
                   </div>
@@ -3863,7 +3918,7 @@ function reverseLinkedList(head) {
                       value={simMessageInput}
                       onChange={e => setSimMessageInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && sendSimMessage()}
-                      className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-850 rounded text-[11px] outline-none text-white focus:border-slate-700 font-sans"
+                      className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded text-[11px] outline-none text-white focus:border-slate-700 font-sans"
                     />
                     <button onClick={sendSimMessage} className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 rounded text-[10px] font-bold cursor-pointer">Send</button>
                   </div>
