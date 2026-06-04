@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Eye, Lock, Database, UserCheck, Globe, Mail, ArrowLeft, CheckCircle, Info, FileText, AlertTriangle } from 'lucide-react';
+import { Shield, Eye, Lock, Database, UserCheck, Globe, Mail, ArrowLeft, CheckCircle, Info, FileText } from 'lucide-react';
 
 const sections = [
   {
@@ -85,33 +85,33 @@ const sections = [
   {
     icon: <Info size={24} />,
     title: "Updates to This Policy",
-    content: `We may update this Privacy Policy periodically to reflect changes in our practices, technologies, legal requirements, or other operational factors. Any material changes will be communicated via a prominent notice on our website or through direct communication. We encourage you to review this page regularly to stay informed about how we protect your data.`,
+    content: `We may update this Privacy Policy periodically to reflect changes in our practices, technologies, legal requirements, or other operational factors. Any material changes will be communicated via a prominent notice on our website or through direct communication. We encourage you to review this page regularly to stay informed.`,
   },
 ];
 
-const PrivacyPolicy = () => {
+const DataProtection = () => {
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-white text-slate-900">
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-28 pb-20 px-6">
         {/* Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-6 py-2 mb-8">
-            <Shield size={16} className="text-emerald-400" />
-            <span className="text-emerald-400 text-sm font-bold uppercase tracking-widest">Legal & Compliance</span>
+          <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-full px-6 py-2 mb-8">
+            <Shield size={16} className="text-emerald-600" />
+            <span className="text-emerald-700 text-sm font-bold uppercase tracking-widest">Legal & Compliance</span>
           </div>
 
           <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tight mb-6">
-            Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Policy</span>
+            Privacy <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-700">Policy</span>
           </h1>
 
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
             At The Contractum, we value your privacy. This policy outlines how we collect, use, protect, and manage your personal information when you interact with our services and platform.
           </p>
 
@@ -127,21 +127,21 @@ const PrivacyPolicy = () => {
           {sections.map((section, idx) => (
             <div
               key={idx}
-              className="bg-slate-900/80 border border-white/5 rounded-2xl p-8 hover:border-white/10 transition-all duration-300"
+              className="bg-slate-50/70 border border-slate-100 rounded-2xl p-8 hover:bg-white hover:shadow-xl hover:shadow-slate-100/50 hover:border-slate-200 transition-all duration-300"
             >
               {/* Section Header */}
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
                   {section.icon}
                 </div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white">
+                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-slate-800">
                   {section.title}
                 </h2>
               </div>
 
               {/* Content */}
               {section.content && (
-                <p className="text-slate-300 leading-relaxed mb-4">{section.content}</p>
+                <p className="text-slate-700 leading-relaxed mb-4">{section.content}</p>
               )}
 
               {/* List */}
@@ -149,8 +149,8 @@ const PrivacyPolicy = () => {
                 <ul className="space-y-3 mt-4">
                   {section.list.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle size={18} className="text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                      <CheckCircle size={18} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-600 text-sm leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -161,18 +161,18 @@ const PrivacyPolicy = () => {
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-white/10">
-                        <th className="text-left py-3 px-4 text-emerald-400 font-bold uppercase tracking-wider text-xs">Data Type</th>
-                        <th className="text-left py-3 px-4 text-emerald-400 font-bold uppercase tracking-wider text-xs">Retention Period</th>
-                        <th className="text-left py-3 px-4 text-emerald-400 font-bold uppercase tracking-wider text-xs">Purpose</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 text-emerald-600 font-bold uppercase tracking-wider text-xs">Data Type</th>
+                        <th className="text-left py-3 px-4 text-emerald-600 font-bold uppercase tracking-wider text-xs">Retention Period</th>
+                        <th className="text-left py-3 px-4 text-emerald-600 font-bold uppercase tracking-wider text-xs">Purpose</th>
                       </tr>
                     </thead>
                     <tbody>
                       {section.table.map((row, i) => (
-                        <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                          <td className="py-3 px-4 text-white font-semibold">{row.type}</td>
-                          <td className="py-3 px-4 text-slate-400">{row.duration}</td>
-                          <td className="py-3 px-4 text-slate-300">{row.purpose}</td>
+                        <tr key={i} className="border-b border-slate-100 hover:bg-slate-100/50 transition-colors">
+                          <td className="py-3 px-4 text-slate-900 font-semibold">{row.type}</td>
+                          <td className="py-3 px-4 text-slate-500">{row.duration}</td>
+                          <td className="py-3 px-4 text-slate-600">{row.purpose}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -183,29 +183,29 @@ const PrivacyPolicy = () => {
           ))}
 
           {/* Contact Section */}
-          <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-2xl p-8">
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl p-8">
             <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl">
+              <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
                 <Mail size={24} />
               </div>
-              <h2 className="text-xl font-black uppercase tracking-tight text-white">
+              <h2 className="text-xl font-black uppercase tracking-tight text-slate-900">
                 Questions About Your Privacy?
               </h2>
             </div>
-            <p className="text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-700 leading-relaxed mb-6">
               If you have any questions, concerns, or requests regarding this Privacy Policy or how we handle your personal data, please do not hesitate to reach out. Our dedicated privacy team is committed to addressing your inquiries promptly and transparently.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/contact/touch"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition-all uppercase tracking-widest text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all uppercase tracking-widest text-sm"
               >
                 <Mail size={16} />
                 Contact Us
               </Link>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 hover:bg-white/5 text-white font-bold rounded-xl transition-all uppercase tracking-widest text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-all uppercase tracking-widest text-sm"
               >
                 <ArrowLeft size={16} />
                 Back to Home
@@ -218,4 +218,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default DataProtection;

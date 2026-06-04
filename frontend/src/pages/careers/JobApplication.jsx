@@ -352,7 +352,18 @@ export default function JobApplication() {
 
     const [job, setJob] = useState(null);
     const [jobLoading, setJobLoading] = useState(true);
-    const [formData, setFormData] = useState({ fullName: "", email: "", phone: "", countryIndex: 0, resume: null, coverLetter: "" });
+    const [formData, setFormData] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+        countryIndex: 0,
+        positionApplied: "",
+        resume: null,
+        experience: "",
+        skills: "",
+        linkedInProfile: "",
+        coverLetter: ""
+    });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
     useEffect(() => {
@@ -362,7 +373,9 @@ export default function JobApplication() {
             // Only treat a purely numeric route param as a static job id.
             const isStaticJobId = /^\d+$/.test(jobId);
             if (isStaticJobId && staticJobsData[jobId]) {
-                setJob({ ...staticJobsData[jobId], _isStatic: true });
+                const j = staticJobsData[jobId];
+                setJob({ ...j, _isStatic: true });
+                setFormData(prev => ({ ...prev, positionApplied: j.title }));
                 setJobLoading(false);
                 return;
             }
@@ -385,6 +398,7 @@ export default function JobApplication() {
                     company: 'TheContractum',
                     _isStatic: false,
                 });
+                setFormData(prev => ({ ...prev, positionApplied: data.title }));
             } catch {
                 setJob(null);
             }
@@ -418,7 +432,11 @@ export default function JobApplication() {
         data.append('fullName', formData.fullName);
         data.append('email', formData.email);
         data.append('phone', phoneWithCode);
-        data.append('jobTitle', job?.title);
+        data.append('jobTitle', formData.positionApplied);
+        data.append('positionApplied', formData.positionApplied);
+        data.append('experience', formData.experience);
+        data.append('skills', formData.skills);
+        data.append('linkedInProfile', formData.linkedInProfile);
         data.append('coverLetter', formData.coverLetter);
         if (formData.resume) {
             data.append('resume', formData.resume);
@@ -431,7 +449,10 @@ export default function JobApplication() {
             });
             if (!res.ok) throw new Error('Submission failed');
             setStatus({ loading: false, success: true, error: null });
-            setTimeout(() => navigate("/careers/jobs"), 2000);
+            setTimeout(() => {
+                setStatus({ loading: false, success: false, error: null });
+                navigate("/careers/jobs");
+            }, 3000);
         } catch (err) {
             setStatus({ loading: false, success: false, error: err.message });
         }
@@ -620,12 +641,12 @@ export default function JobApplication() {
                     {/* Application Form Sidebar */}
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-24">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">Apply for this position</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-4">Job Application Form</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {status.success && (
                                     <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3">
                                         <CheckCircle2 size={20} />
-                                        <p className="font-semibold text-sm">Application submitted!</p>
+                                        <p className="font-semibold text-sm">Your form is submitted successfully.</p>
                                     </div>
                                 )}
                                 {status.error && (
@@ -650,29 +671,64 @@ export default function JobApplication() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
                                     <div className="flex gap-2">
-                                        <select
-                                            name="countryIndex"
-                                            value={formData.countryIndex}
-                                            onChange={handleInputChange}
-                                            className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer"
-                                        >
-                                            {COUNTRIES.map((c, i) => (
-                                                <option key={i} value={i}>{c.code} ({c.iso})</option>
-                                            ))}
-                                        </select>
+                                        <div className="relative group">
+                                            <select
+                                                name="countryIndex"
+                                                value={formData.countryIndex}
+                                                onChange={handleInputChange}
+                                                title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                                                className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer text-gray-800"
+                                            >
+                                                {COUNTRIES.map((c, i) => (
+                                                    <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                                                {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                            </div>
+                                        </div>
                                         <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
-                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
                                             placeholder="98765 43210" />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Resume/CV *</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Position Applied *</label>
+                                    <input type="text" name="positionApplied" value={formData.positionApplied} onChange={handleInputChange} required
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
+                                        placeholder="Position Applied" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Resume Upload *</label>
                                     <input type="file" name="resume" onChange={handleFileChange} required accept=".pdf,.doc,.docx"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                                     <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Experience *</label>
+                                    <input type="text" name="experience" value={formData.experience} onChange={handleInputChange} required
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="e.g. 3 years" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Skills *</label>
+                                    <input type="text" name="skills" value={formData.skills} onChange={handleInputChange} required
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="e.g. React, Node, Python" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile *</label>
+                                    <input type="url" name="linkedInProfile" value={formData.linkedInProfile} onChange={handleInputChange} required
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="https://linkedin.com/in/username" />
                                 </div>
 
                                 <div>

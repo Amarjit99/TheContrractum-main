@@ -2,16 +2,39 @@ import React, { useState } from "react";
 import location from "../assets/location.png";
 import phone from "../assets/phone.png";
 import email from "../assets/email.png";
+import { COUNTRIES } from "../constants/countries";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const Registration = () => {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", otherSubject: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    countryIndex: 0,
+    subject: "",
+    otherSubject: "",
+    message: "",
+  });
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleReset = () => {
+    setForm({
+      name: "",
+      email: "",
+      phone: "",
+      countryIndex: 0,
+      subject: "",
+      otherSubject: "",
+      message: "",
+    });
+    setStatus(null);
+    setErrorMsg("");
   };
 
   const handleSubmit = async (e) => {
@@ -20,8 +43,11 @@ const Registration = () => {
     setErrorMsg("");
 
     const submissionData = {
-      ...form,
+      name: form.name,
+      email: form.email,
+      phone: `${COUNTRIES[form.countryIndex].code} ${form.phone}`,
       subject: form.subject === "Others" ? form.otherSubject : form.subject,
+      message: form.message,
     };
 
     try {
@@ -35,7 +61,18 @@ const Registration = () => {
 
       if (res.ok) {
         setStatus("success");
-        setForm({ name: "", email: "", subject: "", otherSubject: "", message: "" });
+        setForm({
+          name: "",
+          email: "",
+          phone: "",
+          countryIndex: 0,
+          subject: "",
+          otherSubject: "",
+          message: "",
+        });
+        setTimeout(() => {
+          setStatus(null);
+        }, 3000);
       } else {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
@@ -79,9 +116,9 @@ const Registration = () => {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Your Name"
+                placeholder="Name"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
               />
             </div>
 
@@ -91,9 +128,37 @@ const Registration = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="Your Email"
+                placeholder="Email"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <div className="relative group">
+                <select
+                  name="countryIndex"
+                  value={form.countryIndex}
+                  onChange={handleChange}
+                  title={COUNTRIES[form.countryIndex] ? COUNTRIES[form.countryIndex].name : ''}
+                  className="w-28 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 cursor-pointer font-medium"
+                >
+                  {COUNTRIES.map((c, i) => (
+                    <option key={i} value={i} className="bg-gray-900" title={c.name}>{c.code} ({c.iso})</option>
+                  ))}
+                </select>
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                  {COUNTRIES[form.countryIndex] ? `${COUNTRIES[form.countryIndex].flag} ${COUNTRIES[form.countryIndex].name}` : ''}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                </div>
+              </div>
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="Mobile Number"
+                className="flex-1 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 min-w-0 font-medium"
               />
             </div>
 
@@ -103,14 +168,14 @@ const Registration = () => {
                 value={form.subject}
                 onChange={handleChange}
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none"
+                className={`w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium ${form.subject ? 'text-white' : 'text-gray-400'}`}
               >
-                <option value="" className="bg-gray-900">Select Subject</option>
-                <option value="Internship" className="bg-gray-900">Internship</option>
-                <option value="Mentorship" className="bg-gray-900">Mentorship</option>
-                <option value="Counseling" className="bg-gray-900">Counseling</option>
-                <option value="Job" className="bg-gray-900">Job</option>
-                <option value="Others" className="bg-gray-900">Others</option>
+                <option value="" className="bg-gray-900 text-gray-400">Select Inquiry Category</option>
+                <option value="Internship" className="bg-gray-900 text-white">Internship</option>
+                <option value="Mentorship" className="bg-gray-900 text-white">Mentorship</option>
+                <option value="Counseling" className="bg-gray-900 text-white">Counseling</option>
+                <option value="Job" className="bg-gray-900 text-white">Job</option>
+                <option value="Others" className="bg-gray-900 text-white">Others</option>
               </select>
             </div>
 
@@ -121,9 +186,9 @@ const Registration = () => {
                   name="otherSubject"
                   value={form.otherSubject}
                   onChange={handleChange}
-                  placeholder="Specify Subject"
+                  placeholder="Specify Inquiry Category"
                   required
-                  className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400"
+                  className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
                 />
               </div>
             )}
@@ -133,16 +198,16 @@ const Registration = () => {
                 name="message"
                 value={form.message}
                 onChange={handleChange}
-                placeholder="Your Message"
+                placeholder="Message"
                 rows="4"
                 required
-                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none"
+                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none font-medium"
               ></textarea>
             </div>
 
             {/* Status feedback */}
             {status === "success" && (
-              <p className="text-green-400 text-sm font-medium">✅ Message sent successfully! We'll get back to you soon.</p>
+              <p className="text-green-400 text-sm font-medium">✅ Your form is submitted successfully.</p>
             )}
             {status === "error" && (
               <p className="text-red-400 text-sm font-medium">❌ {errorMsg}</p>
@@ -159,7 +224,7 @@ const Registration = () => {
 
               <button
                 type="reset"
-                onClick={() => { setForm({ name: "", email: "", subject: "", message: "" }); setStatus(null); }}
+                onClick={handleReset}
                 className="flex-1 px-6 sm:px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300 text-center"
               >
                 RESET

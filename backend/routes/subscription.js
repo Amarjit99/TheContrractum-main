@@ -48,7 +48,7 @@ router.get('/count', async (req, res) => {
 // POST /api/subscription/newsletter
 // Stores a new newsletter subscription email
 router.post('/newsletter', async (req, res) => {
-  const { email, source } = req.body;
+  const { email, source, fullName, industryPreference } = req.body;
   if (!email || !source) {
     return res.status(400).json({ success: false, message: "Email and source are required" });
   }
@@ -61,17 +61,21 @@ router.post('/newsletter', async (req, res) => {
 
     const newSubscription = new NewsletterSubscription({ 
       email: email.toLowerCase(), 
-      source 
+      source,
+      fullName: fullName || '',
+      industryPreference: industryPreference || ''
     });
     await newSubscription.save();
 
     // Create Notification
     const Notification = require("../models/Notification");
+    const nameStr = fullName ? `${fullName} (${email})` : email;
+    const indStr = industryPreference ? ` (Preferred: ${industryPreference})` : '';
     await Notification.create({
       type: 'Newsletter',
       title: 'New Newsletter Sub',
-      message: `${email} has subscribed to the newsletter via ${source}.`,
-      link: '/admin/dashboard'
+      message: `${nameStr} has subscribed to the newsletter via ${source}${indStr}.`,
+      link: `/admin/submissions?tab=newsletter&id=${newSubscription._id}`
     });
 
     res.status(201).json({

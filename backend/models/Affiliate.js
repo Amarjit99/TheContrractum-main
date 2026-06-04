@@ -6,19 +6,25 @@ const affiliateSchema = new mongoose.Schema({
         required: true
     },
     contact: {
-        type: String,
-        required: true
+        type: String
     },
     email: {
-        type: String,
-        required: true
+        type: String
     },
     website: {
         type: String
     },
     promotionalMethods: {
-        type: String,
-        required: true
+        type: String
+    },
+    audienceCategory: {
+        type: String
+    },
+    paymentDetails: {
+        type: String
+    },
+    promotionMethod: {
+        type: String
     },
     status: {
         type: String,

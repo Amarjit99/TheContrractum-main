@@ -12,7 +12,11 @@ const jobApplicationSchema = new mongoose.Schema({
   email: { type: String, required: true },
   phone: { type: String },
   jobTitle: { type: String },
+  positionApplied: { type: String },
   resume: { type: String }, // Store as URL or path
+  experience: { type: String },
+  skills: { type: String },
+  linkedInProfile: { type: String },
   coverLetter: { type: String },
   status: {
     type: String,

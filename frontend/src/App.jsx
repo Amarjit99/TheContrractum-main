@@ -69,8 +69,8 @@ import CodeOfConduct from './pages/company/CodeOfConduct';
 import EmployeeId from './pages/company/EmployeeId';
 import CompanyContracts from './pages/company/CompanyContracts';
 import ReferralDashboard from './pages/company/ReferralDashboard';
-import CookiePolicy from './pages/company/CookiePolicy';
-import PrivacyPolicy from './pages/company/PrivacyPolicy';
+import CookieUsage from './pages/company/CookieUsage';
+import DataProtection from './pages/company/DataProtection';
 import TermsOfService from './pages/company/TermsOfService';
 
 // //////////////////Team Pages///////////////////////////////////
@@ -167,7 +167,7 @@ import Support from './pages/contact/Support';
 import RequestDemo from './pages/contact/RequestDemo';
 import Feedback from './pages/contact/FeedbackModal';
 import Location from './pages/contact/Location';
-import CookiesPopup from './components/CookiesPopup';
+import ConsentNotice from './components/ConsentNotice';
 import GoogleForm from './pages/contact/GoogleForm';
 
 export default function App() {
@@ -177,7 +177,7 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen relative overflow-x-hidden w-full">
-          <CookiesPopup />
+          <ConsentNotice />
           <Navbar />
           <main className="flex-grow">
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white font-black italic tracking-widest text-2xl uppercase">Loading Experience...</div>}>
@@ -253,8 +253,8 @@ export default function App() {
                 <Route path="/company/employee-id" element={<EmployeeId />} />
                 <Route path="/company/contracts" element={<CompanyContracts />} />
                 <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
-                <Route path="/company/cookie-policy" element={<CookiePolicy />} />
-                <Route path="/company/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/company/cookie-policy" element={<CookieUsage />} />
+                <Route path="/company/privacy-policy" element={<DataProtection />} />
                 <Route path="/company/terms-of-service" element={<TermsOfService />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
