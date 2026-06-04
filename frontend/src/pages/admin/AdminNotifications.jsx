@@ -3,11 +3,12 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { toast, Toaster } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminNotifications() {
-  const { admin } = useAdminAuth();
+  const { admin, authFetch } = useAdminAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,9 @@ export default function AdminNotifications() {
       setNotifications(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Fetch notifications failed", error);
+      if (error.message !== 'Session expired. Please login again.') {
+        toast.error('Failed to load notifications');
+      }
     } finally {
       setLoading(false);
     }
@@ -46,6 +50,7 @@ export default function AdminNotifications() {
       }
     } catch (err) {
       console.error(err);
+      toast.error('Failed to mark notifications as read');
     }
   };
 
@@ -64,6 +69,7 @@ export default function AdminNotifications() {
       }
     } catch (err) {
       console.error(err);
+      toast.error('Failed to delete notification');
     }
   };
 
@@ -77,6 +83,7 @@ export default function AdminNotifications() {
 
   return (
     <AdminLayout>
+      <Toaster position="top-right" />
       <div className="mb-6 mt-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -121,9 +128,8 @@ export default function AdminNotifications() {
               <div
                 key={notif._id}
                 onClick={() => handleNotificationClick(notif)}
-                className={`p-4 sm:p-5 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center cursor-pointer transition-colors hover:bg-gray-50 ${
-                  !notif.isRead ? 'bg-blue-50/30 border-l-4 border-l-[#1e5cdc]' : ''
-                }`}
+                className={`p-4 sm:p-5 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center cursor-pointer transition-colors hover:bg-gray-50 ${!notif.isRead ? 'bg-blue-50/30 border-l-4 border-l-[#1e5cdc]' : ''
+                  }`}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -141,7 +147,7 @@ export default function AdminNotifications() {
                     {notif.message}
                   </p>
                 </div>
-                
+
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 mt-2 sm:mt-0 shrink-0">
                   <span className="text-xs text-gray-400 flex items-center gap-1 font-medium">
                     <Clock size={12} /> {new Date(notif.createdAt).toLocaleDateString()} {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

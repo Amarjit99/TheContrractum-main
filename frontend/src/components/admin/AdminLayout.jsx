@@ -526,6 +526,11 @@ export default function AdminLayout({ children }) {
                 </div>
               </div>
 
+              {/* Profile Dropdown Backdrop */}
+              {showProfileMenu && (
+                <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)} />
+              )}
+
               {/* Profile Dropdown */}
               {showProfileMenu && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">

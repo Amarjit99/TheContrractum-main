@@ -86,6 +86,8 @@ export default function ContractEditor() {
     }
   });
 
+  const isEditable = !isEdit || ['Draft', 'Rejected'].includes(formData.status);
+
   const token = localStorage.getItem('adminToken') || admin?.token;
 
   const fetchUsers = useCallback(async () => {
@@ -402,23 +404,40 @@ export default function ContractEditor() {
             {preview ? <EyeOff size={16} /> : <Eye size={16} />}
             {preview ? 'Edit Mode' : 'Preview'}
           </button>
-          <button
-            onClick={() => handleSubmit(false)}
-            disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all shadow-sm text-sm disabled:opacity-50"
-          >
-            {loading ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-            Save Draft
-          </button>
-          <button
-            onClick={() => handleSubmit(true)}
-            disabled={loading}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 text-sm disabled:opacity-50"
-          >
-            <Send size={16} /> Submit for Approval
-          </button>
+          {isEditable && (
+            <>
+              <button
+                onClick={() => handleSubmit(false)}
+                disabled={loading}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all shadow-sm text-sm disabled:opacity-50"
+              >
+                {loading ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                Save Draft
+              </button>
+              <button
+                onClick={() => handleSubmit(true)}
+                disabled={loading}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 text-sm disabled:opacity-50"
+              >
+                <Send size={16} /> Submit for Approval
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Read-Only Warning Banner */}
+      {!isEditable && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-2xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+             <span className="text-xl">ℹ️</span>
+             <div>
+                <p className="text-sm font-bold">Read-Only Mode</p>
+                <p className="text-xs text-blue-600 font-medium">This contract is currently in <strong>{formData.status.replace('_', ' ')}</strong> status and cannot be edited.</p>
+             </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* ── Main Editor / Preview ── */}
@@ -469,8 +488,9 @@ export default function ContractEditor() {
                     type="text"
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    disabled={!isEditable}
                     placeholder="e.g. Employment Agreement – John Doe"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-gray-900 text-sm"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-bold text-gray-900 text-sm disabled:opacity-60"
                   />
                 </div>
 
@@ -481,8 +501,9 @@ export default function ContractEditor() {
                     type="text"
                     value={formData.description}
                     onChange={e => setFormData({ ...formData, description: e.target.value })}
+                    disabled={!isEditable}
                     placeholder="Short note for internal reference (not shown in contract)"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm text-gray-700"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm text-gray-700 disabled:opacity-60"
                   />
                 </div>
 
@@ -493,7 +514,7 @@ export default function ContractEditor() {
                       Contract Content <span className="text-red-400">*</span>
                       {!preview && <span className="text-blue-400 font-medium normal-case tracking-normal ml-2">(HTML supported)</span>}
                     </span>
-                    {!preview && (
+                    {!preview && isEditable && (
                       <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
                         <Upload size={14} /> Upload Custom File
                         <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
@@ -511,8 +532,9 @@ export default function ContractEditor() {
                       rows={22}
                       value={formData.content}
                       onChange={e => setFormData({ ...formData, content: e.target.value })}
+                      disabled={!isEditable}
                       placeholder={`Enter the full contract text here.\n\nYou can use HTML tags for formatting:\n  <h2>SECTION TITLE</h2>\n  <p>Paragraph text...</p>\n  <ul><li>List item</li></ul>\n\nAvailable placeholders:\n  {{employee_name}}, {{position}}, {{department}}\n  {{start_date}}, {{end_date}}, {{salary}}\n  {{company_name}}, {{company_address}}`}
-                      className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none"
+                      className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none disabled:opacity-70"
                     />
                   )}
                 </div>
@@ -524,12 +546,14 @@ export default function ContractEditor() {
                     <h4 className="text-sm font-bold text-blue-900">Custom Clause-Based Generator</h4>
                     <p className="text-xs text-blue-700 mt-0.5">Fill in the clauses below, then click generate to compile a formatted document.</p>
                   </div>
-                  <button
-                    onClick={handleAutoGenerate}
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-200 shrink-0"
-                  >
-                    Auto-Generate Document
-                  </button>
+                  {isEditable && (
+                    <button
+                      onClick={handleAutoGenerate}
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-200 shrink-0"
+                    >
+                      Auto-Generate Document
+                    </button>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -549,8 +573,9 @@ export default function ContractEditor() {
                             }
                           }));
                         }}
+                        disabled={!isEditable}
                         placeholder={clause.placeholder}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-xs leading-relaxed text-gray-700 resize-none"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-xs leading-relaxed text-gray-700 resize-none disabled:opacity-60"
                       />
                     </div>
                   ))}
@@ -563,39 +588,41 @@ export default function ContractEditor() {
         {/* ── Right Sidebar ── */}
         <div className="space-y-5">
           {/* Template Picker */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-5">
-            <h3 className="text-sm font-black text-blue-800 mb-3 flex items-center gap-2">
-              <LayoutTemplate size={16} /> Apply Template
-            </h3>
-            <p className="text-xs text-blue-600 mb-3 leading-relaxed">Select a professional template to auto-populate the editor.</p>
-            <div className="relative">
-              <button
-                onClick={() => setTemplateOpen(o => !o)}
-                className="w-full flex items-center justify-between px-4 py-2.5 bg-white border border-blue-200 rounded-xl text-sm font-bold text-blue-700 hover:border-blue-400 transition-all"
-              >
-                <span>Choose a template…</span>
-                <ChevronDown size={16} className={`transition-transform ${templateOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {templateOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-blue-100 shadow-xl z-10 overflow-hidden max-h-56 overflow-y-auto">
-                  {templates.length === 0 ? (
-                    <div className="px-4 py-3 text-xs text-gray-400 font-medium">No templates available</div>
-                  ) : (
-                    templates.map(t => (
-                      <button
-                        key={t._id}
-                        onClick={() => applyTemplate(t._id)}
-                        className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
-                      >
-                        <p className="text-sm font-bold text-gray-900">{t.name}</p>
-                        <p className="text-[11px] text-gray-400 font-medium">{t.type} · {t.description || 'No description'}</p>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
+          {isEditable && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-5">
+              <h3 className="text-sm font-black text-blue-800 mb-3 flex items-center gap-2">
+                <LayoutTemplate size={16} /> Apply Template
+              </h3>
+              <p className="text-xs text-blue-600 mb-3 leading-relaxed">Select a professional template to auto-populate the editor.</p>
+              <div className="relative">
+                <button
+                  onClick={() => setTemplateOpen(o => !o)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 bg-white border border-blue-200 rounded-xl text-sm font-bold text-blue-700 hover:border-blue-400 transition-all"
+                >
+                  <span>Choose a template…</span>
+                  <ChevronDown size={16} className={`transition-transform ${templateOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {templateOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-blue-100 shadow-xl z-10 overflow-hidden max-h-56 overflow-y-auto">
+                    {templates.length === 0 ? (
+                      <div className="px-4 py-3 text-xs text-gray-400 font-medium">No templates available</div>
+                    ) : (
+                      templates.map(t => (
+                        <button
+                          key={t._id}
+                          onClick={() => applyTemplate(t._id)}
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
+                        >
+                          <p className="text-sm font-bold text-gray-900">{t.name}</p>
+                          <p className="text-[11px] text-gray-400 font-medium">{t.type} · {t.description || 'No description'}</p>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Configuration */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-5">
@@ -615,7 +642,8 @@ export default function ContractEditor() {
                     setDesignationFilter(e.target.value);
                     setFormData({ ...formData, employeeId: '' }); // reset selected user when filter changes
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+                  disabled={!isEditable}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 disabled:opacity-60"
                 >
                   <option value="">All Designations</option>
                   {uniqueDesignations.map((desig, idx) => (
@@ -638,7 +666,8 @@ export default function ContractEditor() {
                     }
                     setFormData({ ...formData, employeeId: newUserId, content: newContent });
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+                  disabled={!isEditable}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 disabled:opacity-60"
                 >
                   <option value="">Select user…</option>
                   {filteredUsers.map(u => (
@@ -671,7 +700,8 @@ export default function ContractEditor() {
                   const firstType = CONTRACT_CATEGORIES[newCat]?.[0] || '';
                   setFormData(prev => ({ ...prev, category: newCat, type: firstType }));
                 }}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+                disabled={!isEditable}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 disabled:opacity-60"
               >
                 {Object.keys(CONTRACT_CATEGORIES).map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -685,7 +715,8 @@ export default function ContractEditor() {
               <select
                 value={formData.type}
                 onChange={e => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700"
+                disabled={!isEditable}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 disabled:opacity-60"
               >
                 {(CONTRACT_CATEGORIES[formData.category] || []).map(type => (
                   <option key={type} value={type}>{type}</option>
@@ -705,7 +736,8 @@ export default function ContractEditor() {
                     type="date"
                     value={formData.validFrom}
                     onChange={e => setFormData({ ...formData, validFrom: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 mt-1"
+                    disabled={!isEditable}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 mt-1 disabled:opacity-60"
                   />
                 </div>
                 <div>
@@ -714,7 +746,8 @@ export default function ContractEditor() {
                     type="date"
                     value={formData.validUntil}
                     onChange={e => setFormData({ ...formData, validUntil: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 mt-1"
+                    disabled={!isEditable}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold text-gray-700 mt-1 disabled:opacity-60"
                   />
                 </div>
               </div>

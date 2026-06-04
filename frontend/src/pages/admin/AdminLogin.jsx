@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLogin() {
   const { login, admin } = useAdminAuth();
@@ -8,6 +9,8 @@ export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
     if (admin) {
@@ -21,7 +24,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
-      const user = await login(form.email, form.password);
+      const user = await login(form.email, form.password, rememberMe);
       const target = user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard';
       navigate(target);
     } catch (err) {
@@ -59,11 +62,36 @@ export default function AdminLogin() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Password</label>
-              <input type="password" value={form.password} required
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-                placeholder="••••••••" />
+              <div className="relative">
+                <input type={showPassword ? 'text' : 'password'} value={form.password} required
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                  className="w-full px-4 py-3 pr-12 bg-gray-800 border border-gray-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                  placeholder="••••••••" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors p-1"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-red-600 focus:ring-red-500 focus:ring-offset-0 cursor-pointer"
+              />
+              <label htmlFor="rememberMe" className="text-xs text-gray-400 font-medium cursor-pointer select-none">
+                Remember me on this device
+              </label>
+            </div>
+
             <button type="submit" disabled={loading}
               className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white font-bold py-3 rounded-xl transition shadow-lg mt-2">
               {loading ? 'Signing in…' : 'Sign In as Admin'}

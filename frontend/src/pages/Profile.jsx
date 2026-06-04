@@ -35,6 +35,7 @@ export default function Profile() {
   const [loadingContracts, setLoadingContracts] = useState(false);
   const [signingId, setSigningId] = useState(null);
   const [signatureName, setSignatureName] = useState('');
+  const [viewingContract, setViewingContract] = useState(null);
 
   const [pwForm, setPwForm] = useState({ currentPassword:'', newPassword:'', confirmNew:'' });
   const [pwMsg, setPwMsg] = useState({ text:'', ok:true });
@@ -378,7 +379,11 @@ export default function Profile() {
                           Sign Contract 👋
                         </button>
                       )}
-                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <button 
+                        onClick={() => setViewingContract(c)}
+                        title="View Contract"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                       </button>
                     </div>
@@ -390,7 +395,7 @@ export default function Profile() {
             {/* Signature Modal */}
             {signingId && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in duration-300">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
                   <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                     <div>
                       <h3 className="text-xl font-black text-gray-900 leading-tight">Digital Contract Signing</h3>
@@ -406,11 +411,13 @@ export default function Profile() {
                         </p>
                      </div>
 
-                     <div className="py-8">
-                        {/* Contract text preview - simplified */}
-                        <div className="bg-gray-50 p-4 rounded-xl max-h-40 overflow-y-auto text-xs text-gray-500 leading-relaxed font-mono">
-                           {contracts.find(c => c._id === signingId)?.content.replace(/<[^>]*>/g, '')}
-                        </div>
+                     <div className="py-2">
+                        {/* Contract text preview - beautifully styled HTML container */}
+                        <div 
+                           className="bg-gray-50 p-6 rounded-xl max-h-60 overflow-y-auto text-xs text-gray-700 leading-relaxed border border-gray-100 prose prose-sm max-w-none"
+                           style={{ fontFamily: 'Georgia, serif' }}
+                           dangerouslySetInnerHTML={{ __html: contracts.find(c => c._id === signingId)?.content || '' }}
+                        />
                      </div>
 
                      <form onSubmit={handleSign} className="space-y-4">
@@ -428,7 +435,39 @@ export default function Profile() {
                         <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition shadow-xl text-sm uppercase tracking-widest shadow-red-500/20">
                            Confirm & Sign Contract
                         </button>
-                     </form>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Contract Modal */}
+            {viewingContract && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in duration-300">
+                  <div className="p-6 border-b border-gray-50 flex items-center justify-between shrink-0">
+                    <div>
+                      <h3 className="text-lg font-black text-gray-900 leading-tight">{viewingContract.title}</h3>
+                      <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-wider">
+                        {viewingContract.type} &bull; Status: {viewingContract.status.replace('_', ' ')}
+                      </p>
+                    </div>
+                    <button onClick={() => setViewingContract(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+                  </div>
+                  <div className="p-8 overflow-y-auto flex-1 bg-gray-50/50">
+                    <div 
+                      className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 prose prose-sm max-w-none"
+                      style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
+                      dangerouslySetInnerHTML={{ __html: viewingContract.content || '<p class="italic text-gray-400">No content.</p>' }}
+                    />
+                  </div>
+                  <div className="p-6 border-t border-gray-50 bg-gray-50/50 flex justify-end shrink-0">
+                    <button 
+                      onClick={() => setViewingContract(null)}
+                      className="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition shadow text-xs uppercase tracking-wider"
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
               </div>

@@ -56,10 +56,10 @@ router.post('/register', async (req, res) => {
 // POST /api/auth/admin-register
 router.post('/admin-register', async (req, res) => {
   try {
-    const { fullName, email, password, employeeId, role, department } = req.body;
+    const { fullName, email, password, employeeId, role, department, mobile } = req.body;
     
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: 'Full Name, Email, and Password are required' });
+    if (!fullName || !email || !password || !mobile) {
+      return res.status(400).json({ message: 'Full Name, Email, Password, and Mobile Number are required' });
     }
 
     const existingUser = await User.findOne({ email });
@@ -158,6 +158,7 @@ router.post('/admin-register', async (req, res) => {
       employeeId,
       role: subRole,
       department,
+      mobile,
       adminSubRole: subRole,
       joiningDate: new Date().toISOString()
     });

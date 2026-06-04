@@ -5,7 +5,8 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar,
+  User, Activity, LogOut
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -152,6 +153,7 @@ export default function SuperAdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [openMenus, setOpenMenus] = useState(() => {
     const initial = {};
     MENU_ITEMS.forEach(item => {
@@ -356,11 +358,93 @@ export default function SuperAdminLayout({ children }) {
               )}
             </div>
 
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer">
-              <img src={`https://ui-avatars.com/api/?name=${admin?.name}&background=1e5cdc&color=fff`} alt="Admin" className="w-8 h-8 rounded-full border border-gray-200" />
-              <div className="hidden sm:flex items-center gap-1 font-extrabold text-gray-700 text-sm uppercase tracking-tight">
-                Super Admin <ChevronDown size={14} className="text-gray-400" />
+            <div className="relative">
+              <div 
+                className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group"
+                onClick={() => {
+                  setShowProfileMenu(!showProfileMenu);
+                  setShowNotifications(false); // Close notifications if open
+                }}
+              >
+                <div className="relative">
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${admin?.name || 'Super Admin'}&background=1e5cdc&color=fff&bold=true`}
+                    alt="Admin"
+                    className="w-9 h-9 rounded-full border border-gray-200 object-cover"
+                  />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <div className="text-left font-medium">
+                    <div className="text-xs font-black text-gray-800 leading-tight">
+                      {admin?.name || 'Super Admin'}
+                    </div>
+                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                      Super Admin
+                    </div>
+                  </div>
+                  <ChevronDown size={14} className={`text-gray-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
+                </div>
               </div>
+
+              {/* Profile Dropdown Backdrop */}
+              {showProfileMenu && (
+                <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)} />
+              )}
+
+              {/* Profile Dropdown */}
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-4 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/80">
+                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Super Admin'}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-bold text-gray-900 text-sm truncate">{admin?.name || 'Super Admin'}</span>
+                      <span className="text-xs text-gray-500 truncate">{admin?.email || 'admin@thecontractum.com'}</span>
+                    </div>
+                  </div>
+                  <div className="p-2 space-y-0.5">
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/profile');
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
+                    >
+                      <User size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> My Profile
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/analytics');
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
+                    >
+                      <Activity size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Activity Log
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/admin/settings');
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:text-[#1e5cdc] hover:bg-blue-50/50 rounded-xl transition-colors font-semibold group"
+                    >
+                      <Settings size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Global Settings
+                    </button>
+                  </div>
+                  <div className="h-[1px] bg-gray-100 w-full"></div>
+                  <div className="p-2 bg-gray-50/30">
+                    <button 
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl transition-colors font-semibold group"
+                    >
+                      <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" /> Logout Securely
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

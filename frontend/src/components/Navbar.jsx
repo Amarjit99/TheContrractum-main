@@ -291,7 +291,7 @@ export default function Navbar() {
                       {/* Menu Items */}
                       <div className="py-1">
                         {(user.role === 'admin' || user.role === 'super-admin') && (
-                          <Link to={user.role === 'super-admin' ? '/superadmin/SuperAdminDashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
+                          <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             Admin Dashboard
@@ -461,7 +461,7 @@ export default function Navbar() {
 
                 {(user.role === 'admin' || user.role === 'super-admin') && (
                   <Link
-                    to={user.role === 'super-admin' ? '/superadmin/SuperAdminDashboard' : '/admin/dashboard'}
+                    to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 w-full py-3 px-5 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all duration-300"
                   >
