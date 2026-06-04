@@ -651,19 +651,19 @@ export default function JobApplication() {
 
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
-                                    <div>
+                                    <div className="flex gap-2">
                                         <select
                                             name="countryIndex"
                                             value={formData.countryIndex}
                                             onChange={handleInputChange}
-                                            className="w-full mb-2 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer"
+                                            className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer"
                                         >
                                             {COUNTRIES.map((c, i) => (
                                                 <option key={i} value={i}>{c.code} ({c.iso})</option>
                                             ))}
                                         </select>
                                         <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                             placeholder="98765 43210" />
                                     </div>
                                 </div>
