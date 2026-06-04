@@ -24,6 +24,15 @@ const ADMIN_SUB_ROLES = [
   'Database Administrator'
 ];
 
+const getInitials = (name) => {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
 export default function AdminAdmins() {
   const { admin, logout } = useAdminAuth();
   const navigate = useNavigate();
@@ -150,7 +159,7 @@ export default function AdminAdmins() {
                       <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-blue-100 text-[#1e5cdc] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 border border-blue-200">
                         {u.avatar
                           ? <img src={u.avatar} className="w-full h-full object-cover rounded-full" alt="" />
-                          : u.name?.charAt(0).toUpperCase()}
+                          : getInitials(u.name)}
                       </div>
                       <div>
                         <p className="text-gray-800 font-semibold text-xs sm:text-sm">{u.name}</p>

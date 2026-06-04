@@ -130,7 +130,7 @@ export default function AdminContracts() {
       const res = await fetch(`${API}/api/contracts/${c._id}/send-email`, { method: 'POST', headers: jsonHeaders });
       const data = await res.json();
       if (res.ok) toast.success(data.message);
-      else toast.error(data.message || 'Email failed');
+      else toast.error(data.error ? `${data.message}: ${data.error}` : (data.message || 'Email failed'));
     } catch { toast.error('Failed to send email'); }
     setSendingEmail(null);
   };

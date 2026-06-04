@@ -4,7 +4,8 @@ import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
   ArrowLeft, Save, Send, User as UserIcon, Calendar,
   FileText, ClipboardList, Info, Eye, EyeOff, RefreshCw,
-  CheckCircle, LayoutTemplate, ChevronDown, Upload
+  CheckCircle, LayoutTemplate, ChevronDown, Upload, XCircle, Pencil,
+  Mail
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -86,7 +87,11 @@ export default function ContractEditor() {
     }
   });
 
-  const isEditable = !isEdit || ['Draft', 'Rejected'].includes(formData.status);
+  const [forceEdit, setForceEdit] = useState(false);
+  const [originalData, setOriginalData] = useState(null);
+
+  const isDraftOrRejected = !isEdit || ['Draft', 'Rejected'].includes(formData.status);
+  const isEditable = isDraftOrRejected || forceEdit;
 
   const token = localStorage.getItem('adminToken') || admin?.token;
 
@@ -114,7 +119,7 @@ export default function ContractEditor() {
       const res = await fetch(`${API}/api/contracts/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (res.ok) {
-        setFormData({
+        const formObj = {
           employeeId:  data.employeeId?._id || data.employeeId || '',
           title:       data.title || '',
           description: data.description || '',
@@ -139,10 +144,145 @@ export default function ContractEditor() {
             forceMajeure: data.clauses?.forceMajeure || '',
             renewal: data.clauses?.renewal || '',
           }
-        });
+        };
+        setFormData(formObj);
+        setOriginalData(formObj);
       }
     } catch { console.error('Failed to fetch contract'); }
   }, [id, token]);
+
+  const canApproveReject = useCallback(() => {
+    if (!admin || !formData.status) return false;
+    const subRole = (admin.adminSubRole || '').toLowerCase().trim();
+    const isManager = subRole.includes('manager') || admin.role === 'manager';
+    const isHR = subRole.includes('hr') || subRole.startsWith('hr ');
+    const isLegal = subRole.includes('legal') || subRole.includes('compliance');
+    const isSuper = admin.role === 'super-admin';
+
+    return (
+      (formData.status === 'Pending_Manager' && isManager) ||
+      (formData.status === 'Pending_HR' && isHR) ||
+      (formData.status === 'Pending_Legal' && isLegal) ||
+      (formData.status === 'Pending_Final' && isSuper)
+    );
+  }, [admin, formData.status]);
+
+  const handleApprove = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API}/api/contracts/${id}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ comments: 'Approved via view page' })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Contract approved!');
+        navigate('/admin/contracts');
+      } else {
+        toast.error(data.message || 'Action not allowed');
+      }
+    } catch {
+      toast.error('Failed to approve');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!window.confirm('Reject this contract?')) return;
+    try {
+      setLoading(true);
+      const res = await fetch(`${API}/api/contracts/${id}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ comments: 'Rejected via view page' })
+      });
+      if (res.ok) {
+        toast.success('Contract rejected');
+        navigate('/admin/contracts');
+      } else {
+        const data = await res.json();
+        toast.error(data.message || 'Failed to reject');
+      }
+    } catch {
+      toast.error('Failed to reject');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  const handleSendEmail = async () => {
+    if (!formData.employeeId) {
+      toast.error('No employee assigned to this contract.');
+      return;
+    }
+    const emp = users.find(u => u._id === formData.employeeId);
+    const email = emp?.email || 'the employee';
+    if (!window.confirm(`Send contract "${formData.title}" directly to ${email}?`)) return;
+    
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`${API}/api/contracts/${id}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || 'Contract emailed successfully!');
+      } else {
+        toast.error(data.error ? `${data.message}: ${data.error}` : (data.message || 'Failed to send email.'));
+      }
+    } catch {
+      toast.error('Failed to send email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!formData.employeeId || !formData.title.trim() || !formData.content.trim()) {
+      toast.error('Please fill in all required fields: employee, title, and contract content.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const sanitized = { ...formData };
+      if (!sanitized.validFrom)  delete sanitized.validFrom;
+      if (!sanitized.validUntil) delete sanitized.validUntil;
+
+      const res = await fetch(`${API}/api/contracts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(sanitized)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Contract updated successfully!');
+        setForceEdit(false);
+        setOriginalData(sanitized);
+        fetchContract();
+      } else {
+        toast.error(data.error || data.message || 'Failed to update contract');
+      }
+    } catch {
+      toast.error('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     Promise.resolve().then(() => {
@@ -404,7 +544,35 @@ export default function ContractEditor() {
             {preview ? <EyeOff size={16} /> : <Eye size={16} />}
             {preview ? 'Edit Mode' : 'Preview'}
           </button>
-          {isEditable && (
+          {isEdit && (
+            <button
+              onClick={handleSendEmail}
+              disabled={sendingEmail || loading}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all text-sm disabled:opacity-50 shadow-sm"
+            >
+              {sendingEmail ? <RefreshCw size={16} className="animate-spin" /> : <Mail size={16} />}
+              Send Email
+            </button>
+          )}
+          {isEdit && !forceEdit && canApproveReject() && (
+            <>
+              <button
+                onClick={handleReject}
+                disabled={loading}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-red-500/25 disabled:opacity-50"
+              >
+                <XCircle size={16} /> Reject
+              </button>
+              <button
+                onClick={handleApprove}
+                disabled={loading}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+              >
+                <CheckCircle size={16} /> Approve
+              </button>
+            </>
+          )}
+          {isDraftOrRejected ? (
             <>
               <button
                 onClick={() => handleSubmit(false)}
@@ -422,6 +590,40 @@ export default function ContractEditor() {
                 <Send size={16} /> Submit for Approval
               </button>
             </>
+          ) : (
+            <>
+              {!forceEdit ? (
+                <button
+                  onClick={() => setForceEdit(true)}
+                  className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/25"
+                >
+                  <Pencil size={16} /> Edit Contract
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      if (originalData) {
+                        setFormData(originalData);
+                      }
+                      setForceEdit(false);
+                      toast.success('Restored previous content');
+                    }}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all shadow-sm text-sm"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/25 text-sm disabled:opacity-50"
+                  >
+                    {loading ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                    Save Changes
+                  </button>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -434,6 +636,19 @@ export default function ContractEditor() {
              <div>
                 <p className="text-sm font-bold">Read-Only Mode</p>
                 <p className="text-xs text-blue-600 font-medium">This contract is currently in <strong>{formData.status.replace('_', ' ')}</strong> status and cannot be edited.</p>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Editing Mode Banner */}
+      {forceEdit && (
+        <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-800 px-6 py-4 rounded-2xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+             <span className="text-xl">⚠️</span>
+             <div>
+                <p className="text-sm font-bold">Editing In-Review Contract</p>
+                <p className="text-xs text-amber-600 font-medium">You are making changes to a contract that is currently in <strong>{formData.status.replace('_', ' ')}</strong> status.</p>
              </div>
           </div>
         </div>

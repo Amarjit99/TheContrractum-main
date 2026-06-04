@@ -56,6 +56,9 @@ export default function AdminContractTemplates() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(null);
 
+  const subRole = (admin?.adminSubRole || '').toLowerCase().trim();
+  const isLegalOrSuper = subRole.includes('legal') || subRole.includes('compliance') || admin?.role === 'super-admin';
+
   const token = localStorage.getItem('adminToken') || admin?.token;
 
   const fetchTemplates = useCallback(async () => {
@@ -268,9 +271,11 @@ export default function AdminContractTemplates() {
         </div>
         <div className="flex justify-end gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50/50 rounded-b-3xl shrink-0">
           <button onClick={() => setModal(null)} className="px-6 py-2.5 rounded-xl font-bold border border-gray-200 text-gray-600 hover:bg-gray-100 transition-all text-sm">Close</button>
-          <button onClick={() => openEdit(selected)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all text-sm">
-            <Pencil size={15} /> Edit Template
-          </button>
+          {isLegalOrSuper && (
+            <button onClick={() => openEdit(selected)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all text-sm">
+              <Pencil size={15} /> Edit Template
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -301,12 +306,14 @@ export default function AdminContractTemplates() {
             </p>
           </div>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/25 self-start sm:self-auto"
-        >
-          <Plus size={17} /> New Template
-        </button>
+        {isLegalOrSuper && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/25 self-start sm:self-auto"
+          >
+            <Plus size={17} /> New Template
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -350,9 +357,11 @@ export default function AdminContractTemplates() {
             <LayoutTemplate size={28} />
           </div>
           <p className="text-gray-600 font-bold">No templates found</p>
-          <button onClick={openCreate} className="flex items-center gap-2 bg-[#1e5cdc] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
-            <Plus size={16} /> Create First Template
-          </button>
+          {isLegalOrSuper && (
+            <button onClick={openCreate} className="flex items-center gap-2 bg-[#1e5cdc] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
+              <Plus size={16} /> Create First Template
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -393,19 +402,23 @@ export default function AdminContractTemplates() {
                   >
                     <Eye size={13} /> Preview
                   </button>
-                  <button
-                    onClick={() => openEdit(t)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-all text-xs font-bold border border-gray-100 hover:border-indigo-100"
-                  >
-                    <Pencil size={13} /> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(t)}
-                    disabled={deleting === t._id}
-                    className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all border border-gray-100 hover:border-red-100 disabled:opacity-40"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {isLegalOrSuper && (
+                    <>
+                      <button
+                        onClick={() => openEdit(t)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-all text-xs font-bold border border-gray-100 hover:border-indigo-100"
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(t)}
+                        disabled={deleting === t._id}
+                        className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all border border-gray-100 hover:border-red-100 disabled:opacity-40"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

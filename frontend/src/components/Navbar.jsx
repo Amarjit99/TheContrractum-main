@@ -1,18 +1,37 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAdminAuth } from '../context/AdminAuthContext';
 import logo from '../assets/main-logo1.png';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout: userLogout } = useAuth();
+  const { admin, logout: adminLogout } = useAdminAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [closeTimeout, setCloseTimeout] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
 
+  const currentUser = user || admin;
+  const currentName = currentUser ? (currentUser.name || `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() || 'User') : '';
+
+  const getAvatarInitials = (usr) => {
+    if (!usr) return '?';
+    const nameStr = (usr.name || `${usr.firstName || ''} ${usr.lastName || ''}`.trim() || (usr.role === 'super-admin' ? 'Super Admin' : (usr.role === 'admin' ? 'Admin' : 'User')));
+    const parts = nameStr.split(/\s+/).filter(Boolean);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
+  };
+
   const handleLogout = () => {
-    logout();
+    if (admin) {
+      adminLogout();
+    } else {
+      userLogout();
+    }
     navigate('/');
   };
 
@@ -261,7 +280,7 @@ export default function Navbar() {
           </div>
 
           {/* Auth Button - Desktop */}
-          {user ? (
+          {currentUser ? (
             <div className="hidden lg:flex flex-shrink-0 justify-end items-center">
               <div className="relative">
                 {/* Avatar Button */}
@@ -270,7 +289,7 @@ export default function Navbar() {
                   className="flex items-center gap-2 group focus:outline-none"
                 >
                   <span className="w-10 h-10 xl:w-12 xl:h-12 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-base xl:text-lg ring-2 ring-transparent group-hover:ring-red-300 transition-all duration-200 shadow-md">
-                    {user.name?.charAt(0).toUpperCase()}
+                    {getAvatarInitials(currentUser)}
                   </span>
                   <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -285,13 +304,13 @@ export default function Navbar() {
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 z-[110] overflow-hidden animate-fade-in">
                       {/* User Info Header */}
                       <div className="px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white">
-                        <p className="font-bold text-sm truncate">{user.name}</p>
-                        <p className="text-red-200 text-xs truncate">{user.email}</p>
+                        <p className="font-bold text-sm truncate">{currentName}</p>
+                        <p className="text-red-200 text-xs truncate">{currentUser.email}</p>
                       </div>
                       {/* Menu Items */}
                       <div className="py-1">
-                        {(user.role === 'admin' || user.role === 'super-admin') && (
-                          <Link to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
+                        {['admin', 'super-admin', 'manager', 'employee'].includes(currentUser.role) && (
+                          <Link to={currentUser.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'} onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             Admin Dashboard
@@ -452,16 +471,16 @@ export default function Navbar() {
 
           {/* Auth Section - Mobile */}
           <div className="mt-4 pt-4 border-t border-gray-200 pb-8">
-            {user ? (
+            {currentUser ? (
               <div className="space-y-2">
                 <div className="px-5 py-3 bg-red-50 rounded-xl mb-3 border border-red-100">
-                  <p className="font-bold text-gray-900">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="font-bold text-gray-900">{currentName}</p>
+                  <p className="text-sm text-gray-500">{currentUser.email}</p>
                 </div>
 
-                {(user.role === 'admin' || user.role === 'super-admin') && (
+                {['admin', 'super-admin', 'manager', 'employee'].includes(currentUser.role) && (
                   <Link
-                    to={user.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'}
+                    to={currentUser.role === 'super-admin' ? '/admin/super-dashboard' : '/admin/dashboard'}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 w-full py-3 px-5 text-red-600 hover:bg-red-50 font-bold rounded-xl transition-all duration-300"
                   >

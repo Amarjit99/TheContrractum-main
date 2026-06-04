@@ -254,6 +254,15 @@ const ROLE_DETAILS = {
   }
 };
 
+const getInitials = (name) => {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
 export default function AdminUsers() {
   const { admin } = useAdminAuth();
   const headers = useMemo(() => ({
@@ -1441,7 +1450,7 @@ export default function AdminUsers() {
                                       <div key={u._id} className="flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-xl">
                                         <div className="flex items-center gap-2">
                                           <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-[10px]">
-                                            {u.name?.charAt(0).toUpperCase()}
+                                            {getInitials(u.name)}
                                           </div>
                                           <div>
                                             <span className="text-xs font-bold text-gray-800 block leading-tight">{u.name}</span>
@@ -1613,7 +1622,7 @@ export default function AdminUsers() {
                                 <td className="py-3.5 px-4 whitespace-nowrap">
                                   <div className="flex items-center gap-2.5">
                                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
-                                      {u.name?.charAt(0).toUpperCase()}
+                                      {getInitials(u.name)}
                                     </div>
                                     <div>
                                       <p className="font-bold text-gray-900 text-xs">{u.name}</p>
@@ -1714,7 +1723,7 @@ export default function AdminUsers() {
                               <td className="py-3.5 px-4 whitespace-nowrap">
                                 <div className="flex items-center gap-2.5">
                                   <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
-                                    {u.name?.charAt(0).toUpperCase()}
+                                    {getInitials(u.name)}
                                   </div>
                                   <div>
                                     <p className="font-bold text-gray-900 text-xs">{u.name}</p>

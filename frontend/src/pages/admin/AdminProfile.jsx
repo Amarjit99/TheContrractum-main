@@ -4,6 +4,16 @@ import { User, Mail, Shield, Calendar, Phone, Save, KeyRound, Briefcase } from '
 import { toast, Toaster } from 'react-hot-toast';
 import AdminLayout from '../../components/admin/AdminLayout';
 
+const getAvatarInitials = (usr) => {
+  if (!usr) return 'A';
+  const nameStr = (usr.name || `${usr.firstName || ''} ${usr.lastName || ''}`.trim() || (usr.role === 'super-admin' ? 'Super Admin' : (usr.role === 'admin' ? 'Admin' : 'User')));
+  const parts = nameStr.split(/\s+/).filter(Boolean);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
 export default function AdminProfile() {
   const { admin, authFetch, updateAdminData } = useAdminAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -108,7 +118,7 @@ export default function AdminProfile() {
 
               <div className="relative mb-4">
                 <img
-                  src={`https://ui-avatars.com/api/?name=${admin?.name || 'Admin'}&background=1e5cdc&color=fff&size=128`}
+                  src={`https://ui-avatars.com/api/?name=${getAvatarInitials(admin)}&background=1e5cdc&color=fff&size=128`}
                   alt="Profile"
                   className="w-32 h-32 rounded-full border-4 border-white shadow-xl"
                 />

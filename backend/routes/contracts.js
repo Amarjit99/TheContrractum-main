@@ -499,13 +499,14 @@ router.get('/', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, r
         let query = {};
         const category = getContractRoleCategory(req.user);
 
-        // Filter based on what the role needs to see
-        if (category === 'Manager') query.status = 'Pending_Manager';
+        // Filter based on what the role needs to see ONLY if pendingOnly or pendingFinal is specified
+        if (req.query.pendingOnly === 'true') {
+            if (category === 'Manager') query.status = 'Pending_Manager';
         else if (category === 'HR') query.status = { $in: ['Pending_HR', 'Draft', 'Rejected'] };
-        else if (category === 'Legal') query.status = 'Pending_Legal';
-        else if (category === 'SuperAdmin') {
-            // Super Admin sees all or specifically Pending_Final
-            if (req.query.pendingFinal) query.status = 'Pending_Final';
+            else if (category === 'Legal') query.status = 'Pending_Legal';
+            else if (category === 'SuperAdmin') query.status = 'Pending_Final';
+        } else if (req.query.pendingFinal === 'true') {
+            query.status = 'Pending_Final';
         }
 
         const contracts = await Contract.find(query)
@@ -567,7 +568,7 @@ router.put('/:id/approve', protect, checkSubRole(['Legal', 'HR', 'Manager']), as
         else if (contract.status === 'Pending_Final') nextRole = 'Super Admin';
         else if (contract.status === 'Pending_Signature') {
              // Notify Employee
-             // (Implementation of employee notification could go here)
+             sendContractEmailHelper(contract).catch(err => console.error("Error sending auto-email on approval:", err));
         }
 
         if (nextRole) {
@@ -628,6 +629,7 @@ router.put('/:id/sign', protect, async (req, res) => {
         contract.status = 'Active';
 
         await contract.save();
+        sendContractEmailHelper(contract).catch(err => console.error("Error sending auto-email on signature:", err));
         res.json(contract);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -651,8 +653,8 @@ router.put('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
-        if (!['Draft', 'Rejected'].includes(contract.status)) {
-            return res.status(403).json({ message: 'Only Draft or Rejected contracts can be edited.' });
+        if (!['Draft', 'Rejected', 'Pending_Manager', 'Pending_HR', 'Pending_Legal', 'Pending_Final', 'Pending_Signature', 'Active', 'Expired'].includes(contract.status)) {
+            return res.status(403).json({ message: 'Only Draft, Rejected, Pending, Active, or Expired contracts can be edited.' });
         }
         const updates = { ...req.body };
         if (updates.validFrom === '') delete updates.validFrom;
@@ -684,53 +686,18 @@ router.delete('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (
 // ── Email a contract to the employee ────────────────────────────
 router.post('/:id/send-email', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
-        const nodemailer = require('nodemailer');
-        const contract = await Contract.findById(req.params.id)
-            .populate('employeeId', 'firstName lastName email name');
+        const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
 
-        const employee = contract.employeeId;
-        const toEmail = employee?.email;
-        if (!toEmail) return res.status(400).json({ message: 'Employee email not found' });
+        const sent = await sendContractEmailHelper(contract);
+        if (!sent) return res.status(400).json({ message: 'Failed to send email. Receiver details missing.' });
 
-        const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE || 'gmail',
-            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-        });
-
-        const employeeName = employee.name || `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Employee';
-
-        await transporter.sendMail({
-            from: `"The Contractum" <${process.env.EMAIL_USER}>`,
-            to: toEmail,
-            subject: `Your Contract: ${contract.title}`,
-            html: `
-<div style="font-family:Arial,sans-serif;max-width:650px;margin:0 auto;background:#f8fafc;padding:32px;border-radius:16px;">
-  <div style="background:#1e5cdc;color:white;padding:24px 32px;border-radius:12px 12px 0 0;margin:-32px -32px 32px;">
-    <h1 style="margin:0;font-size:20px;">The Contractum</h1>
-    <p style="margin:4px 0 0;opacity:0.8;font-size:13px;">Official Contract Notification</p>
-  </div>
-  <p style="font-size:16px;">Dear <strong>${employeeName}</strong>,</p>
-  <p>Please find your contract document below. Review it carefully and contact HR if you have any questions.</p>
-  <div style="background:white;border-radius:12px;padding:24px;margin:20px 0;border:1px solid #e5e7eb;">
-    <h2 style="color:#1e5cdc;font-size:16px;margin:0 0 8px;">${contract.title}</h2>
-    <p style="color:#6b7280;font-size:13px;margin:0;">Type: ${contract.type} | Status: ${contract.status}</p>
-  </div>
-  <div style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin:20px 0;line-height:1.6;">
-    ${contract.content}
-  </div>
-  <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:32px;">
-    This is an automated email from The Contractum system. Please do not reply to this email.
-  </p>
-</div>`,
-        });
-
-        // Log the action
+        // Log the action in history
         contract.history = contract.history || [];
-        contract.history.push({ action: 'Email Sent', by: req.user._id, timestamp: new Date(), comments: `Email sent to ${toEmail}` });
+        contract.history.push({ action: 'Email Sent', by: req.user._id, timestamp: new Date(), comments: `Email sent with PDF attachment` });
         await contract.save();
 
-        res.json({ message: `Contract successfully emailed to ${toEmail}` });
+        res.json({ message: `Contract successfully emailed with PDF attachment` });
     } catch (err) {
         console.error('Email error:', err);
         res.status(500).json({ message: 'Failed to send email', error: err.message });
@@ -835,5 +802,208 @@ Promise.resolve().then(async () => {
         console.error("Migration error:", e);
     }
 });
+
+// ── PDF and Email Helpers ────────────────────────────────────────
+const PDFDocument = require('pdfkit');
+const nodemailer = require('nodemailer');
+
+function parseHTMLToPDFKitTokens(html) {
+    const tokens = [];
+    let cleanHtml = html
+        .replace(/\r?\n/g, ' ')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '</p>\n')
+        .replace(/<\/h[1-6]>/gi, '</h1>\n');
+        
+    const lines = cleanHtml.split('\n');
+    for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+        
+        const headingMatch = line.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
+        if (headingMatch) {
+            const text = stripHtmlTags(headingMatch[1]);
+            if (text) tokens.push({ type: 'heading', text });
+            continue;
+        }
+        
+        const text = stripHtmlTags(line);
+        if (text) {
+            tokens.push({ type: 'paragraph', text });
+        }
+    }
+    return tokens;
+}
+
+function stripHtmlTags(str) {
+    return str
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .trim();
+}
+
+function generateContractPDF(contract, employeeName) {
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument({ margin: 50 });
+            const chunks = [];
+            
+            doc.on('data', chunk => chunks.push(chunk));
+            doc.on('end', () => resolve(Buffer.concat(chunks)));
+            
+            // Header
+            doc.fillColor('#1e5cdc')
+               .fontSize(22)
+               .text('THE CONTRACTUM', { align: 'center' });
+            
+            doc.fillColor('#4b5563')
+               .fontSize(10)
+               .text('Official Contract Document', { align: 'center' });
+            
+            doc.moveDown(1.5);
+            
+            doc.strokeColor('#e5e7eb')
+               .lineWidth(1)
+               .moveTo(50, doc.y)
+               .lineTo(562, doc.y)
+               .stroke();
+            
+            doc.moveDown(1);
+            
+            doc.fillColor('#1f2937')
+               .fontSize(14)
+               .text(`Title: ${contract.title}`, { bold: true });
+               
+            doc.fontSize(10)
+               .fillColor('#4b5563')
+               .text(`Recipient: ${employeeName}`)
+               .text(`Type: ${contract.type}`)
+               .text(`Category: ${contract.category || 'Employment & HR Contracts'}`)
+               .text(`Status: ${contract.status}`)
+               .text(`Date Generated: ${new Date().toLocaleDateString()}`);
+            
+            doc.moveDown(1);
+            
+            doc.strokeColor('#e5e7eb')
+               .lineWidth(1)
+               .moveTo(50, doc.y)
+               .lineTo(562, doc.y)
+               .stroke();
+            
+            doc.moveDown(1.5);
+            
+            const tokens = parseHTMLToPDFKitTokens(contract.content || '');
+            for (const token of tokens) {
+                if (token.type === 'heading') {
+                    doc.moveDown(0.5);
+                    doc.fillColor('#1e5cdc')
+                       .fontSize(14)
+                       .text(token.text, { bold: true });
+                    doc.moveDown(0.5);
+                } else if (token.type === 'paragraph') {
+                    doc.fillColor('#1f2937')
+                       .fontSize(10)
+                       .text(token.text, { lineGap: 4, align: 'justify' });
+                    doc.moveDown(0.8);
+                }
+            }
+            
+            if (contract.signature && contract.signature.isSigned) {
+                doc.moveDown(2);
+                doc.strokeColor('#e5e7eb')
+                   .lineWidth(1)
+                   .moveTo(50, doc.y)
+                   .lineTo(562, doc.y)
+                   .stroke();
+                doc.moveDown(1);
+                
+                doc.fillColor('#1f2937')
+                   .fontSize(12)
+                   .text('DIGITAL SIGNATURE VERIFICATION', { bold: true });
+                doc.fontSize(10)
+                   .fillColor('#4b5563')
+                   .text(`Signed By: ${contract.signature.signatureName}`)
+                   .text(`Signed At: ${new Date(contract.signature.signedAt).toLocaleString()}`)
+                   .text(`IP Address: ${contract.signature.signatureIp || 'N/A'}`);
+            }
+            
+            doc.end();
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+async function sendContractEmailHelper(contract) {
+    let employee = null;
+    if (contract.employeeId && contract.employeeId.email) {
+        employee = contract.employeeId;
+    } else {
+        const User = require('../models/User');
+        employee = await User.findById(contract.employeeId);
+    }
+    if (!employee || !employee.email) return false;
+    
+    const toEmail = employee.email;
+    const employeeName = employee.name || `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Employee';
+    
+    const transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_SERVICE || 'gmail',
+        auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    });
+    
+    const pdfBuffer = await generateContractPDF(contract, employeeName);
+    const pdfName = `${contract.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+    
+    let subject = `Your Contract: ${contract.title}`;
+    let introText = `Please find your contract document attached below. Review it carefully and contact HR if you have any questions.`;
+    
+    if (contract.status === 'Pending_Signature') {
+        subject = `Awaiting Your Signature: ${contract.title}`;
+        introText = `Your contract is ready for your signature. Please log into the portal to sign it digitally. A copy of the contract is attached as a PDF.`;
+    } else if (contract.status === 'Active') {
+        subject = `Contract Executed & Active: ${contract.title}`;
+        introText = `Congratulations! Your contract has been signed and is now active. A copy of the executed contract with digital signature verification is attached as a PDF.`;
+    }
+    
+    await transporter.sendMail({
+        from: `"The Contractum" <${process.env.EMAIL_USER}>`,
+        to: toEmail,
+        subject: subject,
+        html: `
+<div style="font-family:Arial,sans-serif;max-width:650px;margin:0 auto;background:#f8fafc;padding:32px;border-radius:16px;">
+  <div style="background:#1e5cdc;color:white;padding:24px 32px;border-radius:12px 12px 0 0;margin:-32px -32px 32px;">
+    <h1 style="margin:0;font-size:20px;">The Contractum</h1>
+    <p style="margin:4px 0 0;opacity:0.8;font-size:13px;">Official Contract Notification</p>
+  </div>
+  <p style="font-size:16px;">Dear <strong>${employeeName}</strong>,</p>
+  <p>${introText}</p>
+  <div style="background:white;border-radius:12px;padding:24px;margin:20px 0;border:1px solid #e5e7eb;">
+    <h2 style="color:#1e5cdc;font-size:16px;margin:0 0 8px;">${contract.title}</h2>
+    <p style="color:#6b7280;font-size:13px;margin:0;">Type: ${contract.type} | Status: ${contract.status}</p>
+  </div>
+  <div style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin:20px 0;line-height:1.6;max-height: 400px; overflow-y: auto;">
+    ${contract.content}
+  </div>
+  <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:32px;">
+    This is an automated email from The Contractum system. Please do not reply to this email.
+  </p>
+</div>
+        `,
+        attachments: [
+            {
+                filename: pdfName,
+                content: pdfBuffer,
+                contentType: 'application/pdf'
+            }
+        ]
+    });
+    return true;
+}
 
 module.exports = router;

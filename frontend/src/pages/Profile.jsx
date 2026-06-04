@@ -87,11 +87,18 @@ export default function Profile() {
         body: JSON.stringify({ signatureName })
       });
       if (res.ok) {
+        toast.success('Contract signed successfully!');
         setSigningId(null);
         setSignatureName('');
         fetchContracts();
+      } else {
+        const data = await res.json();
+        toast.error(data.message || 'Signing failed');
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      toast.error('An error occurred during signing');
+    }
   };
 
   // Avatar upload

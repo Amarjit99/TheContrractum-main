@@ -82,6 +82,17 @@ const STATUS_OPTIONS = [
 
 function AdminCareers() {
   const { admin } = useAdminAuth();
+
+  const getAvatarInitials = (usr) => {
+    if (!usr) return 'A';
+    const nameStr = (usr.name || `${usr.firstName || ''} ${usr.lastName || ''}`.trim() || (usr.role === 'super-admin' ? 'Super Admin' : (usr.role === 'admin' ? 'Admin' : 'User')));
+    const parts = nameStr.split(/\s+/).filter(Boolean);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
+  };
+
   const headers = useMemo(() => ({
     Authorization: `Bearer ${admin?.token}`,
     'Content-Type': 'application/json'
@@ -1221,7 +1232,7 @@ function reverseLinkedList(head) {
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <img src={`https://ui-avatars.com/api/?name=${admin?.name || 'Anita Verma'}&background=1e5cdc&color=fff`} className="w-8 h-8 rounded-full border border-gray-200 shadow-xs" alt="Profile" />
+                  <img src={`https://ui-avatars.com/api/?name=${getAvatarInitials(admin)}&background=1e5cdc&color=fff`} className="w-8 h-8 rounded-full border border-gray-200 shadow-xs" alt="Profile" />
                   <div className="hidden xl:block text-left text-[10px] leading-tight font-semibold">
                     <p className="text-gray-900">{admin?.name || 'Anita Verma'}</p>
                     <p className="text-gray-400 font-medium">HR Manager</p>

@@ -232,6 +232,16 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
   );
 };
 
+const getAvatarInitials = (usr) => {
+  if (!usr) return 'A';
+  const nameStr = (usr.name || `${usr.firstName || ''} ${usr.lastName || ''}`.trim() || (usr.role === 'super-admin' ? 'Super Admin' : (usr.role === 'admin' ? 'Admin' : 'User')));
+  const parts = nameStr.split(/\s+/).filter(Boolean);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
 export default function AdminLayout({ children }) {
   const { admin, logout } = useAdminAuth();
   const navigate = useNavigate();
@@ -507,7 +517,7 @@ export default function AdminLayout({ children }) {
               >
                 <div className="relative">
                   <img
-                    src={`https://ui-avatars.com/api/?name=${admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}&background=1e5cdc&color=fff&bold=true`}
+                    src={`https://ui-avatars.com/api/?name=${getAvatarInitials(admin)}&background=1e5cdc&color=fff&bold=true`}
                     alt="Admin"
                     className="w-9 h-9 rounded-full border border-gray-200 object-cover"
                   />
@@ -535,7 +545,7 @@ export default function AdminLayout({ children }) {
               {showProfileMenu && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-4 border-b border-gray-50 flex items-center gap-3 bg-gray-50/80">
-                    <img src={`https://ui-avatars.com/api/?name=${admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
+                    <img src={`https://ui-avatars.com/api/?name=${getAvatarInitials(admin)}&background=1e5cdc&color=fff`} alt="Admin" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm shrink-0" />
                     <div className="flex flex-col min-w-0">
                       <span className="font-bold text-gray-900 text-sm truncate">{admin?.name || (admin?.role === 'super-admin' ? 'Super Admin' : 'Admin')}</span>
                       <span className="text-xs text-gray-500 truncate">{admin?.email || 'admin@thecontractum.com'}</span>
