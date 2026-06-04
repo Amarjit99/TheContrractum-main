@@ -77,7 +77,7 @@ const Registration = () => {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
       }
-    } catch {
+    } catch (err) {
       setStatus("error");
       setErrorMsg("Could not reach the server. Please try again later.");
     }
@@ -217,7 +217,7 @@ const Registration = () => {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-red-700 hover:to-pink-700 px-6 sm:px-8 py-4 font-bold tracking-wide rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-60 disabled:cursor-not-allowed text-center"
+                className="flex-1 px-6 sm:px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300 text-center"
               >
                 {status === "loading" ? "SENDING..." : "SEND MESSAGE"}
               </button>

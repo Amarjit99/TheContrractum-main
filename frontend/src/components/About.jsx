@@ -15,12 +15,12 @@ export default function About() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="text-center p-4 bg-primary/10 rounded-2xl">
-                <div className="text-3xl font-bold text-primary mb-2">10+</div>
-                <div className="text-gray-600">Years Experience</div>
+                <div className="text-3xl font-bold text-black mb-2">10+</div>
+                <div className="text-black">Years Experience</div>
               </div>
               <div className="text-center p-4 bg-primary/10 rounded-2xl">
-                <div className="text-3xl font-bold text-primary mb-2">5000+</div>
-                <div className="text-gray-600">Happy Clients</div>
+                <div className="text-3xl font-bold text-black mb-2">5000+</div>
+                <div className="text-black">Happy Clients</div>
               </div>
             </div>
           </div>

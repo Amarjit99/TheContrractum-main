@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { 
@@ -131,47 +132,47 @@ export default function Projects() {
     const projects = [
         {
             id: 1,
-            title: "Project Nova",
-            category: "R&D - Artificial Intelligence",
-            desc: "A next-generation predictive analytics engine designed to optimize supply chain logistics in real-time using reinforcement learning.",
-            status: "Active Development",
-            tech: ["Python", "PyTorch", "AWS Sagemaker"],
-            icon: <Cpu className="w-8 h-8 text-purple-500" />,
+            title: "Merchant Onboarding QR & Sound Box, EDC, Loans",
+            category: "Fintech",
+            desc: "A merchant onboarding workflow that streamlines QR, sound box, EDC, and loan services through a single operational platform.",
+            status: "In Progress",
+            tech: ["React", "Node.js", "Payments", "KYC", "CRM"],
+            icon: <Code className="w-8 h-8 text-blue-500" />,
             details: [
-                "Real-time supply chain optimization mapping.",
-                "Advanced reinforcement learning simulation environments.",
-                "Scalable AWS infrastructure for global deployment.",
-                "Interactive predictive analytics performance dashboard."
+                "Merchant onboarding flow",
+                "QR and sound box integration",
+                "EDC terminal support",
+                "Loan servicing enablement"
             ]
         },
         {
             id: 2,
-            title: "Project Aegis",
-            category: "Cybersecurity",
-            desc: "An automated threat detection system that uses behavioral analysis to identify zero-day vulnerabilities in enterprise networks.",
-            status: "Beta Testing",
-            tech: ["Go", "Kafka", "ElasticSearch"],
-            icon: <Code className="w-8 h-8 text-blue-500" />,
+            title: "Smart City Infrastructure Hub",
+            category: "Healthcare",
+            desc: "A centralized hub for managing city infrastructure, monitoring assets, and coordinating operational data in real time.",
+            status: "In Progress",
+            tech: ["GIS", "IoT", "React", "Cloud", "Analytics"],
+            icon: <Cpu className="w-8 h-8 text-purple-500" />,
             details: [
-                "Behavioral analysis threat detection engine.",
-                "Zero-day vulnerability identification protocols.",
-                "Kafka-based real-time event streaming architecture.",
-                "Automated network remediation and containment."
+                "Infrastructure asset tracking",
+                "Operational dashboards",
+                "Real-time data monitoring",
+                "Smart city coordination"
             ]
         },
         {
             id: 3,
-            title: "Project Helios",
-            category: "Renewable Energy Tech",
-            desc: "IoT-based monitoring platform for solar farms to maximize efficiency and predict maintenance needs.",
-            status: "Concept Phase",
-            tech: ["IoT", "React Native", "MQTT"],
+            title: "Healthcare Data Analytics Platform",
+            category: "Healthcare",
+            desc: "A data analytics platform for healthcare teams to unify patient insights, reporting, and decision support across systems.",
+            status: "In Progress",
+            tech: ["Python", "React", "MongoDB", "Dashboards", "BI"],
             icon: <Rocket className="w-8 h-8 text-orange-500" />,
             details: [
-                "IoT-based remote sensor monitoring network.",
-                "Solar farm efficiency optimization algorithms.",
-                "Predictive maintenance and anomaly alerting.",
-                "Secure MQTT communication protocol for devices."
+                "Patient analytics",
+                "Clinical reporting",
+                "Data visualization",
+                "Decision support"
             ]
         }
     ];

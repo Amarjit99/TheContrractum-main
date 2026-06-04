@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { blogPosts } from './BlogArticle';
 import p20 from "../../assets/p20.png";
 import p18 from "../../assets/p18.png";
-import { toast } from 'react-hot-toast';
 
 export default function Blogs() {
     const navigate = useNavigate();
@@ -58,6 +56,12 @@ export default function Blogs() {
         document.getElementById('blog-section')?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const openFeaturedTopic = (topicName) => {
+        if (topicName === 'AI & Machine Learning') {
+            navigate('/resources/blogs/1');
+        }
+    };
+
     const handleSubscribe = async (e) => {
         e.preventDefault();
         if (isSubscribed || isSubscribing || !email) return;
@@ -80,31 +84,18 @@ export default function Blogs() {
                 fetch(`${API}/api/subscription/subscribe`, { method: 'POST' });
             } else {
                 const data = await response.json();
-                toast.error(data.message || "Subscription failed");
+                alert(data.message || "Subscription failed");
             }
         } catch (err) {
             console.error("Error subscribing:", err);
-            toast.error("An error occurred. Please try again.");
+            alert("An error occurred. Please try again.");
         } finally {
             setIsSubscribing(false);
         }
     };
 
-    // Combine DB posts and static posts, deduplicating by title
-    // We prioritize static posts because they have structured content (sections/images)
-    const allPosts = [...dbBlogs, ...blogPosts].reduce((acc, current) => {
-        const x = acc.find(item => item.title === current.title);
-        if (!x) {
-            return acc.concat([current]);
-        } else {
-            // If we found a duplicate, and the current one is static (numeric id), use it instead
-            const isCurrentStatic = /^\d+$/.test(String(current.id));
-            if (isCurrentStatic) {
-                return acc.map(item => item.title === current.title ? current : item);
-            }
-            return acc;
-        }
-    }, []);
+    // Only DB posts — no more hardcoded duplicates
+    const allPosts = dbBlogs;
 
     // Filter by category and search
     const filteredPosts = allPosts.filter(post => {
@@ -142,32 +133,24 @@ export default function Blogs() {
                             Explore expert insights, industry trends, and innovative ideas that drive digital transformation and business success.
                         </p>
 
-                        <div className="mt-6 md:mt-8 flex flex-col gap-3 sm:gap-4 max-w-lg">
-                            <button
-                                onClick={scrollToBlogs}
-                                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-primary-light text-white text-sm sm:text-base font-bold rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                            >
-                                Explore Articles
-                            </button>
-                            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                                <div className="relative flex-grow">
-                                    <input 
-                                        type="email" 
-                                        placeholder="Enter your email..." 
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full px-6 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:border-primary transition-all"
-                                    />
-                                </div>
+                        <form onSubmit={handleSubscribe} className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-lg">
+                            <div className="relative flex-grow">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email..."
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-6 py-3.5 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-xl text-white placeholder:text-white/60 focus:outline-none focus:border-primary transition-all"
+                                />
+                            </div>
                             <button
                                 type="submit"
                                 disabled={isSubscribed || isSubscribing}
-                                className={`px-6 sm:px-8 py-3.5 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 whitespace-nowrap ${
-                                    isSubscribed 
-                                    ? "bg-green-500 text-white cursor-default" 
-                                    : "bg-gradient-to-r from-primary to-primary-light text-white hover:shadow-2xl hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-                                }`}
+                                className={`px-6 sm:px-8 py-3.5 rounded-xl transition-all duration-300 text-center text-sm sm:text-base font-bold flex items-center justify-center gap-2 whitespace-nowrap ${isSubscribed
+                                        ? "bg-green-500 text-white cursor-default"
+                                        : "bg-gradient-to-r from-primary to-primary-light text-white hover:shadow-2xl hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                                    }`}
                             >
                                 {isSubscribing ? (
                                     <>
@@ -181,8 +164,7 @@ export default function Blogs() {
                                     </>
                                 ) : "Join Newsletter"}
                             </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
 
                     <div className="hidden md:flex justify-center md:justify-end">
@@ -220,7 +202,11 @@ export default function Blogs() {
                             { name: "Cybersecurity", image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=300" },
                             { name: "Digital Innovation", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=300" }
                         ].map((item, index) => (
-                            <div key={index} className="group cursor-pointer">
+                            <div
+                                key={index}
+                                onClick={() => openFeaturedTopic(item.name)}
+                                className={`group ${item.name === 'AI & Machine Learning' ? 'cursor-pointer' : 'cursor-default'}`}
+                            >
                                 <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 mx-auto rounded-full overflow-hidden border-2 sm:border-4 border-purple-200 group-hover:border-purple-500 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                                     <img
                                         src={item.image}
@@ -360,11 +346,10 @@ export default function Blogs() {
                                         setSelectedCategory(category);
                                         setVisiblePosts(6);
                                     }}
-                                    className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold transition-all duration-300 whitespace-nowrap ${
-                                        selectedCategory === category
-                                            ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg scale-105'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-primary hover:text-white border-2 border-transparent hover:border-purple-200'
-                                    }`}
+                                    className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold whitespace-nowrap border ${selectedCategory === category
+                                            ? 'bg-primary text-black border-primary'
+                                            : 'bg-transparent text-black-700 border-gray-200'
+                                        }`}
                                 >
                                     {category}
                                 </button>
@@ -430,9 +415,9 @@ export default function Blogs() {
                                             </div>
                                             <button
                                                 onClick={() => navigate(`/resources/blogs/${post.id}`)}
-                                                className="w-full py-2 bg-gradient-to-r from-primary to-primary-light text-black font-semibold rounded-lg hover:shadow-lg transition-all duration-300 group-hover:scale-105"
+                                                className="w-full py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300"
                                             >
-                                                Read Article →
+                                                Read Article
                                             </button>
                                         </div>
                                     </div>

@@ -169,8 +169,8 @@ export default function JobOpenings() {
             </div>
 
             {/* Filter Section */}
-            <div id="openings" className="max-w-7xl mx-auto px-6 lg:px-8 -mt-12 relative z-10">
-                <div className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row gap-6 items-center border border-gray-100">
+            <div id="openings" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10">
+                <div className="bg-white p-4 sm:p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch md:items-center border border-gray-100">
                     <div className="flex-1 w-full md:w-auto flex items-center gap-3 border border-gray-100 rounded-2xl px-5 py-4 bg-gray-50">
                         <Search className="text-gray-400" />
                         <input
@@ -179,16 +179,16 @@ export default function JobOpenings() {
                             className="bg-transparent border-none outline-none w-full text-gray-700 font-bold"
                         />
                     </div>
-                    <div className="flex gap-4 w-full md:w-auto">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                         <select
-                            className="flex-1 md:w-56 px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none cursor-pointer"
+                            className="w-full sm:flex-1 md:w-56 px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none cursor-pointer"
                             value={filterDepartment}
                             onChange={(e) => setFilterDepartment(e.target.value)}
                         >
                             {departments.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                         <select
-                            className="flex-1 md:w-56 px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none cursor-pointer"
+                            className="w-full sm:flex-1 md:w-56 px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none cursor-pointer"
                             value={filterLocation}
                             onChange={(e) => setFilterLocation(e.target.value)}
                         >
