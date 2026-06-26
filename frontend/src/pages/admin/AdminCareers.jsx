@@ -980,7 +980,8 @@ function reverseLinkedList(head) {
           password: 'employee12345',
           mobile: cand.phone || '9876543210',
           adminSubRole: staffRegistrationForm.roleAccess,
-          joiningDate: staffRegistrationForm.joiningDate
+          joiningDate: staffRegistrationForm.joiningDate,
+          employeeId: staffRegistrationForm.employeeId
         })
       });
 

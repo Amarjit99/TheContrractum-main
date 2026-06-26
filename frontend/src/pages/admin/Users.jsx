@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
+import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
 import {
   Search, CheckCircle, Clock, Edit3, X, Plus, ShieldAlert,
   LayoutDashboard, FileText, Calendar, Send, UserCheck, Star,
@@ -265,6 +266,7 @@ const getInitials = (name) => {
 
 export default function AdminUsers() {
   const { admin } = useAdminAuth();
+  const Layout = admin?.role === 'super-admin' ? SuperAdminLayout : AdminLayout;
   const headers = useMemo(() => ({
     Authorization: `Bearer ${admin?.token}`,
     'Content-Type': 'application/json'
@@ -317,7 +319,7 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({
     name: '', email: '', mobile: '', role: '', password: '',
     isHeld: false, holdUntil: '', holdReason: '', adminSubRole: '', adminPermissions: 'view',
-    company: '', industry: '', jobTitle: ''
+    company: '', industry: '', jobTitle: '', employeeId: ''
   });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -325,7 +327,7 @@ export default function AdminUsers() {
     firstName: '', lastName: '', email: '', password: '', mobile: '',
     role: 'user', adminSubRole: 'HR Administrator', adminPermissions: 'view',
     isHeld: false, holdUntil: '', holdReason: '',
-    company: '', industry: '', jobTitle: ''
+    company: '', industry: '', jobTitle: '', employeeId: ''
   });
 
   const [holdingUser, setHoldingUser] = useState(null);
@@ -669,10 +671,10 @@ export default function AdminUsers() {
   };
 
   return (
-    <AdminLayout>
+    <Layout>
       {/* Split dashboard portal wrapper */}
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 -m-6 rounded-2xl overflow-hidden border border-gray-100">
-        
+
         {/* User Access Navigation Sidebar (Dark Blue theme) */}
         <aside className="w-full lg:w-72 bg-slate-900 text-slate-100 flex flex-col p-5 shrink-0 border-r border-slate-800">
           <div className="mb-8 flex items-center gap-3">
@@ -692,7 +694,8 @@ export default function AdminUsers() {
               { id: 'modules', icon: <Settings size={18} />, label: 'Company Modules & Tools Management' },
               { id: 'website-users', icon: <Users size={18} />, label: 'Website User Management' },
               { id: 'customer-accounts', icon: <Crown size={18} />, label: 'User & Customer Accounts' },
-              { id: 'staff-accounts', icon: <UserPlus size={18} />, label: 'Staff & Admin Accounts' },
+              { id: 'staff-accounts', icon: <UserPlus size={18} />, label: 'Staff / Employees' },
+              { id: 'admins-accounts', icon: <Shield size={18} />, label: 'Admin Accounts' },
               { id: 'security', icon: <Lock size={18} />, label: 'Access Control Settings' },
               { id: 'logs', icon: <Activity size={18} />, label: 'Authentication & Activity Logs' }
             ].map(tab => (
@@ -702,11 +705,10 @@ export default function AdminUsers() {
                   setActiveSubTab(tab.id);
                   setPage(1);
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer ${
-                  activeSubTab === tab.id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer ${activeSubTab === tab.id
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-                }`}
+                  }`}
               >
                 {tab.icon}
                 {tab.label}
@@ -723,7 +725,7 @@ export default function AdminUsers() {
 
         {/* Main Content Pane */}
         <main className="flex-1 flex flex-col min-w-0 bg-white">
-          
+
           {/* Header */}
           <header className="border-b border-gray-100 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-20">
             <div>
@@ -741,19 +743,21 @@ export default function AdminUsers() {
                 <FileSpreadsheet size={15} /> Export Report
               </button>
 
-              {activeSubTab === 'staff-accounts' && admin?.role === 'super-admin' && (
+              {(activeSubTab === 'staff-accounts' || activeSubTab === 'admins-accounts') && admin?.role === 'super-admin' && (
                 <button
                   onClick={() => {
                     setCreateFormData({
                       firstName: '', lastName: '', email: '', password: '', mobile: '',
-                      role: 'employee', adminSubRole: 'HR Executive', adminPermissions: 'view',
+                      role: activeSubTab === 'admins-accounts' ? 'admin' : 'employee',
+                      adminSubRole: activeSubTab === 'admins-accounts' ? 'System Administrator' : 'HR Executive',
+                      adminPermissions: 'view',
                       isHeld: false, holdUntil: '', holdReason: ''
                     });
                     setIsCreateModalOpen(true);
                   }}
                   className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
                 >
-                  <Plus size={15} /> Add Staff Account
+                  <Plus size={15} /> {activeSubTab === 'admins-accounts' ? 'Add Admin Account' : 'Add Staff Account'}
                 </button>
               )}
 
@@ -807,7 +811,7 @@ export default function AdminUsers() {
 
                     {/* Visual Charts row */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                      
+
                       {/* LineChart - User Growth */}
                       <div className="xl:col-span-2 bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                         <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-1.5">
@@ -866,10 +870,10 @@ export default function AdminUsers() {
 
                     {/* Inner Grids: Top Roles, Modules progress, Recent logs, Access summary */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                      
+
                       {/* Left: Top Roles & Modules */}
                       <div className="xl:col-span-2 space-y-6">
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* Top 5 Roles */}
                           <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
@@ -927,9 +931,8 @@ export default function AdminUsers() {
                                     <td className="py-2.5 px-3 font-mono text-[10px]">{log.ip}</td>
                                     <td className="py-2.5 px-3 text-gray-400">{log.time}</td>
                                     <td className="py-2.5 px-3 text-right">
-                                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                                        log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                                      }`}>
+                                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                        }`}>
                                         {log.status}
                                       </span>
                                     </td>
@@ -944,7 +947,7 @@ export default function AdminUsers() {
 
                       {/* Right: Status donut and Access Summary */}
                       <div className="space-y-6">
-                        
+
                         {/* Status Donut */}
                         <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                           <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-3">Users by Status</h3>
@@ -1011,11 +1014,10 @@ export default function AdminUsers() {
                           {/* Super Admin Root Node */}
                           <button
                             onClick={() => setSelectedRole('Super Admin')}
-                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${
-                              selectedRole === 'Super Admin'
+                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${selectedRole === 'Super Admin'
                                 ? 'bg-blue-600 text-white font-bold shadow-xs'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-semibold'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2">
                               <Crown size={14} className={selectedRole === 'Super Admin' ? 'text-white' : 'text-amber-500'} />
@@ -1027,11 +1029,10 @@ export default function AdminUsers() {
                           {/* Admin Root Node */}
                           <button
                             onClick={() => setSelectedRole('Admin')}
-                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${
-                              selectedRole === 'Admin'
+                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${selectedRole === 'Admin'
                                 ? 'bg-blue-600 text-white font-bold shadow-xs'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-semibold'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2">
                               <Shield size={14} className={selectedRole === 'Admin' ? 'text-white' : 'text-blue-500'} />
@@ -1039,13 +1040,12 @@ export default function AdminUsers() {
                             </div>
                             <ChevronRight size={12} className={selectedRole === 'Admin' ? 'text-white' : 'text-gray-400'} />
                           </button>
-                                                   {/* Admins Folder */}
+                          {/* Admins Folder */}
                           <div>
                             <button
                               onClick={() => { toggleNode('Admins'); setSelectedRole('Admins'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Admins' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Admins' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Admins ? (
@@ -1067,11 +1067,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1090,9 +1089,8 @@ export default function AdminUsers() {
                           <div>
                             <button
                               onClick={() => { toggleNode('Managers'); setSelectedRole('Managers'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Managers' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Managers' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Managers ? (
@@ -1114,11 +1112,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1137,9 +1134,8 @@ export default function AdminUsers() {
                           <div>
                             <button
                               onClick={() => { toggleNode('Employees'); setSelectedRole('Employees'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Employees' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Employees' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Employees ? (
@@ -1161,11 +1157,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1373,11 +1368,10 @@ export default function AdminUsers() {
                                   <h4 className="text-sm font-black text-gray-900">{selectedRole}</h4>
                                   <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 block">{roleInfo.classification}</span>
                                 </div>
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
-                                  roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
-                                  roleScope === 'view-delete' ? 'bg-amber-50 text-amber-600 border border-amber-150' :
-                                  'bg-gray-100 text-gray-600'
-                                }`}>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+                                    roleScope === 'view-delete' ? 'bg-amber-50 text-amber-600 border border-amber-150' :
+                                      'bg-gray-100 text-gray-600'
+                                  }`}>
                                   Scope: {roleScope}
                                 </span>
                               </div>
@@ -1398,9 +1392,8 @@ export default function AdminUsers() {
                                     return (
                                       <label
                                         key={perm}
-                                        className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                                          isChecked ? 'border-blue-100 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
-                                        } cursor-pointer`}
+                                        className={`flex items-center justify-between p-3 rounded-xl border transition-all ${isChecked ? 'border-blue-100 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
+                                          } cursor-pointer`}
                                       >
                                         <div className="flex items-center gap-2.5">
                                           <input
@@ -1415,9 +1408,8 @@ export default function AdminUsers() {
                                             <span className="text-[10px] text-gray-400 block mt-0.5">Grants operational clearance to this specific sub-module</span>
                                           </div>
                                         </div>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                          isChecked ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
-                                        }`}>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${isChecked ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
+                                          }`}>
                                           {isChecked ? 'Allowed' : 'Blocked'}
                                         </span>
                                       </label>
@@ -1457,9 +1449,8 @@ export default function AdminUsers() {
                                             <span className="text-[10px] text-gray-400 block">{u.email}</span>
                                           </div>
                                         </div>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                          u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                                        }`}>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                          }`}>
                                           {u.isHeld ? 'Suspended' : 'Active'}
                                         </span>
                                       </div>
@@ -1548,9 +1539,8 @@ export default function AdminUsers() {
                               <td className="py-3.5 px-4 font-medium text-gray-500">{u.email}</td>
                               <td className="py-3.5 px-4">{u.mobile || u.phone || 'N/A'}</td>
                               <td className="py-3.5 px-4">
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                  u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                                }`}>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                  }`}>
                                   {u.isHeld ? 'Suspended' : 'Active'}
                                 </span>
                               </td>
@@ -1635,9 +1625,8 @@ export default function AdminUsers() {
                                 <td className="py-3.5 px-4 text-gray-600">{u.jobTitle || 'N/A'}</td>
                                 <td className="py-3.5 px-4">{u.mobile || u.phone || 'N/A'}</td>
                                 <td className="py-3.5 px-4">
-                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                    u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                                  }`}>
+                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                    }`}>
                                     {u.isHeld ? 'Suspended' : 'Active'}
                                   </span>
                                 </td>
@@ -1692,16 +1681,16 @@ export default function AdminUsers() {
                   </div>
                 )}
 
-                {/* VIEW 5: STAFF & ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {/* VIEW 5: STAFF / EMPLOYEES (REAL USER DIRECTORY) */}
                 {activeSubTab === 'staff-accounts' && (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-base font-bold text-gray-800">Staff & Admin Accounts Directory</h3>
-                        <p className="text-xs text-gray-500">Manage internal admin, manager, and employee accounts</p>
+                        <h3 className="text-base font-bold text-gray-800">Staff / Employees Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal manager and employee accounts</p>
                       </div>
                       <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
-                        {userData.users?.filter(u => u.role !== 'user').length || 0} Staff Members
+                        {userData.users?.filter(u => u.role === 'employee' || u.role === 'manager').length || 0} Staff Members
                       </span>
                     </div>
 
@@ -1710,6 +1699,7 @@ export default function AdminUsers() {
                         <thead>
                           <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
                             <th className="py-3.5 px-4">Staff Member</th>
+                            <th className="py-3.5 px-4">Employee ID</th>
                             <th className="py-3.5 px-4">Role / Classification</th>
                             <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
                             <th className="py-3.5 px-4">Verify Status</th>
@@ -1718,7 +1708,224 @@ export default function AdminUsers() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-gray-700">
-                          {userData.users?.filter(u => u.role !== 'user').map(u => (
+                          {userData.users?.filter(u => u.role === 'employee' || u.role === 'manager').map(u => (
+                            <tr key={u._id} className="hover:bg-gray-50/50">
+                              <td className="py-3.5 px-4 whitespace-nowrap">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
+                                    {getInitials(u.name)}
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-gray-900 text-xs">{u.name}</p>
+                                    <p className="text-[10px] text-gray-400 mt-0.5">{u.email}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 font-mono font-bold text-xs text-blue-600 uppercase">
+                                {u.employeeId || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4 uppercase font-bold text-[10px] text-gray-500">
+                                {u.role?.replace('-', ' ')}
+                              </td>
+                              <td className="py-3.5 px-4 font-semibold text-indigo-600">
+                                {u.adminSubRole || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {u.isHeld ? (
+                                  <span className="text-[9px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-150">On Hold</span>
+                                ) : u.isApproved ? (
+                                  <span className="text-[9px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-150">Verified</span>
+                                ) : (
+                                  <span className="text-[9px] font-bold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-150">Pending</span>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {admin?.role === 'super-admin' && u.role !== 'super-admin' ? (
+                                  u.isHeld ? (
+                                    <button onClick={() => handleReleaseHoldDirect(u)} className="text-[10px] font-bold text-emerald-600 hover:underline">
+                                      Release
+                                    </button>
+                                  ) : (
+                                    <button onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }} className="text-[10px] font-bold text-red-500 hover:underline">
+                                      Hold Account
+                                    </button>
+                                  )
+                                ) : '-'}
+                              </td>
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex justify-end gap-1">
+                                  {!u.isApproved && (
+                                    <button onClick={() => verifyUser(u._id, u.name, u.role)} className="px-2 py-1 bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 rounded text-[10px]">
+                                      Verify
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      setEditingUser(u);
+                                      setFormData({
+                                        name: u.name || '', email: u.email || '', mobile: u.mobile || u.phone || '',
+                                        role: u.role || 'user', password: '', isHeld: u.isHeld || false,
+                                        holdUntil: u.holdUntil ? u.holdUntil.split('T')[0] : '', holdReason: u.holdReason || '',
+                                        adminSubRole: u.adminSubRole || '', adminPermissions: u.adminPermissions || 'view',
+                                        company: u.company || '', industry: u.industry || '', jobTitle: u.jobTitle || '',
+                                        employeeId: u.employeeId || ''
+                                      });
+                                    }}
+                                    className="px-2 py-1 bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 rounded text-[10px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  {u.role !== 'super-admin' && (
+                                    <button onClick={() => deleteUser(u._id, u.name)} className="text-gray-400 hover:text-red-500 p-1 rounded">
+                                      <Trash2 size={13} />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 5.5: ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {activeSubTab === 'admins-accounts' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800">Admin Accounts Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal super-admin and admin accounts</p>
+                      </div>
+                      <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+                        {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').length || 0} Admin Members
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
+                            <th className="py-3.5 px-4">Admin Member</th>
+                            <th className="py-3.5 px-4">Employee ID</th>
+                            <th className="py-3.5 px-4">Role / Classification</th>
+                            <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
+                            <th className="py-3.5 px-4">Verify Status</th>
+                            <th className="py-3.5 px-4">Hold Schedule</th>
+                            <th className="py-3.5 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-gray-700">
+                          {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').map(u => (
+                            <tr key={u._id} className="hover:bg-gray-50/50">
+                              <td className="py-3.5 px-4 whitespace-nowrap">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
+                                    {getInitials(u.name)}
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-gray-900 text-xs">{u.name}</p>
+                                    <p className="text-[10px] text-gray-400 mt-0.5">{u.email}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 font-mono font-bold text-xs text-blue-600 uppercase">
+                                {u.employeeId || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4 uppercase font-bold text-[10px] text-gray-500">
+                                {u.role?.replace('-', ' ')}
+                              </td>
+                              <td className="py-3.5 px-4 font-semibold text-indigo-600">
+                                {u.adminSubRole || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {u.isHeld ? (
+                                  <span className="text-[9px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-150">On Hold</span>
+                                ) : u.isApproved ? (
+                                  <span className="text-[9px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-150">Verified</span>
+                                ) : (
+                                  <span className="text-[9px] font-bold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-150">Pending</span>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {admin?.role === 'super-admin' && u.role !== 'super-admin' ? (
+                                  u.isHeld ? (
+                                    <button onClick={() => handleReleaseHoldDirect(u)} className="text-[10px] font-bold text-emerald-600 hover:underline">
+                                      Release
+                                    </button>
+                                  ) : (
+                                    <button onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }} className="text-[10px] font-bold text-red-500 hover:underline">
+                                      Hold Account
+                                    </button>
+                                  )
+                                ) : '-'}
+                              </td>
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex justify-end gap-1">
+                                  {!u.isApproved && (
+                                    <button onClick={() => verifyUser(u._id, u.name, u.role)} className="px-2 py-1 bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 rounded text-[10px]">
+                                      Verify
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      setEditingUser(u);
+                                      setFormData({
+                                        name: u.name || '', email: u.email || '', mobile: u.mobile || u.phone || '',
+                                        role: u.role || 'user', password: '', isHeld: u.isHeld || false,
+                                        holdUntil: u.holdUntil ? u.holdUntil.split('T')[0] : '', holdReason: u.holdReason || '',
+                                        adminSubRole: u.adminSubRole || '', adminPermissions: u.adminPermissions || 'view',
+                                        company: u.company || '', industry: u.industry || '', jobTitle: u.jobTitle || '',
+                                        employeeId: u.employeeId || ''
+                                      });
+                                    }}
+                                    className="px-2 py-1 bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 rounded text-[10px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  {u.role !== 'super-admin' && (
+                                    <button onClick={() => deleteUser(u._id, u.name)} className="text-gray-400 hover:text-red-500 p-1 rounded">
+                                      <Trash2 size={13} />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 5.5: ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {activeSubTab === 'admins-accounts' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800">Admin Accounts Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal super-admin and admin accounts</p>
+                      </div>
+                      <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+                        {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').length || 0} Admin Members
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
+                            <th className="py-3.5 px-4">Admin Member</th>
+                            <th className="py-3.5 px-4">Role / Classification</th>
+                            <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
+                            <th className="py-3.5 px-4">Verify Status</th>
+                            <th className="py-3.5 px-4">Hold Schedule</th>
+                            <th className="py-3.5 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-gray-700">
+                          {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').map(u => (
                             <tr key={u._id} className="hover:bg-gray-50/50">
                               <td className="py-3.5 px-4 whitespace-nowrap">
                                 <div className="flex items-center gap-2.5">
@@ -1909,10 +2116,9 @@ export default function AdminUsers() {
                                     <p className="text-[10px] text-gray-400 mt-0.5">{operatorEmail}</p>
                                   </td>
                                   <td className="py-3.5 px-4">
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                      log.action === 'Create' ? 'bg-blue-50 text-blue-600' :
-                                      log.action === 'Delete' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
-                                    }`}>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${log.action === 'Create' ? 'bg-blue-50 text-blue-600' :
+                                        log.action === 'Delete' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
+                                      }`}>
                                       {log.action}
                                     </span>
                                   </td>
@@ -1991,29 +2197,43 @@ export default function AdminUsers() {
                 </div>
               </div>
 
-              {['admin', 'manager', 'employee'].includes(formData.role) && (
+              {['admin', 'manager', 'employee', 'super-admin'].includes(formData.role) && (
                 <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Employee ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. EMP-WMS-2026-001"
+                      value={formData.employeeId}
+                      onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs outline-none uppercase font-mono"
+                    />
+                  </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Assign Sub-Role</label>
                     <select
                       value={formData.adminSubRole}
                       onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white"
+                      disabled={formData.role === 'super-admin'}
                     >
                       <option value="">Select a Sub-Role</option>
                       {formData.role === 'admin' && ADMIN_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {formData.role === 'manager' && MANAGER_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {formData.role === 'employee' && EMPLOYEE_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      {formData.role === 'super-admin' && <option value="">N/A</option>}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
-                    <select value={formData.adminPermissions} onChange={(e) => setFormData({ ...formData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
-                      <option value="view">Only See (view)</option>
-                      <option value="view-delete">See and Delete (view-delete)</option>
-                      <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
-                    </select>
-                  </div>
+                  {formData.role !== 'super-admin' && (
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
+                      <select value={formData.adminPermissions} onChange={(e) => setFormData({ ...formData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+                        <option value="view">Only See (view)</option>
+                        <option value="view-delete">See and Delete (view-delete)</option>
+                        <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2120,29 +2340,43 @@ export default function AdminUsers() {
                 </div>
               </div>
 
-              {['admin', 'manager', 'employee'].includes(createFormData.role) && (
+              {['admin', 'manager', 'employee', 'super-admin'].includes(createFormData.role) && (
                 <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Employee ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. EMP-WMS-2026-001"
+                      value={createFormData.employeeId}
+                      onChange={(e) => setCreateFormData({ ...createFormData, employeeId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs outline-none uppercase font-mono"
+                    />
+                  </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Assign Sub-Role</label>
                     <select
                       value={createFormData.adminSubRole}
                       onChange={(e) => setCreateFormData({ ...createFormData, adminSubRole: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white"
+                      disabled={createFormData.role === 'super-admin'}
                     >
                       <option value="">Select a Sub-Role</option>
                       {createFormData.role === 'admin' && ADMIN_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {createFormData.role === 'manager' && MANAGER_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {createFormData.role === 'employee' && EMPLOYEE_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      {createFormData.role === 'super-admin' && <option value="">N/A</option>}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
-                    <select value={createFormData.adminPermissions} onChange={(e) => setCreateFormData({ ...createFormData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
-                      <option value="view">Only See (view)</option>
-                      <option value="view-delete">See and Delete (view-delete)</option>
-                      <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
-                    </select>
-                  </div>
+                  {createFormData.role !== 'super-admin' && (
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
+                      <select value={createFormData.adminPermissions} onChange={(e) => setCreateFormData({ ...createFormData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+                        <option value="view">Only See (view)</option>
+                        <option value="view-delete">See and Delete (view-delete)</option>
+                        <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2206,6 +2440,6 @@ export default function AdminUsers() {
         </div>
       )}
 
-    </AdminLayout>
+    </Layout>
   );
 }

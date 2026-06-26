@@ -10,7 +10,6 @@ import Profile from './pages/Profile';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
-import AdminAdmins from './pages/admin/Admins';
 import AdminRegistrationPage from './pages/admin/AdminRegistrationPage';
 import AdminContacts from './pages/admin/Contacts';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
@@ -194,7 +193,6 @@ export default function App() {
                 <Route path="/admin/dashboard" element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
                 <Route path="/admin/super-dashboard" element={<AdminProtectedRoute superAdminOnly><SuperAdminDashboard /></AdminProtectedRoute>} />
                 <Route path="/admin/users" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'System Administrator', 'User Access Administrator', 'Compliance Administrator']}><AdminUsers /></AdminProtectedRoute>} />
-                <Route path="/admin/admins" element={<AdminProtectedRoute superAdminOnly><AdminAdmins /></AdminProtectedRoute>} />
                 <Route path="/admin/contacts" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'CRM & Lead Manager', 'CRM Administrator', 'CRM Executive', 'Manager', 'Sales Manager', 'Sales Executive']}><AdminContacts /></AdminProtectedRoute>} />
                 <Route path="/admin/services" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Website Administrator', 'Technical Support Executive', 'TR']}><AdminServices /></AdminProtectedRoute>} />
                 <Route path="/admin/blogs" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminBlogs /></AdminProtectedRoute>} />

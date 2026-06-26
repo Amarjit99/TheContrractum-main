@@ -20,6 +20,7 @@ const MENU_ITEMS = [
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
       { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
+      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
       { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
@@ -38,7 +39,6 @@ const MENU_ITEMS = [
     subItems: [
       { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
       { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
       { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
@@ -62,7 +62,7 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
     
     const rolePermissions = {
       // Admins
-      'System Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings', 'analytics', 'users', 'admins'],
+      'System Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings', 'analytics', 'users'],
       'HR Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'careers', 'interns', 'users', 'certificates', 'id-cards', 'referrals'],
       'Operations Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'projects', 'form-links', 'submissions', 'surveys'],
       'Website Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'blogs', 'news', 'projects', 'founders', 'form-links', 'settings'],
@@ -73,7 +73,7 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
       'Content Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'blogs', 'news'],
       'Finance Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'partners', 'affiliates', 'referrals', 'contracts'],
       'Compliance Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates'],
-      'User Access Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'users', 'admins'],
+      'User Access Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'users'],
       'Database Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings'],
 
       // Managers

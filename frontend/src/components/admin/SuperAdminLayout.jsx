@@ -21,6 +21,7 @@ const MENU_ITEMS = [
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blogs' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
       { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
+      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
       { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders' },
@@ -37,10 +38,8 @@ const MENU_ITEMS = [
     icon: <UsersRound size={20} />,
     hasSubmenu: true,
     subItems: [
-      { id: 'admins', to: '/admin/admins', icon: <UsersRound size={18} />, label: 'Admins' },
       { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliates' },
       { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contracts' },
       { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },

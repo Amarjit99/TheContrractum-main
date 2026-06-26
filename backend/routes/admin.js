@@ -228,18 +228,22 @@ router.get('/users', async (req, res) => {
       User.countDocuments(query),
     ]);
 
-    // If fetching admins, merge with AdminDetail (admindb) data
-    if (role === 'admin') {
-      const adminDetails = await AdminDetail.find({ email: { $in: users.map(u => u.email) } });
+    // Merge with AdminDetail (admindb) data for any admin/staff users in the list
+    const staffEmails = users.filter(u => ['admin', 'manager', 'employee'].includes(u.role)).map(u => u.email);
+    if (staffEmails.length > 0) {
+      const adminDetails = await AdminDetail.find({ email: { $in: staffEmails } });
       users = users.map(u => {
-        const detail = adminDetails.find(d => d.email === u.email);
-        if (detail) {
-          return {
-            ...u.toObject(),
-            adminSubRole: detail.adminSubRole,
-            adminPermissions: detail.adminPermissions,
-            joiningDate: detail.joiningDate
-          };
+        if (['admin', 'manager', 'employee'].includes(u.role)) {
+          const detail = adminDetails.find(d => d.email === u.email);
+          if (detail) {
+            return {
+              ...u.toObject(),
+              adminSubRole: detail.adminSubRole,
+              adminPermissions: detail.adminPermissions,
+              joiningDate: detail.joiningDate,
+              employeeId: detail.employeeId || u.employeeId || ''
+            };
+          }
         }
         return u;
       });
@@ -260,7 +264,8 @@ router.post('/users', async (req, res) => {
     const { 
       firstName, lastName, email, password, mobile, role, 
       adminSubRole, adminPermissions, joiningDate, isApproved,
-      isHeld, holdUntil, holdReason, company, industry, jobTitle 
+      isHeld, holdUntil, holdReason, company, industry, jobTitle,
+      employeeId
     } = req.body;
 
     if (!firstName || !lastName || !email || !password || !mobile) {
@@ -281,6 +286,7 @@ router.post('/users', async (req, res) => {
       password, // Hashes automatically via userSchema.pre('save')
       mobile,
       role: role || 'user',
+      employeeId: employeeId || '',
       isApproved: isApproved !== undefined ? isApproved : true,
       adminSubRole: ['admin', 'manager', 'employee'].includes(role) ? (adminSubRole || 'System Administrator') : '',
       adminPermissions: ['admin', 'manager', 'employee'].includes(role) ? (adminPermissions || 'view') : 'view',
@@ -296,6 +302,7 @@ router.post('/users', async (req, res) => {
     if (['admin', 'manager', 'employee'].includes(user.role)) {
       await AdminDetail.create({
         userId: user._id,
+        employeeId: user.employeeId || '',
         name,
         email,
         adminSubRole: user.adminSubRole || 'System Administrator',
@@ -316,7 +323,7 @@ router.put('/users/:id/role', async (req, res) => {
     const { 
       role, isApproved, joiningDate, password, name, email, mobile,
       isHeld, holdUntil, holdReason, adminSubRole, adminPermissions,
-      company, industry, jobTitle
+      company, industry, jobTitle, employeeId
     } = req.body;
     
     const targetUser = await User.findById(req.params.id);
@@ -351,6 +358,7 @@ router.put('/users/:id/role', async (req, res) => {
     if (company !== undefined) update.company = company;
     if (industry !== undefined) update.industry = industry;
     if (jobTitle !== undefined) update.jobTitle = jobTitle;
+    if (employeeId !== undefined) update.employeeId = employeeId;
 
     if (name) {
       update.name = name;
@@ -375,7 +383,8 @@ router.put('/users/:id/role', async (req, res) => {
         email: user.email,
         adminSubRole: user.adminSubRole || 'System Administrator',
         adminPermissions: user.adminPermissions || 'view',
-        joiningDate: user.joiningDate || new Date().toISOString()
+        joiningDate: user.joiningDate || new Date().toISOString(),
+        employeeId: user.employeeId || ''
       };
       await AdminDetail.findOneAndUpdate(
         { $or: [{ userId: user._id }, { email: user.email }] },
@@ -733,12 +742,14 @@ router.post('/approve-registration/:id', async (req, res) => {
       isApproved: true,
       mobile: mobile,
       adminSubRole: subRole,
-      joiningDate: reg.joiningDate || new Date().toISOString()
+      joiningDate: reg.joiningDate || new Date().toISOString(),
+      employeeId: reg.employeeId || ''
     });
 
     // 2. Create the Admin Detail (stored in admindb collection)
     await AdminDetail.create({
       userId: user._id,
+      employeeId: reg.employeeId || '',
       name: `${firstName} ${lastName}`,
       email: reg.email,
       adminSubRole: subRole,
