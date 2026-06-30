@@ -74,7 +74,7 @@ const OurJourney = () => {
           {/* <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-4">Our Journey</span> */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-4 md:mb-6 drop-shadow-2xl tracking-wide">From Vision to Innovation</h1>
           <p className="text-xl md:text-2xl font-light mb-8 drop-shadow-lg tracking-wide">Transformed Over a Decade of Excellence and Growth</p>
-          <div className="flex gap-3 md:gap-5 justify-center flex-wrap">
+          {/* <div className="flex gap-3 md:gap-5 justify-center flex-wrap">
             <Link to="/resources/events" className="inline-flex items-center gap-3 px-6 md:px-9 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold uppercase tracking-wide rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
               <span>Explore Our Story</span>
               <ArrowRight className="w-5 h-5" />
@@ -83,7 +83,7 @@ const OurJourney = () => {
               <span>View Case Studies</span>
               <Sparkles className="w-5 h-5" />
             </Link>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -235,8 +235,8 @@ const OurJourney = () => {
                   <h3 className="text-xl md:text-2xl font-bold text-blue-600 mb-2">{story.title}</h3>
                   <p className="text-gray-700 mb-4 text-base leading-relaxed">{story.description}</p>
                   <Link to="/projects/case-studies" className="text-blue-600 font-bold hover:text-cyan-500 transition-colors duration-300 inline-flex items-center gap-2">
-                    <span>Read Case Study</span>
-                    <ArrowRight className="w-4 h-4" />
+                    {/* <span>Read Case Study</span> */}
+                    {/* <ArrowRight className="w-4 h-4" /> */}
                   </Link>
                 </div>
               </div>
@@ -268,7 +268,7 @@ const OurJourney = () => {
                 key={index}
                 onMouseEnter={() => setHoveredCard('stat-' + index)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="bg-white bg-opacity-12 backdrop-blur-xl border-2 border-white border-opacity-25 rounded-2xl p-6 text-center transition-all duration-400 hover:bg-opacity-18 hover:border-opacity-50 hover:-translate-y-3 hover:shadow-2xl group"
+                className="bg-black bg-opacity-12 backdrop-blur-xl border-2 border-white border-opacity-25 rounded-2xl p-6 text-center transition-all duration-400 hover:bg-opacity-18 hover:border-opacity-50 hover:-translate-y-3 hover:shadow-2xl group"
               >
                 <div className="text-4xl md:text-5xl font-black text-cyan-400 transition-all duration-300 group-hover:scale-125 group-hover:text-white">{stat.number}</div>
                 <p className="text-white font-bold text-sm md:text-base mt-3 transition-all duration-300 group-hover:tracking-wider">{stat.label}</p>

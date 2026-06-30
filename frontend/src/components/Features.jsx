@@ -6,7 +6,7 @@ const beliefs = [
   "We believe in rewarding ideas!",
   "We believe in being a boundaryless organization.",
   "We build trust in the system through open communication.",
-  "We take pride in what we do.",
+  "We take pride in what we do",
 ];
 
 export default function AboutSection() {
@@ -39,8 +39,8 @@ export default function AboutSection() {
 
           {/* Experience Badge */}
           <div className="absolute bottom-10 left-10 bg-primary text-white p-6 rounded-lg shadow-xl">
-            <h2 className="text-3xl font-bold">10</h2>
-            <p className="text-sm">Years of Experience</p>
+            {/* <h2 className="text-3xl font-bold">10</h2>
+            <p className="text-sm">Years of Experience</p> */}
           </div>
         </div>
 
@@ -49,16 +49,16 @@ export default function AboutSection() {
           {/* About Label */}
           <div className="flex items-center gap-3 mb-4">
             <span className="w-2 h-2 bg-primary rounded-full"></span>
-            <p className="text-primary uppercase tracking-widest font-semibold text-sm">
+            {/* <p className="text-primary uppercase tracking-widest font-semibold text-sm">
               About Us
-            </p>
+            </p> */}
           </div>
 
           {/* Heading */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
             End To End <br />
             Business Solution <br />
-            And Services.
+            And Services
           </h2>
 
           <div className="mb-6">
@@ -90,7 +90,7 @@ export default function AboutSection() {
 
           {/* Read More Button */}
           <div className="mt-8">
-            <Link
+            {/* <Link
               to="/company/about-us"
               className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
             >
@@ -98,7 +98,7 @@ export default function AboutSection() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

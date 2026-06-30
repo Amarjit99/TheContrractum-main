@@ -17,16 +17,16 @@ const Getintouch = () => {
   ];
 
   const [form, setForm] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     countryIndex: 0,
-    companyName: "",
-    subject: "",
-    otherSubject: "",
-    message: "",
     country: "",
-    preferredContactMethod: "",
+    postalCode: "",
+    message: "",
+    newsletter: false,
+    privacyPolicy: false,
   });
   const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
@@ -39,21 +39,25 @@ const Getintouch = () => {
   }, []);
 
   const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleReset = () => {
     setForm({
-      fullName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       phone: "",
       countryIndex: 0,
-      companyName: "",
-      subject: "",
-      otherSubject: "",
-      message: "",
       country: "",
-      preferredContactMethod: "",
+      postalCode: "",
+      message: "",
+      newsletter: false,
+      privacyPolicy: false,
     });
     setStatus(null);
     setErrorMsg("");
@@ -61,18 +65,26 @@ const Getintouch = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.privacyPolicy) {
+      setStatus("error");
+      setErrorMsg("You must accept the Privacy Policy to submit the form.");
+      return;
+    }
     setStatus("loading");
     setErrorMsg("");
 
     const submissionData = {
-      fullName: form.fullName,
+      fullName: `${form.firstName} ${form.lastName}`.trim(),
       email: form.email,
-      phone: `${COUNTRIES[form.countryIndex].code} ${form.phone}`,
-      companyName: form.companyName,
-      subject: form.subject === "Others" ? form.otherSubject : form.subject,
+      phone: `${COUNTRIES[form.countryIndex].code} ${form.phone}`.trim(),
+      companyName: "",
+      subject: "Drop Us a Line - Contact Form",
       message: form.message,
       country: form.country,
-      preferredContactMethod: form.preferredContactMethod,
+      preferredContactMethod: "Email",
+      postalCode: form.postalCode,
+      newsletter: form.newsletter,
+      privacyPolicy: form.privacyPolicy,
     };
 
     try {
@@ -87,16 +99,16 @@ const Getintouch = () => {
       if (res.ok) {
         setStatus("success");
         setForm({
-          fullName: "",
+          firstName: "",
+          lastName: "",
           email: "",
           phone: "",
           countryIndex: 0,
-          companyName: "",
-          subject: "",
-          otherSubject: "",
-          message: "",
           country: "",
-          preferredContactMethod: "",
+          postalCode: "",
+          message: "",
+          newsletter: false,
+          privacyPolicy: false,
         });
         setTimeout(() => {
           setStatus(null);
@@ -151,39 +163,41 @@ const Getintouch = () => {
       </div>
 
       {/* Main Contact Section */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+    <div className="max-w-[1700px] mx-auto px-8 lg:px-12 py-20">
+       <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-16 items-start">
 
           {/* Send Message Form & World Map */}
           <div className="space-y-12">
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-gray-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16"></div>
-              <h2 className="text-4xl font-black text-slate-900 mb-4 italic">Contact Us Form</h2>
+              <h2 className="text-5xl font-black text-slate-900 mb-6 italic">Drop Us a Line</h2>
               <p className="text-slate-500 text-lg mb-8 font-medium">We'd love to hear from you. Fill out the form below and we'll get back to you shortly.</p>
 
               <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Full Name *</label>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">First Name *</label>
                     <input
                       type="text"
-                      name="fullName"
-                      value={form.fullName}
+                      name="firstName"
+                      value={form.firstName}
                       onChange={handleChange}
                       className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="Your Full Name"
+                      placeholder="Your First Name"
                       required
                     />
                   </div>
+
+                  
                   <div>
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Email Address *</label>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Last Name *</label>
                     <input
-                      type="email"
-                      name="email"
-                      value={form.email}
+                      type="text"
+                      name="lastName"
+                      value={form.lastName}
                       onChange={handleChange}
                       className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="your@email.com"
+                      placeholder="Your Last Name"
                       required
                     />
                   </div>
@@ -191,7 +205,22 @@ const Getintouch = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Phone Number</label>
+               <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">
+    Email Address *
+  </label>
+
+  <input
+    type="email"
+    name="email"
+    value={form.email}
+    onChange={handleChange}
+    className="w-full min-w-[320px] px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
+    placeholder="your@email.com"
+    required
+  />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Phone Number *</label>
                     <div className="flex gap-2">
                       <div className="relative group">
                         <select
@@ -210,26 +239,17 @@ const Getintouch = () => {
                           <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
                         </div>
                       </div>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                        className="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold min-w-0"
-                        placeholder="XXXXX XXXXX"
-                      />
+
+                  <input
+  type="tel"
+  name="phone"
+  value={form.phone}
+  onChange={handleChange}
+  className="w-full min-w-[220px] px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
+  placeholder="Enter Phone Number"
+  required
+/>
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Company Name</label>
-                    <input
-                      type="text"
-                      name="companyName"
-                      value={form.companyName}
-                      onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="Your Company Name"
-                    />
                   </div>
                 </div>
 
@@ -250,54 +270,18 @@ const Getintouch = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Preferred Contact Method *</label>
-                    <select
-                      name="preferredContactMethod"
-                      value={form.preferredContactMethod}
-                      onChange={handleChange}
-                      className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
-                      required
-                    >
-                      <option value="">Select Method</option>
-                      <option value="Email">Email Address</option>
-                      <option value="Phone Call">Phone Call</option>
-                      <option value="WhatsApp">WhatsApp</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Subject *</label>
-                  <select
-                    name="subject"
-                    value={form.subject}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
-                    required
-                  >
-                    <option value="">Select Subject</option>
-                    <option value="Internship">Internship</option>
-                    <option value="Mentorship">Mentorship</option>
-                    <option value="Counseling">Counseling</option>
-                    <option value="Job">Job</option>
-                    <option value="Others">Others</option>
-                  </select>
-                </div>
-
-                {form.subject === "Others" && (
-                  <div className="animate-fadeIn">
-                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Specify Subject *</label>
+                    <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Postal Code *</label>
                     <input
                       type="text"
-                      name="otherSubject"
-                      value={form.otherSubject}
+                      name="postalCode"
+                      value={form.postalCode}
                       onChange={handleChange}
                       className="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold"
-                      placeholder="Enter your subject"
+                      placeholder="Postal / ZIP Code"
                       required
                     />
                   </div>
-                )}
+                </div>
 
                 <div>
                   <label className="block text-sm font-black text-slate-700 mb-2 uppercase tracking-widest text-xs">Message *</label>
@@ -310,6 +294,38 @@ const Getintouch = () => {
                     placeholder="Tell us more..."
                     required
                   ></textarea>
+                </div>
+
+                {/* Newsletter & Privacy Checkboxes */}
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <input
+                      id="newsletter"
+                      type="checkbox"
+                      name="newsletter"
+                      checked={form.newsletter}
+                      onChange={handleChange}
+                      className="w-5 h-5 mt-1 border-2 border-slate-300 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <label htmlFor="newsletter" className="text-sm font-bold text-slate-600 cursor-pointer select-none">
+                      Yes, subscribe to our newsletter for updates, insights, and newsletters.
+                    </label>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <input
+                      id="privacyPolicy"
+                      type="checkbox"
+                      name="privacyPolicy"
+                      checked={form.privacyPolicy}
+                      onChange={handleChange}
+                      required
+                      className="w-5 h-5 mt-1 border-2 border-slate-300 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <label htmlFor="privacyPolicy" className="text-sm font-bold text-slate-600 cursor-pointer select-none">
+                      I agree to the <Link to="/company/privacy-policy" className="text-blue-500 hover:underline">Privacy Policy</Link> and terms of use. *
+                    </label>
+                  </div>
                 </div>
 
                 {/* Status feedback */}
@@ -350,7 +366,7 @@ const Getintouch = () => {
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 italic">Global Presence</h3>
               </div>
-            <div className="rounded-2xl overflow-hidden border-4 border-slate-50">
+              <div className="rounded-2xl overflow-hidden border-4 border-slate-50">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3578.4512345678901!2d75.83500000000001!3d25.180000000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396f850e8ae2985d%3A0x1234567890abcdef!2sRangbari%20Rd%2C%20Kota%2C%20Rajasthan%20324005!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
                   width="100%"

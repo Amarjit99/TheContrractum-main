@@ -45,33 +45,17 @@ import { AdminAuthProvider } from './context/AdminAuthContext';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 
 /////////////////////// Company Pages//////////////////////////////////
+
 import AboutUs from './pages/company/AboutUs';
-import Leadership from './pages/company/Leadership';
-import OurJourney from './pages/company/OurJourney';
-import WhyChooseUs from './pages/company/WhyChooseUs';
 import Vision from './pages/company/Vision';
 import Mission from './pages/company/Mission';
 import Value from './pages/company/Value';
 import Founder from './pages/company/Founder';
-import Innovation from './pages/company/Innovation';
-import Reliability from './pages/company/Reliability';
-import Scalability from './pages/company/Scalability';
-import StartScaling from './pages/company/StartScaling';
-import ViewArchitecture from './pages/company/ViewArchitecture';
-import LeadershipJourney from './pages/company/LeadershipJourney';
-import VisionaryLeadership from './pages/company/VisionaryLeadership';
-import StrategicExcellence from './pages/company/StrategicExcellence';
-import ExploreInnovations from './pages/company/ExploreInnovations';
-import JoinInnovationLab from './pages/company/JoinInnovationLab';
-import ContactInnovationLab from './pages/company/ContactInnovationLab';
-import SLADetails from './pages/company/SLADetails';
+import Leadership from './pages/company/Leadership';
+import OurJourney from './pages/company/OurJourney';
 import CodeOfConduct from './pages/company/CodeOfConduct';
 import EmployeeId from './pages/company/EmployeeId';
-import CompanyContracts from './pages/company/CompanyContracts';
-import ReferralDashboard from './pages/company/ReferralDashboard';
-import CookieUsage from './pages/company/CookieUsage';
-import DataProtection from './pages/company/DataProtection';
-import TermsOfService from './pages/company/TermsOfService';
+
 
 // //////////////////Team Pages///////////////////////////////////
 import CoreTeam from './pages/team/CoreTeam';
@@ -83,7 +67,10 @@ import ConnectExperts from './pages/team/ConnectExperts';
 import AdvisorsDetails from './pages/team/AdvisorsDetails';
 import BecomeAdvisor from './pages/team/BecomeAdvisor';
 
-//////////////////// Solutions Pages/////////////////////////////////////
+
+
+
+//////////////////// Solutions Pages///////////////////////////////////
 import Csit from './pages/solutions/business/Csit';
 import Gissolution from './pages/solutions/business/Gis';
 import SolutionDownload from './pages/solutions/SolutionDownload';
@@ -98,7 +85,7 @@ import DigitalSolutions from './pages/solutions/DigitalSolutions';
 import BusinessSolutions from './pages/solutions/BusinessSolutions';
 import ConnectivitySolutions from './pages/solutions/ConnectivitySolutions';
 
-//////////////////////// Industries Pages////////////////////////////////////
+//////////////////////// Industries Pages///////////////////////////////
 import Government from './pages/industries/Government';
 import GovernmentDetails from './pages/industries/GovernmentDetails';
 import Healthcare from './pages/industries/Healthcare';
@@ -138,7 +125,7 @@ import CompletedProjectDetails from './pages/projects/CompletedProjectDetails';
 import CaseStudyDetails from './pages/projects/CaseStudyDetails';
 import ScheduleConsultation from './pages/projects/ScheduleConsultation';
 
-//////////////////// Resources Pages/////////////////////////////////////
+//////////////////// Resources Pages//////////////////////////////////
 import Blogs from './pages/resources/Blogs';
 import BlogArticle from './pages/resources/BlogArticle';
 import News from './pages/resources/News';
@@ -223,39 +210,18 @@ export default function App() {
                 <Route path="/admin/contracts/view/:id" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><ContractEditor /></AdminProtectedRoute>} />
                 <Route path="/admin/contracts/templates" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager']}><AdminContractTemplates /></AdminProtectedRoute>} />
 
-                {/* ///////////////////////// Company Routes///////////////////////// */}
-                <Route path="/company/about-us" element={<AboutUs />} />
-                <Route path="/company/about-us/vision" element={<Vision />} />
-                <Route path="/company/about-us/mission" element={<Mission />} />
-                <Route path="/company/about-us/values" element={<Value />} />
+                {/*//////////////////// Company Routes////////// */}
+                {/*//////////////////// Company Routes ////////////////////*/}
 
-                <Route path="/company/leadership" element={<Leadership />} />
-                <Route path="/company/leadership/founders" element={<Founder />} />
-                <Route path="/company/leadership/management" element={<Leadership />} />
-                <Route path="/company/leadership/visionary" element={<VisionaryLeadership />} />
-                <Route path="/company/leadership/strategic-excellence" element={<StrategicExcellence />} />
-
-                <Route path="/company/our-journey" element={<OurJourney />} />
-                <Route path="/company/our-journey/timeline" element={<OurJourney />} />
-
-                <Route path="/company/why-choose-us" element={<WhyChooseUs />} />
-                <Route path="/company/why-choose-us/innovation" element={<Innovation />} />
-                <Route path="/company/innovation/explore" element={<ExploreInnovations />} />
-                <Route path="/company/innovation/join-lab" element={<JoinInnovationLab />} />
-                <Route path="/company/innovation/contact-lab" element={<ContactInnovationLab />} />
-                <Route path="/company/why-choose-us/reliability" element={<Reliability />} />
-                <Route path="/company/why-choose-us/reliability/sla" element={<SLADetails />} />
-                <Route path="/company/why-choose-us/scalability" element={<Scalability />} />
-                <Route path="/company/why-choose-us/scalability/start-scaling" element={<StartScaling />} />
-                <Route path="/company/why-choose-us/scalability/architecture" element={<ViewArchitecture />} />
-                <Route path="/company/leadership-journey" element={<LeadershipJourney />} />
-                <Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
-                <Route path="/company/employee-id" element={<EmployeeId />} />
-                <Route path="/company/contracts" element={<CompanyContracts />} />
-                <Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
-                <Route path="/company/cookie-policy" element={<CookieUsage />} />
-                <Route path="/company/privacy-policy" element={<DataProtection />} />
-                <Route path="/company/terms-of-service" element={<TermsOfService />} />
+<Route path="/company/about-us" element={<AboutUs />} />
+<Route path="/company/vision" element={<Vision />} />
+<Route path="/company/mission" element={<Mission />} />
+<Route path="/company/values" element={<Value />} />
+<Route path="/company/founders" element={<Founder />} />
+<Route path="/company/management" element={<Leadership />} />
+<Route path="/company/our-journey" element={<OurJourney />} />
+<Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
+<Route path="/company/employee-id" element={<EmployeeId />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />

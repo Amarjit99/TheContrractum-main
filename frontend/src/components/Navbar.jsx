@@ -24,25 +24,17 @@ export default function Navbar() {
 
     {
       name: 'Company',
-      submenu: [
-        { title: 'Our Vision', path: '/company/about-us/vision', items: [] },
-        { title: 'Our Mission', path: '/company/about-us/mission', items: [] },
-        { title: 'Our Values', path: '/company/about-us/values', items: [] },
-
-
-        { title: 'Founders & Directors', path: '/company/leadership/founders', items: [] },
-        { title: 'Management Team', path: '/company/leadership/management', items: [] },
-
-        { title: 'Our Journey', path: '/company/our-journey', items: [] },
-        { title: 'Company Timeline', path: '/company/our-journey/timeline', items: [] },
-
-        { title: 'Innovation', path: '/company/why-choose-us/innovation', items: [] },
-        { title: 'Reliability', path: '/company/why-choose-us/reliability', items: [] },
-        { title: 'Scalability', path: '/company/why-choose-us/scalability', items: [] },
-        { title: 'Code Of Conduct', path: '/company/code-of-conduct', items: [] },
-        { title: 'Employee ID Verification', path: '/company/employee-id', items: [] },
-        { title: 'Contracts & Documents', path: '/company/contracts', items: [] },
-      ]
+      submenu:[
+  { title: 'About Us', path: '/company/about-us', items: [] },
+  { title: 'Our Vision', path: '/company/vision', items: [] },
+  { title: 'Our Mission', path: '/company/mission', items: [] },
+  { title: 'Our Values', path: '/company/values', items: [] },
+  { title: 'Founders & Directors', path: '/company/founders', items: [] },
+  { title: 'Management Team', path: '/company/management', items: [] },
+  { title: 'Our Journey', path: '/company/our-journey', items: [] },
+  { title: 'Code of Conduct', path: '/company/code-of-conduct', items: [] },
+  { title: 'Employee ID Verification', path: '/company/employee-id', items: [] },
+]
 
     },
     {

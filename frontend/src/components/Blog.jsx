@@ -5,35 +5,35 @@ import { Users, Briefcase, Trophy, BarChart3, Calendar } from "lucide-react";
 export default function WhyChooseUs() {
   const features = [
     {
-      number: "1000",
+      number: 1000,
       title: "Our Staffs",
       desc: "TheContractum has a pool of carefully recruited business solution experts to service the success of each of our clients.",
       icon: <Users size={60} strokeWidth={1.5} />,
       bgImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=600&fit=crop",
     },
     {
-      number: "200",
+      number: 200,
       title: "Our Clients",
       desc: "Trusted by over 200 businesses ranging from startups to large enterprises across diverse industries.",
       icon: <Briefcase size={60} strokeWidth={1.5} />,
       bgImage: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=600&fit=crop",
     },
     {
-      number: "175",
+      number: 175,
       title: "Completed Projects",
       desc: "Successfully delivered 175+ projects spanning IT, GIS, telecom, HR tech, and more.",
       icon: <Trophy size={60} strokeWidth={1.5} />,
       bgImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=600&fit=crop",
     },
     {
-      number: "25",
+      number: 25,
       title: "Running Projects",
       desc: "Actively managing 25+ ongoing projects, delivering innovation and progress every day.",
       icon: <BarChart3 size={60} strokeWidth={1.5} />,
       bgImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=600&fit=crop",
     },
     {
-      number: "1",
+      number: 1,
       title: "Mini Event Platform",
       desc: "A real-time interactive application showcasing RSVP flow, concurrency, and attendee management.",
       icon: <Calendar size={60} strokeWidth={1.5} />,
@@ -46,16 +46,16 @@ export default function WhyChooseUs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
 
         {/* Small Top Tag */}
-        <div className="mb-4">
-          <p className="text-primary uppercase tracking-widest text-sm font-semibold">
-            Our Feature
-          </p>
-          <div className="w-6 h-6 border-2 border-primary rounded-full mx-auto mt-2"></div>
+        <div className="mb-4 text-center">
+          {/* <p className="text-primary uppercase tracking-widest text-sm font-semibold">
+            Key Metrics
+          </p> */}
+          {/* <div className="w-6 h-6 border-2 border-primary rounded-full mx-auto mt-2"></div> */}
         </div>
 
         {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-20">
-          Our Feature
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-20 text-center">
+          Why Choose The Contractum
         </h2>
 
         {/* Feature Grid */}
@@ -88,10 +88,7 @@ export default function WhyChooseUs() {
                   </div>
                 </div>
 
-                {/* Step Number Circle */}
-                <div className="absolute bottom-4 right-6 w-14 h-14 bg-black group-hover:bg-primary text-white rounded-full flex items-center justify-center text-lg font-semibold shadow-md group-hover:shadow-xl transition-all duration-500 group-hover:scale-110">
-                  {item.number}
-                </div>
+                {/* Step Number removed per request */}
 
               </div>
 

@@ -17,7 +17,7 @@ export default function Home() {
       <Services />
       <Builder />
       <Culture />
-      <Client />
+      {/* <Client /> */}
       <Testmonials />
       <Blog />
       <Contact />

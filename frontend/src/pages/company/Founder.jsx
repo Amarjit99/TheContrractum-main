@@ -251,7 +251,7 @@ export default function Founder() {
                     <p className="text-xl sm:text-2xl text-white/90 mb-10 max-w-3xl leading-relaxed drop-shadow-lg">
                         Visionary leaders with 280+ years of combined experience driving innovation and excellence across the globe
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-start">
+                    {/* <div className="flex flex-col sm:flex-row gap-4 justify-start">
                         <Link to="/team/core-team" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
                             <Users className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Meet the Team
@@ -260,7 +260,7 @@ export default function Founder() {
                             Our Leadership
                             <Sparkles className="w-5 h-5" />
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
