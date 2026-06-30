@@ -136,7 +136,29 @@ export default function AdminContracts() {
   };
 
   const handleDownloadPDF = async (c) => {
-    const toastId = toast.loading('Generating PDF…');
+    const toastId = toast.loading('Downloading PDF...');
+    try {
+      const authHeaders = { Authorization: `Bearer ${localStorage.getItem('adminToken') || admin?.token}` };
+      const res = await fetch(`${API}/api/contracts/${c._id}/download-pdf`, { headers: authHeaders });
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(c.title || 'Contract').replace(/[^a-z0-9]/gi, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      toast.success('PDF downloaded!', { id: toastId });
+    } catch (err) {
+      console.error(err);
+      toast.error('PDF download failed', { id: toastId });
+    }
+  };
+
+  const handleDownloadWebPDF = async (c) => {
+    const toastId = toast.loading('Generating Web PDF...');
     try {
       const div = document.createElement('div');
       div.style.cssText = 'width:794px;padding:40px;font-family:Georgia,serif;background:white;position:fixed;left:-9999px;top:0;';
@@ -153,12 +175,15 @@ export default function AdminContracts() {
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, -y, imgWidth, imgHeight);
         y += 297;
       }
-      pdf.save(`${(c.title || 'Contract').replace(/[^a-z0-9]/gi, '_')}.pdf`);
-      toast.success('PDF downloaded!', { id: toastId });
-    } catch {
-      toast.error('PDF generation failed', { id: toastId });
+      pdf.save(`${(c.title || 'Contract').replace(/[^a-z0-9]/gi, '_')}_web.pdf`);
+      toast.success('Web PDF downloaded!', { id: toastId });
+    } catch (err) {
+      console.error(err);
+      toast.error('Web PDF generation failed', { id: toastId });
     }
   };
+
+
 
   const handleBulkGenerate = async () => {
     if (!bulkForm.templateId || !bulkForm.employeeIds.length) {
@@ -203,7 +228,9 @@ export default function AdminContracts() {
   };
 
   const filteredContracts = contracts.filter(c => {
-    const empName = c.employeeId?.name || `${c.employeeId?.firstName || ''} ${c.employeeId?.lastName || ''}`.trim();
+    const empName = c.employeeId 
+      ? (c.employeeId.name || `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim())
+      : (c.customRecipient?.name || 'External Recipient');
     const matchSearch =
       (c.title || '').toLowerCase().includes(search.toLowerCase()) ||
       empName.toLowerCase().includes(search.toLowerCase()) ||
@@ -538,7 +565,9 @@ export default function AdminContracts() {
                             <div className="sm:hidden flex items-center gap-1.5 mt-1.5 text-gray-500">
                               <UserIcon size={10} />
                               <span className="text-[10px] font-medium truncate max-w-[110px]">
-                                {c.employeeId?.firstName} {c.employeeId?.lastName}
+                                {c.employeeId 
+                                  ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim() 
+                                  : (c.customRecipient?.name || 'External Recipient')}
                               </span>
                             </div>
                           </div>
@@ -549,11 +578,19 @@ export default function AdminContracts() {
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-[11px] uppercase shrink-0">
-                            {c.employeeId?.firstName?.[0]}{c.employeeId?.lastName?.[0]}
+                            {c.employeeId 
+                              ? `${c.employeeId.firstName?.[0] || c.employeeId.name?.[0] || 'E'}${c.employeeId.lastName?.[0] || ''}` 
+                              : (c.customRecipient?.name?.[0] || 'E')}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold text-gray-900 truncate">{c.employeeId?.firstName} {c.employeeId?.lastName}</p>
-                            <p className="text-[11px] text-gray-400 font-medium truncate max-w-[130px]">{c.employeeId?.email}</p>
+                            <p className="text-sm font-bold text-gray-900 truncate">
+                              {c.employeeId 
+                                ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim() 
+                                : (c.customRecipient?.name || 'External Recipient')}
+                            </p>
+                            <p className="text-[11px] text-gray-400 font-medium truncate max-w-[130px]">
+                              {c.employeeId ? c.employeeId.email : (c.customRecipient?.email || 'N/A')}
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -596,9 +633,13 @@ export default function AdminContracts() {
                             </>
                           )}
                           {/* Download PDF */}
-                          <button onClick={() => handleDownloadPDF(c)} title="Download PDF"
-                            className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                          <button onClick={() => handleDownloadPDF(c)} title="Download Official Verified PDF (Server-side)"
+                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                             <Download size={17} />
+                          </button>
+                          <button onClick={() => handleDownloadWebPDF(c)} title="Download Web PDF (Client-side)"
+                            className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors">
+                            <FileText size={17} />
                           </button>
                           {/* Send Email */}
                           <button onClick={() => handleSendEmail(c)} title="Email to Employee"

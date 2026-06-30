@@ -1,7 +1,16 @@
 const mongoose = require('mongoose');
 
 const contractSchema = new mongoose.Schema({
-  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+  recipientType: { type: String, enum: ['employee', 'external'], default: 'employee' },
+  customRecipient: {
+    name: { type: String },
+    email: { type: String },
+    jobTitle: { type: String },
+    department: { type: String },
+    salary: { type: String },
+    address: { type: String }
+  },
   title: { type: String, required: true },
   description: { type: String },
   type: { type: String, default: 'Employment Agreement' },
@@ -36,6 +45,7 @@ const contractSchema = new mongoose.Schema({
     isSigned: { type: Boolean, default: false },
     signedAt: { type: Date },
     signatureName: { type: String }, // Digital signature (typed name)
+    signatureImage: { type: String }, // Drawn signature image (base64)
     signatureIp: { type: String }
   },
 
