@@ -17,7 +17,7 @@ export default function Telecom() {
                         className="w-full h-full object-cover"
                     />
                 </div>
-                <div className="absolute inset-0 bg-linear-to-r from-zinc-900 via-zinc-900/90 to-transparent z-0"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-transparent z-0"></div>
 
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                     <div className="max-w-3xl">
@@ -27,7 +27,7 @@ export default function Telecom() {
                         </div> */}
                         <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                             The Future of <br />
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-cyan-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#007BFF] to-cyan-400">
                                 Global Communication
                             </span>
                         </h1>
@@ -35,7 +35,7 @@ export default function Telecom() {
                             Empowering telecom providers with 5G infrastructure, AI-driven network optimization, and seamless customer experience platforms.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/company/leadership/management" className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
+                            <Link to="/company/leadership/management" className="px-8 py-4 bg-[#007BFF] hover:bg-[#0056B3] text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
                                 Consult with Us
                                 <ArrowRight size={20} />
                             </Link>
@@ -120,7 +120,7 @@ export default function Telecom() {
                             </div>
                         </div>
                         <div className="relative">
-                            <div className="absolute inset-0 bg-linear-to-tr from-primary/20 to-cyan-600/20 rounded-3xl transform rotate-3"></div>
+                            <div className="absolute inset-0 bg-gradient-to-tr from-[#007BFF]/20 to-cyan-600/20 rounded-3xl transform rotate-3"></div>
                             <img
                                 src={telecomImg}
                                 alt="Fiber Optics"

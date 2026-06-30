@@ -102,7 +102,7 @@ if (mongoUri && mongoUri.startsWith("mongodb")) {
         console.error("❌ Failed to seed default users:", err);
       }
     })
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
+    .catch((err) => console.error("❌ MongoDB connection error:", err)); // Reload trigger
 } else {
   console.warn("⚠️  MONGO_URI not set. Skipping MongoDB connection.");
 }
@@ -134,11 +134,15 @@ app.use("/api/survey", require("./routes/survey"));
 app.use("/api/admin/news", require("./routes/news"));
 app.use("/api/news", require("./routes/news")); // Exposing a cleaner public read path optionally, but we'll point both to the same file which handles logic.
 app.use("/api/interns", require("./routes/interns"));
+app.use("/api/volunteer-stories", require("./routes/volunteerStories"));
 app.use("/api/founders", require("./routes/founders"));
 app.use("/api/id-cards", require("./routes/idCards"));
 app.use("/api/referrals", require("./routes/referrals"));
 app.use("/api/projects", require("./routes/projects"));
 app.use("/api/completed-projects", require("./routes/completedProjects"));
+app.use("/api/case-studies", require("./routes/caseStudies"));
+app.use("/api/research", require("./routes/research"));
+app.use("/api/testimonials", require("./routes/testimonials"));
 app.use("/api/contracts", require("./routes/contracts"));
 app.use("/api/affiliate-applications", require("./routes/affiliates"));
 app.use("/api/certificates", require("./routes/certificates"));

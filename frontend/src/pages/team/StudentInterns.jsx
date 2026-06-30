@@ -17,6 +17,7 @@ const staticInterns = [
             image: venkateshImg,
             quote: "Working on real-world projects from day one has been an incredible learning curve.",
             tags: ["React", "Express.js", "Web Devolopement", "MongoDB", "Node.js"],
+            batchYear: "2025"
         },
         {
             name: "Ankit Kumar",
@@ -25,6 +26,7 @@ const staticInterns = [
             image: ankitImg,
             quote: "The mentorship here is unmatched. I've learned more in 3 months than a year of college.",
             tags: ["Python", "React", "Web Devolopement", "MongoDB", "Node.js"],
+            batchYear: "2025"
         },
         {
             name: "Amarjeet P",
@@ -33,6 +35,7 @@ const staticInterns = [
             image: amarjitImg,
             quote: "The mentorship here is unmatched. I've learned more in 3 months than a year of college, building secure, scalable web applications.",
             tags: ["Python", "React", "Web Devolopement", "MongoDB", "Node.js", "Web Security", "Penetration Testing"],
+            batchYear: "2025"
         },
         {
             name: "Rahul Singh",
@@ -41,6 +44,7 @@ const staticInterns = [
             image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=400",
             quote: "Protecting live infrastructure against simulated attacks was the highlight of my summer.",
             tags: ["Ethical Hacking", "Network Security"],
+            batchYear: "2025"
         },
         {
             name: "Ananya Roy",
@@ -49,11 +53,14 @@ const staticInterns = [
             image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400",
             quote: "I love how my designs are actually being used by thousands of users today.",
             tags: ["Figma", "User Research", "Prototyping"],
+            batchYear: "2025"
         },
     ];
 
 export default function StudentInterns() {
     const [interns, setInterns] = useState([]);
+    const [activeYear, setActiveYear] = useState("");
+    const [uniqueYears, setUniqueYears] = useState([]);
 
     useEffect(() => {
         const fetchInterns = async () => {
@@ -76,6 +83,16 @@ export default function StudentInterns() {
         };
         fetchInterns();
     }, []);
+
+    useEffect(() => {
+        if (interns.length > 0) {
+            const years = [...new Set(interns.map(i => i.batchYear || "2025"))].sort((a, b) => b - a);
+            setUniqueYears(years);
+            if (!activeYear && years.length > 0) {
+                setActiveYear(years[0]);
+            }
+        }
+    }, [interns]);
 
 
     return (
@@ -111,12 +128,31 @@ export default function StudentInterns() {
                             Our Rising Stars
                         </span>
                         <h2 className="text-4xl sm:text-5xl font-black mb-4 text-slate-900">Meet Our Talented Interns</h2>
-                        <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+                        <p className="text-slate-600 text-lg max-w-2xl mx-auto mb-8">
                             Passionate students bringing fresh ideas and driving innovation
                         </p>
+                        
+                        {/* Year Tabs */}
+                        {uniqueYears.length > 1 && (
+                            <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+                                {uniqueYears.map((year) => (
+                                    <button
+                                        key={year}
+                                        onClick={() => setActiveYear(year)}
+                                        className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm ${
+                                            activeYear === year
+                                                ? "bg-orange-600 text-white shadow-orange-500/30 scale-105"
+                                                : "bg-white text-slate-600 hover:bg-orange-50 hover:text-orange-600 border border-slate-200"
+                                        }`}
+                                    >
+                                        {year} Batch
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {interns.map((intern, index) => (
+                        {interns.filter(i => (i.batchYear || "2025") === activeYear).map((intern, index) => (
                             <div
                                 key={index}
                                 className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100 hover:-translate-y-2 flex flex-col h-full"

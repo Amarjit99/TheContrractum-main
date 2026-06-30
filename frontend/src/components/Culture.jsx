@@ -9,6 +9,7 @@ export default function OurCulture() {
     "We believe in being a boundaryless organization.",
     "We build trust in the system through open communication.",
     "We take pride in what we do.",
+    "We cultivate an innovation-driven mindset.",
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -32,36 +33,47 @@ export default function OurCulture() {
   const cx = 300;
   const cy = 260;
 
-  const toRad = (deg) => (deg * Math.PI) / 180;
-
-  const pos = (deg) => ({
-    left: cx + d * Math.cos(toRad(deg)) - smallR,
-    top: cy + d * Math.sin(toRad(deg)) - smallR,
-  });
+  const getDelay = (deg) => {
+    return `${-(deg / 6).toFixed(2)}s`;
+  };
 
   const circles = [
-    { label: "Culture of\nPerformance", color: "bg-green-500", deg: 270 },
-    { label: "Rewarding\nIdeas!", color: "bg-orange-500", deg: 330 },
-    { label: "The\nContractum", color: "bg-blue-600", deg: 30 },
-    { label: "Open\nCommunication", color: "bg-indigo-600", deg: 90 },
-    { label: "Pride in\nWork", color: "bg-teal-500", deg: 150 },
-    { label: "Boundaryless\nOrganization", color: "bg-violet-500", deg: 210 },
+    { label: "Culture of\nPerformance", color: "bg-green-500", deg: 0 },
+    { label: "Rewarding\nIdeas!", color: "bg-orange-500", deg: 51 },
+    { label: "The\nContractum", color: "bg-blue-600", deg: 103 },
+    { label: "Open\nCommunication", color: "bg-indigo-600", deg: 154 },
+    { label: "Pride in\nWork", color: "bg-teal-500", deg: 206 },
+    { label: "Boundaryless\nOrganization", color: "bg-violet-500", deg: 257 },
+    { label: "Innovation-Driven\nMindset", color: "bg-pink-600", deg: 309 },
   ];
 
   return (
     <section className="bg-gray-100 py-24">
+      <style>{`
+        @keyframes orbit-animation {
+          from {
+            transform: rotate(0deg) translateX(216px) rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg) translateX(216px) rotate(-360deg);
+          }
+        }
+        .animate-orbit-custom {
+          animation: orbit-animation 60s linear infinite;
+        }
+      `}</style>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Top Tag */}
         <div className="text-center mb-8">
-          <p className="text-primary uppercase tracking-widest text-sm font-semibold">
+          <p className="text-black uppercase tracking-widest text-sm font-semibold">
             Our Culture
           </p>
         </div>
 
         {/* Heading */}
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-20">
-          What Is <span className="text-primary">The Contractum</span> Culture?
+          What Is The Contractum Culture?
         </h2>
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -84,12 +96,11 @@ export default function OurCulture() {
                 </h3>
               </div>
 
-              {/* 6 Surrounding Circles Orbiting Center */}
-              <div className="absolute inset-0 animate-rotate-slow">
+              {/* 7 Surrounding Circles Orbiting Center */}
+              <div className="absolute inset-0">
                 {circles.map((circle, idx) => {
-                  const { left, top } = pos(circle.deg);
-                  // Top circles (210, 270, 330) float DOWN, Bottom circles (30, 90, 150) float UP
-                  const isTopHalf = circle.deg === 270 || circle.deg === 330 || circle.deg === 210;
+                  const delay = getDelay(circle.deg);
+                  const isTopHalf = circle.deg >= 180 && circle.deg < 360;
                   const floatClass = isTopHalf 
                     ? `animate-float-reverse-${(idx % 3) + 1}` 
                     : `animate-float-${(idx % 3) + 1}`;
@@ -97,14 +108,20 @@ export default function OurCulture() {
                   return (
                     <div
                       key={idx}
-                      className={`absolute w-36 h-36 ${circle.color} rounded-full flex items-center justify-center text-white text-center shadow-lg ${floatClass}`}
-                      style={{ left, top }}
+                      className="absolute w-36 h-36 animate-orbit-custom"
+                      style={{
+                        left: cx - smallR,
+                        top: cy - smallR,
+                        animationDelay: delay,
+                      }}
                     >
-                      {/* Counter-rotate to keep text upright while orbiting */}
-                      <div className="animate-rotate-slow-reverse p-4">
-                        <span className="text-xs font-bold leading-snug whitespace-pre-line drop-shadow-sm">
-                          {circle.label}
-                        </span>
+                      {/* Float container inside orbit container */}
+                      <div className={`w-full h-full ${circle.color} rounded-full flex items-center justify-center text-white text-center shadow-lg ${floatClass}`}>
+                        <div className="p-2 w-full h-full flex flex-col items-center justify-center">
+                          <span className="text-[10px] sm:text-xs font-bold leading-snug whitespace-pre-line drop-shadow-sm px-1">
+                            {circle.label}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -119,7 +136,7 @@ export default function OurCulture() {
               <div
                 key={index}
                 className={`border-b border-gray-300 pb-6 text-lg transition-all duration-500 ${activeIndex === index
-                  ? "text-primary font-bold scale-105 border-primary animate-pulse"
+                  ? "text-black font-bold scale-105 border-black animate-pulse"
                   : "text-gray-700"
                   }`}
               >

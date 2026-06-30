@@ -78,7 +78,7 @@ export default function ReferralDashboard() {
                             <CreditCard size={20} className="text-indigo-500"/>
                             <span className="font-semibold text-sm uppercase tracking-wider">Earnings</span>
                         </div>
-                        <h2 className="text-4xl font-black text-gray-900">${totalEarned.toFixed(2)}</h2>
+                        <h2 className="text-4xl font-black text-gray-900">{totalEarned.toFixed(2)}</h2>
                     </div>
                 </div>
                 <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex items-center justify-between">
@@ -96,7 +96,7 @@ export default function ReferralDashboard() {
                             <Gift size={20} className="text-amber-500"/>
                             <span className="font-semibold text-sm uppercase tracking-wider">Pending Rewards</span>
                         </div>
-                        <h2 className="text-4xl font-black text-gray-900">${pendingRewards.toFixed(2)}</h2>
+                        <h2 className="text-4xl font-black text-gray-900">{pendingRewards.toFixed(2)}</h2>
                     </div>
                 </div>
             </div>
@@ -188,7 +188,7 @@ export default function ReferralDashboard() {
                                     </div>
                                 </td>
                                 <td className="py-5 px-8 font-bold text-gray-300">
-                                    $70.00
+                                    70.00
                                 </td>
                             </tr>
                             <tr className="hover:bg-gray-50/50 transition">
@@ -207,7 +207,7 @@ export default function ReferralDashboard() {
                                     </div>
                                 </td>
                                 <td className="py-5 px-8 font-bold text-gray-300">
-                                    $70.00
+                                    70.00
                                 </td>
                             </tr>
 
@@ -240,8 +240,7 @@ export default function ReferralDashboard() {
                                             {ref.status === 'Hired' ? 'Offer Extended' : ref.status === 'Interview' ? 'Screening' : 'Submitted'}
                                         </div>
                                     </td>
-                                    <td className={`py-5 px-8 font-bold ${ref.rewardStatus === 'Rewarded' ? 'text-gray-900' : 'text-gray-400'}`}>
-                                        ${ref.rewardAmount.toFixed(2)}
+                                    <td className={`py-5 px-8 font-bold ${ref.rewardStatus === 'Rewarded' ? 'text-gray-900' : 'text-gray-400'}`}>{ref.rewardAmount.toFixed(2)}
                                     </td>
                                 </tr>
                             ))}
@@ -285,7 +284,7 @@ export default function ReferralDashboard() {
                           'bg-indigo-500'
                      }`}></div> {status === 'Hired' ? 'Offer Extended' : status === 'Interview' ? 'Scheduled Call' : 'Submitted'}
                   </span>
-                  <span className="text-gray-500">${reward.toFixed(2)}</span>
+                  <span className="text-gray-500">{reward.toFixed(2)}</span>
               </div>
           </div>
       );
@@ -357,13 +356,13 @@ export default function ReferralDashboard() {
                               </div>
                               <span className="text-sm font-semibold text-gray-900">PayPal Transfer Processed</span>
                           </div>
-                          <span className="text-sm font-bold text-emerald-600">$70.00</span>
+                          <span className="text-sm font-bold text-emerald-600">70.00</span>
                       </div>
                   </div>
                   <div className="md:w-1/3 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl p-6 text-white relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
                       <h4 className="font-bold text-lg mb-2">Reward Trigger!</h4>
-                      <p className="text-sm text-indigo-100 mb-6">Great mate! Sarah was recently hired. You've earned a $70 reward!</p>
+                      <p className="text-sm text-indigo-100 mb-6">Great mate! Sarah was recently hired. You've earned a 70 reward!</p>
                       <button onClick={() => setActiveView("Rewards")} className="bg-white text-indigo-600 font-bold text-sm px-6 py-2 rounded-full w-fit hover:bg-indigo-50 transition shadow-md block text-center">
                           View Reward Balance
                       </button>
@@ -382,7 +381,7 @@ export default function ReferralDashboard() {
                         <CreditCard size={120} />
                     </div>
                     <span className="text-sm font-bold tracking-wider uppercase text-gray-500">Total Rewards Balance</span>
-                    <h2 className="text-5xl font-black text-gray-900 mt-2">${pendingRewards.toFixed(2)}</h2>
+                    <h2 className="text-5xl font-black text-gray-900 mt-2">{pendingRewards.toFixed(2)}</h2>
                     <div className="mt-8">
                         <svg className="w-full h-12 stroke-indigo-400 stroke-2 fill-none" viewBox="0 0 200 40" preserveAspectRatio="none">
                             <path d="M0,35 Q20,10 40,30 T80,20 T120,25 T160,10 T200,5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -396,7 +395,7 @@ export default function ReferralDashboard() {
                         <CheckCircle size={120} />
                     </div>
                     <span className="text-sm font-bold tracking-wider uppercase text-gray-500">Payouts Sent</span>
-                    <h2 className="text-5xl font-black text-gray-900 mt-2">${rewardsPaid.toFixed(2)}</h2>
+                    <h2 className="text-5xl font-black text-gray-900 mt-2">{rewardsPaid.toFixed(2)}</h2>
                     <div className="mt-8">
                         <svg className="w-full h-12 stroke-emerald-400 stroke-2 fill-none" viewBox="0 0 200 40" preserveAspectRatio="none">
                             <path d="M0,20 Q20,35 40,25 T80,30 T120,15 T160,20 T200,10" strokeLinecap="round" strokeLinejoin="round"/>
@@ -419,7 +418,7 @@ export default function ReferralDashboard() {
                                     <p className="text-xs text-gray-400">1 day ago</p>
                                 </div>
                             </div>
-                            <span className="font-bold text-gray-500">$70.00</span>
+                            <span className="font-bold text-gray-500">70.00</span>
                         </div>
                         <div className="flex justify-between items-center pb-4 border-b border-gray-50">
                             <div className="flex items-center gap-4">
@@ -429,7 +428,7 @@ export default function ReferralDashboard() {
                                     <p className="text-xs text-gray-400">3 days ago</p>
                                 </div>
                             </div>
-                            <span className="font-bold text-emerald-600">+$130.00</span>
+                            <span className="font-bold text-emerald-600">+130.00</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <div className="flex items-center gap-4">
@@ -441,7 +440,7 @@ export default function ReferralDashboard() {
                                     <p className="text-xs text-gray-400">1 week ago</p>
                                 </div>
                             </div>
-                            <span className="font-bold text-emerald-600">+$125.00</span>
+                            <span className="font-bold text-emerald-600">+125.00</span>
                         </div>
                     </div>
                 </div>
@@ -451,7 +450,7 @@ export default function ReferralDashboard() {
                     <div className="w-48 h-80 bg-white rounded-3xl shadow-xl border-4 border-gray-900 relative overflow-hidden flex flex-col p-4 items-center text-center">
                         <div className="w-20 h-4 bg-gray-900 rounded-b-xl absolute top-0 -mt-1 mx-auto left-0 right-0"></div>
                         <Gift className="text-amber-400 w-16 h-16 mt-10 mb-4 animate-bounce" />
-                        <h4 className="font-black text-gray-900 leading-tight">You've earned a $70 reward!</h4>
+                        <h4 className="font-black text-gray-900 leading-tight">You've earned a 70 reward!</h4>
                         <p className="text-[10px] text-gray-500 mt-2">Emma was officially hired.</p>
                         <div className="mt-auto w-full bg-indigo-600 text-white rounded-full py-2 text-xs font-bold shadow-md">
                             View Balance
@@ -492,7 +491,7 @@ export default function ReferralDashboard() {
                         Dashboard
                     </button>
                     <button onClick={() => setActiveView("Tracking")} className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeView === "Tracking" ? "bg-indigo-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-100"}`}>
-                        Candidates & Tracking
+                        Candidates and Tracking
                     </button>
                     <button onClick={() => setActiveView("Rewards")} className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${activeView === "Rewards" ? "bg-indigo-600 text-white shadow-md" : "text-gray-500 hover:bg-gray-100"}`}>
                         Rewards

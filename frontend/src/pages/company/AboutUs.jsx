@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Target, Rocket, Users, ShieldCheck, Award, Rocket as RocketIcon, Lightbulb, Globe } from "lucide-react";
 
 const WorkingProcessItem = ({ title, desc, icon }) => (
@@ -99,8 +100,8 @@ export default function AboutUs() {
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Ready to Accelerate Your Entrepreneurial Dreams?</h2>
                     <div className="flex flex-wrap justify-center gap-6">
-                        <button className="px-10 py-4 bg-primary text-black font-bold rounded-xl hover:bg-primary-dark transition shadow-lg">Work With Us</button>
-                        <button className="px-10 py-4 border-2 border-primary text-black font-bold rounded-xl hover:bg-primary hover:text-gray-500 transition">Get Expert Advice</button>
+                        <Link to="/join/partner" className="px-10 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition shadow-lg inline-block text-center cursor-pointer">Work With Us</Link>
+                        <Link to="/contact/touch" className="px-10 py-4 border-2 border-primary text-black font-bold rounded-xl hover:bg-primary hover:text-white transition inline-block text-center cursor-pointer">Get Expert Advice</Link>
                     </div>
                 </div>
             </section>

@@ -538,7 +538,7 @@ export default function AdminAffiliates() {
                                 <LayoutDashboard size={20} />
                             </span>
                             <div>
-                                <h2 className="text-white text-base font-black tracking-tight leading-none">AffiliatePro</h2>
+                                <h3 className="text-white text-base font-black tracking-tight leading-none">AffiliateMarketing</h3>
                                 <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Marketing System</span>
                             </div>
                         </div>
@@ -574,21 +574,7 @@ export default function AdminAffiliates() {
                         </nav>
                     </div>
 
-                    {/* Bottom Plan Box */}
-                    <div className="mt-8 pt-4 border-t border-gray-800">
-                        <div className="bg-[#1e1b4b] border border-[#3730a3]/50 rounded-2xl p-4 text-center">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-[10px] uppercase font-black text-[#818cf8] tracking-widest">Pro Plan</span>
-                                <span className="bg-[#10b981]/20 text-[#10b981] text-[9px] font-bold px-2 py-0.5 rounded-full">Active</span>
-                            </div>
-                            <p className="text-[10px] text-gray-400 font-medium mb-3 leading-relaxed">
-                                You are using Pro Plan.<br />Valid till 31 Dec, 2026.
-                            </p>
-                            <button className="w-full bg-[#6366f1] hover:bg-[#4f46e5] text-white text-xs font-bold py-2 rounded-xl transition-all shadow-md">
-                                Upgrade Plan
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
 
                 {/* 2. Main Content pane on Right */}

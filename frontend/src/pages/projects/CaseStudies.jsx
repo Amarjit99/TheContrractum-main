@@ -6,155 +6,28 @@ import { toast } from 'react-hot-toast';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 
-// Case Studies Data
-const caseStudiesData = [
-  {
-    id: 1,
-    title: "Transforming Healthcare with AI-Powered Diagnostics",
-    client: "National Health Institute",
-    industry: "Healthcare",
-    duration: "14 months",
-    teamSize: 22,
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop",
-    challenge: "The healthcare system was facing delays in disease diagnosis, leading to late treatments and increased mortality rates. Manual analysis of medical reports took 3-5 days, creating bottlenecks in patient care.",
-    solution: "We developed an AI-powered diagnostic platform using machine learning algorithms to analyze medical images, lab reports, and patient history. The system provides real-time diagnostic suggestions with 95% accuracy, integrated seamlessly with existing hospital management systems.",
-    results: [
-      "95% diagnostic accuracy",
-      "Reduced diagnosis time from 5 days to 2 hours",
-      "Served 2M+ patients",
-      "40% reduction in treatment delays",
-      "Saved 15,000+ lives"
-    ],
-    technologies: ["Python", "TensorFlow", "React", "PostgreSQL", "AWS", "Docker"],
-    testimonial: "This AI system has revolutionized our diagnostic process. We're now able to save more lives than ever before.",
-    testimonialAuthor: "Dr. Sarah Johnson, Chief Medical Officer",
-    impact: "The platform is now deployed across 500+ hospitals nationwide, processing 50,000+ diagnostic cases daily and contributing to a 35% improvement in patient outcomes.",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "Banking Revolution: Digital Transformation at Scale",
-    client: "Global Banking Corporation",
-    industry: "Finance",
-    duration: "18 months",
-    teamSize: 28,
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&h=600&fit=crop",
-    challenge: "Legacy banking systems were causing frequent downtime, security vulnerabilities, and poor customer experience. The bank was losing customers to digital-first competitors and facing compliance issues.",
-    solution: "We architected and implemented a complete digital banking platform with microservices architecture, real-time transaction processing, biometric security, and AI-powered fraud detection. The solution included mobile apps, web platform, and API integration with third-party services.",
-    results: [
-      "Zero downtime in 12 months",
-      "10M+ active users",
-      "99.99% uptime",
-      "85% reduction in fraud",
-      "$500M in digital transactions/day"
-    ],
-    technologies: ["React Native", "Java", "Spring Boot", "Oracle", "Kubernetes", "AWS"],
-    testimonial: "The transformation exceeded our expectations. We've become a leader in digital banking innovation.",
-    testimonialAuthor: "James Wilson, CTO",
-    impact: "The bank saw a 200% increase in digital adoption, reduced operational costs by $50M annually, and improved customer satisfaction scores from 3.2 to 4.8/5.",
-    featured: true
-  },
-  {
-    id: 3,
-    title: "E-Learning Platform: Reaching 1 Million Students",
-    client: "National Education Board",
-    industry: "Education",
-    duration: "16 months",
-    teamSize: 20,
-    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=1200&h=600&fit=crop",
-    challenge: "During the pandemic, 2000+ schools lacked infrastructure for remote learning. Students from rural areas had no access to quality education, widening the educational gap. Traditional systems couldn't scale.",
-    solution: "Built a comprehensive e-learning platform with live classes, interactive content, AI-powered personalized learning paths, offline mode for low-bandwidth areas, and multi-language support. Integrated assessment tools and parent-teacher communication.",
-    results: [
-      "1M+ students enrolled",
-      "2000+ schools connected",
-      "98% student engagement",
-      "30% improvement in test scores",
-      "Accessible in 15 languages"
-    ],
-    technologies: ["React", "Node.js", "WebRTC", "MongoDB", "Redis", "CDN"],
-    testimonial: "This platform bridged the digital divide and ensured no student was left behind during the pandemic.",
-    testimonialAuthor: "Prof. Michael Chen, Education Secretary",
-    impact: "The platform enabled uninterrupted education for 1M+ students during lockdowns, with 95% attendance rates and significantly improved learning outcomes across all demographics.",
-    featured: false
-  },
-  {
-    id: 4,
-    title: "Smart City Infrastructure: IoT at Urban Scale",
-    client: "Metropolitan City Council",
-    industry: "Government",
-    duration: "20 months",
-    teamSize: 32,
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1200&h=600&fit=crop",
-    challenge: "The city faced traffic congestion, waste management inefficiencies, frequent power outages, and poor emergency response times. Manual monitoring of 500+ city services was unsustainable.",
-    solution: "Deployed an integrated IoT smart city platform with 10,000+ sensors monitoring traffic, utilities, air quality, waste levels, and emergency services. Real-time analytics dashboard with predictive maintenance and automated alerts. AI-powered traffic optimization.",
-    results: [
-      "50% reduction in traffic congestion",
-      "35% energy savings",
-      "60% faster emergency response",
-      "40% waste management efficiency",
-      "10,000+ IoT devices deployed"
-    ],
-    technologies: ["React", "Python", "IoT", "PostgreSQL", "Kafka", "GIS", "AWS"],
-    testimonial: "Our city has become a model for smart urban development. The ROI exceeded projections by 180%.",
-    testimonialAuthor: "Mayor Robert Martinez",
-    impact: "The smart city implementation saved $75M in operational costs, improved citizen satisfaction by 65%, and positioned the city as a technology leader attracting $2B in investments.",
-    featured: true
-  },
-  {
-    id: 5,
-    title: "Supply Chain Optimization: Real-Time Global Logistics",
-    client: "TransGlobal Logistics",
-    industry: "Logistics",
-    duration: "12 months",
-    teamSize: 18,
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop",
-    challenge: "Managing 5000+ delivery vehicles across 50 countries with poor visibility, route inefficiencies, and high fuel costs. Average delivery delays of 48 hours and 20% of shipments lost or damaged.",
-    solution: "Created an intelligent supply chain platform with real-time GPS tracking, AI-powered route optimization, predictive maintenance, automated warehouse management, and blockchain-based shipment verification. Integration with global customs systems.",
-    results: [
-      "5000+ vehicles tracked 24/7",
-      "35% fuel cost reduction",
-      "90% on-time delivery rate",
-      "50% reduction in damages",
-      "$120M annual savings"
-    ],
-    technologies: ["React", "Java", "Blockchain", "PostgreSQL", "AWS", "ML"],
-    testimonial: "This system transformed our operations. We're now the most efficient logistics company in our sector.",
-    testimonialAuthor: "Linda Thompson, COO",
-    impact: "The platform processes 100K+ shipments daily across 50 countries, reduced carbon footprint by 30%, and increased customer retention from 70% to 95%.",
-    featured: false
-  },
-  {
-    id: 6,
-    title: "Retail Analytics: Personalization at Scale",
-    client: "MegaMart Retail Chain",
-    industry: "Retail",
-    duration: "10 months",
-    teamSize: 15,
-    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop",
-    challenge: "Low conversion rates, poor inventory management leading to stockouts and overstocking, and inability to personalize customer experience across 500+ stores. Lost $50M annually in missed opportunities.",
-    solution: "Implemented an AI-powered retail analytics platform with real-time customer behavior tracking, predictive inventory management, personalized recommendations, dynamic pricing, and omnichannel integration. Mobile app with AR try-on features.",
-    results: [
-      "45% increase in conversion rate",
-      "60% reduction in stockouts",
-      "30% boost in average order value",
-      "2M+ app downloads",
-      "$80M additional revenue"
-    ],
-    technologies: ["React Native", "Python", "MongoDB", "Elasticsearch", "AWS", "AR"],
-    testimonial: "The personalization engine understands our customers better than we do. Sales have skyrocketed.",
-    testimonialAuthor: "David Park, VP of Operations",
-    impact: "The platform now serves 5M+ customers monthly, increased online sales by 200%, and provided actionable insights that optimized procurement by $30M annually.",
-    featured: false
-  }
-];
-
 export default function CaseStudies() {
   const navigate = useNavigate();
+  const [caseStudies, setCaseStudies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const industries = ["All", "Healthcare", "Finance", "Education", "Government", "Logistics", "Retail"];
+
+  useEffect(() => {
+    fetch(`${API}/api/case-studies`)
+      .then(res => res.json())
+      .then(data => {
+        setCaseStudies(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch case studies:", err);
+        setLoading(false);
+      });
+  }, []);
 
   // Track scroll position
   useEffect(() => {
@@ -167,10 +40,10 @@ export default function CaseStudies() {
   }, []);
 
   // Filter case studies
-  const filteredCaseStudies = caseStudiesData.filter(study => {
-    const matchesSearch = study.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      study.challenge.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      study.client.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredCaseStudies = (caseStudies || []).filter(study => {
+    const matchesSearch = (study.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (study.challenge || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (study.client || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = selectedIndustry === "All" || study.industry === selectedIndustry;
     return matchesSearch && matchesIndustry;
   });
@@ -224,7 +97,7 @@ export default function CaseStudies() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <p className="text-3xl font-bold text-slate-900">{caseStudiesData.length}</p>
+            <p className="text-3xl font-bold text-slate-900">{caseStudies.length}</p>
             <p className="text-sm text-slate-600 mt-1">Case Studies</p>
           </div>
 
@@ -300,7 +173,7 @@ export default function CaseStudies() {
           </div>
 
           <div className="mt-4 text-sm text-slate-600">
-            Showing <span className="font-bold text-slate-900">{filteredCaseStudies.length}</span> of <span className="font-bold text-slate-900">{caseStudiesData.length}</span> case studies
+            Showing <span className="font-bold text-slate-900">{filteredCaseStudies.length}</span> of <span className="font-bold text-slate-900">{caseStudies.length}</span> case studies
           </div>
         </div>
 

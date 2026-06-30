@@ -3,9 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import logo from '../../assets/main-logo.jpg';
 import {
-  LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
+  LayoutDashboard, FileText, FileEdit, Briefcase, Handshake, HeartHandshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity
+  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity, CheckSquare
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -19,16 +19,32 @@ const MENU_ITEMS = [
       { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
-      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
+      {
+        id: 'projects',
+        label: 'Projects',
+        icon: <FolderKanban size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'projects-overview', to: '/admin/projects?tab=overview', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
+          { id: 'projects-ongoing', to: '/admin/projects?tab=ongoing', icon: <FolderKanban size={16} />, label: 'Ongoing Projects' },
+          { id: 'projects-completed', to: '/admin/projects?tab=completed', icon: <CheckSquare size={16} />, label: 'Completed Projects' },
+          { id: 'projects-cases', to: '/admin/projects?tab=casestudies', icon: <FileText size={16} />, label: 'Case Studies' },
+          { id: 'projects-research', to: '/admin/projects?tab=research', icon: <Award size={16} />, label: 'Research & Innovation' },
+          { id: 'projects-testimonials', to: '/admin/projects?tab=testimonials', icon: <Users size={16} />, label: 'Client Testimonials' }
+        ]
+      },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
       { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
       { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={18} />, label: 'Student Interns' },
+      { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={18} />, label: 'Volunteer Stories' },
       { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={18} />, label: 'Form Links' },
       { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={18} />, label: 'Submissions' },
       { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
       { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
+      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
+      { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' },
     ]
   },
   {
@@ -38,7 +54,6 @@ const MENU_ITEMS = [
     hasSubmenu: true,
     subItems: [
       { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
       { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
       { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
       { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
@@ -48,18 +63,28 @@ const MENU_ITEMS = [
   },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
   { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-  { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
 ];
 
 const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout }) => {
+  const [openNestedMenus, setOpenNestedMenus] = useState({});
+
+  const toggleNestedSubmenu = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenNestedMenus(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   // Helper to check if item is allowed for current sub-role
   const isItemAllowed = (itemId) => {
     if (!admin) return false;
     if (admin.role === 'super-admin') return true;
-    
+
     const subRole = admin.adminSubRole;
     if (!subRole) return false;
-    
+
+    // Normalize nested projects items to 'projects' permission
+    const normalizedId = itemId.startsWith('projects-') ? 'projects' : itemId;
+
     const rolePermissions = {
       // Admins
       'System Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings', 'analytics', 'users', 'admins'],
@@ -116,14 +141,24 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
       'Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'blogs', 'news', 'projects', 'events', 'event-registrations', 'form-links', 'partners', 'analytics', 'settings'],
       'Legal': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates']
     };
-    
+
     const allowed = rolePermissions[subRole] || [];
-    return allowed.includes(itemId);
+    return allowed.includes(normalizedId);
   };
 
   const filteredMenuItems = MENU_ITEMS.map(item => {
     if (item.hasSubmenu) {
-      const allowedSubs = item.subItems.filter(sub => isItemAllowed(sub.id));
+      const allowedSubs = item.subItems.map(sub => {
+        if (sub.hasSubmenu) {
+          const allowedNested = sub.subItems.filter(nested => isItemAllowed(nested.id));
+          if (allowedNested.length > 0) {
+            return { ...sub, subItems: allowedNested };
+          }
+          return null;
+        }
+        return isItemAllowed(sub.id) ? sub : null;
+      }).filter(Boolean);
+
       if (allowedSubs.length > 0) {
         return { ...item, subItems: allowedSubs };
       }
@@ -131,6 +166,26 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
     }
     return isItemAllowed(item.id) ? item : null;
   }).filter(Boolean);
+
+  useEffect(() => {
+    const activeNested = {};
+    filteredMenuItems.forEach(item => {
+      if (item && item.hasSubmenu && item.subItems) {
+        item.subItems.forEach(sub => {
+          if (sub && sub.hasSubmenu && sub.subItems) {
+            const isChildActive = sub.subItems.some(nested => {
+              const fullPath = location.pathname + location.search;
+              return fullPath.includes(nested.to);
+            });
+            if (isChildActive) {
+              activeNested[sub.id] = true;
+            }
+          }
+        });
+      }
+    });
+    setOpenNestedMenus(prev => ({ ...prev, ...activeNested }));
+  }, [location.pathname, location.search]);
 
   return (
     <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
@@ -151,16 +206,23 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
           const isOpen = openMenus[item.id];
 
           if (item.hasSubmenu) {
-            const isChildActive = item.subItems?.some(sub => location.pathname === sub.to);
+            const isChildActive = item.subItems?.some(sub => {
+              if (sub.hasSubmenu) {
+                return sub.subItems?.some(nested => {
+                  const fullPath = location.pathname + location.search;
+                  return fullPath.includes(nested.to);
+                });
+              }
+              return location.pathname === sub.to;
+            });
             return (
               <div key={item.id} className="space-y-1">
                 <button
                   onClick={(e) => toggleSubmenu(e, item.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isChildActive
-                      ? 'bg-white/10 text-white shadow-sm'
-                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                  }`}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isChildActive
+                    ? 'bg-white/10 text-white shadow-sm'
+                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-blue-200">
@@ -176,17 +238,69 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                 {isOpen && item.subItems && (
                   <div className="pl-6 pr-2 py-1 space-y-1 transition-all duration-200">
                     {item.subItems.map(subItem => {
+                      if (subItem.hasSubmenu) {
+                        const isNestedOpen = openNestedMenus[subItem.id];
+                        const isNestedActive = subItem.subItems?.some(nested => {
+                          const fullPath = location.pathname + location.search;
+                          return fullPath.includes(nested.to);
+                        });
+                        return (
+                          <div key={subItem.id} className="space-y-1">
+                            <button
+                              onClick={(e) => toggleNestedSubmenu(e, subItem.id)}
+                              className={`w-full flex items-center justify-between pl-8 pr-4 py-2 rounded-lg text-sm font-medium transition-colors ${isNestedActive
+                                ? 'bg-white/10 text-white shadow-sm font-semibold'
+                                : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className="text-blue-200">
+                                  {subItem.icon}
+                                </span>
+                                {subItem.label}
+                              </div>
+                              <span className="opacity-70">
+                                {isNestedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              </span>
+                            </button>
+                            {isNestedOpen && subItem.subItems && (
+                              <div className="pl-4 space-y-1 transition-all duration-200">
+                                {subItem.subItems.map(nestedItem => {
+                                  const fullPath = location.pathname + location.search;
+                                  const isDeepActive = fullPath.includes(nestedItem.to);
+                                  return (
+                                    <Link
+                                      key={nestedItem.id}
+                                      to={nestedItem.to}
+                                      onClick={() => setSidebarOpen(false)}
+                                      className={`flex items-center gap-3 pl-8 pr-4 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${isDeepActive
+                                        ? 'bg-white text-[#1e5cdc] shadow-md font-semibold transform scale-[1.01]'
+                                        : 'text-blue-105 hover:bg-white/5 hover:text-white'
+                                        }`}
+                                    >
+                                      <span className={`${isDeepActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
+                                        {nestedItem.icon}
+                                      </span>
+                                      {nestedItem.label}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
                       const isSubActive = location.pathname === subItem.to;
                       return (
                         <Link
                           key={subItem.id}
                           to={subItem.to}
                           onClick={() => setSidebarOpen(false)}
-                          className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
-                            isSubActive
-                              ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
-                              : 'text-blue-100 hover:bg-white/5 hover:text-white'
-                          }`}
+                          className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${isSubActive
+                            ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
+                            : 'text-blue-105 hover:bg-white/5 hover:text-white'
+                            }`}
                         >
                           <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                             {subItem.icon}
@@ -206,11 +320,10 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
               <Link
                 to={item.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
-                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                  ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
+                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
               >
                 <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                   {item.icon}
@@ -498,7 +611,7 @@ export default function AdminLayout({ children }) {
             )}
 
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group"
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
@@ -537,7 +650,7 @@ export default function AdminLayout({ children }) {
                     </div>
                   </div>
                   <div className="p-2 space-y-0.5">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/profile');
@@ -546,7 +659,7 @@ export default function AdminLayout({ children }) {
                     >
                       <User size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> My Profile
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/analytics');
@@ -555,7 +668,7 @@ export default function AdminLayout({ children }) {
                     >
                       <Activity size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Activity Log
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/settings');
@@ -567,7 +680,7 @@ export default function AdminLayout({ children }) {
                   </div>
                   <div className="h-[1px] bg-gray-100 w-full"></div>
                   <div className="p-2 bg-gray-50/30">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         handleLogout();

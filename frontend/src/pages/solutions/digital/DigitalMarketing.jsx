@@ -24,13 +24,13 @@ export default function DigitalMarketing() {
                                 Digital Excellence
                             </span>
                         </div>
-                        <h1 className="text-1xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] mb-8 tracking-tighter">
+                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] mb-8 tracking-tighter">
                             Dominate the <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                                 Digital Frontier
                             </span>
                         </h1>
-                        <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed font-medium max-w-2xl">
+                        <p className="text-lg sm:text-xl text-slate-300 mb-10 leading-relaxed font-medium max-w-2xl">
                             The Contractum transforms your digital presence into a high-performance growth engine. We combine data-driven strategies with creative mastery to capture attention and convert leads.
                         </p>
                         <div className="flex flex-wrap gap-4">
@@ -50,7 +50,7 @@ export default function DigitalMarketing() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="order-2 lg:order-1">
-                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 leading-tight italic">
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-8 leading-tight">
                                 Data-Driven Intelligence, <br />
                                 Human-Centered Design
                             </h2>
@@ -85,7 +85,7 @@ export default function DigitalMarketing() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="mb-20">
                         <span className="text-cyan-600 font-black text-sm uppercase tracking-[0.2em] mb-4 block">Our Capabilities</span>
-                        <h2 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter italic">End-to-End Digital Solutions</h2>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">End-to-End Digital Solutions</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -208,7 +208,7 @@ export default function DigitalMarketing() {
                         </div>
                         <div>
                             <span className="text-cyan-400 font-black text-sm uppercase tracking-[0.3em] mb-6 block">Growth Tracking</span>
-                            <h2 className="text-4xl md:text-5xl font-black mb-8 leading-tight italic">Watch Your Brand Grow in Real-Time</h2>
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-8 leading-tight">Watch Your Brand Grow in Real-Time</h2>
                             <p className="text-lg text-slate-400 mb-10 leading-relaxed">
                                 Transparency is at the core of what we do. You'll have constant access to your performance metrics, meaning you never have to guess where your marketing budget is going.
                             </p>
@@ -233,7 +233,7 @@ export default function DigitalMarketing() {
             <section className="py-24 bg-white">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="text-center max-w-4xl mx-auto mb-20">
-                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 italic tracking-tight">Our 4-Step Strategic Engine</h2>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight">Our 4-Step Strategic Engine</h2>
                         <p className="text-lg text-slate-600 font-medium">We don't believe in guesswork. Our process ensures every move is calculated for maximum impact.</p>
                     </div>
 
@@ -265,7 +265,7 @@ export default function DigitalMarketing() {
                 </div>
 
                 <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-                    <h2 className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter italic">
+                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-8 tracking-tighter">
                         Ready to Outpace the <br />
                         <span className="text-cyan-400 uppercase">Competition?</span>
                     </h2>

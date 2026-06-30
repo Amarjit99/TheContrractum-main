@@ -213,8 +213,8 @@ export default function Navbar() {
 
                 {/* Enhanced Mega Menu Dropdown */}
                 {item.submenu && activeDropdown === index && (
-                    <div
-                      className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn z-[110]"
+                  <div
+                    className="absolute right-0 mt-4 w-80 bg-white rounded-2xl shadow-2xl border-2 border-red-200 overflow-hidden animate-fadeIn z-[110]"
                     onMouseEnter={handleDropdownEnter}
                     onMouseLeave={handleDropdownLeave}
                   >

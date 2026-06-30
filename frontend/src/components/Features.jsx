@@ -56,9 +56,7 @@ export default function AboutSection() {
 
           {/* Heading */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
-            End To End <br />
-            Business Solution <br />
-            And Services.
+            End To End Business Solution And Services.
           </h2>
 
           <div className="mb-6">
@@ -92,7 +90,7 @@ export default function AboutSection() {
           <div className="mt-8">
             <Link
               to="/company/about-us"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
+              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
             >
               Read More
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

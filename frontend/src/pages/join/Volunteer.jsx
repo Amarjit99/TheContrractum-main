@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import { COUNTRIES } from '../../constants/countries';
@@ -20,6 +20,63 @@ export default function Volunteer() {
         availability: '',
         interestArea: ''
     });
+
+    const [dynamicStories, setDynamicStories] = useState([]);
+    const [activeYear, setActiveYear] = useState("");
+    const [uniqueYears, setUniqueYears] = useState([]);
+    
+    useEffect(() => {
+        const fetchStories = async () => {
+            try {
+                const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const res = await fetch(`${API}/api/volunteer-stories`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setDynamicStories(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch volunteer stories:", err);
+            }
+        };
+        fetchStories();
+    }, []);
+
+    const staticTestimonials = [
+        {
+            name: "Priya Sharma",
+            role: "Tech Volunteer",
+            quote: "Volunteering with TheContractum changed my perspective. I've learned so much while helping others discover their potential.",
+            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+            batchYear: "2025"
+        },
+        {
+            name: "Rajesh Kumar",
+            role: "Mentor",
+            quote: "The mentoring program is incredibly rewarding. Seeing young people succeed is the best feeling anyone can experience.",
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+            batchYear: "2025"
+        },
+        {
+            name: "Anjali Singh",
+            role: "Community Outreach",
+            quote: "Through this volunteer program, I've discovered my passion for education and community service. Highly recommended!",
+            image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80",
+            batchYear: "2025"
+        },
+    ];
+
+    const displayStories = dynamicStories.length > 0 ? dynamicStories : staticTestimonials;
+
+    useEffect(() => {
+        if (displayStories.length > 0) {
+            const years = [...new Set(displayStories.map(i => i.batchYear || "2025"))].sort((a, b) => b - a);
+            setUniqueYears(years);
+            if (!activeYear || !years.includes(activeYear)) {
+                setActiveYear(years[0]);
+            }
+        }
+    }, [displayStories, activeYear]);
+
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
     const handleChange = (e) => {
@@ -141,26 +198,7 @@ export default function Volunteer() {
         },
     ];
 
-    const testimonials = [
-        {
-            name: "Priya Sharma",
-            role: "Tech Volunteer",
-            quote: "Volunteering with TheContractum changed my perspective. I've learned so much while helping others discover their potential.",
-            image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
-        },
-        {
-            name: "Rajesh Kumar",
-            role: "Mentor",
-            quote: "The mentoring program is incredibly rewarding. Seeing young people succeed is the best feeling anyone can experience.",
-            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
-        },
-        {
-            name: "Anjali Singh",
-            role: "Community Outreach",
-            quote: "Through this volunteer program, I've discovered my passion for education and community service. Highly recommended!",
-            image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80"
-        },
-    ];
+
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -264,21 +302,44 @@ export default function Volunteer() {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black text-slate-900 mb-4 italic">Volunteer Stories</h2>
-                        <p className="text-slate-500 font-medium">Hear from those who are making a difference</p>
+                        <p className="text-slate-500 font-medium mb-10">Hear from those who are making a difference</p>
+                        
+                        {/* Year Tabs */}
+                        {uniqueYears.length > 1 && (
+                            <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+                                {uniqueYears.map((year) => (
+                                    <button
+                                        key={year}
+                                        onClick={() => setActiveYear(year)}
+                                        className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm ${
+                                            activeYear === year
+                                                ? "bg-teal-600 text-white shadow-teal-500/30 scale-105"
+                                                : "bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-200"
+                                        }`}
+                                    >
+                                        {year} Batch
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        {testimonials.map((t, idx) => (
-                            <div key={idx} className="bg-white p-10 rounded-[2.5rem] shadow-xl relative group hover:-translate-y-2 transition-all">
-                                <div className="absolute -top-6 left-10 w-16 h-16 rounded-2xl overflow-hidden border-4 border-white shadow-lg">
-                                    <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                        {displayStories.filter(i => (i.batchYear || "2025") === activeYear).map((t, idx) => {
+                            const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                            const imageSrc = t.image && t.image.includes('/uploads/') ? `${API}${t.image}` : t.image;
+                            return (
+                                <div key={idx} className="bg-white p-10 rounded-[2.5rem] shadow-xl relative group hover:-translate-y-2 transition-all">
+                                    <div className="absolute -top-6 left-10 w-16 h-16 rounded-2xl overflow-hidden border-4 border-white shadow-lg">
+                                        <img src={imageSrc} alt={t.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="mt-6">
+                                        <p className="text-slate-600 italic mb-6 leading-relaxed">"{t.quote}"</p>
+                                        <h4 className="font-black text-slate-900">{t.name}</h4>
+                                        <p className="text-teal-600 font-bold text-xs uppercase tracking-widest">{t.role}</p>
+                                    </div>
                                 </div>
-                                <div className="mt-6">
-                                    <p className="text-slate-600 italic mb-6 leading-relaxed">"{t.quote}"</p>
-                                    <h4 className="font-black text-slate-900">{t.name}</h4>
-                                    <p className="text-teal-600 font-bold text-xs uppercase tracking-widest">{t.role}</p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>

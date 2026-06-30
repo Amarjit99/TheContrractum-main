@@ -196,13 +196,12 @@ export default function Partner() {
                   </div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tier</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      partner.tier === 'Elite'
-                        ? 'bg-amber-50 text-amber-600 border border-amber-200'
-                        : partner.tier === 'Premier'
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${partner.tier === 'Elite'
+                      ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                      : partner.tier === 'Premier'
                         ? 'bg-blue-50 text-blue-600 border border-blue-200'
                         : 'bg-gray-50 text-gray-600 border border-gray-200'
-                    }`}>
+                      }`}>
                       {partner.tier} Tier
                     </span>
                   </div>

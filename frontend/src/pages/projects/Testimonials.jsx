@@ -210,6 +210,8 @@ const testimonialsData = [
 ];
 
 export default function Testimonials() {
+  const [testimonialsData, setTestimonialsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
   const [selectedRating, setSelectedRating] = useState("All");
@@ -217,6 +219,23 @@ export default function Testimonials() {
 
   const industries = ["All", "Healthcare", "Finance", "Education", "Government", "Logistics", "Retail", "Technology", "Energy", "Automotive", "Travel & Tourism"];
   const ratings = ["All", "5 Stars"];
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/testimonials`);
+        if (res.ok) {
+          const data = await res.json();
+          setTestimonialsData(data);
+        }
+      } catch (err) {
+        console.error("Error fetching testimonials:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   // Track scroll position
   useEffect(() => {
@@ -231,9 +250,9 @@ export default function Testimonials() {
   // Filter testimonials
   const filteredTestimonials = testimonialsData.filter(testimonial => {
     const matchesSearch = testimonial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         testimonial.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         testimonial.testimonial.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         testimonial.project.toLowerCase().includes(searchTerm.toLowerCase());
+      testimonial.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      testimonial.testimonial.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      testimonial.project.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = selectedIndustry === "All" || testimonial.industry === selectedIndustry;
     const matchesRating = selectedRating === "All" || testimonial.rating === 5;
     return matchesSearch && matchesIndustry && matchesRating;
@@ -244,10 +263,18 @@ export default function Testimonials() {
   const videoTestimonials = filteredTestimonials.filter(t => t.videoTestimonial);
 
   // Calculate statistics
-  const avgRating = (testimonialsData.reduce((sum, t) => sum + t.rating, 0) / testimonialsData.length).toFixed(1);
+  const avgRating = testimonialsData.length > 0 ? (testimonialsData.reduce((sum, t) => sum + t.rating, 0) / testimonialsData.length).toFixed(1) : "5.0";
   const totalClients = testimonialsData.length;
-  const satisfactionRate = Math.round((testimonialsData.filter(t => t.rating === 5).length / testimonialsData.length) * 100);
+  const satisfactionRate = testimonialsData.length > 0 ? Math.round((testimonialsData.filter(t => t.rating === 5).length / testimonialsData.length) * 100) : 100;
   const industriesServed = [...new Set(testimonialsData.map(t => t.industry))].length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-amber-50 to-orange-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-orange-50">
@@ -255,8 +282,8 @@ export default function Testimonials() {
       {/* Hero Header with Background Image */}
       <div className="relative text-white py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&h=600&fit=crop&q=80" 
+          <img
+            src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&h=600&fit=crop&q=80"
             alt="Client Testimonials"
             className="w-full h-full object-cover"
           />
@@ -286,7 +313,7 @@ export default function Testimonials() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
@@ -333,7 +360,7 @@ export default function Testimonials() {
         {/* Search and Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 mb-12">
           <div className="grid md:grid-cols-4 gap-6">
-            
+
             {/* Search */}
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -410,15 +437,19 @@ export default function Testimonials() {
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     </div>
-                    
+
                     <div className="flex items-center gap-4 relative z-10">
-                      <img 
-                        src={testimonial.image} 
-                        alt={testimonial.name}
-                        className="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover"
-                      />
+                      <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`}>
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          className="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover hover:scale-105 transition-transform cursor-pointer"
+                        />
+                      </Link>
                       <div className="text-white">
-                        <h3 className="text-xl font-bold">{testimonial.name}</h3>
+                        <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`} className="hover:text-amber-200 transition-colors cursor-pointer">
+                          <h3 className="text-xl font-bold">{testimonial.name}</h3>
+                        </Link>
                         <p className="text-amber-100 text-sm font-semibold">{testimonial.position}</p>
                         <p className="text-amber-50 text-sm">{testimonial.company}</p>
                       </div>
@@ -498,13 +529,17 @@ export default function Testimonials() {
                 >
                   <div className="p-6 flex flex-col grow">
                     <div className="flex items-center gap-3 mb-4">
-                      <img 
-                        src={testimonial.image} 
-                        alt={testimonial.name}
-                        className="w-16 h-16 rounded-full border-2 border-amber-200 object-cover"
-                      />
+                      <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`}>
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          className="w-16 h-16 rounded-full border-2 border-amber-200 object-cover hover:scale-105 transition-transform cursor-pointer"
+                        />
+                      </Link>
                       <div className="flex-1">
-                        <h3 className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">{testimonial.name}</h3>
+                        <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`} className="hover:text-amber-600 transition-colors cursor-pointer">
+                          <h3 className="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">{testimonial.name}</h3>
+                        </Link>
                         <p className="text-xs text-slate-600 font-semibold">{testimonial.position}</p>
                         <p className="text-xs text-slate-500">{testimonial.company}</p>
                       </div>
@@ -579,23 +614,27 @@ export default function Testimonials() {
               {videoTestimonials.slice(0, 6).map((testimonial) => (
                 <div key={testimonial.id} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
                   <div className="flex items-center gap-3 mb-3">
-                    <img 
-                      src={testimonial.image} 
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full border-2 border-white object-cover"
-                    />
+                    <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`}>
+                      <img
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        className="w-12 h-12 rounded-full border-2 border-white object-cover hover:scale-105 transition-transform cursor-pointer"
+                      />
+                    </Link>
                     <div>
-                      <p className="font-bold text-sm text-white">{testimonial.name}</p>
+                      <Link to={`/projects/testimonials/${testimonial.id || testimonial._id}`} className="hover:text-amber-200 transition-colors cursor-pointer">
+                        <p className="font-bold text-sm text-white">{testimonial.name}</p>
+                      </Link>
                       <p className="text-xs text-gray-100">{testimonial.company}</p>
                     </div>
                   </div>
                   <p className="text-sm text-gray-100 leading-relaxed line-clamp-3">"{testimonial.testimonial.substring(0, 100)}..."</p>
-                  <button className="mt-3 w-full bg-white text-blue-900 py-2 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                  <a href={testimonial.videoUrl || "https://youtube.com/@thecontractum"} target="_blank" rel="noopener noreferrer" className="mt-3 w-full bg-white text-blue-900 py-2 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
                     </svg>
                     Watch Video
-                  </button>
+                  </a>
                 </div>
               ))}
             </div>

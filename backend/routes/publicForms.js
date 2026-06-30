@@ -59,4 +59,35 @@ router.post('/volunteer', async (req, res) => {
   }
 });
 
+// @desc    Get Public Stats for Home Page features section
+// @route   GET /api/public/stats
+// @access  Public
+router.get('/stats', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const Partner = require('../models/Partner');
+    const CompletedProject = require('../models/CompletedProject');
+    const Project = require('../models/Project');
+    const MiniEvent = require('../models/MiniEvent');
+
+    const [staffCount, clientCount, completedProjectsCount, runningProjectsCount, miniEventsCount] = await Promise.all([
+      User.countDocuments({ role: { $ne: 'user' } }),
+      Partner.countDocuments(),
+      CompletedProject.countDocuments(),
+      Project.countDocuments(),
+      MiniEvent.countDocuments()
+    ]);
+
+    res.json({
+      staffs: staffCount,
+      clients: clientCount,
+      completedProjects: completedProjectsCount,
+      runningProjects: runningProjectsCount,
+      miniEvents: miniEventsCount
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch public stats', error: err.message });
+  }
+});
+
 module.exports = router;
