@@ -33,7 +33,7 @@ export default function Retail() {
                             Unifying physical and digital commerce with omnichannel strategies, AI-driven personalization, and smart supply chain solutions.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/touch" className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/request-consultation" className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Request Strategy
                                 <ArrowRight size={20} />
                             </Link>
@@ -90,13 +90,17 @@ export default function Retail() {
             <div className="py-24">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 lg:order-1 relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-3xl transform -rotate-3"></div>
+                        <div className="order-2 lg:order-1 flex flex-col gap-6">
+                            <img
+                                src={eco}
+                                alt="Modern Retail"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
                             <img
                                 src={ecommerceImg}
-                                alt="Modern Retail"
+                                alt="E-commerce Ecosystem"
                                 loading="lazy"
-                                className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                         <div className="order-1 lg:order-2">

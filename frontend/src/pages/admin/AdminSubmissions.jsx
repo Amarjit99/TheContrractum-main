@@ -43,7 +43,10 @@ const FORM_CATEGORIES = [
   { id: 'intern', name: 'Internship Applications', endpoint: 'intern', category: 'HR' },
   { id: 'event-registration', name: 'Event Registrations', endpoint: 'event-registration', category: 'Community' },
   { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support' },
-  { id: 'vendor', name: 'Vendor Registrations', endpoint: 'vendor', category: 'Business' }
+  { id: 'vendor', name: 'Vendor Registrations', endpoint: 'vendor', category: 'Business' },
+  { id: 'whitepaper', name: 'Whitepaper Requests', endpoint: 'whitepaper', category: 'Marketing' },
+  { id: 'media-kit', name: 'Media Kit Requests', endpoint: 'media-kit', category: 'Marketing' },
+  { id: 'report', name: 'Report Requests', endpoint: 'report', category: 'Marketing' }
 ];
 
 // Mapping Forms to Categories
@@ -65,7 +68,10 @@ const FORM_DETAILS = [
   { id: 'rsvps', name: 'Event RSVPs', category: 'Events & Participation' },
   { id: 'event-registrations', name: 'Event Registrations', category: 'Events & Participation' },
   { id: 'feedback', name: 'User Feedback', category: 'Customer Support Services' },
-  { id: 'volunteer', name: 'Volunteer Application', category: 'CSR & Community Programs' }
+  { id: 'volunteer', name: 'Volunteer Application', category: 'CSR & Community Programs' },
+  { id: 'whitepaper', name: 'Whitepaper Request', category: 'Marketing & Engagement' },
+  { id: 'media-kit', name: 'Media Kit Request', category: 'Marketing & Engagement' },
+  { id: 'report', name: 'Report Request', category: 'Marketing & Engagement' }
 ];
 
 // Helper to generate dynamic SVG Sparklines
@@ -673,7 +679,10 @@ export default function AdminSubmissions() {
                 (cat.id === 'referral' && s.name === 'Referrals') ||
                 (cat.id === 'intern' && s.name === 'Intern Apps') ||
                 (cat.id === 'event-registration' && s.name === 'Event Registrations') ||
-                (cat.id === 'volunteer' && s.name === 'Volunteer Apps')
+                (cat.id === 'volunteer' && s.name === 'Volunteer Apps') ||
+                (cat.id === 'whitepaper' && s.name === 'Whitepaper Requests') ||
+                (cat.id === 'media-kit' && s.name === 'Media Kit Requests') ||
+                (cat.id === 'report' && s.name === 'Report Requests')
               );
               const count = stat ? stat.count : 0;
 
@@ -1292,7 +1301,11 @@ export default function AdminSubmissions() {
                             {filteredSubmissionsCRUD.length > 0 ? (
                               filteredSubmissionsCRUD.map((sub) => {
                                 const name = sub.name || sub.fullName || `${sub.firstName || ''} ${sub.lastName || ''}`;
-                                const subject = sub.subject || sub.service || sub.jobTitle || sub.interestArea || 'Form Entry';
+                                const subject = (sub.whitepaperId?.title || (sub.details?.whitepaperId && sub.details.whitepaperId.title)) ||
+                                   (sub.reportId?.title || (sub.details?.reportId && sub.details.reportId.title)) ||
+                                   (activeSubTab === 'media-kit' || sub.formType === 'Media Kit Request' ? 'Corporate Media Kit' : '') ||
+                                   sub.subject || sub.service || sub.jobTitle || sub.interestArea || 
+                                   'Form Entry';
 
                                 return (
                                   <tr key={sub._id} className="hover:bg-gray-50/50 transition duration-150">
@@ -1421,6 +1434,22 @@ export default function AdminSubmissions() {
               <div className="space-y-3">
                 <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider border-b border-gray-100 pb-2">Submitted Content Inputs</h4>
                 <div className="bg-white rounded-2xl border border-gray-150 p-5 space-y-4 text-xs font-semibold text-gray-600">
+                  {(selectedSubDetail.whitepaperId || selectedSubDetail.details?.whitepaperId) && (
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Requested Whitepaper</span>
+                      <div className="bg-red-50 p-3 rounded-xl border border-red-100 text-gray-700 text-xs font-bold leading-relaxed">
+                        {(selectedSubDetail.whitepaperId?.title || selectedSubDetail.details?.whitepaperId?.title) || 'N/A'} (ID: {(selectedSubDetail.whitepaperId?._id || selectedSubDetail.details?.whitepaperId?._id) || 'N/A'})
+                      </div>
+                    </div>
+                  )}
+                  {(selectedSubDetail.reportId || selectedSubDetail.details?.reportId) && (
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Requested Report</span>
+                      <div className="bg-red-50 p-3 rounded-xl border border-red-100 text-gray-700 text-xs font-bold leading-relaxed">
+                        {(selectedSubDetail.reportId?.title || selectedSubDetail.details?.reportId?.title) || 'N/A'} (ID: {(selectedSubDetail.reportId?._id || selectedSubDetail.details?.reportId?._id) || 'N/A'})
+                      </div>
+                    </div>
+                  )}
                   {Object.keys(selectedSubDetail.details || {}).map((key) => {
                     const val = selectedSubDetail.details[key];
                     if (
@@ -1845,6 +1874,22 @@ export default function AdminSubmissions() {
                   </div>
                 )}
 
+                {(selectedSub.whitepaperId || selectedSub.details?.whitepaperId) && (
+                  <div className="col-span-2 font-semibold">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">Requested Whitepaper</span>
+                    <span className="font-extrabold text-gray-800 block mt-0.5 bg-white p-2.5 rounded-xl border border-gray-150">
+                      {(selectedSub.whitepaperId?.title || selectedSub.details?.whitepaperId?.title) || 'N/A'} (ID: {(selectedSub.whitepaperId?._id || selectedSub.details?.whitepaperId?._id) || 'N/A'})
+                    </span>
+                  </div>
+                )}
+                {(selectedSub.reportId || selectedSub.details?.reportId) && (
+                  <div className="col-span-2 font-semibold">
+                    <span className="font-bold text-gray-400 block uppercase mb-1">Requested Report</span>
+                    <span className="font-extrabold text-gray-800 block mt-0.5 bg-white p-2.5 rounded-xl border border-gray-150">
+                      {(selectedSub.reportId?.title || selectedSub.details?.reportId?.title) || 'N/A'} (ID: {(selectedSub.reportId?._id || selectedSub.details?.reportId?._id) || 'N/A'})
+                    </span>
+                  </div>
+                )}
                 {selectedSub.coverLetter && (
                   <div className="col-span-2 border-t border-gray-150 pt-3 mt-1">
                     <span className="font-bold text-gray-400 block uppercase mb-1">Cover Letter Message</span>

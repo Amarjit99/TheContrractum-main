@@ -28,7 +28,7 @@ export default function Healthcare() {
                             Revolutionizing patient care with cutting-edge telemedicine, data interoperability, and AI-driven diagnostic tools.
                         </p>
                         <div className="flex flex-wrap gap-5">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/request-consultation" className="px-10 py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Talk to an Expert
                                 <ArrowRight size={20} />
                             </Link>
@@ -85,12 +85,17 @@ export default function Healthcare() {
             <div className="py-24 bg-white">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 lg:order-1 relative">
-                            <div className="absolute -inset-6 bg-gradient-to-tr from-teal-600 to-emerald-600 rounded-3xl opacity-20 blur-2xl"></div>
+                        <div className="order-2 lg:order-1 flex flex-col gap-6">
+                            <img
+                                src={healthcareImg}
+                                alt="Healthcare System"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
                             <img
                                 src={healthTech}
                                 alt="Healthcare Technology"
-                                className="relative rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-500 border-4 border-white w-full h-auto"
+                                loading="lazy"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                         <div className="order-1 lg:order-2">
@@ -171,7 +176,7 @@ export default function Healthcare() {
                                 Partner with us to deliver better care through technology. Secure, scalable, and patient-centric solutions await.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-5 justify-center">
-                                <Link to="/contact/quote" className="px-10 py-4 bg-white text-teal-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
+                                <Link to="/industries/request-consultation" className="px-10 py-4 bg-white text-teal-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
                                     Get Started
                                 </Link>
                                 <Link to="/industries/why-healthcare" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-teal-900 transition-all transform hover:scale-105">

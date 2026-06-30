@@ -148,6 +148,9 @@ app.use("/api/public", require("./routes/publicForms"));
 app.use("/api/audit-logs", require("./routes/auditLogs"));
 app.use("/api/settings", require("./routes/settings"));
 app.use("/api/tasks", require("./routes/tasks"));
+app.use("/api/whitepapers", require("./routes/whitepapers"));
+app.use("/api/reports", require("./routes/reports"));
+app.use("/api/media", require("./routes/media"));
 
 
 // Serve static files

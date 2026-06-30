@@ -56,10 +56,10 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
   const isItemAllowed = (itemId) => {
     if (!admin) return false;
     if (admin.role === 'super-admin') return true;
-    
+
     const subRole = admin.adminSubRole;
     if (!subRole) return false;
-    
+
     const rolePermissions = {
       // Admins
       'System Administrator': ['dashboard', 'tasks', 'profile', 'notifications', 'settings', 'analytics', 'users', 'admins'],
@@ -116,7 +116,7 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
       'Manager': ['dashboard', 'tasks', 'profile', 'notifications', 'services', 'blogs', 'news', 'projects', 'events', 'event-registrations', 'form-links', 'partners', 'analytics', 'settings'],
       'Legal': ['dashboard', 'tasks', 'profile', 'notifications', 'founders', 'contracts', 'certificates']
     };
-    
+
     const allowed = rolePermissions[subRole] || [];
     return allowed.includes(itemId);
   };
@@ -156,11 +156,10 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
               <div key={item.id} className="space-y-1">
                 <button
                   onClick={(e) => toggleSubmenu(e, item.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isChildActive
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isChildActive
                       ? 'bg-white/10 text-white shadow-sm'
                       : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-blue-200">
@@ -182,11 +181,10 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                           key={subItem.id}
                           to={subItem.to}
                           onClick={() => setSidebarOpen(false)}
-                          className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
-                            isSubActive
+                          className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${isSubActive
                               ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
                               : 'text-blue-100 hover:bg-white/5 hover:text-white'
-                          }`}
+                            }`}
                         >
                           <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                             {subItem.icon}
@@ -206,11 +204,10 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
               <Link
                 to={item.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
                     ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`}
               >
                 <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                   {item.icon}
@@ -498,7 +495,7 @@ export default function AdminLayout({ children }) {
             )}
 
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group"
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
@@ -537,7 +534,7 @@ export default function AdminLayout({ children }) {
                     </div>
                   </div>
                   <div className="p-2 space-y-0.5">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/profile');
@@ -546,7 +543,7 @@ export default function AdminLayout({ children }) {
                     >
                       <User size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> My Profile
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/analytics');
@@ -555,7 +552,7 @@ export default function AdminLayout({ children }) {
                     >
                       <Activity size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Activity Log
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/settings');
@@ -567,7 +564,7 @@ export default function AdminLayout({ children }) {
                   </div>
                   <div className="h-[1px] bg-gray-100 w-full"></div>
                   <div className="p-2 bg-gray-50/30">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         handleLogout();

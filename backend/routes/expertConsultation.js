@@ -8,11 +8,13 @@ router.post("/", async (req, res) => {
     const {
       name, email, company,
       systemProductName, technicalIssue, errorScreenshot, deviceInformation, contactDetails,
-      consultationTopic, preferredSchedule, phone
+      consultationTopic, preferredSchedule, phone,
+      // Business Consultation fields
+      country, industry, serviceRequired, inquiryType, companySize, preferredContactMethod, projectTimeline, message
     } = req.body;
 
     // Check if new form fields or old form fields are provided
-    if (!systemProductName && !consultationTopic && (!name || !email)) {
+    if (!systemProductName && !consultationTopic && !industry && (!name || !email)) {
       return res.status(400).json({ error: "Required fields are missing." });
     }
 
@@ -32,17 +34,26 @@ router.post("/", async (req, res) => {
       contactDetails,
       consultationTopic,
       preferredSchedule,
-      phone
+      phone,
+      // Business Consultation fields
+      country,
+      industry,
+      serviceRequired,
+      inquiryType,
+      companySize,
+      preferredContactMethod,
+      projectTimeline,
+      message
     });
 
     await newConsultation.save();
 
     // Create Notification
     const Notification = require("../models/Notification");
-    const isExpertForm = !!consultationTopic;
+    const isExpertForm = !!consultationTopic || !!industry;
     const notificationTitle = isExpertForm ? 'New Expert Consultation Request' : 'New Technical Assistance Request';
     const notificationMessage = isExpertForm 
-      ? `${finalName} requested a consultation on: "${consultationTopic}".`
+      ? `${finalName} requested a consultation on: "${industry || consultationTopic}".`
       : `${finalName} requested assistance on ${finalCompany}.`;
 
     await Notification.create({

@@ -10,7 +10,11 @@ const eventRegistrationSchema = new mongoose.Schema(
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, required: true, trim: true },
     organization: { type: String, trim: true },
-    status: { type: String, default: "Pending" }
+    status: { type: String, default: "Pending" },
+    amountPaid: { type: String, default: "Free" },
+    paymentMethod: { type: String, default: "N/A" },
+    paymentStatus: { type: String, default: "N/A" },
+    paymentDetails: { type: mongoose.Schema.Types.Mixed, default: {} }
   },
   { timestamps: true }
 );

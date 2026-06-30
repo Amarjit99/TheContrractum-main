@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Signal, Radio, Globe2, Wifi, Server, Phone, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import telecomImg from '../../assets/tele.jfif';
+import telecomBg from '../../assets/telecom.jpeg';
 
 export default function Telecom() {
     const [showStart, setShowStart] = useState(false);
@@ -35,7 +36,7 @@ export default function Telecom() {
                             Empowering telecom providers with 5G infrastructure, AI-driven network optimization, and seamless customer experience platforms.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/company/leadership/management" className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
+                            <Link to="/industries/request-consultation" className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
                                 Consult with Us
                                 <ArrowRight size={20} />
                             </Link>
@@ -119,13 +120,17 @@ export default function Telecom() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-linear-to-tr from-primary/20 to-cyan-600/20 rounded-3xl transform rotate-3"></div>
+                        <div className="flex flex-col gap-6">
+                            <img
+                                src={telecomBg}
+                                alt="Telecom Network Infrastructure"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
                             <img
                                 src={telecomImg}
-                                alt="Fiber Optics"
+                                alt="Fiber Optics Technology"
                                 loading="lazy"
-                                className="relative rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                     </div>

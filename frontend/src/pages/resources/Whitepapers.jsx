@@ -1,221 +1,10 @@
 import { useState, useEffect } from "react";
 import { toast } from 'react-hot-toast';
 
-// Whitepapers Data
-const whitepapers = [
-  {
-    id: 1,
-    title: "The Future of Artificial Intelligence: Trends, Challenges, and Opportunities",
-    category: "AI & Machine Learning",
-    publicationDate: "2025-12",
-    authors: ["Dr. Sarah Johnson", "Prof. Michael Chen", "Dr. Priya Sharma"],
-    pages: 48,
-    fileSize: "3.2 MB",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop",
-    abstract: "This comprehensive whitepaper explores the evolving landscape of artificial intelligence, examining breakthrough developments in deep learning, neural networks, and cognitive computing. We analyze emerging trends, address critical challenges in AI ethics and governance, and identify transformative opportunities across industries.",
-    keyTopics: [
-      "Deep Learning Architectures",
-      "AI Ethics & Responsible AI",
-      "Natural Language Processing",
-      "Computer Vision Applications",
-      "AI in Healthcare & Finance"
-    ],
-    downloadCount: 15420,
-    featured: true,
-    year: "2025"
-  },
-  {
-    id: 2,
-    title: "Blockchain Beyond Cryptocurrency: Enterprise Use Cases and Implementation Strategies",
-    category: "Blockchain",
-    publicationDate: "2026-01",
-    authors: ["James Martinez", "Dr. Lisa Wang"],
-    pages: 56,
-    fileSize: "4.1 MB",
-    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=600&fit=crop",
-    abstract: "An in-depth analysis of blockchain technology applications beyond digital currencies. This paper examines real-world enterprise implementations, smart contract frameworks, supply chain transparency, decentralized identity management, and practical strategies for blockchain adoption in organizations.",
-    keyTopics: [
-      "Smart Contract Development",
-      "Supply Chain Transparency",
-      "Decentralized Finance (DeFi)",
-      "Blockchain Security",
-      "Enterprise Adoption Roadmap"
-    ],
-    downloadCount: 12850,
-    featured: true,
-    year: "2026"
-  },
-  {
-    id: 3,
-    title: "Cloud-Native Architecture: Building Scalable and Resilient Applications",
-    category: "Cloud Computing",
-    publicationDate: "2025-11",
-    authors: ["Alex Thompson", "Dr. Robert Kim", "Jennifer Lopez"],
-    pages: 64,
-    fileSize: "5.3 MB",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop",
-    abstract: "A comprehensive guide to cloud-native application development, covering microservices architecture, containerization with Docker and Kubernetes, serverless computing, DevOps practices, and strategies for building highly scalable, resilient applications in multi-cloud environments.",
-    keyTopics: [
-      "Microservices Architecture",
-      "Kubernetes Orchestration",
-      "Serverless Computing",
-      "DevOps & CI/CD Pipelines",
-      "Multi-Cloud Strategies"
-    ],
-    downloadCount: 18920,
-    featured: true,
-    year: "2025"
-  },
-  {
-    id: 4,
-    title: "Cybersecurity in the Age of IoT: Protecting Connected Ecosystems",
-    category: "Cybersecurity",
-    publicationDate: "2025-10",
-    authors: ["Dr. Emily Rodriguez", "Mark Stevens"],
-    pages: 52,
-    fileSize: "3.8 MB",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop",
-    abstract: "This whitepaper addresses the critical security challenges presented by the Internet of Things, examining vulnerabilities in connected devices, network security protocols, threat detection mechanisms, and comprehensive frameworks for securing IoT ecosystems across industrial and consumer applications.",
-    keyTopics: [
-      "IoT Security Frameworks",
-      "Zero Trust Architecture",
-      "Threat Intelligence & Detection",
-      "Encryption & Authentication",
-      "Compliance & Regulations"
-    ],
-    downloadCount: 14200,
-    featured: false,
-    year: "2025"
-  },
-  {
-    id: 5,
-    title: "Data Analytics & Business Intelligence: Driving Data-Driven Decision Making",
-    category: "Data Analytics",
-    publicationDate: "2025-09",
-    authors: ["Dr. Andrew Wilson", "Sarah Parker", "Dr. Raj Patel"],
-    pages: 72,
-    fileSize: "6.1 MB",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
-    abstract: "An extensive exploration of modern data analytics practices, covering big data processing, predictive analytics, real-time dashboards, machine learning integration, and strategies for transforming raw data into actionable business insights that drive competitive advantage.",
-    keyTopics: [
-      "Big Data Processing",
-      "Predictive Analytics Models",
-      "Data Visualization Techniques",
-      "Real-Time Analytics",
-      "Business Intelligence Tools"
-    ],
-    downloadCount: 11750,
-    featured: false,
-    year: "2025"
-  },
-  {
-    id: 6,
-    title: "5G Networks and Edge Computing: Transforming Connectivity",
-    category: "Networking",
-    publicationDate: "2026-02",
-    authors: ["Dr. Maria Gonzalez", "Thomas Anderson"],
-    pages: 44,
-    fileSize: "3.5 MB",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop",
-    abstract: "A detailed examination of 5G technology and edge computing architectures, analyzing how ultra-low latency networks and distributed computing are enabling new use cases in autonomous vehicles, smart cities, industrial automation, and immersive extended reality experiences.",
-    keyTopics: [
-      "5G Network Architecture",
-      "Edge Computing Infrastructure",
-      "Latency Optimization",
-      "Smart City Applications",
-      "Industrial IoT Integration"
-    ],
-    downloadCount: 9340,
-    featured: true,
-    year: "2026"
-  },
-  {
-    id: 7,
-    title: "Quantum Computing: Preparing for the Next Computing Revolution",
-    category: "Emerging Technology",
-    publicationDate: "2025-08",
-    authors: ["Prof. David Lee", "Dr. Amanda Brown"],
-    pages: 68,
-    fileSize: "5.8 MB",
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&h=600&fit=crop",
-    abstract: "This forward-looking whitepaper introduces quantum computing fundamentals, explores current quantum algorithms and applications, examines quantum supremacy achievements, and provides guidance for organizations to prepare for the quantum era, including post-quantum cryptography strategies.",
-    keyTopics: [
-      "Quantum Computing Fundamentals",
-      "Quantum Algorithms",
-      "Quantum Cryptography",
-      "Industry Applications",
-      "Post-Quantum Security"
-    ],
-    downloadCount: 7520,
-    featured: false,
-    year: "2025"
-  },
-  {
-    id: 8,
-    title: "Sustainable Technology: Green IT and Environmental Responsibility",
-    category: "Sustainability",
-    publicationDate: "2025-07",
-    authors: ["Dr. Catherine White", "John Miller", "Dr. Anita Kumar"],
-    pages: 58,
-    fileSize: "4.4 MB",
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1200&h=600&fit=crop",
-    abstract: "A comprehensive analysis of sustainable technology practices, covering energy-efficient data center design, e-waste management, carbon-neutral cloud computing, renewable energy integration, and strategies for organizations to reduce their environmental footprint while maintaining technological innovation.",
-    keyTopics: [
-      "Green Data Centers",
-      "Carbon-Neutral Computing",
-      "E-Waste Management",
-      "Renewable Energy Integration",
-      "Sustainability Metrics"
-    ],
-    downloadCount: 10280,
-    featured: false,
-    year: "2025"
-  },
-  {
-    id: 9,
-    title: "Digital Transformation: Strategic Framework for Modern Enterprises",
-    category: "Digital Strategy",
-    publicationDate: "2025-06",
-    authors: ["Richard Davis", "Dr. Nicole Taylor"],
-    pages: 76,
-    fileSize: "6.7 MB",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop",
-    abstract: "This strategic whitepaper provides a comprehensive framework for digital transformation, addressing organizational change management, technology adoption strategies, customer experience optimization, agile methodologies, and measurement frameworks for successful digital initiatives.",
-    keyTopics: [
-      "Digital Maturity Assessment",
-      "Change Management Strategies",
-      "Customer Experience Design",
-      "Agile Transformation",
-      "ROI Measurement Frameworks"
-    ],
-    downloadCount: 13670,
-    featured: false,
-    year: "2025"
-  },
-  {
-    id: 10,
-    title: "Robotics & Automation: The Future of Work and Industry 4.0",
-    category: "Robotics",
-    publicationDate: "2025-05",
-    authors: ["Dr. Kevin Zhang", "Laura Martinez", "Prof. Samuel Harris"],
-    pages: 62,
-    fileSize: "5.2 MB",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=600&fit=crop",
-    abstract: "An in-depth exploration of robotics and intelligent automation systems, examining collaborative robots, autonomous systems, AI-powered automation, workforce implications, and implementation strategies for Industry 4.0 transformation in manufacturing and service sectors.",
-    keyTopics: [
-      "Collaborative Robotics",
-      "Intelligent Automation",
-      "Industry 4.0 Standards",
-      "Workforce Transformation",
-      "ROI & Implementation"
-    ],
-    downloadCount: 8940,
-    featured: false,
-    year: "2025"
-  }
-];
-
+// Whitepapers Backend Data Integration
 export default function Whitepapers() {
+  const [whitepapers, setWhitepapers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
@@ -224,8 +13,107 @@ export default function Whitepapers() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Modals state
+  const [selectedPaperForAccess, setSelectedPaperForAccess] = useState(null);
+  const [leadData, setLeadData] = useState({ fullName: "", email: "", company: "", jobTitle: "" });
+  const [isSubmittingLead, setIsSubmittingLead] = useState(false);
+
+  const [selectedPaperForDetails, setSelectedPaperForDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailedPaper, setDetailedPaper] = useState(null);
+
   const categories = ["All", "AI & Machine Learning", "Blockchain", "Cloud Computing", "Cybersecurity", "Data Analytics", "Networking", "Emerging Technology", "Sustainability", "Digital Strategy", "Robotics"];
   const years = ["All", "2026", "2025"];
+
+  // Fetch whitepapers on mount
+  useEffect(() => {
+    const fetchWhitepapers = async () => {
+      try {
+        const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API}/api/whitepapers`);
+        if (response.ok) {
+          const data = await response.json();
+          setWhitepapers(data);
+        } else {
+          toast.error("Failed to load whitepapers from server.");
+        }
+      } catch (err) {
+        console.error("Error fetching whitepapers:", err);
+        toast.error("An error occurred while loading whitepapers.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWhitepapers();
+  }, []);
+
+  // Fetch individual whitepaper details
+  const handleOpenDetails = async (id) => {
+    setDetailsLoading(true);
+    // Find the item first to open the modal immediately with cached state
+    const placeholder = whitepapers.find(p => p._id === id);
+    setDetailedPaper(placeholder);
+    setSelectedPaperForDetails(id);
+    
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/whitepapers/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDetailedPaper(data);
+      } else {
+        toast.error("Failed to fetch detailed whitepaper information.");
+      }
+    } catch (err) {
+      console.error("Error fetching details:", err);
+      toast.error("Error loading whitepaper details.");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  // Submit request / Lead capture form
+  const handleLeadSubmit = async (e) => {
+    e.preventDefault();
+    if (!leadData.fullName || !leadData.email || !leadData.company) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    setIsSubmittingLead(true);
+    try {
+      const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await fetch(`${API}/api/whitepapers/${selectedPaperForAccess._id}/request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success("Access request approved!");
+        
+        // Update local state download count
+        setWhitepapers(prev => prev.map(p => p._id === selectedPaperForAccess._id ? { ...p, downloadCount: data.downloadCount } : p));
+        
+        // Open PDF in a new tab / start download
+        window.open(data.pdfUrl, '_blank');
+        
+        // Reset lead form and close access modal
+        setLeadData({ fullName: "", email: "", company: "", jobTitle: "" });
+        setSelectedPaperForAccess(null);
+        setSelectedPaperForDetails(null); // close details modal if it was open
+      } else {
+        const errData = await response.json();
+        toast.error(errData.message || "Failed to submit request.");
+      }
+    } catch (err) {
+      console.error("Error submitting lead:", err);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsSubmittingLead(false);
+    }
+  };
 
   // Track scroll position
   useEffect(() => {
@@ -283,6 +171,18 @@ export default function Whitepapers() {
   const totalDownloads = whitepapers.reduce((sum, paper) => sum + paper.downloadCount, 0);
   const totalPages = whitepapers.reduce((sum, paper) => sum + paper.pages, 0);
   const totalAuthors = [...new Set(whitepapers.flatMap(p => p.authors))].length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-primary-light flex items-center justify-center py-20">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full border border-slate-100">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-800 font-black tracking-wide text-lg animate-pulse">Loading Research Library...</p>
+          <p className="text-slate-500 text-sm mt-2">Fetching latest reports from the backend...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-primary-light">
@@ -436,7 +336,7 @@ export default function Whitepapers() {
             <div className="grid md:grid-cols-2 gap-8">
               {featuredPapers.map((paper) => (
                 <div
-                  key={paper.id}
+                  key={paper._id || paper.id}
                   className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
                   <div className="relative h-64 overflow-hidden">
@@ -455,7 +355,7 @@ export default function Whitepapers() {
                         ⭐ Featured
                       </span>
                     </div>
-
+ 
                     <div className="absolute bottom-4 left-4 right-4">
                       <span className="bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-1 rounded-full text-xs font-semibold inline-block mb-3">
                         {paper.category}
@@ -465,7 +365,7 @@ export default function Whitepapers() {
                       </h3>
                     </div>
                   </div>
-
+ 
                   <div className="p-6">
                     <div className="flex items-center gap-4 mb-4 text-sm text-slate-600">
                       <div className="flex items-center gap-1">
@@ -487,16 +387,16 @@ export default function Whitepapers() {
                         <span>{paper.fileSize}</span>
                       </div>
                     </div>
-
+ 
                     <p className="text-slate-700 text-sm mb-4 leading-relaxed line-clamp-3">
                       {paper.abstract}
                     </p>
-
+ 
                     <div className="mb-4">
                       <p className="text-xs font-bold text-slate-700 mb-2">Authors:</p>
                       <p className="text-sm text-slate-600">{paper.authors.join(", ")}</p>
                     </div>
-
+ 
                     <div className="mb-4">
                       <p className="text-xs font-bold text-slate-700 mb-2">Key Topics:</p>
                       <div className="flex flex-wrap gap-2">
@@ -512,8 +412,11 @@ export default function Whitepapers() {
                         )}
                       </div>
                     </div>
-
-                    <button className="w-full bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-3 rounded-lg font-bold hover:from-blue-800 hover:to-indigo-900 transition-all duration-300 shadow-lg hover:shadow-blue-200/50 flex items-center justify-center gap-2">
+ 
+                    <button 
+                      onClick={() => setSelectedPaperForAccess(paper)}
+                      className="w-full bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-3 rounded-lg font-bold hover:from-blue-800 hover:to-indigo-900 transition-all duration-300 shadow-lg hover:shadow-blue-200/50 flex items-center justify-center gap-2"
+                    >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
@@ -536,7 +439,7 @@ export default function Whitepapers() {
             <div className="grid md:grid-cols-3 gap-6">
               {regularPapers.map((paper) => (
                 <div
-                  key={paper.id}
+                  key={paper._id || paper.id}
                   className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -550,17 +453,17 @@ export default function Whitepapers() {
                     <span className="absolute top-4 left-4 bg-indigo-100 text-primary px-3 py-1 rounded-full text-xs font-bold border border-indigo-300">
                       {paper.publicationDate}
                     </span>
-
+ 
                     <span className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm text-slate-800 px-3 py-1 rounded-full text-xs font-semibold">
                       {paper.category}
                     </span>
                   </div>
-
+ 
                   <div className="p-5">
                     <h3 className="text-lg font-bold text-slate-900 mb-3 leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                       {paper.title}
                     </h3>
-
+ 
                     <div className="flex items-center gap-3 mb-3 text-xs text-slate-600">
                       <div className="flex items-center gap-1">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -581,11 +484,11 @@ export default function Whitepapers() {
                         <span>{paper.fileSize}</span>
                       </div>
                     </div>
-
+ 
                     <p className="text-slate-600 text-xs mb-4 leading-relaxed line-clamp-3">
                       {paper.abstract}
                     </p>
-
+ 
                     <div className="flex flex-wrap gap-1 mb-4">
                       {paper.keyTopics.slice(0, 2).map((topic, index) => (
                         <span key={index} className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-md font-semibold">
@@ -593,13 +496,25 @@ export default function Whitepapers() {
                         </span>
                       ))}
                     </div>
-
-                    <button className="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 text-sm">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      <span>Download</span>
-                    </button>
+ 
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleOpenDetails(paper._id)}
+                        className="flex-1 bg-slate-100 text-slate-800 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors text-sm"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        onClick={() => setSelectedPaperForAccess(paper)}
+                        style={{ backgroundColor: '#007BFF', color: '#ffffff' }}
+                        className="flex-1 py-2 rounded-lg font-bold hover:opacity-90 transition-all flex items-center justify-center gap-1 text-sm shadow-sm hover:shadow-md"
+                      >
+                        <svg className="w-4 h-4" style={{ color: '#ffffff' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span style={{ color: '#ffffff' }}>Download</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -704,6 +619,273 @@ export default function Whitepapers() {
           `}</style>
         </div>
       )}
+
+      {/* Access / Lead Capture Modal */}
+      {selectedPaperForAccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-[100] px-4">
+          <div 
+            onClick={() => setSelectedPaperForAccess(null)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
+          ></div>
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full transform transition-all border border-slate-100 overflow-hidden animate-slide-up">
+            
+            {/* Header background gradient */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary to-primary-light"></div>
+            
+            <button 
+              onClick={() => setSelectedPaperForAccess(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">Access Technical Report</h3>
+              <p className="text-slate-500 text-sm mt-1 leading-snug">
+                Please complete the form below to download <strong>{selectedPaperForAccess.title}</strong>
+              </p>
+            </div>
+
+            <form onSubmit={handleLeadSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. John Doe"
+                  value={leadData.fullName}
+                  onChange={(e) => setLeadData(prev => ({ ...prev, fullName: e.target.value }))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Work Email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. john@company.com"
+                  value={leadData.email}
+                  onChange={(e) => setLeadData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Company / Organization *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Acme Corp"
+                  value={leadData.company}
+                  onChange={(e) => setLeadData(prev => ({ ...prev, company: e.target.value }))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Research Director"
+                  value={leadData.jobTitle}
+                  onChange={(e) => setLeadData(prev => ({ ...prev, jobTitle: e.target.value }))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSubmittingLead}
+                  style={{ backgroundColor: '#007BFF', color: '#ffffff' }}
+                  className="w-full disabled:opacity-75 disabled:cursor-not-allowed py-3 rounded-xl font-extrabold hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2"
+                >
+                  {isSubmittingLead ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span style={{ color: '#ffffff' }}>Verifying & Downloading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" style={{ color: '#ffffff' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      <span style={{ color: '#ffffff' }}>Submit & Download PDF</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Whitepaper Details Modal */}
+      {selectedPaperForDetails && detailedPaper && (
+        <div className="fixed inset-0 flex items-center justify-center z-[90] px-4 overflow-y-auto py-8">
+          <div 
+            onClick={() => {
+              setSelectedPaperForDetails(null);
+              setDetailedPaper(null);
+            }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          ></div>
+          <div className="relative bg-white rounded-3xl shadow-2xl max-w-3xl w-full transform transition-all border border-slate-100 overflow-hidden z-10 my-auto animate-scale-up">
+            
+            {/* Cover Image & Category Header */}
+            <div className="relative h-64 md:h-80 overflow-hidden">
+              <img 
+                src={detailedPaper.image} 
+                alt={detailedPaper.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+              
+              <button 
+                onClick={() => {
+                  setSelectedPaperForDetails(null);
+                  setDetailedPaper(null);
+                }}
+                className="absolute top-6 right-6 bg-slate-900/60 hover:bg-slate-900/80 backdrop-blur-sm text-white p-2 rounded-full transition-colors z-20"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="absolute bottom-6 left-6 right-6 text-white">
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase mb-3 inline-block">
+                  {detailedPaper.category}
+                </span>
+                <h3 className="text-2xl md:text-3xl font-black leading-tight tracking-tight drop-shadow-md">
+                  {detailedPaper.title}
+                </h3>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="p-6 md:p-8">
+              {detailsLoading ? (
+                <div className="py-12 text-center">
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-slate-500 font-bold text-sm">Fetching updated resource details...</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+                  
+                  {/* Left Column: Abstract, Topics, Authors */}
+                  <div className="md:col-span-2 space-y-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Abstract</h4>
+                      <p className="text-slate-700 text-sm leading-relaxed font-normal whitespace-pre-line">
+                        {detailedPaper.abstract}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Key Topics Covered</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {detailedPaper.keyTopics?.map((topic, index) => (
+                          <span key={index} className="bg-slate-100 text-slate-800 text-xs px-3 py-1.5 rounded-xl font-semibold border border-slate-200">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Research Authors</h4>
+                      <p className="text-slate-800 text-sm font-bold flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span>{detailedPaper.authors?.join(", ")}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Metadata Cards & CTA */}
+                  <div className="space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 h-fit">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Report Details</h4>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-xs text-slate-500 font-semibold">Published</span>
+                        <span className="text-xs text-slate-800 font-bold">{detailedPaper.publicationDate}</span>
+                      </div>
+                      <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-xs text-slate-500 font-semibold">Length</span>
+                        <span className="text-xs text-slate-800 font-bold">{detailedPaper.pages} pages</span>
+                      </div>
+                      <div className="flex justify-between border-b border-slate-200 pb-2">
+                        <span className="text-xs text-slate-500 font-semibold">File Size</span>
+                        <span className="text-xs text-slate-800 font-bold">{detailedPaper.fileSize}</span>
+                      </div>
+                      <div className="flex justify-between pb-1">
+                        <span className="text-xs text-slate-500 font-semibold">Downloads</span>
+                        <span className="text-xs text-slate-800 font-bold">{(detailedPaper.downloadCount || 0).toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => setSelectedPaperForAccess(detailedPaper)}
+                      style={{ backgroundColor: '#007BFF', color: '#ffffff' }}
+                      className="w-full hover:opacity-90 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
+                    >
+                      <svg className="w-5 h-5" style={{ color: '#ffffff' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      <span style={{ color: '#ffffff' }}>Access Full Report</span>
+                    </button>
+                  </div>
+
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-up {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes scale-up {
+          from { transform: scale(0.95); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out forwards;
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-scale-up {
+          animation: scale-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 }

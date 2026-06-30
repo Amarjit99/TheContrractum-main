@@ -249,6 +249,17 @@ export default function Events() {
   });
   const [isRegistering, setIsRegistering] = useState(false);
   const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
+  const [regStep, setRegStep] = useState(1);
+  const [countryCode, setCountryCode] = useState("+91");
+  const [validationErrors, setValidationErrors] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentData, setPaymentData] = useState({
+    cardName: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvc: "",
+    transactionId: ""
+  });
 
   const categories = ["All", "Conference", "Workshop", "Training", "Networking", "Bootcamp", "Webinar", "Masterclass"];
 
@@ -326,22 +337,139 @@ export default function Events() {
   const handleRegisterClick = (event) => {
     setSelectedEvent(event);
     setShowRegisterModal(true);
+    setRegStep(1);
+    setCountryCode("+91");
+    setValidationErrors({});
+    setPaymentMethod("card");
+    setPaymentData({
+      cardName: "",
+      cardNumber: "",
+      cardExpiry: "",
+      cardCvc: "",
+      transactionId: ""
+    });
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      organization: ""
+    });
   };
 
-  const handleRegistrationSubmit = async (e) => {
+  const validateStep1 = () => {
+    const errs = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.firstName.trim()) {
+      errs.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      errs.lastName = "Last name is required";
+    }
+    if (!formData.email) {
+      errs.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      errs.email = "Please enter a valid email address";
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!formData.phone) {
+      errs.phone = "Phone number is required";
+    } else if (!phoneRegex.test(formData.phone)) {
+      errs.phone = "Phone number must be exactly 10 digits";
+    }
+
+    setValidationErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleStep1Submit = (e) => {
     e.preventDefault();
+    if (!validateStep1()) return;
+
+    const isPaid = selectedEvent.price && selectedEvent.price.trim().toLowerCase() !== "free";
+    if (isPaid) {
+      setRegStep(2);
+      setValidationErrors({});
+    } else {
+      submitEventRegistration();
+    }
+  };
+
+  const validateStep2 = () => {
+    const errs = {};
+    if (paymentMethod === "card") {
+      if (!paymentData.cardName.trim()) {
+        errs.cardName = "Cardholder name is required";
+      }
+      const cardNumClean = paymentData.cardNumber.replace(/\s+/g, "");
+      if (!/^\d{16}$/.test(cardNumClean)) {
+        errs.cardNumber = "Card number must be 16 digits";
+      }
+      if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(paymentData.cardExpiry)) {
+        errs.cardExpiry = "Expiry must be MM/YY";
+      }
+      if (!/^\d{3}$/.test(paymentData.cardCvc)) {
+        errs.cardCvc = "CVC must be 3 digits";
+      }
+    } else if (paymentMethod === "qr") {
+      if (!/^[a-zA-Z0-9]{12}$/.test(paymentData.transactionId)) {
+        errs.transactionId = "Transaction ID must be exactly 12 alphanumeric characters";
+      }
+    }
+    setValidationErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleStep2Submit = (e) => {
+    e.preventDefault();
+    if (!validateStep2()) return;
+
+    let details = {};
+    if (paymentMethod === "card") {
+      const cardNumClean = paymentData.cardNumber.replace(/\s+/g, "");
+      details = {
+        cardholderName: paymentData.cardName,
+        cardLast4: cardNumClean.slice(-4),
+        cardBrand: "Simulated Card"
+      };
+    } else {
+      details = {
+        transactionId: paymentData.transactionId
+      };
+    }
+
+    submitEventRegistration({
+      method: paymentMethod === "card" ? "Card" : "QR Code",
+      details
+    });
+  };
+
+  const submitEventRegistration = async (paymentDetailsParams = null) => {
     setIsRegistering(true);
     try {
       const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const fullPhone = `${countryCode} ${formData.phone}`;
+      
+      const payload = {
+        eventName: selectedEvent.title,
+        eventDate: selectedEvent.date,
+        eventTime: selectedEvent.time,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: fullPhone,
+        organization: formData.organization,
+        amountPaid: selectedEvent.price || "Free",
+        paymentMethod: paymentDetailsParams ? paymentDetailsParams.method : "N/A",
+        paymentStatus: paymentDetailsParams ? "Completed" : "N/A",
+        paymentDetails: paymentDetailsParams ? paymentDetailsParams.details : {}
+      };
+
       const response = await fetch(`${API}/api/event-registrations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventName: selectedEvent.title,
-          eventDate: selectedEvent.date,
-          eventTime: selectedEvent.time,
-          ...formData
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -760,7 +888,7 @@ export default function Events() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 px-6 py-4 rounded-lg text-slate-900 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
+                className="flex-1 px-6 py-4 rounded-lg bg-white/10 text-white placeholder-white/60 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
               />
               <button
                 type="submit"
@@ -849,41 +977,218 @@ export default function Events() {
                 </div>
               </div>
 
-              <form onSubmit={handleRegistrationSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">First Name *</label>
-                    <input type="text" required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="John" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Last Name *</label>
-                    <input type="text" required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Doe" />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="john@example.com" />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
-                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="+1 (555) 000-0000" />
-                </div>
+              <form onSubmit={regStep === 1 ? handleStep1Submit : handleStep2Submit} className="space-y-4">
+                {regStep === 1 ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1">First Name *</label>
+                        <input type="text" required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="John" />
+                        {validationErrors.firstName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.firstName}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1">Last Name *</label>
+                        <input type="text" required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="Doe" />
+                        {validationErrors.lastName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.lastName}</p>}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
+                      <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="john@example.com" />
+                      {validationErrors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.email}</p>}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 font-semibold text-slate-700 outline-none"
+                        >
+                          <option value="+91">+91 (IN)</option>
+                          <option value="+1">+1 (US/CA)</option>
+                          <option value="+44">+44 (UK)</option>
+                          <option value="+61">+61 (AU)</option>
+                          <option value="+49">+49 (DE)</option>
+                          <option value="+65">+65 (SG)</option>
+                          <option value="+971">+971 (AE)</option>
+                        </select>
+                        <input
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10)})}
+                          className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800"
+                          placeholder="10-digit number"
+                        />
+                      </div>
+                      {validationErrors.phone && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.phone}</p>}
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Company / College</label>
-                  <input type="text" value={formData.organization} onChange={(e) => setFormData({...formData, organization: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Optional" />
-                </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Company / College</label>
+                      <input type="text" value={formData.organization} onChange={(e) => setFormData({...formData, organization: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="Optional" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-700">Registration Fee:</span>
+                      <span className="text-lg font-black text-blue-950">{selectedEvent.price}</span>
+                    </div>
+
+                    <div className="flex gap-4 border-b border-slate-200 pb-2">
+                      <button
+                        type="button"
+                        onClick={() => { setPaymentMethod("card"); setValidationErrors({}); }}
+                        className={`flex-1 py-2 text-center font-bold text-sm rounded-lg transition-all ${
+                          paymentMethod === "card"
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        💳 Card Payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setPaymentMethod("qr"); setValidationErrors({}); }}
+                        className={`flex-1 py-2 text-center font-bold text-sm rounded-lg transition-all ${
+                          paymentMethod === "qr"
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        📱 Scan QR Code
+                      </button>
+                    </div>
+
+                    {paymentMethod === "card" ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Cardholder Name</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.cardName}
+                            onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                            placeholder="John Doe"
+                          />
+                          {validationErrors.cardName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardName}</p>}
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Card Number</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.cardNumber}
+                            onChange={(e) => setPaymentData({...paymentData, cardNumber: e.target.value.replace(/\D/g, "").slice(0, 16)})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                            placeholder="1234 5678 1234 5678"
+                          />
+                          {validationErrors.cardNumber && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardNumber}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Expiry (MM/YY)</label>
+                            <input
+                              type="text"
+                              required
+                              value={paymentData.cardExpiry}
+                              onChange={(e) => {
+                                let val = e.target.value;
+                                if (val.length === 2 && !val.includes('/')) {
+                                  val = val + '/';
+                                }
+                                setPaymentData({...paymentData, cardExpiry: val.slice(0, 5)});
+                              }}
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                              placeholder="MM/YY"
+                            />
+                            {validationErrors.cardExpiry && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardExpiry}</p>}
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">CVC</label>
+                            <input
+                              type="password"
+                              required
+                              value={paymentData.cardCvc}
+                              onChange={(e) => setPaymentData({...paymentData, cardCvc: e.target.value.replace(/\D/g, "").slice(0, 3)})}
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                              placeholder="123"
+                            />
+                            {validationErrors.cardCvc && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardCvc}</p>}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 text-center">
+                        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col items-center justify-center">
+                          <svg className="w-36 h-36 text-slate-800" viewBox="0 0 100 100" fill="currentColor">
+                            <path d="M5,5 h90 v90 h-90 z" fill="none" stroke="currentColor" strokeWidth="2"/>
+                            <rect x="10" y="10" width="20" height="20" fill="currentColor"/>
+                            <rect x="15" y="15" width="10" height="10" fill="white"/>
+                            <rect x="70" y="10" width="20" height="20" fill="currentColor"/>
+                            <rect x="75" y="15" width="10" height="10" fill="white"/>
+                            <rect x="10" y="70" width="20" height="20" fill="currentColor"/>
+                            <rect x="15" y="75" width="10" height="10" fill="white"/>
+                            <rect x="40" y="10" width="10" height="10" fill="currentColor"/>
+                            <rect x="55" y="10" width="5" height="20" fill="currentColor"/>
+                            <rect x="40" y="25" width="20" height="5" fill="currentColor"/>
+                            <rect x="40" y="35" width="15" height="15" fill="currentColor"/>
+                            <rect x="70" y="35" width="20" height="10" fill="currentColor"/>
+                            <rect x="75" y="50" width="10" height="15" fill="currentColor"/>
+                            <rect x="10" y="45" width="15" height="5" fill="currentColor"/>
+                            <rect x="10" y="55" width="5" height="10" fill="currentColor"/>
+                            <rect x="20" y="55" width="10" height="5" fill="currentColor"/>
+                            <rect x="40" y="60" width="20" height="20" fill="currentColor"/>
+                            <rect x="45" y="65" width="10" height="10" fill="white"/>
+                            <rect x="70" y="70" width="10" height="5" fill="currentColor"/>
+                            <rect x="85" y="70" width="5" height="15" fill="currentColor"/>
+                            <rect x="70" y="85" width="15" height="5" fill="currentColor"/>
+                          </svg>
+                          <p className="text-xs font-bold text-slate-600 mt-3">Scan to Pay via UPI</p>
+                          <p className="text-[10px] text-slate-400">Merchant: TheContractum Events</p>
+                        </div>
+                        
+                        <div className="text-left">
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Transaction ID / UTR (12 Digits)</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.transactionId}
+                            onChange={(e) => setPaymentData({...paymentData, transactionId: e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 12)})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 font-mono text-slate-800"
+                            placeholder="e.g. 123456789012"
+                          />
+                          {validationErrors.transactionId && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.transactionId}</p>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+                  {regStep === 2 && (
+                    <button type="button" onClick={() => { setRegStep(1); setValidationErrors({}); }} className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 transition-colors mr-auto">
+                      ← Back
+                    </button>
+                  )}
                   <button type="button" onClick={() => setShowRegisterModal(false)} className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
                     Cancel
                   </button>
                   <button type="submit" disabled={isRegistering} className="px-8 py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
                     {isRegistering ? (
                       <><svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</>
-                    ) : "Complete Registration"}
+                    ) : regStep === 1 && selectedEvent.price && selectedEvent.price.trim().toLowerCase() !== "free" ? (
+                      "Proceed to Payment"
+                    ) : (
+                      "Complete Registration"
+                    )}
                   </button>
                 </div>
               </form>

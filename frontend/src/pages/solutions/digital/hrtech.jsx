@@ -170,7 +170,7 @@ export default function HrTech() {
                             Partner with Us
                         </Link>
                         <Link
-                            to="/solutions/download?service=hrtech"
+                            to="/solutions/info?service=hrtech"
                             className="bg-white/5 hover:bg-white/10 text-white font-bold px-12 py-5 rounded-2xl transition-all border border-white/20 backdrop-blur-sm text-lg"
                         >
                             Download HR Profile (PDF)

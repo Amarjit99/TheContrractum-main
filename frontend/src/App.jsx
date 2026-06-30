@@ -85,8 +85,10 @@ import BecomeAdvisor from './pages/team/BecomeAdvisor';
 
 //////////////////// Solutions Pages/////////////////////////////////////
 import Csit from './pages/solutions/business/Csit';
+import CsitInfo from './pages/solutions/business/CsitInfo';
 import Gissolution from './pages/solutions/business/Gis';
 import SolutionDownload from './pages/solutions/SolutionDownload';
+import SolutionInfo from './pages/solutions/SolutionInfo';
 import MRASservies from './pages/solutions/business/Mras';
 import ECommerceSolutions from './pages/solutions/digital/ECommerce';
 import HrTech from './pages/solutions/digital/HrTech';
@@ -112,6 +114,7 @@ import WhyChooseBanking from './pages/industries/WhyChooseBanking';
 import Manufacturing from './pages/industries/Manufacturing';
 import OptimizeProduction from './pages/industries/OptimizeProduction';
 import Agriculture from './pages/industries/Agriculture';
+import RequestConsultation from './pages/industries/RequestConsultation';
 
 // ///////////////////////Careers Pages/////////////////////////////////
 import Life from './pages/careers/Life';
@@ -145,9 +148,11 @@ import News from './pages/resources/News';
 import Events from './pages/resources/Events';
 import CSR from './pages/resources/CSR';
 import CSRReport from './pages/resources/CSRReport';
+import CSRReportDownload from './pages/resources/CSRReportDownload';
 import Whitepapers from './pages/resources/Whitepapers';
 import Reports from './pages/resources/Reports';
 import Media from './pages/resources/Media';
+import ContentMediaRelations from './pages/resources/ContentMediaRelations';
 
 //////////////////// Join Us Pages////////////////////////////////////
 import Partner from './pages/join/Partner';
@@ -207,6 +212,7 @@ export default function App() {
                 <Route path="/admin/form-links" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Support Manager', 'Support Administrator', 'CRM & Lead Manager', 'CRM Administrator', 'Customer Support Executive']}><AdminFormLinks /></AdminProtectedRoute>} />
                 <Route path="/admin/notifications" element={<AdminProtectedRoute><AdminNotifications /></AdminProtectedRoute>} />
                 <Route path="/admin/submissions" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'CRM & Lead Manager', 'CRM Administrator', 'Data Entry & Documentation Executive']}><AdminSubmissions /></AdminProtectedRoute>} />
+                <Route path="/admin/leads" element={<Navigate to="/admin/submissions" replace />} />
                 <Route path="/admin/surveys" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'Data Entry & Documentation Executive']}><AdminSurveys /></AdminProtectedRoute>} />
                 <Route path="/admin/profile" element={<AdminProtectedRoute><AdminProfile /></AdminProtectedRoute>} />
                 <Route path="/admin/news" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminNews /></AdminProtectedRoute>} />
@@ -271,9 +277,11 @@ export default function App() {
                 {/* ///////////////////////// solutions Routes///////////////////////// */}
                 <Route path="/solutions/digital" element={<DigitalSolutions />} />
                 <Route path="/solutions/business/csit" element={<Csit />} />
+                <Route path="/solutions/business/csit/info" element={<CsitInfo />} />
                 <Route path="/solutions/business/gis" element={<Gissolution />} />
                 <Route path="/solutions/download" element={<SolutionDownload />} />
                 <Route path="/solutions/download/" element={<SolutionDownload />} />
+                <Route path="/solutions/info" element={<SolutionInfo />} />
                 <Route path="/solutions/business/Mras" element={<MRASservies />} />
                 <Route path="/solutions/digital/digital-marketing" element={<DigitalMarketing />} />
                 <Route path="/solutions/digital/e-commerce" element={<ECommerceSolutions />} />
@@ -300,6 +308,7 @@ export default function App() {
                 <Route path="/industries/manufacturing" element={<Manufacturing />} />
                 <Route path="/industries/optimize-production" element={<OptimizeProduction />} />
                 <Route path="/industries/agriculture" element={<Agriculture />} />
+                <Route path="/industries/request-consultation" element={<RequestConsultation />} />
 
 
                 {/* ///////////////////////// Careers Routes///////////////////////// */}
@@ -336,9 +345,11 @@ export default function App() {
                 <Route path="/resources/events" element={<Events />} />
                 <Route path="/resources/csr" element={<CSR />} />
                 <Route path="/resources/csr-report" element={<CSRReport />} />
+                <Route path="/resources/csr-report/download" element={<CSRReportDownload />} />
                 <Route path="/resources/whitepapers" element={<Whitepapers />} />
                 <Route path="/resources/reports" element={<Reports />} />
                 <Route path="/resources/media" element={<Media />} />
+                <Route path="/resources/media-relations" element={<ContentMediaRelations />} />
 
 
                 {/* ///////////////////////// joins Routes///////////////////////// */}

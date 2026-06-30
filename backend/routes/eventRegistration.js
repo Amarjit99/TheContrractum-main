@@ -8,7 +8,20 @@ const Notification = require("../models/Notification");
 // @access  Public
 router.post("/", async (req, res) => {
   try {
-    const { eventName, eventDate, eventTime, firstName, lastName, email, phone, organization } = req.body;
+    const {
+      eventName,
+      eventDate,
+      eventTime,
+      firstName,
+      lastName,
+      email,
+      phone,
+      organization,
+      amountPaid,
+      paymentMethod,
+      paymentStatus,
+      paymentDetails
+    } = req.body;
 
     if (!eventName || !firstName || !lastName || !email || !phone) {
       return res.status(400).json({ message: "Please enter all required fields" });
@@ -23,6 +36,10 @@ router.post("/", async (req, res) => {
       email,
       phone,
       organization,
+      amountPaid: amountPaid || "Free",
+      paymentMethod: paymentMethod || "N/A",
+      paymentStatus: paymentStatus || "N/A",
+      paymentDetails: paymentDetails || {},
     });
 
     await newRegistration.save();

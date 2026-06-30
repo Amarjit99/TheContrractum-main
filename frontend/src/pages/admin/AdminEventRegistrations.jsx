@@ -157,72 +157,92 @@ export default function AdminEventRegistrations() {
 
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-50/50">
-                                <tr>
-                                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Attendee</th>
-                                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Event Detail</th>
-                                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Organization</th>
-                                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan="4" className="py-20 text-center">
-                                            <Loader2 className="animate-spin mx-auto text-blue-600 mb-4" size={32} />
-                                            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading Registrations...</p>
-                                        </td>
-                                    </tr>
-                                ) : filteredRegistrations.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="4" className="py-20 text-center text-slate-400">No registrations found matching your search.</td>
-                                    </tr>
-                                ) : (
-                                    filteredRegistrations.map(reg => (
-                                        <tr key={reg._id} className="hover:bg-slate-50/30 transition-colors">
-                                            <td className="px-3 sm:px-6 py-3 sm:py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs sm:text-sm shrink-0">
-                                                        {reg.firstName[0]}{reg.lastName[0]}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-bold text-slate-900 text-sm sm:text-base truncate">{reg.firstName} {reg.lastName}</p>
-                                                        <div className="flex flex-col sm:flex-row sm:items-center gap-x-3 gap-y-0.5">
-                                                            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500">
-                                                                <Mail size={12} className="shrink-0" />
-                                                                <span className="truncate max-w-[120px] sm:max-w-none">{reg.email}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500">
-                                                                <Phone size={12} className="shrink-0" />
-                                                                <span>{reg.phone}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-3 sm:px-6 py-3 sm:py-4">
-                                                <div className="space-y-1">
-                                                    <p className="font-bold text-slate-800 text-xs sm:text-sm">{reg.eventName}</p>
-                                                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-                                                        <Calendar size={12} className="text-blue-500 shrink-0" />
-                                                        <span>{reg.eventDate} • {reg.eventTime}</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
-                                                <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                                                    <Building size={14} className="text-slate-400 shrink-0" />
-                                                    <span className="truncate max-w-[150px]">{reg.organization || 'N/A'}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-3 sm:px-6 py-3 sm:py-4">
-                                                <div className="text-[10px] sm:text-xs text-slate-400">
-                                                    <p>{new Date(reg.createdAt).toLocaleDateString()}</p>
-                                                    <p>{new Date(reg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                             <thead className="bg-slate-50/50">
+                                 <tr>
+                                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Attendee</th>
+                                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Event Detail</th>
+                                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Organization</th>
+                                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Payment</th>
+                                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest">Date</th>
+                                 </tr>
+                             </thead>
+                             <tbody className="divide-y divide-slate-50">
+                                 {loading ? (
+                                     <tr>
+                                         <td colSpan="5" className="py-20 text-center">
+                                             <Loader2 className="animate-spin mx-auto text-blue-600 mb-4" size={32} />
+                                             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading Registrations...</p>
+                                         </td>
+                                     </tr>
+                                 ) : filteredRegistrations.length === 0 ? (
+                                     <tr>
+                                         <td colSpan="5" className="py-20 text-center text-slate-400">No registrations found matching your search.</td>
+                                     </tr>
+                                 ) : (
+                                     filteredRegistrations.map(reg => (
+                                         <tr key={reg._id} className="hover:bg-slate-50/30 transition-colors">
+                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                 <div className="flex items-center gap-3">
+                                                     <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs sm:text-sm shrink-0">
+                                                         {reg.firstName ? reg.firstName[0] : ''}{reg.lastName ? reg.lastName[0] : ''}
+                                                     </div>
+                                                     <div className="min-w-0">
+                                                         <p className="font-bold text-slate-900 text-sm sm:text-base truncate">{reg.firstName} {reg.lastName}</p>
+                                                         <div className="flex flex-col sm:flex-row sm:items-center gap-x-3 gap-y-0.5">
+                                                             <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500">
+                                                                 <Mail size={12} className="shrink-0" />
+                                                                 <span className="truncate max-w-[120px] sm:max-w-none">{reg.email}</span>
+                                                                 </div>
+                                                             <div className="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500">
+                                                                 <Phone size={12} className="shrink-0" />
+                                                                 <span>{reg.phone}</span>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </td>
+                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                 <div className="space-y-1">
+                                                     <p className="font-bold text-slate-800 text-xs sm:text-sm">{reg.eventName}</p>
+                                                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+                                                         <Calendar size={12} className="text-blue-500 shrink-0" />
+                                                         <span>{reg.eventDate} • {reg.eventTime}</span>
+                                                     </div>
+                                                 </div>
+                                             </td>
+                                             <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell">
+                                                 <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                                                     <Building size={14} className="text-slate-400 shrink-0" />
+                                                     <span className="truncate max-w-[150px]">{reg.organization || 'N/A'}</span>
+                                                 </div>
+                                             </td>
+                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                 <div className="space-y-1">
+                                                     <div className="flex items-center gap-1.5">
+                                                         <span className="text-xs font-bold text-slate-800">{reg.amountPaid || 'Free'}</span>
+                                                         {reg.amountPaid && reg.amountPaid.toLowerCase() !== 'free' ? (
+                                                             <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-green-100 text-green-700">Paid</span>
+                                                         ) : (
+                                                             <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-100 text-slate-600">Free</span>
+                                                         )}
+                                                     </div>
+                                                     {reg.paymentMethod && reg.paymentMethod !== 'N/A' && (
+                                                         <div className="text-[10px] text-slate-500 font-semibold">
+                                                             via {reg.paymentMethod}
+                                                             {reg.paymentDetails && reg.paymentDetails.cardLast4 && ` (*${reg.paymentDetails.cardLast4})`}
+                                                             {reg.paymentDetails && reg.paymentDetails.transactionId && ` (Ref: ${reg.paymentDetails.transactionId})`}
+                                                         </div>
+                                                     )}
+                                                 </div>
+                                             </td>
+                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
+                                                 <div className="text-[10px] sm:text-xs text-slate-400">
+                                                     <p>{new Date(reg.createdAt).toLocaleDateString()}</p>
+                                                     <p>{new Date(reg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                                 </div>
+                                             </td>
+                                         </tr>
+                                     ))
                                 )}
                             </tbody>
                         </table>
