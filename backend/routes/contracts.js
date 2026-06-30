@@ -23,405 +23,681 @@ const PROFESSIONAL_TEMPLATES = [
         name: 'Standard Employment Contract',
         type: 'Employment Agreement',
         category: 'Employment & HR Contracts',
-        description: 'Full-time employment agreement covering compensation, duties, and termination.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #1e5cdc;padding-bottom:12px;color:#1e5cdc;">EMPLOYMENT AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Employment Agreement ("Agreement") is entered into as of <strong>{{start_date}}</strong>, by and between:</p>
-<p><strong>The Contractum Private Limited</strong>, a company incorporated under the laws of India, having its registered office at {{company_address}} (hereinafter referred to as the <em>"Company"</em>), and</p>
-<p><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the <em>"Employee"</em>).</p>
+        description: 'Comprehensive full-time employment agreement covering duties, probation, intellectual property, confidentiality, and dispute resolution.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#1e5cdc;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Contract of Employment</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #1e5cdc, #6366f1);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">1. POSITION AND DUTIES</h2>
-<p>The Company hereby employs the Employee in the capacity of <strong>{{position}}</strong> within the <strong>{{department}}</strong> department. The Employee agrees to perform all duties and responsibilities as assigned by the Company from time to time, adhering to the Company's policies and code of conduct.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">2. COMMENCEMENT AND DURATION</h2>
-<p>This Agreement shall commence on <strong>{{start_date}}</strong> and shall continue unless terminated by either party in accordance with the provisions herein.</p>
+<p>This Contract of Employment ("Agreement") is executed and made effective as of <strong>{{start_date}}</strong>, by and between:</p>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">3. COMPENSATION</h2>
-<p>The Employee shall receive a gross monthly salary of <strong>{{salary}}</strong>, subject to applicable tax deductions and statutory contributions. Salary shall be disbursed on or before the last working day of each month.</p>
+<div style="background-color:#f8fafc;border-left:4px solid #1e5cdc;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#0f172a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">First Party (Employer):</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, a company incorporated under the laws of India, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
+</div>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">4. WORKING HOURS</h2>
-<p>The Employee shall work a standard of 8 hours per day, 5 days a week, Monday through Friday. Overtime, if required, shall be compensated per Company policy.</p>
+<div style="background-color:#f8fafc;border-left:4px solid #6366f1;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#0f172a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">Second Party (Employee):</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Employee").</p>
+</div>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">5. CONFIDENTIALITY</h2>
-<p>The Employee agrees to maintain strict confidentiality regarding all proprietary information, trade secrets, business strategies, and client data acquired during the term of employment. This obligation shall survive the termination of this Agreement.</p>
+<p><strong>WHEREAS</strong>, the Company wishes to employ the Employee, and the Employee wishes to accept employment with the Company, under the professional terms and conditions set forth herein.</p>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">6. INTELLECTUAL PROPERTY</h2>
-<p>All work products, inventions, software, or intellectual property developed by the Employee in the course of employment shall be the exclusive property of the Company.</p>
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">1. APPOINTMENT AND SCOPE OF DUTIES</h3>
+<p>The Employee is hereby appointed in the capacity of <strong>{{position}}</strong> within the <strong>{{department}}</strong> department. The Employee's duties shall encompass all responsibilities associated with the role, including but not limited to project delivery, software implementation, administrative oversight, and any additional tasks assigned by the reporting manager. The Employee agrees to perform all duties faithfully, with diligence and to the best of their professional ability.</p>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">7. TERMINATION</h2>
-<p>Either party may terminate this Agreement with a written notice of <strong>30 days</strong>. The Company reserves the right to terminate immediately for gross misconduct, breach of policy, or dishonesty, without notice or severance.</p>
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">2. COMMENCEMENT AND DURATION</h3>
+<p>This employment arrangement shall commence on <strong>{{start_date}}</strong>. The first six (6) months of employment shall be considered a probationary period. Upon successful completion of probation, the Company will confirm the employment in writing, following which the contract shall continue indefinitely until terminated by either party in accordance with Section 7.</p>
 
-<h2 style="color:#1e5cdc;font-size:15px;margin-top:24px;">8. GOVERNING LAW</h2>
-<p>This Agreement shall be governed by and construed in accordance with the laws of India. Disputes shall be subject to the exclusive jurisdiction of courts in {{company_city}}.</p>
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">3. COMPENSATION AND BENEFITS</h3>
+<p>In consideration of the services rendered, the Employee shall receive a gross monthly salary of <strong>{{salary}}</strong>. Payments shall be disbursed on or before the last working day of each calendar month, subject to standard statutory tax deductions (TDS) and provident fund contributions. The Employee shall also be eligible for medical insurance benefits and annual performance reviews as per Company policy.</p>
+
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">4. HOURS OF WORK AND LEAVES</h3>
+<p>The standard work week is 40 hours, scheduled from Monday through Friday, 9:00 AM to 6:00 PM. The Employee is entitled to 18 days of paid annual leaves, plus sick and casual leaves as outlined in the HR Manual. All annual leave requests must be submitted and pre-approved by the department manager.</p>
+
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">5. CONFIDENTIALITY AND NON-DISCLOSURE</h3>
+<p>The Employee acknowledges that they will have access to proprietary trade secrets, software designs, client lists, business methodologies, and confidential datasets. The Employee agrees to maintain strict confidentiality during and indefinitely after their employment. Disclosure of any proprietary information to third parties without prior written consent from the Company's Board is strictly prohibited and constitutes a breach of contract.</p>
+
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">6. INTELLECTUAL PROPERTY</h3>
+<p>The Employee agrees that all intellectual property rights, including software codes, database designs, patents, trademarks, and documentation developed, written, or created by the Employee during the course of employment shall be the sole and exclusive property of the Company from the moment of creation.</p>
+
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">7. TERMINATION AND NOTICE PERIOD</h3>
+<p>During the probation period, either party may terminate this agreement with fifteen (15) days written notice. Post-confirmation, either party may terminate employment with thirty (30) days written notice or payment of base salary in lieu thereof. The Company reserves the absolute right to terminate this contract immediately and without severance pay in cases of gross misconduct, dishonesty, fraud, or violation of the NDA.</p>
+
+<h3 style="color:#1e5cdc;font-size:16px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;margin-top:25px;">8. GOVERNING LAW AND JURISDICTION</h3>
+<p>This Agreement shall be governed by and construed in accordance with the laws of India. Any disputes arising out of or in connection with this contract shall be submitted to the exclusive jurisdiction of the competent courts in {{company_city}}.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Employee Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Title: Compliance Officer</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Employee Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Internship Agreement',
         type: 'Internship Agreement',
         category: 'Employment & HR Contracts',
-        description: 'Educational internship terms covering duration, stipend, and learning objectives.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #7c3aed;padding-bottom:12px;color:#7c3aed;">INTERNSHIP AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Internship Agreement is made on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> (the "Company") and <strong>{{employee_name}}</strong> (the "Intern").</p>
+        description: 'Educational internship terms covering duration, stipend, learning objectives, intellectual property, and non-disclosure obligations.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#7c3aed;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Internship Agreement</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #7c3aed, #a78bfa);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">1. INTERNSHIP ROLE</h2>
-<p>The Intern will serve as a <strong>{{position}}</strong> intern in the <strong>{{department}}</strong> department from <strong>{{start_date}}</strong> to <strong>{{end_date}}</strong>.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">2. LEARNING OBJECTIVES</h2>
-<p>The internship is designed to provide practical exposure and skill development. The Intern will work under a designated mentor and receive guidance on real-world projects aligned with their field of study.</p>
+<p>This Internship Agreement ("Agreement") is made and entered into on <strong>{{start_date}}</strong>, by and between:</p>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">3. STIPEND</h2>
-<p>The Intern shall receive a monthly stipend of <strong>{{salary}}</strong>. This stipend does not constitute a salary and the Intern is not entitled to employment benefits.</p>
+<div style="background-color:#fcfaff;border-left:4px solid #7c3aed;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#5b21b6;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
+</div>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">4. WORKING HOURS</h2>
-<p>The Intern is expected to work 6–8 hours per day during regular business days. Flexible arrangements may be discussed with the reporting manager.</p>
+<div style="background-color:#fcfaff;border-left:4px solid #a78bfa;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#5b21b6;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Intern:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Intern").</p>
+</div>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">5. CONDUCT AND CONFIDENTIALITY</h2>
-<p>The Intern agrees to maintain professional conduct and treat all Company information as strictly confidential during and after the internship period.</p>
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">1. INTERNSHIP ROLE & SCOPE</h3>
+<p>The Intern is appointed as a <strong>{{position}}</strong> intern in the <strong>{{department}}</strong> department. The primary focus of the internship is professional training, skill development, and assisting on real-world projects under the guidance of a designated Company mentor. The Intern agrees to adhere to the Company's operational guidelines, code of conduct, and work schedules.</p>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">6. CERTIFICATION</h2>
-<p>Upon successful completion, the Intern will receive an official internship certificate and letter of recommendation, subject to performance review.</p>
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">2. DURATION OF INTERNSHIP</h3>
+<p>This Agreement shall commence on <strong>{{start_date}}</strong> and shall conclude on <strong>{{end_date}}</strong>, spanning the designated learning duration. This internship represents a temporary learning arrangement and does not guarantee or imply any future offer of permanent employment with the Company.</p>
 
-<h2 style="color:#7c3aed;font-size:15px;margin-top:24px;">7. TERMINATION</h2>
-<p>Either party may terminate this agreement with 7 days written notice. Termination for misconduct may be immediate.</p>
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">3. Stipend</h3>
+<p>The Company shall pay the Intern a monthly stipend of <strong>{{salary}}</strong>. This stipend is intended to support the Intern's educational expenses and does not constitute a regular employment salary. The Intern is not eligible for Company benefits, leaves, bonuses, or statutory insurance plans applicable to full-time employees.</p>
+
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">4. CONFIDENTIALITY AND NON-DISCLOSURE</h3>
+<p>The Intern will be exposed to proprietary databases, source codes, methodologies, and internal strategies. The Intern agrees to keep all such information strictly confidential and shall not reproduce, share, or store company data outside of the Company's authorized platforms.</p>
+
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">5. INTELLECTUAL PROPERTY</h3>
+<p>All software codes, designs, presentations, documentation, or other assets created by the Intern during the internship shall belong exclusively to the Company from the moment of inception.</p>
+
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">6. TERMINATION</h3>
+<p>Either party may terminate this internship agreement with seven (7) days written notice. The Company reserves the right to terminate the internship immediately without notice or stipend in lieu in the event of any professional misconduct, breach of NDA, or violation of internal policies.</p>
+
+<h3 style="color:#7c3aed;font-size:16px;border-bottom:1px solid #f3e8ff;padding-bottom:6px;margin-top:25px;">7. GOVERNING LAW</h3>
+<p>This agreement shall be governed by the laws of India. Courts of Bengaluru, India shall have exclusive jurisdiction over any disputes arising out of this internship arrangement.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Intern Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized HR Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Intern Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Freelancer / NDA Agreement',
         type: 'Freelance Contract',
         category: 'Employment & HR Contracts',
-        description: 'Freelance service agreement with NDA clause, scope of work, and payment terms.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #d97706;padding-bottom:12px;color:#d97706;">FREELANCE SERVICE & NON-DISCLOSURE AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Agreement is entered into on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> (the "Client") and <strong>{{employee_name}}</strong> (the "Freelancer").</p>
+        description: 'Professional freelance services agreement with detailed Scope of Work, billing schedule, intellectual property assignment, and NDA clauses.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#d97706;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Freelance Services & NDA</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #d97706, #fbbf24);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">1. SCOPE OF WORK</h2>
-<p>The Freelancer agrees to deliver services as defined in the Statement of Work (SOW) for the role of <strong>{{position}}</strong>. Work must meet agreed quality standards and timelines.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">2. ENGAGEMENT PERIOD</h2>
-<p>This engagement shall be effective from <strong>{{start_date}}</strong> to <strong>{{end_date}}</strong> unless extended in writing by both parties.</p>
+<p>This Freelance Services & NDA Agreement ("Agreement") is executed on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">3. PAYMENT TERMS</h2>
-<p>The agreed compensation is <strong>{{salary}}</strong> payable upon milestone completion or as per the agreed payment schedule. Late delivery may result in proportional deductions.</p>
+<div style="background-color:#fffbeb;border-left:4px solid #d97706;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Client:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
+</div>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">4. CONFIDENTIALITY (NDA)</h2>
-<p>The Freelancer agrees that all information shared by the Client — including business strategies, source code, client data, pricing, and proprietary methodologies — is confidential. The Freelancer shall not disclose, reproduce, or use such information for any purpose other than fulfilling this Agreement. This clause remains in effect for <strong>3 years</strong> post-termination.</p>
+<div style="background-color:#fffbeb;border-left:4px solid #fbbf24;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Freelancer:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Freelancer").</p>
+</div>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">5. INTELLECTUAL PROPERTY</h2>
-<p>All deliverables, including designs, code, and content, created under this Agreement shall become the exclusive property of the Client upon final payment.</p>
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">1. SCOPE OF SERVICES</h3>
+<p>The Freelancer is engaged to perform strategic and engineering services in the capacity of a <strong>{{position}}</strong> for the <strong>{{department}}</strong> division. The specific deliverables, milestones, and timelines shall conform to the Statement of Work. The Freelancer shall determine the method, details, and means of performing these services, maintaining professional standards of quality.</p>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">6. INDEPENDENT CONTRACTOR</h2>
-<p>The Freelancer is an independent contractor and not an employee of the Client. The Freelancer is solely responsible for their own taxes and insurance.</p>
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">2. TERM AND ENGAGEMENT</h3>
+<p>This Agreement is effective from <strong>{{start_date}}</strong> and shall remain in effect through <strong>{{end_date}}</strong>, unless terminated earlier in accordance with Section 7.</p>
 
-<h2 style="color:#d97706;font-size:15px;margin-top:24px;">7. TERMINATION</h2>
-<p>Either party may terminate with 14 days notice. Work completed up to termination date shall be compensated on a pro-rata basis.</p>
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">3. COMPENSATION AND INVOICING</h3>
+<p>The agreed compensation for the services is <strong>{{salary}}</strong>. The Freelancer shall submit detailed invoices upon milestone completion. The Client shall process approved invoice payments within fifteen (15) days of receipt. The Freelancer is an independent contractor and shall bear sole responsibility for all taxes, duties, and statutory filings.</p>
+
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">4. CONFIDENTIALITY AND NON-DISCLOSURE (NDA)</h3>
+<p>The Freelancer agrees that all details of this engagement, including Client source code, database structures, business workflows, client lists, and pricing models, are strictly confidential. The Freelancer shall not disclose or use this information for any purpose other than executing the scope of services. This NDA obligation shall survive for three (3) years post-termination.</p>
+
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">5. INTELLECTUAL PROPERTY</h3>
+<p>All software developments, design assets, research reports, or source codes created by the Freelancer under this Agreement shall belong solely and exclusively to the Client immediately upon payment of the corresponding milestone invoice.</p>
+
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">6. INDEPENDENT CONTRACTOR STATUS</h3>
+<p>Nothing in this Agreement shall create an employer-employee relationship, agency, or joint venture. The Freelancer is not entitled to any Client leaves, insurance, provident fund, or other employee benefits.</p>
+
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">7. TERMINATION</h3>
+<p>Either party may terminate this agreement with fourteen (14) days written notice. In the event of termination, the Freelancer shall be compensated pro-rata for all approved milestones completed up to the date of termination.</p>
+
+<h3 style="color:#d97706;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">8. GOVERNING LAW</h3>
+<p>This agreement shall be governed by the laws of India. Courts of Bengaluru, Karnataka shall have exclusive jurisdiction.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Freelancer Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Freelancer Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Vendor Service Agreement',
         type: 'Vendor Agreement',
         category: 'Business & Corporate Agreements',
-        description: 'Vendor/supplier contract covering deliverables, SLA, payment, and liability.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #0d9488;padding-bottom:12px;color:#0d9488;">VENDOR SERVICE AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Vendor Agreement ("Agreement") is entered into on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> (the "Company") and <strong>{{employee_name}}</strong> (the "Vendor").</p>
+        description: 'Corporate vendor agreement detailing service scope, strict SLA obligations, billing schedule, and liability limits.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#0d9488;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Vendor Service Agreement</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #0d9488, #2dd4bf);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">1. SERVICES</h2>
-<p>The Vendor agrees to provide <strong>{{position}}</strong> services as described in the attached Statement of Work. Services must conform to agreed specifications and delivery schedules.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">2. CONTRACT PERIOD</h2>
-<p>This Agreement is effective from <strong>{{start_date}}</strong> to <strong>{{end_date}}</strong> and may be renewed by mutual written consent.</p>
+<p>This Vendor Service Agreement ("Agreement") is executed on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">3. PAYMENT TERMS</h2>
-<p>The Company shall pay the Vendor <strong>{{salary}}</strong> per the agreed schedule. Invoices must be submitted with supporting documentation. Payment shall be processed within 30 days of invoice approval.</p>
+<div style="background-color:#f0fdfa;border-left:4px solid #0d9488;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#115e59;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+</div>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">4. SERVICE LEVEL AGREEMENT (SLA)</h2>
-<p>The Vendor shall maintain a minimum uptime/delivery rate of 99% for all contracted services. Penalties for SLA breach shall be as outlined in the SLA Addendum.</p>
+<div style="background-color:#f0fdfa;border-left:4px solid #2dd4bf;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#115e59;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Vendor:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing/located at {{employee_address}} (hereinafter referred to as the "Vendor").</p>
+</div>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">5. CONFIDENTIALITY</h2>
-<p>The Vendor shall treat all Company data, processes, and client information as strictly confidential and shall implement appropriate technical and organizational security measures.</p>
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">1. SERVICES & STATEMENT OF WORK</h3>
+<p>The Vendor agrees to supply and deliver <strong>{{position}}</strong> services supporting the <strong>{{department}}</strong> division, meeting the requirements outlined in the Statement of Work and SLA guidelines.</p>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">6. COMPLIANCE</h2>
-<p>The Vendor shall comply with all applicable laws, regulations, and data protection requirements, including the Information Technology Act, 2000 and its amendments.</p>
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">2. TERM AND DURATION</h3>
+<p>This Agreement is effective from <strong>{{start_date}}</strong> through <strong>{{end_date}}</strong> and may be renewed by written mutual consent prior to the expiration date.</p>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">7. LIABILITY</h2>
-<p>The Vendor's total liability shall not exceed the total fees paid in the 3 months preceding the claim. Neither party shall be liable for indirect, consequential, or incidental damages.</p>
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">3. PAYMENT TERMS</h3>
+<p>The agreed service fee is <strong>{{salary}}</strong>. The Vendor shall submit monthly timesheets and invoices. The Company will process payments within thirty (30) days of receiving approved invoices. The Vendor is responsible for all local GST and statutory tax filings.</p>
 
-<h2 style="color:#0d9488;font-size:15px;margin-top:24px;">8. TERMINATION</h2>
-<p>Either party may terminate with 30 days written notice. The Company may terminate immediately for material breach without liability.</p>
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">4. SERVICE LEVEL AGREEMENT (SLA) & PERFORMANCE</h3>
+<p>The Vendor shall maintain a minimum service delivery / system uptime rate of 99% for all contracted services. Service interruptions or SLA breaches will result in fee credit adjustments as outlined in the SLA Addendum.</p>
+
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">5. CONFIDENTIALITY & DATA SECURITY</h3>
+<p>The Vendor shall protect and maintain the strict confidentiality of all Customer data. The Vendor shall implement state-of-the-art security measures in compliance with the Information Technology Act, 2000 and data protection standards.</p>
+
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">6. LIABILITY AND INDEMNIFICATION</h3>
+<p>The Vendor's total liability under this Agreement shall not exceed the total service fees paid in the three (3) months preceding the incident. Neither party shall be liable for consequential, indirect, or punitive damages.</p>
+
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">7. TERMINATION</h3>
+<p>Either party may terminate this Agreement with thirty (30) days written notice. Immediate termination is permitted in the event of insolvency, material breach, or service disruption exceeding 48 hours.</p>
+
+<h3 style="color:#0d9488;font-size:16px;border-bottom:1px solid #ccfbf1;padding-bottom:6px;margin-top:25px;">8. GOVERNING LAW</h3>
+<p>This Agreement shall be governed by the laws of India. Disputes are subject to the exclusive jurisdiction of competent courts in Mumbai.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Vendor Representative</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Company</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For: {{employee_name}}</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Vendor Representative</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Consulting Agreement',
         type: 'Consultant Agreement',
         category: 'Employment & HR Contracts',
-        description: 'Professional consulting services agreement with deliverables and IP clauses.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #6366f1;padding-bottom:12px;color:#6366f1;">CONSULTING SERVICES AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Consulting Services Agreement ("Agreement") is made on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> ("Client") and <strong>{{employee_name}}</strong> ("Consultant").</p>
+        description: 'Professional consultant engagement contract detailing consulting terms, milestone invoicing, and IP assignment.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#6366f1;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Consulting Services Agreement</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #6366f1, #818cf8);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">1. CONSULTING SERVICES</h2>
-<p>The Consultant shall provide expert advisory and consulting services in the capacity of <strong>{{position}}</strong> for the <strong>{{department}}</strong> division. Services include strategic analysis, recommendations, and deliverables as mutually agreed in writing.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">2. TERM</h2>
-<p>This Agreement shall be effective from <strong>{{start_date}}</strong> through <strong>{{end_date}}</strong> and may be renewed upon written mutual consent prior to expiry.</p>
+<p>This Consulting Services Agreement ("Agreement") is made on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">3. FEES & INVOICING</h2>
-<p>The Client agrees to pay the Consultant a fee of <strong>{{salary}}</strong> as agreed. Invoices shall be submitted monthly with an itemized activity log and paid within 15 business days of receipt.</p>
+<div style="background-color:#f5f3ff;border-left:4px solid #6366f1;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#4338ca;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Client:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
+</div>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">4. INDEPENDENT CONTRACTOR STATUS</h2>
-<p>The Consultant is an independent contractor. Nothing in this Agreement shall create an employment, agency, or partnership relationship. The Consultant bears sole responsibility for taxes and statutory deductions.</p>
+<div style="background-color:#f5f3ff;border-left:4px solid #818cf8;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#4338ca;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Consultant:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Consultant").</p>
+</div>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">5. CONFIDENTIALITY & NON-COMPETE</h2>
-<p>The Consultant agrees to keep all Client information strictly confidential for a period of <strong>2 years</strong> following the termination of this Agreement. The Consultant shall not engage with direct competitors during the engagement period.</p>
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">1. CONSULTING SERVICES</h3>
+<p>The Consultant agrees to provide consulting and expert advisory services in the capacity of a <strong>{{position}}</strong> within the <strong>{{department}}</strong> division, delivering strategic and technical advice as requested.</p>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">6. DELIVERABLES & IP</h2>
-<p>All reports, analyses, presentations, or tools produced under this Agreement are the intellectual property of the Client upon final payment.</p>
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">2. TERM OF ENGAGEMENT</h3>
+<p>This Agreement shall commence on <strong>{{start_date}}</strong> and remain effective through <strong>{{end_date}}</strong>, unless extended by mutual written consent prior to expiration.</p>
 
-<h2 style="color:#6366f1;font-size:15px;margin-top:24px;">7. TERMINATION</h2>
-<p>Either party may terminate this Agreement with 14 days written notice. The Client may terminate immediately for breach of confidentiality without further obligation.</p>
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">3. CONSULTING FEES & INVOICES</h3>
+<p>The Client shall pay the Consultant a consulting fee of <strong>{{salary}}</strong>. Invoices shall be submitted monthly with detailed strategic activity logs and paid within fifteen (15) business days of approval.</p>
+
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">4. CONFIDENTIALITY & NDA</h3>
+<p>The Consultant agrees to keep all Client technologies, strategic details, client files, and software codes strictly confidential for a period of two (2) years following the termination of this contract.</p>
+
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">5. INTELLECTUAL PROPERTY</h3>
+<p>All work products, presentations, strategic models, or source codes developed by the Consultant under this Agreement shall belong solely and exclusively to the Client immediately upon payment of the corresponding fee.</p>
+
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">6. TERMINATION</h3>
+<p>Either party may terminate this Agreement with fourteen (14) days written notice. The Client may terminate immediately for breach of NDA without further obligation.</p>
+
+<h3 style="color:#6366f1;font-size:16px;border-bottom:1px solid #e0e7ff;padding-bottom:6px;margin-top:25px;">7. GOVERNING LAW</h3>
+<p>This Agreement is governed by the laws of India. Courts of Bengaluru, India shall have exclusive jurisdiction.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Consultant Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Client</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Consultant Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Probationary Employment Contract',
         type: 'Employment Agreement',
         category: 'Employment & HR Contracts',
-        description: 'Employment contract for probation period with performance review clause.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #f59e0b;padding-bottom:12px;color:#f59e0b;">PROBATIONARY EMPLOYMENT AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Probationary Employment Agreement is entered into on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> (the "Company") and <strong>{{employee_name}}</strong> (the "Employee").</p>
+        description: 'Employment contract for probation period with performance review and evaluation benchmarks.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#f59e0b;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Probationary Employment Contract</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #f59e0b, #fbbf24);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">1. POSITION & PROBATION PERIOD</h2>
-<p>The Employee is appointed as <strong>{{position}}</strong> in the <strong>{{department}}</strong> department on a probationary basis commencing <strong>{{start_date}}</strong> for a period of <strong>90 days</strong>, ending on <strong>{{end_date}}</strong>.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">2. PERFORMANCE REVIEW</h2>
-<p>The Employee's performance will be formally reviewed at the end of the probation period. Confirmation of employment is subject to satisfactory performance, attendance, and conduct during this period.</p>
+<p>This Probationary Employment Contract is entered into on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">3. COMPENSATION DURING PROBATION</h2>
-<p>During the probation period, the Employee shall receive a gross monthly salary of <strong>{{salary}}</strong>. Benefits and increments applicable to confirmed employees shall apply only upon successful confirmation.</p>
+<div style="background-color:#fffbeb;border-left:4px solid #f59e0b;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+</div>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">4. DUTIES & RESPONSIBILITIES</h2>
-<p>The Employee is expected to perform all assigned duties diligently, comply with Company policies, maintain professional conduct, and meet performance benchmarks set by the reporting manager.</p>
+<div style="background-color:#fffbeb;border-left:4px solid #fbbf24;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Employee:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Employee").</p>
+</div>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">5. TERMINATION DURING PROBATION</h2>
-<p>Either party may terminate this Agreement during the probation period with <strong>7 days</strong> written notice, or immediately in cases of gross misconduct. The Company reserves the right to extend the probation period by up to 30 additional days if required.</p>
+<h3 style="color:#f59e0b;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">1. APPOINTMENT & PROBATION PERIOD</h3>
+<p>The Employee is appointed as <strong>{{position}}</strong> in the <strong>{{department}}</strong> department on a probationary basis commencing <strong>{{start_date}}</strong> for a period of 90 days, ending on <strong>{{end_date}}</strong>.</p>
 
-<h2 style="color:#f59e0b;font-size:15px;margin-top:24px;">6. CONFIDENTIALITY</h2>
-<p>The Employee agrees to maintain complete confidentiality of all Company data, processes, and client information both during and after the probation period.</p>
+<h3 style="color:#f59e0b;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">2. PERFORMANCE REVIEW & CONFIRMATION</h3>
+<p>The Employee's performance, attendance, and conduct will be formally evaluated at the end of the probation period. Confirmation of employment is subject to satisfactory performance review.</p>
+
+<h3 style="color:#f59e0b;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">3. COMPENSATION DURING PROBATION</h3>
+<p>During the probation period, the Employee shall receive a monthly salary of <strong>{{salary}}</strong>. Standard confirmed employee benefits will apply only upon successful confirmation of employment.</p>
+
+<h3 style="color:#f59e0b;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">4. NOTICE AND TERMINATION</h3>
+<p>Either party may terminate this agreement during probation with seven (7) days written notice. The Company reserves the right to terminate immediately for gross misconduct.</p>
+
+<h3 style="color:#f59e0b;font-size:16px;border-bottom:1px solid #fef3c7;padding-bottom:6px;margin-top:25px;">5. CONFIDENTIALITY</h3>
+<p>The Employee agrees to maintain strict confidentiality of all Company data and processes both during and after their probation period.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">HR / Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Employee Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Company</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Employee Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Remote Work Agreement',
         type: 'Remote Work Agreement',
         category: 'Employment & HR Contracts',
-        description: 'Work-from-home policy agreement covering equipment, security, and productivity expectations.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #10b981;padding-bottom:12px;color:#10b981;">REMOTE WORK AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Remote Work Agreement ("Agreement") is made on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> ("Company") and <strong>{{employee_name}}</strong> ("Employee") employed as <strong>{{position}}</strong> in the <strong>{{department}}</strong> department.</p>
+        description: 'Work-from-home policy agreement covering equipment, cybersecurity protocols, and productivity standards.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#10b981;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Remote Work Agreement</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #10b981, #34d399);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">1. REMOTE WORK ARRANGEMENT</h2>
-<p>The Company authorizes the Employee to work remotely from their home or a pre-approved location effective <strong>{{start_date}}</strong>. This arrangement may be modified or revoked with 7 days notice.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">2. WORKING HOURS & AVAILABILITY</h2>
-<p>The Employee shall maintain regular working hours of 9:00 AM to 6:00 PM IST, Monday through Friday, and shall be available via designated communication channels (email, Slack, video calls) during these hours.</p>
+<p>This Remote Work Agreement ("Agreement") is made on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">3. PRODUCTIVITY & DELIVERABLES</h2>
-<p>The Employee is expected to meet all KPIs, deadlines, and deliverables as assigned. Weekly check-ins with the reporting manager are mandatory. Performance metrics shall be tracked via the Company's project management tools.</p>
+<div style="background-color:#f0fdf4;border-left:4px solid #10b981;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#065f46;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+</div>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">4. EQUIPMENT & EXPENSES</h2>
-<p>The Employee is responsible for maintaining a reliable internet connection and appropriate workspace. Company-provided equipment must be used solely for business purposes and returned upon termination of employment.</p>
+<div style="background-color:#f0fdf4;border-left:4px solid #34d399;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#065f46;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Employee:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong>, residing at {{employee_address}} (hereinafter referred to as the "Employee"), employed as <strong>{{position}}</strong> in the <strong>{{department}}</strong> department.</p>
+</div>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">5. DATA SECURITY</h2>
-<p>The Employee shall ensure all Company data is protected using approved security tools (VPN, encrypted storage). Sharing of credentials or Company data with unauthorized persons is strictly prohibited.</p>
+<h3 style="color:#10b981;font-size:16px;border-bottom:1px solid #d1fae5;padding-bottom:6px;margin-top:25px;">1. REMOTE WORK ARRANGEMENT</h3>
+<p>The Company authorizes the Employee to work remotely from their home or a pre-approved location effective <strong>{{start_date}}</strong>. This arrangement is subject to quarterly evaluation and may be modified or revoked with seven (7) days written notice.</p>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">6. COMPENSATION</h2>
-<p>The Employee shall continue to receive a monthly salary of <strong>{{salary}}</strong> as per existing employment terms. No additional allowances for remote work are provided unless separately agreed in writing.</p>
+<h3 style="color:#10b981;font-size:16px;border-bottom:1px solid #d1fae5;padding-bottom:6px;margin-top:25px;">2. AVAILABILITY AND WORKING HOURS</h3>
+<p>The Employee shall maintain regular working hours of 9:00 AM to 6:00 PM IST, Monday through Friday, and shall remain fully reachable via designated communication channels (Slack, Email, Video conferencing) during these hours.</p>
 
-<h2 style="color:#10b981;font-size:15px;margin-top:24px;">7. REVIEW & TERMINATION OF ARRANGEMENT</h2>
-<p>This remote work arrangement shall be reviewed quarterly. The Company reserves the right to require office attendance at any time with reasonable notice.</p>
+<h3 style="color:#10b981;font-size:16px;border-bottom:1px solid #d1fae5;padding-bottom:6px;margin-top:25px;">3. DATA SECURITY PROTOCOLS</h3>
+<p>The Employee shall ensure that all Client and Company data is protected using approved security tools. Remote access must always route through the Company's approved VPN. Sharing credentials or devices with unauthorized persons is strictly prohibited.</p>
+
+<h3 style="color:#10b981;font-size:16px;border-bottom:1px solid #d1fae5;padding-bottom:6px;margin-top:25px;">4. EQUIPMENT & WORK SPACE</h3>
+<p>The Employee is responsible for maintaining a reliable internet connection. Company-provided devices must be used solely for business purposes and returned immediately upon termination of employment.</p>
+
+<h3 style="color:#10b981;font-size:16px;border-bottom:1px solid #d1fae5;padding-bottom:6px;margin-top:25px;">5. COMPENSATION</h3>
+<p>The Employee shall receive a monthly salary of <strong>{{salary}}</strong>. No additional allowances or expenses for remote work are provided unless separately agreed in writing.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Employee Signature</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Company</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Employee Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'MOU – Partnership Agreement',
         type: 'Memorandum of Understanding (MoU)',
         category: 'Business & Corporate Agreements',
-        description: 'Memorandum of Understanding for institutional or business partnerships.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #ec4899;padding-bottom:12px;color:#ec4899;">MEMORANDUM OF UNDERSTANDING (MOU)</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This Memorandum of Understanding is entered into on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> ("Party A") and <strong>{{employee_name}}</strong> ("Party B").</p>
+        description: 'Memorandum of Understanding for institutional or business partnerships detailing areas of joint collaboration.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#ec4899;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Memorandum of Understanding</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #ec4899, #f472b6);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">1. PURPOSE</h2>
-<p>The parties intend to collaborate in the area of <strong>{{position}}</strong> to achieve mutual business objectives, share resources, and leverage combined expertise for the benefit of both organizations.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">2. SCOPE OF COLLABORATION</h2>
-<p>The collaboration shall include joint initiatives, co-branding opportunities, knowledge sharing, and resource pooling as mutually agreed. Specific deliverables and timelines shall be defined in separate Statements of Work.</p>
+<p>This Memorandum of Understanding ("MOU") is entered into on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">3. DURATION</h2>
-<p>This MOU shall be effective from <strong>{{start_date}}</strong> to <strong>{{end_date}}</strong> and may be renewed by written mutual agreement. Either party may withdraw with 30 days written notice.</p>
+<div style="background-color:#fdf2f8;border-left:4px solid #ec4899;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#9d174d;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">First Party:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong> ("Party A"), having its registered office at {{company_address}}.</p>
+</div>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">4. FINANCIAL TERMS</h2>
-<p>Unless separately agreed, each party shall bear its own costs. Revenue sharing, if applicable, shall be defined at <strong>{{salary}}</strong> or as per a separately executed commercial agreement.</p>
+<div style="background-color:#fdf2f8;border-left:4px solid #f472b6;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#9d174d;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">Second Party:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong> ("Party B"), residing/located at {{employee_address}}.</p>
+</div>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">5. CONFIDENTIALITY</h2>
-<p>Both parties agree to maintain strict confidentiality regarding all shared information, strategies, client data, and proprietary materials. This obligation shall survive for 3 years post-termination.</p>
+<h3 style="color:#ec4899;font-size:16px;border-bottom:1px solid #fce7f3;padding-bottom:6px;margin-top:25px;">1. PURPOSE & COOPERATIVE SCOPE</h3>
+<p>The parties intend to collaborate on <strong>{{position}}</strong> initiatives to enhance <strong>{{department}}</strong> research and business collaboration.</p>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">6. NON-BINDING NATURE</h2>
-<p>This MOU represents a statement of intent and does not constitute a legally binding contract unless supplemented by a formal agreement. Neither party shall have any legal obligation to the other solely on the basis of this MOU.</p>
+<h3 style="color:#ec4899;font-size:16px;border-bottom:1px solid #fce7f3;padding-bottom:6px;margin-top:25px;">2. DURATION</h3>
+<p>This MOU is effective from <strong>{{start_date}}</strong> to <strong>{{end_date}}</strong>. Either party may terminate their participation with thirty (30) days written notice.</p>
 
-<h2 style="color:#ec4899;font-size:15px;margin-top:24px;">7. DISPUTE RESOLUTION</h2>
-<p>Any disputes arising from this MOU shall be resolved through mutual discussion and mediation before resorting to legal proceedings.</p>
+<h3 style="color:#ec4899;font-size:16px;border-bottom:1px solid #fce7f3;padding-bottom:6px;margin-top:25px;">3. FINANCIAL TERMS</h3>
+<p>This MOU is non-binding and carries no financial obligations. Any specific commercial projects or revenue sharing arrangements (such as <strong>{{salary}}</strong>) shall be governed by separate, legally binding agreements.</p>
+
+<h3 style="color:#ec4899;font-size:16px;border-bottom:1px solid #fce7f3;padding-bottom:6px;margin-top:25px;">4. CONFIDENTIALITY</h3>
+<p>Both parties agree to maintain strict confidentiality of all shared business models, strategies, and proprietary technologies during and for three (3) years post-termination.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized Signatory</p></div>
-  <div><p><strong>{{employee_name}}</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Partner Representative</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For Party A</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For Party B</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Representative</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'Official Offer Letter',
         type: 'Offer Letter',
         category: 'Employment & HR Contracts',
-        description: 'Standard professional offer letter with compensation, role details, and joining requirements.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #3b82f6;padding-bottom:12px;color:#3b82f6;">OFFICIAL OFFER LETTER</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p><strong>Date:</strong> {{start_date}}</p>
-<p><strong>To:</strong> {{employee_name}}</p>
-<p><strong>Address:</strong> {{employee_address}}</p>
-<br/>
+        description: 'Standard professional offer letter with compensation breakdown table, onboarding requirements, and acceptance conditions.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#3b82f6;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Official Offer of Employment</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #3b82f6, #60a5fa);margin:15px auto 0 auto;width:150px;"></div>
+</div>
+
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
+
 <p>Dear <strong>{{employee_name}}</strong>,</p>
-<p>We are thrilled to offer you the full-time position of <strong>{{position}}</strong> in our <strong>{{department}}</strong> department at <strong>The Contractum Private Limited</strong>. We were incredibly impressed by your background and are confident you will make a fantastic addition to our team!</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">1. POSITION & START DATE</h2>
-<p>You will be reporting to the Department Head. Your anticipated start date is <strong>{{start_date}}</strong>, and your primary work location will be our main office in {{company_city}} (or Remote as mutually agreed).</p>
+<p>We are delighted to extend to you an offer of employment with <strong>The Contractum Private Limited</strong>. We were highly impressed by your qualifications, skills, and experience during the interview process, and we are confident that you will play a vital role in our growth and success.</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">2. COMPENSATION & BENEFITS</h2>
-<p>Your starting salary will be <strong>{{salary}}</strong> per annum/month, subject to applicable tax deductions. In addition, you will be eligible for standard company benefits including health insurance, paid time off, and performance bonuses as detailed in the Employee Handbook.</p>
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">1. POSITION & REPORTING RELATIONSHIP</h3>
+<p>You are offered the position of <strong>{{position}}</strong> within the <strong>{{department}}</strong> department. In this role, you will report directly to the Department Head or such other supervisor as designated by the Company. Your primary place of work will be our office in {{company_city}}. The standard working hours are from 9:00 AM to 6:00 PM, Monday through Friday.</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">3. CONDITIONS OF EMPLOYMENT</h2>
-<p>This offer is contingent upon the successful completion of a background check, reference checks, and your ability to provide proof of identity and eligibility to work in the relevant jurisdiction. You will also be required to sign a Confidentiality and Non-Disclosure Agreement (NDA) on your start date.</p>
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">2. COMPENSATION & SALARY BREAKDOWN</h3>
+<p>Your Total Cost to Company (CTC) will be <strong>{{salary}}</strong>, subject to applicable tax deductions (TDS) and statutory contributions. The detailed breakdown of your salary is structured as follows:</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">4. AT-WILL EMPLOYMENT (If Applicable)</h2>
-<p>Please note that this offer letter is not a contract of guaranteed employment for any specific duration. Your employment will be subject to a standard probation period as per company policy.</p>
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-family: sans-serif; font-size: 13px;">
+  <thead>
+    <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+      <th style="padding: 10px; text-align: left; font-weight: 700; color: #1e3a8a;">Salary Component</th>
+      <th style="padding: 10px; text-align: right; font-weight: 700; color: #1e3a8a;">Percentage / Detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 10px; color: #334155;">Basic Salary</td>
+      <td style="padding: 10px; text-align: right; color: #334155;">50% of Base CTC</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 10px; color: #334155;">House Rent Allowance (HRA)</td>
+      <td style="padding: 10px; text-align: right; color: #334155;">20% of Base CTC</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 10px; color: #334155;">Special Allowance</td>
+      <td style="padding: 10px; text-align: right; color: #334155;">Balancing Component</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #e2e8f0;">
+      <td style="padding: 10px; color: #334155;">Provident Fund (PF) Contribution</td>
+      <td style="padding: 10px; text-align: right; color: #334155;">As per statutory guidelines</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #cbd5e1; font-weight: 700;">
+      <td style="padding: 10px; color: #0f172a;">Total CTC (Cost to Company)</td>
+      <td style="padding: 10px; text-align: right; color: #0f172a;">{{salary}}</td>
+    </tr>
+  </tbody>
+</table>
 
-<br/>
-<p>If you choose to accept this offer, please sign and return this letter by <strong>{{end_date}}</strong>. If we do not receive your signed acceptance by this date, the offer will be automatically withdrawn.</p>
-<p>We are very excited to welcome you to the team and look forward to a mutually rewarding professional relationship.</p>
+<p>You will also be eligible for standard medical insurance benefits, paid time off, and discretionary performance bonuses in accordance with the Company policy in force.</p>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">3. PROBATION & REVIEW PERIOD</h3>
+<p>You will be on probation for a period of six (6) months from your start date. Upon satisfactory completion of the probation period, your employment will be confirmed in writing. The notice period during probation shall be fifteen (15) days on either side, and thirty (30) days upon confirmation.</p>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">4. ONBOARDING DOCUMENTS & CONTINGENCIES</h3>
+<p>This offer is strictly contingent upon satisfactory background reference checks and submission of required self-attested documents: Past experience letters, relieves letters, last 3 months salary slips, educational certificates, and Government photo IDs.</p>
+
+<p>Please confirm your acceptance of this offer by signing and returning a copy of this letter by <strong>{{end_date}}</strong>. Should you fail to submit your acceptance by this date, this offer will stand automatically withdrawn.</p>
 
 <br/><br/>
-<div style="display:flex;justify-content:space-between;margin-top:48px;">
-  <div><p><strong>For The Contractum Pvt. Ltd.</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">Authorized HR Signatory</p></div>
-  <div><p><strong>Accepted By:</strong></p><br/><br/><p style="border-top:1px solid #333;padding-top:4px;width:200px;">{{employee_name}}</p></div>
-</div>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Company</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized HR Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Employee Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+    </td>
+  </tr>
+</table>
 </div>`
     },
     {
         name: 'SaaS Agreement',
         type: 'SaaS Agreement',
         category: 'Software & IT Contracts',
-        description: 'Software-as-a-Service subscription, hosting, service levels, and customer obligations.',
-        content: `<div style="font-family:Georgia,serif;max-width:800px;margin:0 auto;color:#1a1a1a;line-height:1.8;">
-<h1 style="text-align:center;font-size:22px;font-weight:700;border-bottom:2px solid #3b82f6;padding-bottom:12px;color:#3b82f6;">SOFTWARE-AS-A-SERVICE (SaaS) AGREEMENT</h1>
-<p style="text-align:center;color:#666;font-size:13px;">The Contractum Private Limited</p>
-<br/>
-<p>This SaaS Agreement ("Agreement") is made on <strong>{{start_date}}</strong> between <strong>The Contractum Private Limited</strong> ("Provider") and <strong>{{employee_name}}</strong> ("Customer").</p>
+        description: 'Software-as-a-Service subscription agreement outlining access license, platform fees, billing schedule, and data security.',
+        content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:26px;font-weight:800;color:#3b82f6;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">SaaS Subscription Agreement</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #3b82f6, #60a5fa);margin:15px auto 0 auto;width:150px;"></div>
+</div>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">1. SERVICES & LICENSE</h2>
-<p>Provider grants Customer a non-exclusive, non-transferable right to access and use the SaaS platform for the role of <strong>{{position}}</strong>. Customer agrees to use the platform solely for internal business operations.</p>
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">2. FEES & BILLING</h2>
-<p>Customer shall pay monthly subscription fees of <strong>{{salary}}</strong>. All invoice payments are due within 30 days of the invoice date.</p>
+<p>This SaaS Subscription Agreement ("Agreement") is executed on <strong>{{start_date}}</strong> by and between:</p>
 
-<h2 style="color:#3b82f6;font-size:15px;margin-top:24px;">3. DATA PRIVACY & SECURITY</h2>
-<p>Provider will maintain standard physical and technical security measures to protect Customer data in compliance with standard regulations.</p>
+<div style="background-color:#f0fdfa;border-left:4px solid #3b82f6;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#1e3a8a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Provider:</p>
+  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong> ("Provider"), having its principal office at {{company_address}}.</p>
+</div>
+
+<div style="background-color:#f0fdfa;border-left:4px solid #60a5fa;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 10px 0;font-weight:700;color:#1e3a8a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Customer:</p>
+  <p style="margin:0;font-size:14px;"><strong>{{employee_name}}</strong> ("Customer"), residing/located at {{employee_address}}.</p>
+</div>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">1. ACCESS LICENSE & SAAS SERVICES</h3>
+<p>Provider grants Customer a non-exclusive, non-transferable subscription license to use the cloud-hosted platform for the role of <strong>{{position}}</strong> in the <strong>{{department}}</strong> division.</p>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">2. SUBSCRIPTION FEES</h3>
+<p>The agreed monthly subscription fee is <strong>{{salary}}</strong>. Payments are billed in advance at the start of each billing cycle. Customer agrees to pay all fees within thirty (30) days of the invoice date.</p>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">3. DATA PRIVACY & DATA SECURITY</h3>
+<p>Provider will maintain appropriate physical, administrative, and technical security measures to protect Customer data in compliance with standard regulations. Customer owns all database content entered.</p>
+
+<h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">4. TERMINATION AND SUSPENSION</h3>
+<p>Customer may cancel the subscription at any time. Provider reserves the right to suspend platform access for payments overdue by more than fifteen (15) days.</p>
+
+<br/><br/>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Provider</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Customer</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signature</p>
+    </td>
+  </tr>
+</table>
 </div>`
     }
 ];
+
 
 // ---------- Templates ----------
 
 // Get all templates (returns all for admin, seeds professional ones if DB is empty)
 router.get('/templates', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
-        let templates = await ContractTemplate.find({ isActive: true });
-        if (templates.length < PROFESSIONAL_TEMPLATES.length) {
-            // Use bulkWrite with upsert to avoid duplicate key errors
-            const bulkOps = PROFESSIONAL_TEMPLATES.map(template => ({
-                updateOne: {
-                    filter: { name: template.name },
-                    update: { $setOnInsert: { ...template, isActive: true } },
-                    upsert: true
-                }
-            }));
-            await ContractTemplate.bulkWrite(bulkOps);
-            // Fix any existing templates that missed the default value
-            await ContractTemplate.updateMany({ isActive: { $exists: false } }, { $set: { isActive: true } });
-            templates = await ContractTemplate.find({ isActive: true });
-        }
+        const bulkOps = PROFESSIONAL_TEMPLATES.map(template => ({
+            updateOne: {
+                filter: { name: template.name },
+                update: { $set: { ...template, isActive: true } },
+                upsert: true
+            }
+        }));
+        await ContractTemplate.bulkWrite(bulkOps);
+        await ContractTemplate.updateMany({ isActive: { $exists: false } }, { $set: { isActive: true } });
+        const templates = await ContractTemplate.find({ isActive: true });
         res.json(templates);
     } catch (err) {
-        console.error("Error fetching/seeding templates:", err);
-        res.status(500).json({ message: 'Error fetching templates', error: err.message });
+        console.error("Error syncing templates:", err);
+        res.status(500).json({ message: 'Error syncing templates', error: err.message });
     }
 });
 
@@ -624,6 +900,7 @@ router.put('/:id/sign', protect, async (req, res) => {
             isSigned: true,
             signedAt: new Date(),
             signatureName: req.body.signatureName,
+            signatureImage: req.body.signatureImage,
             signatureIp: req.ip
         };
         contract.status = 'Active';
@@ -633,6 +910,37 @@ router.put('/:id/sign', protect, async (req, res) => {
         res.json(contract);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+// ── PDF Download ───────────────────────────────────────────────
+router.get('/:id/download-pdf', protect, async (req, res) => {
+    try {
+        const contract = await Contract.findById(req.params.id)
+            .populate('employeeId', 'name firstName lastName email');
+        if (!contract) return res.status(404).json({ message: 'Contract not found' });
+
+        const isEmployee = contract.employeeId && req.user && contract.employeeId._id.toString() === req.user._id.toString();
+        const category = getContractRoleCategory(req.user);
+        const isAdmin = ['Manager', 'HR', 'Legal', 'SuperAdmin'].includes(category);
+
+        if (!isAdmin && !isEmployee) {
+            return res.status(403).json({ message: 'You are not authorized to download this contract.' });
+        }
+
+        const employeeName = contract.employeeId 
+            ? (contract.employeeId.name || `${contract.employeeId.firstName || ''} ${contract.employeeId.lastName || ''}`.trim()) 
+            : (contract.customRecipient?.name || 'Recipient');
+            
+        const pdfBuffer = await generateContractPDF(contract, employeeName);
+        const pdfName = `${contract.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${pdfName}"`);
+        res.send(pdfBuffer);
+    } catch (err) {
+        console.error('PDF download error:', err);
+        res.status(500).json({ message: 'Failed to download PDF', error: err.message });
     }
 });
 
@@ -930,6 +1238,19 @@ function generateContractPDF(contract, employeeName) {
                    .text(`Signed By: ${contract.signature.signatureName}`)
                    .text(`Signed At: ${new Date(contract.signature.signedAt).toLocaleString()}`)
                    .text(`IP Address: ${contract.signature.signatureIp || 'N/A'}`);
+
+                if (contract.signature.signatureImage) {
+                    try {
+                        doc.moveDown(1);
+                        doc.text('Signature Drawing:');
+                        doc.moveDown(0.5);
+                        const base64Data = contract.signature.signatureImage.replace(/^data:image\/\w+;base64,/, "");
+                        const dataBuffer = Buffer.from(base64Data, 'base64');
+                        doc.image(dataBuffer, { width: 150 });
+                    } catch (imageErr) {
+                        console.error('Failed to embed signature image in PDF:', imageErr);
+                    }
+                }
             }
             
             doc.end();
@@ -940,17 +1261,27 @@ function generateContractPDF(contract, employeeName) {
 }
 
 async function sendContractEmailHelper(contract) {
-    let employee = null;
-    if (contract.employeeId && contract.employeeId.email) {
-        employee = contract.employeeId;
-    } else {
-        const User = require('../models/User');
-        employee = await User.findById(contract.employeeId);
+    let employeeName = 'Recipient';
+    let toEmail = null;
+
+    if (contract.employeeId) {
+        let employee = null;
+        if (contract.employeeId.email) {
+            employee = contract.employeeId;
+        } else {
+            const User = require('../models/User');
+            employee = await User.findById(contract.employeeId);
+        }
+        if (employee && employee.email) {
+            toEmail = employee.email;
+            employeeName = employee.name || `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Employee';
+        }
+    } else if (contract.customRecipient && contract.customRecipient.email) {
+        toEmail = contract.customRecipient.email;
+        employeeName = contract.customRecipient.name || 'Recipient';
     }
-    if (!employee || !employee.email) return false;
-    
-    const toEmail = employee.email;
-    const employeeName = employee.name || `${employee.firstName || ''} ${employee.lastName || ''}`.trim() || 'Employee';
+
+    if (!toEmail) return false;
     
     const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE || 'gmail',
@@ -960,15 +1291,21 @@ async function sendContractEmailHelper(contract) {
     const pdfBuffer = await generateContractPDF(contract, employeeName);
     const pdfName = `${contract.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
     
-    let subject = `Your Contract: ${contract.title}`;
-    let introText = `Please find your contract document attached below. Review it carefully and contact HR if you have any questions.`;
+    let subject = `Congratulations from The Contractum: ${contract.title}`;
+    let congratulatoryHeader = "Congratulations & Warm Welcome!";
+    let congratulatoryMessage = `We want to extend our heartfelt congratulations to you on this milestone in your professional association with <strong>The Contractum</strong>. We wish you the absolute best and look forward to a mutually beneficial and highly successful relationship.`;
+    let actionInstructions = `Please find your contract/agreement document attached below. We request you to review it carefully. If you have any questions or require clarifications, please contact our Human Resources department.`;
     
     if (contract.status === 'Pending_Signature') {
-        subject = `Awaiting Your Signature: ${contract.title}`;
-        introText = `Your contract is ready for your signature. Please log into the portal to sign it digitally. A copy of the contract is attached as a PDF.`;
+        subject = `Congratulations & Action Required - Offer Letter: ${contract.title}`;
+        congratulatoryHeader = "Congratulations & Warm Welcome!";
+        congratulatoryMessage = `On behalf of the entire team at <strong>The Contractum</strong>, we want to congratulate you on your selection! We are absolutely thrilled about the prospect of you joining us. We believe your unique skills, background, and energy will be a fantastic addition to our organization, and we look forward to building a highly successful future together.`;
+        actionInstructions = `Your official contract is ready for your signature. Please log into the portal to review the terms and sign the document digitally at your earliest convenience. A copy of the contract is attached below as a PDF for your convenience.`;
     } else if (contract.status === 'Active') {
-        subject = `Contract Executed & Active: ${contract.title}`;
-        introText = `Congratulations! Your contract has been signed and is now active. A copy of the executed contract with digital signature verification is attached as a PDF.`;
+        subject = `Warm Welcome to the Team! Contract Active: ${contract.title}`;
+        congratulatoryHeader = "Welcome to The Contractum Family!";
+        congratulatoryMessage = `It is with great pleasure that we officially welcome you to <strong>The Contractum</strong>! Your contract has been signed and is now fully executed and active. We wish you an incredibly rewarding, productive, and inspiring journey ahead with us. We are excited to collaborate and achieve new milestones together.`;
+        actionInstructions = `A copy of your fully executed agreement with digital signature verification is attached to this email as a PDF for your official records.`;
     }
     
     await transporter.sendMail({
@@ -976,22 +1313,64 @@ async function sendContractEmailHelper(contract) {
         to: toEmail,
         subject: subject,
         html: `
-<div style="font-family:Arial,sans-serif;max-width:650px;margin:0 auto;background:#f8fafc;padding:32px;border-radius:16px;">
-  <div style="background:#1e5cdc;color:white;padding:24px 32px;border-radius:12px 12px 0 0;margin:-32px -32px 32px;">
-    <h1 style="margin:0;font-size:20px;">The Contractum</h1>
-    <p style="margin:4px 0 0;opacity:0.8;font-size:13px;">Official Contract Notification</p>
+<div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;max-width:650px;margin:0 auto;background-color:#f1f5f9;padding:40px 20px;">
+  <div style="background:linear-gradient(135deg, #1e5cdc 0%, #4f46e5 100%);color:white;padding:32px;border-radius:16px 16px 0 0;text-align:center;box-shadow:0 4px 10px rgba(30,92,220,0.15);">
+    <h1 style="margin:0;font-size:26px;font-weight:800;letter-spacing:-0.5px;text-transform:uppercase;">The Contractum</h1>
+    <p style="margin:6px 0 0;opacity:0.85;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Official Contract Notification</p>
   </div>
-  <p style="font-size:16px;">Dear <strong>${employeeName}</strong>,</p>
-  <p>${introText}</p>
-  <div style="background:white;border-radius:12px;padding:24px;margin:20px 0;border:1px solid #e5e7eb;">
-    <h2 style="color:#1e5cdc;font-size:16px;margin:0 0 8px;">${contract.title}</h2>
-    <p style="color:#6b7280;font-size:13px;margin:0;">Type: ${contract.type} | Status: ${contract.status}</p>
+  
+  <div style="background-color:#ffffff;padding:40px 32px;border-radius:0 0 16px 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);">
+    <h2 style="color:#0f172a;font-size:20px;font-weight:700;margin-top:0;margin-bottom:20px;">Dear ${employeeName},</h2>
+    
+    <div style="background-color:#eff6ff;border-left:4px solid #1e5cdc;padding:20px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+      <h3 style="margin:0 0 8px 0;color:#1e5cdc;font-size:15px;font-weight:700;">✨ ${congratulatoryHeader}</h3>
+      <p style="margin:0;font-size:14px;color:#1e3a8a;line-height:1.6;text-align:justify;">
+        ${congratulatoryMessage}
+      </p>
+    </div>
+
+    <p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:24px;text-align:justify;">
+      ${actionInstructions}
+    </p>
+
+    <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:28px;">
+      <h4 style="color:#1e5cdc;font-size:15px;font-weight:700;margin:0 0 12px 0;text-transform:uppercase;letter-spacing:0.5px;">Document Summary</h4>
+      <table style="width:100%;font-size:13px;color:#475569;border-collapse:collapse;">
+        <tr>
+          <td style="padding:6px 0;font-weight:600;color:#0f172a;width:120px;">Title:</td>
+          <td style="padding:6px 0;">${contract.title}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-weight:600;color:#0f172a;">Category:</td>
+          <td style="padding:6px 0;">${contract.category}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-weight:600;color:#0f172a;">Type:</td>
+          <td style="padding:6px 0;">${contract.type}</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 0;font-weight:600;color:#0f172a;">Status:</td>
+          <td style="padding:6px 0;"><span style="background-color:#dcfce7;color:#15803d;padding:2px 8px;border-radius:9999px;font-weight:700;font-size:11px;text-transform:uppercase;">${contract.status.replace('_', ' ')}</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="text-align:center;margin:32px 0 16px 0;">
+      <a href="http://localhost:5173" style="display:inline-block;background-color:#1e5cdc;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:14px;box-shadow:0 4px 6px rgba(30,92,220,0.25);transition:background-color 0.2s;">
+        Go to Portal
+      </a>
+    </div>
+
+    <hr style="border:0;border-top:1px solid #e2e8f0;margin:32px 0 24px 0;" />
+
+    <p style="font-size:14px;color:#475569;line-height:1.6;margin:0 0 4px 0;">Warmest regards,</p>
+    <p style="font-size:14px;color:#0f172a;font-weight:700;margin:0 0 2px 0;">The Talent Acquisition & HR Team</p>
+    <p style="font-size:13px;color:#64748b;margin:0;">The Contractum Private Limited</p>
   </div>
-  <div style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin:20px 0;line-height:1.6;max-height: 400px; overflow-y: auto;">
-    ${contract.content}
-  </div>
-  <p style="color:#9ca3af;font-size:12px;text-align:center;margin-top:32px;">
-    This is an automated email from The Contractum system. Please do not reply to this email.
+  
+  <p style="color:#94a3b8;font-size:11px;text-align:center;margin-top:24px;line-height:1.5;">
+    This is an automated administrative notification from The Contractum platform.<br />
+    Please do not reply directly to this email. For any support, contact hr@thecontractum.com.
   </p>
 </div>
         `,
