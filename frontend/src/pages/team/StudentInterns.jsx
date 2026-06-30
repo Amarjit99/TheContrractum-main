@@ -4,13 +4,20 @@ import intern from "../../assets/intern.webp";
 import venkateshImg from "../../assets/venkatesh.jpeg";
 import ankitImg from "../../assets/ankit.png";
 import amarjitImg from "../../assets/amarjit.jpeg";
-
+import rahul from "../../assets/rahul.jpeg";
 import { useState, useEffect } from 'react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const staticInterns = [
         {
+            name: "Rahul Kumar Rajak",
+            role: "Software Web Development Project Intern",
+            school: "Pondicherry University",
+            image: rahul,
+            quote: "Working on real-world projects from day one has been an incredible learning curve.",
+            tags: ["React", "Express.js", "Web Devolopement", "MongoDB", "Node.js"],
+        },{
             name: "Puttoju Venkatesh",
             role: "Software Web Development Project Intern",
             school: "Pondicherry University",
@@ -95,9 +102,8 @@ export default function StudentInterns() {
                             Fueling growth, innovation, and fresh perspectives. Meet the bright minds shaping tomorrow.
                         </p>
                         <Link to="/contact/touch">
-                            <button className="bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold px-10 py-4 rounded-xl hover:from-orange-700 hover:to-red-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                                Join Our Team
-                            </button>
+                            
+                            
                         </Link>
                     </div>
                 </div>
