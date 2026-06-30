@@ -3,7 +3,7 @@ import { Target, Rocket, Users, ShieldCheck, Award, Rocket as RocketIcon, Lightb
 
 const WorkingProcessItem = ({ title, desc, icon }) => (
     <div className="bg-white/5 backdrop-blur-sm p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition duration-300">
-        <div className="bg-white p-4 rounded-2xl w-fit mb-6 shadow-md">{icon}</div>
+        <div className="mb-6">{icon}</div>
         <h4 className="text-2xl font-bold mb-4">{title}</h4>
         <p className="text-gray-400 leading-relaxed text-sm">{desc}</p>
     </div>
@@ -11,12 +11,12 @@ const WorkingProcessItem = ({ title, desc, icon }) => (
 
 export default function AboutUs() {
     const workingProcess = [
-        { title: "Client-Focused", desc: "Understanding client’s needs, for both Urban and Rural India, delivering solutions that best suit them.", icon: <Users className="text-primary w-8 h-8" /> },
-        { title: "Trusted by Industry", desc: "Recognized for performance and flexibility by independent analysts and the IT industry.", icon: <ShieldCheck className="text-primary w-8 h-8" /> },
-        { title: "Generate Confidence", desc: "Our skilled team helps convince customers of project advantages, fostering trust and ease of work.", icon: <Award className="text-primary w-8 h-8" /> },
-        { title: "Technology Integrated", desc: "Successful integration of modern technology, providing end-to-end business services nationwide.", icon: <RocketIcon className="text-primary w-8 h-8" /> },
-        { title: "Focus on Innovation", desc: "Committed to adopting innovative ideas with a dedicated R&D team for simpler delivery systems.", icon: <Lightbulb className="text-primary w-8 h-8" /> },
-        { title: "PAN India Presence", desc: "Rapidly achieving presence in every corner of India, serving citizens through a large connectivity platform.", icon: <Globe className="text-primary w-8 h-8" /> },
+        { title: "Discover & Understand", desc: "We begin by understanding your goals, constraints, and market realities to define a practical roadmap.", icon: <Users className="text-primary w-8 h-8" /> },
+        { title: "Plan with Precision", desc: "Our experts translate requirements into a clear execution plan with measurable milestones and outcomes.", icon: <ShieldCheck className="text-primary w-8 h-8" /> },
+        { title: "Build with Confidence", desc: "We deliver with quality-first engineering practices, transparent communication, and accountable ownership.", icon: <Award className="text-primary w-8 h-8" /> },
+        { title: "Integrate Technology", desc: "Modern technologies are integrated seamlessly to create scalable, secure, and future-ready solutions.", icon: <RocketIcon className="text-primary w-8 h-8" /> },
+        { title: "Innovate Continuously", desc: "Our teams continuously optimize performance and experience through research, feedback, and iteration.", icon: <Lightbulb className="text-primary w-8 h-8" /> },
+        { title: "Scale Nationwide", desc: "With strong delivery capabilities across India, we support consistent execution at every stage of growth.", icon: <Globe className="text-primary w-8 h-8" /> },
     ];
 
     return (
@@ -77,6 +77,9 @@ export default function AboutUs() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
                     <h2 className="text-4xl md:text-5xl font-black text-center mb-16">Our Working Process</h2>
+                    <p className="max-w-3xl mx-auto text-center text-gray-300 mb-12 text-lg">
+                        A structured approach that combines strategy, execution, and continuous improvement to deliver dependable results.
+                    </p>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {workingProcess.map((item, idx) => <WorkingProcessItem key={idx} {...item} />)}
                     </div>

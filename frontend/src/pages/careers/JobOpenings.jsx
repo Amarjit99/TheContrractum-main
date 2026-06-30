@@ -107,8 +107,9 @@ export default function JobOpenings() {
             type: "Full-Time",
             posted: "Active",
             tags: ["Scalability", "Architecture"]
-        },
-    ];
+        }
+   
+];
 
     // Merge live (admin-posted) jobs first, then static
     const dynamicJobTitles = new Set(liveJobs.map(j => (j.title || '').toLowerCase()));
@@ -118,11 +119,13 @@ export default function JobOpenings() {
         ...filteredStaticJobs
     ];
 
-    // Dynamic filter options (include values from live jobs)
+    // Dynamic filter options (include values from live and static jobs)
     const liveDepts = liveJobs.map(j => j.department).filter(Boolean);
     const liveLocs = liveJobs.map(j => j.location).filter(Boolean);
-    const departments = ["All", ...new Set(["Marketing", "Software Developer", "YTDP", ...liveDepts])];
-    const locations = ["All", ...new Set(["India", "Kota, Rajasthan", "Remote", "Worldwide", ...liveLocs])];
+    const staticDepts = staticJobs.map(j => j.department).filter(Boolean);
+    const departments = ["All", ...new Set([...staticDepts, ...liveDepts])];
+    const locations = ["All", ...new Set(["India", "Kota, Rajasthan", "Remote", ...liveLocs])];
+    
 
     const filteredJobs = allJobs.filter(job => {
         const matchDept = filterDepartment === "All" || job.department === filterDepartment;
@@ -155,9 +158,9 @@ export default function JobOpenings() {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
                 <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full text-center sm:text-left">
                     <div className="max-w-3xl">
-                        <span className="inline-block px-4 py-2 rounded-full bg-red-500/20 text-white text-sm font-bold uppercase tracking-widest mb-6 border border-red-500/30 backdrop-blur-md">
+                        {/* <span className="inline-block px-4 py-2 rounded-full bg-red-500/20 text-white text-sm font-bold uppercase tracking-widest mb-6 border border-red-500/30 backdrop-blur-md">
                             We are hiring!
-                        </span>
+                        </span> */}
                         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 leading-tight text-white drop-shadow-2xl">
                             Are you ready to do the <span className="text-red-500">best work</span> of your life?
                         </h1>
@@ -317,7 +320,7 @@ export default function JobOpenings() {
             </div>
 
             {/* YTDP Highlight */}
-            <div className="bg-white py-24">
+            {/* <div className="bg-white py-24">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="bg-[#001f3f] rounded-[3rem] p-10 md:p-20 text-white relative overflow-hidden shadow-2xl">
                         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
@@ -338,15 +341,15 @@ export default function JobOpenings() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Interview Process */}
             <div className="bg-gray-50 py-24">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="text-center mb-20">
-                        <span className="inline-block px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-black uppercase tracking-widest mb-4">
+                        {/* <span className="inline-block px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-black uppercase tracking-widest mb-4">
                             Our Method
-                        </span>
+                        </span> */}
                         <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-6 font-serif underline decoration-red-600 decoration-8 underline-offset-8">How We Hire</h2>
                     </div>
 

@@ -29,14 +29,14 @@ export default function Leadership() {
                         The visionaries and strategists guiding The Contractum towards a smarter, more connected future
                     </p>
                     <div className="flex flex-wrap gap-4 mb-10">
-                        <Link to="/company/leadership/visionary" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">
+                        {/* <Link to="/company/leadership/visionary" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">
                             <Target className="w-5 h-5 text-white" />
                             <p className="text-sm font-semibold text-white">Visionary Leadership</p>
                         </Link>
                         <Link to="/company/leadership/strategic-excellence" className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30 hover:bg-white/20 hover:border-white/60 transition-all duration-300 group">
                             <Sparkles className="w-5 h-5 text-white" />
                             <p className="text-sm font-semibold text-white">Strategic Excellence</p>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@ export default function Leadership() {
                         <p className="text-gray-700 text-lg leading-relaxed mb-6">
                             Our founders have pioneered innovation and established the core values that drive our organization forward.
                         </p>
-                        <Link to="/company/leadership/founders" className="group inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
+                        <Link to="/company/founders" className="group inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold shadow-lg hover:shadow-2xl">
                             Meet Our Founders
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                         </Link>

@@ -44,14 +44,7 @@ export default function OurClients() {
 
   const [startIndex, setStartIndex] = useState(0);
 
-  // Auto rotate every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStartIndex((prev) => (prev + 1) % clients.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [clients.length]);
+  // Auto-rotation removed; navigation is manual via Prev/Next buttons
 
   // Get 3 visible clients
   const visibleClients = Array.from({ length: 3 }, (_, i) =>
@@ -68,11 +61,32 @@ export default function OurClients() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
 
+        {/* Prev/Next Overlay Buttons */}
+        {clients.length > 0 && (
+          <>
+            <button
+              aria-label="Previous clients"
+              onClick={() => setStartIndex((prev) => (prev - 1 + clients.length) % clients.length)}
+              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-30 items-center justify-center w-10 h-10 bg-white text-primary border border-primary hover:bg-primary/10 transition-shadow shadow-md rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              ←
+            </button>
+
+            <button
+              aria-label="Next clients"
+              onClick={() => setStartIndex((prev) => (prev + 1) % clients.length)}
+              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-30 items-center justify-center w-10 h-10 bg-white text-primary hover:bg-primary-dark transition-shadow shadow-md rounded-full focus:outline-none focus:ring-2 focus:ring-primary-dark"
+            >
+              →
+            </button>
+          </>
+        )}
+
         {/* Top Label */}
         <div className="mb-4">
-          <p className="text-primary uppercase tracking-widest text-sm font-semibold border-b-2 border-primary inline-block pb-1">
+          {/* <p className="text-primary uppercase tracking-widest text-sm font-semibold border-b-2 border-primary inline-block pb-1">
             Our Clients
-          </p>
+          </p> */}
         </div>
 
         {/* Heading */}

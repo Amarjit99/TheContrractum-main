@@ -40,12 +40,12 @@ export default function OurCulture() {
   });
 
   const circles = [
-    { label: "Culture of\nPerformance", color: "bg-green-500", deg: 270 },
-    { label: "Rewarding\nIdeas!", color: "bg-orange-500", deg: 330 },
-    { label: "The\nContractum", color: "bg-blue-600", deg: 30 },
-    { label: "Open\nCommunication", color: "bg-indigo-600", deg: 90 },
-    { label: "Pride in\nWork", color: "bg-teal-500", deg: 150 },
-    { label: "Boundaryless\nOrganization", color: "bg-violet-500", deg: 210 },
+    { label: "Culture of Performance", color: "bg-green-500", deg: 270 },
+    { label: "Rewarding Ideas", color: "bg-orange-500", deg: 330 },
+    { label: "Heart of Contractum", color: "bg-blue-600", deg: 30 },
+    { label: "Open Communication", color: "bg-indigo-600", deg: 90 },
+    { label: "Pride in Our Work", color: "bg-teal-500", deg: 150 },
+    { label: "Boundaryless Collaboration", color: "bg-violet-500", deg: 210 },
   ];
 
   return (
@@ -54,9 +54,9 @@ export default function OurCulture() {
 
         {/* Top Tag */}
         <div className="text-center mb-8">
-          <p className="text-primary uppercase tracking-widest text-sm font-semibold">
+          {/* <p className="text-primary uppercase tracking-widest text-sm font-semibold">
             Our Culture
-          </p>
+          </p> */}
         </div>
 
         {/* Heading */}

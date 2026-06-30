@@ -639,7 +639,8 @@ export default function JobApplication() {
                     </div>
 
                     {/* Application Form Sidebar */}
-                    <div className="lg:col-span-1">
+                <div className="grid lg:grid-cols-30 gap-8">
+    <div className="lg:col-span-15">
                         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-24">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Job Application Form</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -752,6 +753,7 @@ export default function JobApplication() {
                                 </p>
                             </form>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

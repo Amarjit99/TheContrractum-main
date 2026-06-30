@@ -50,18 +50,8 @@ export default function CoreTeam() {
                             The visionaries and strategists guiding The Contractum towards a smarter, more connected future.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/company/leadership/visionary" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl hover:bg-white/20 transition-all cursor-pointer">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                    <Target className="w-5 h-5 text-white" />
-                                </div>
-                                <p className="text-sm font-bold text-white">Visionary Leadership</p>
-                            </Link>
-                            <Link to="/company/leadership/strategic-excellence" className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/30 shadow-2xl hover:bg-white/20 transition-all cursor-pointer">
-                                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                    <Rocket className="w-5 h-5 text-white" />
-                                </div>
-                                <p className="text-sm font-bold text-white">Strategic Excellence</p>
-                            </Link>
+                         
+                          
                         </div>
                     </div>
                 </div>
