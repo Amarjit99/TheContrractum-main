@@ -58,8 +58,8 @@ import CodeOfConduct from './pages/company/CodeOfConduct';
 import EmployeeId from './pages/company/EmployeeId';
 import CompanyContracts from './pages/company/CompanyContracts';
 import ReferralDashboard from './pages/company/ReferralDashboard';
-import CookiePolicy from './pages/company/CookiePolicy';
-import PrivacyPolicy from './pages/company/PrivacyPolicy';
+import CookiePolicy from './pages/company/CookieUsage';
+import PrivacyPolicy from './pages/company/DataProtection';
 import TermsOfService from './pages/company/TermsOfService';
 import LearnMore from './pages/company/LearnMore';
 
