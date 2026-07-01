@@ -47,9 +47,8 @@ export default function IndustryAdvisors() {
                             Guiding our journey with decades of experience and strategic foresight from world-class industry leaders
                         </p>
                         <Link to="/team/advisors-details">
-                            <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-purple-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-                                Meet Our Advisors
-                            </button>
+                            
+                            
                         </Link>
                     </div>
                 </div>

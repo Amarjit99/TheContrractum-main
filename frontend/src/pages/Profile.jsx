@@ -35,6 +35,12 @@ export default function Profile() {
   const [loadingContracts, setLoadingContracts] = useState(false);
   const [signingId, setSigningId] = useState(null);
   const [signatureName, setSignatureName] = useState('');
+  const [viewingContract, setViewingContract] = useState(null);
+
+  const [sigType, setSigType] = useState('type'); // 'type' | 'draw'
+  const [cursiveStyle, setCursiveStyle] = useState(0); // 0 | 1 | 2
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const [pwForm, setPwForm] = useState({ currentPassword:'', newPassword:'', confirmNew:'' });
   const [pwMsg, setPwMsg] = useState({ text:'', ok:true });
@@ -77,20 +83,115 @@ export default function Profile() {
     if (t && t !== tab) setTab(t);
   }, [location.search, tab]);
 
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#dc2626'; // Premium red signature ink
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const getSignatureData = () => {
+    if (sigType === 'draw') {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+      const ctx = canvas.getContext('2d');
+      const buffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+      const isEmpty = !buffer.some(color => color !== 0);
+      if (isEmpty) return null;
+      return canvas.toDataURL('image/png');
+    } else {
+      const canvas = document.createElement('canvas');
+      canvas.width = 300;
+      canvas.height = 80;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const fonts = [
+        'italic 26px Georgia',
+        'italic 26px cursive',
+        'italic bold 24px Palatino'
+      ];
+      ctx.font = fonts[cursiveStyle];
+      ctx.fillStyle = '#1e3a8a'; // Premium blue signature ink
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      ctx.fillText(signatureName || user?.name || 'Employee', canvas.width / 2, canvas.height / 2);
+      
+      return canvas.toDataURL('image/png');
+    }
+  };
+
   const handleSign = async (e) => {
     e.preventDefault();
+    if (!signatureName.trim()) {
+      toast.error('Please enter your signature name.');
+      return;
+    }
+    const sigImg = getSignatureData();
+    if (!sigImg) {
+      toast.error('Please draw your signature on the pad.');
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/api/contracts/${signingId}/sign`, {
         method: 'PUT',
         headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signatureName })
+        body: JSON.stringify({ signatureName, signatureImage: sigImg })
       });
       if (res.ok) {
+        toast.success('Contract signed successfully!');
         setSigningId(null);
         setSignatureName('');
+        setSigType('type');
+        setCursiveStyle(0);
         fetchContracts();
+      } else {
+        const data = await res.json();
+        toast.error(data.message || 'Signing failed');
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      toast.error('An error occurred during signing');
+    }
   };
 
   // Avatar upload
@@ -378,7 +479,11 @@ export default function Profile() {
                           Sign Contract 👋
                         </button>
                       )}
-                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <button 
+                        onClick={() => setViewingContract(c)}
+                        title="View Contract"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                       </button>
                     </div>
@@ -390,45 +495,225 @@ export default function Profile() {
             {/* Signature Modal */}
             {signingId && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in duration-300">
-                  <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in duration-300">
+                  <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-black text-gray-900 leading-tight">Digital Contract Signing</h3>
-                      <p className="text-gray-400 text-sm font-medium mt-1 uppercase tracking-wider">Legal Acknowledgment</p>
+                      <h3 className="text-lg font-black text-gray-900 leading-tight">Digital Contract Signing</h3>
+                      <p className="text-gray-400 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Secure Verification Log</p>
                     </div>
-                    <button onClick={() => setSigningId(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+                    <button onClick={() => setSigningId(null)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
                   </div>
-                  <div className="p-8 space-y-6">
-                     <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3">
-                        <span className="text-xl">⚠️</span>
-                        <p className="text-xs text-amber-700 font-bold leading-relaxed">
-                          By signing this document, you acknowledge that you have read and agree to all terms and conditions stated in the contract. This digital signature is legally binding.
+                  <div className="p-6 space-y-6">
+                     <div className="bg-amber-50 p-4 rounded-xl border border-amber-100/60 flex gap-3 text-xs leading-relaxed text-amber-800">
+                        <span className="text-lg">⚠️</span>
+                        <p className="font-semibold">
+                          By signing, you agree to all terms and conditions stated in the contract. This digital signature acts with full legal binding under the IT Act.
                         </p>
                      </div>
 
-                     <div className="py-8">
-                        {/* Contract text preview - simplified */}
-                        <div className="bg-gray-50 p-4 rounded-xl max-h-40 overflow-y-auto text-xs text-gray-500 leading-relaxed font-mono">
-                           {contracts.find(c => c._id === signingId)?.content.replace(/<[^>]*>/g, '')}
-                        </div>
+                     <div className="py-1">
+                        {/* Contract text preview */}
+                        <div 
+                           className="bg-gray-50 p-4 rounded-xl max-h-40 overflow-y-auto text-[11px] text-gray-600 leading-relaxed border border-gray-100 prose prose-sm max-w-none shadow-inner"
+                           style={{ fontFamily: 'Georgia, serif' }}
+                           dangerouslySetInnerHTML={{ __html: contracts.find(c => c._id === signingId)?.content || '' }}
+                        />
                      </div>
 
-                     <form onSubmit={handleSign} className="space-y-4">
+                     {/* Signature Selector tabs */}
+                     <div className="flex bg-gray-50 p-1.5 rounded-xl border border-gray-100">
+                       <button
+                         type="button"
+                         onClick={() => setSigType('type')}
+                         className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${
+                           sigType === 'type' ? 'bg-white text-red-600 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-600'
+                         }`}
+                       >
+                         Type Signature
+                       </button>
+                       <button
+                         type="button"
+                         onClick={() => setSigType('draw')}
+                         className={`flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all ${
+                           sigType === 'draw' ? 'bg-white text-red-600 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-600'
+                         }`}
+                       >
+                         Draw Signature
+                       </button>
+                     </div>
+
+                     <form onSubmit={handleSign} className="space-y-5">
                         <div>
-                           <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Type your full name to sign</label>
+                           <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Type your name as signature *</label>
                            <input 
                               required
                               type="text" 
                               value={signatureName}
                               onChange={(e) => setSignatureName(e.target.value)}
                               placeholder="e.g. John Doe"
-                              className="w-full px-4 py-3 bg-red-50/50 border-2 border-dashed border-red-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 font-bold text-red-900 placeholder-red-200 text-center text-lg"
+                              className="w-full px-4 py-3 bg-red-50/30 border border-red-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 font-bold text-red-900 placeholder-red-200 text-center text-lg shadow-sm"
                            />
                         </div>
-                        <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl transition shadow-xl text-sm uppercase tracking-widest shadow-red-500/20">
+
+                        {sigType === 'type' ? (
+                          <div>
+                            <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Select cursive handwriting style</label>
+                            <div className="grid grid-cols-3 gap-3">
+                              {[
+                                { family: 'Georgia, serif', style: 'italic', weight: 'bold', label: 'Classic' },
+                                { family: 'cursive', style: 'italic', weight: 'normal', label: 'Cursive' },
+                                { family: 'Palatino, serif', style: 'italic', weight: '600', label: 'Formal' }
+                              ].map((style, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => setCursiveStyle(idx)}
+                                  className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
+                                    cursiveStyle === idx ? 'border-red-500 bg-red-50/30 ring-2 ring-red-100' : 'border-gray-200 bg-white hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <span 
+                                    style={{ fontFamily: style.family, fontStyle: style.style, fontWeight: style.weight }}
+                                    className="text-lg text-blue-900 truncate max-w-full"
+                                  >
+                                    {signatureName || 'Signature'}
+                                  </span>
+                                  <span className="text-[9px] text-gray-400 font-bold uppercase mt-2">{style.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest">Draw your signature below</label>
+                              <button 
+                                type="button" 
+                                onClick={clearCanvas} 
+                                className="text-[10px] font-bold text-red-600 hover:underline uppercase tracking-wider"
+                              >
+                                Clear Pad
+                              </button>
+                            </div>
+                            <div className="border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden bg-gray-50/50 shadow-inner">
+                              <canvas 
+                                ref={canvasRef}
+                                onMouseDown={startDrawing}
+                                onMouseMove={draw}
+                                onMouseUp={stopDrawing}
+                                onMouseLeave={stopDrawing}
+                                onTouchStart={startDrawing}
+                                onTouchMove={draw}
+                                onTouchEnd={stopDrawing}
+                                width={600}
+                                height={150}
+                                className="w-full h-[150px] bg-white cursor-crosshair touch-none"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl transition shadow-xl text-xs uppercase tracking-widest shadow-red-500/20">
                            Confirm & Sign Contract
                         </button>
-                     </form>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Contract Modal */}
+            {viewingContract && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in duration-300">
+                  <div className="p-6 border-b border-gray-50 flex items-center justify-between shrink-0">
+                    <div>
+                      <h3 className="text-lg font-black text-gray-900 leading-tight">{viewingContract.title}</h3>
+                      <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">
+                        {viewingContract.type} &bull; Status: {viewingContract.status.replace('_', ' ')}
+                      </p>
+                    </div>
+                    <button onClick={() => setViewingContract(null)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+                  </div>
+                  <div className="p-6 overflow-y-auto flex-1 bg-gray-50/50 space-y-6">
+                    {/* Visual Stepper */}
+                    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                      <div className="flex items-center justify-between max-w-xl mx-auto text-[9px] font-black uppercase tracking-wider text-gray-400">
+                        {['Draft', 'Manager', 'HR', 'Legal', 'Final', 'Sign'].map((step, idx) => {
+                          let isDone = false;
+                          let isCurrent = false;
+                          const status = viewingContract.status;
+
+                          if (idx === 0) isDone = true;
+                          else if (idx === 1) {
+                            isDone = ['Pending_HR', 'Pending_Legal', 'Pending_Final', 'Pending_Signature', 'Active'].includes(status);
+                            isCurrent = status === 'Pending_Manager';
+                          } else if (idx === 2) {
+                            isDone = ['Pending_Legal', 'Pending_Final', 'Pending_Signature', 'Active'].includes(status);
+                            isCurrent = status === 'Pending_HR';
+                          } else if (idx === 3) {
+                            isDone = ['Pending_Final', 'Pending_Signature', 'Active'].includes(status);
+                            isCurrent = status === 'Pending_Legal';
+                          } else if (idx === 4) {
+                            isDone = ['Pending_Signature', 'Active'].includes(status);
+                            isCurrent = status === 'Pending_Final';
+                          } else if (idx === 5) {
+                            isDone = status === 'Active';
+                            isCurrent = status === 'Pending_Signature';
+                          }
+
+                          return (
+                            <div key={step} className="flex flex-col items-center gap-1.5 relative flex-1 last:flex-none">
+                              {idx < 5 && (
+                                <div className={`absolute top-3 left-1/2 w-full h-[2px] -z-10 ${isDone ? 'bg-emerald-500' : 'bg-gray-100'}`} style={{ width: 'calc(100% - 24px)', left: 'calc(50% + 12px)' }}></div>
+                              )}
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black z-10 border ${
+                                isDone ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : isCurrent ? 'bg-blue-600 border-blue-600 text-white animate-pulse' : 'bg-white border-gray-200 text-gray-400'
+                              }`}>
+                                {isDone ? '✓' : idx + 1}
+                              </div>
+                              <span className={isCurrent ? 'text-blue-600 font-black' : isDone ? 'text-emerald-600' : 'text-gray-400'}>{step}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Contract Body */}
+                    <div 
+                      className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 prose prose-sm max-w-none animate-in fade-in duration-500"
+                      style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
+                      dangerouslySetInnerHTML={{ __html: viewingContract.content || '<p class="italic text-gray-400">No content.</p>' }}
+                    />
+
+                    {/* Approval comments audit timeline */}
+                    {viewingContract.approvals && viewingContract.approvals.length > 0 && (
+                      <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4 animate-in fade-in duration-500">
+                        <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest font-sans">Approval Trail Audits</h4>
+                        <div className="space-y-4 relative border-l-2 border-gray-100 ml-3 pl-6">
+                          {viewingContract.approvals.map((app, i) => (
+                            <div key={i} className="relative">
+                              <span className="absolute -left-[31px] top-0.5 bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] font-black">
+                                {app.role[0]}
+                              </span>
+                              <div className="text-xs">
+                                <span className="font-bold text-gray-800">{app.role} Approved</span>
+                                <span className="text-[9px] text-gray-400 ml-2">{new Date(app.timestamp).toLocaleString()}</span>
+                                <p className="text-gray-500 italic mt-1 font-medium bg-gray-50 p-2 rounded-lg border border-gray-100">"{app.comments || 'No comments'}"</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end shrink-0">
+                    <button 
+                      onClick={() => setViewingContract(null)}
+                      className="px-6 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition shadow text-xs uppercase tracking-wider"
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
               </div>

@@ -28,10 +28,50 @@ export default function Startup() {
     ];
 
     const keyBenefits = [
-        { number: '500+', label: 'Mentor Network', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=150&h=150&fit=crop' },
-        { number: '50M+', label: 'Funding Access', image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=150&h=150&fit=crop' },
-        { number: '1000+', label: 'Portfolio Companies', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=150&h=150&fit=crop' },
-        { number: '80%', label: 'Success Rate', image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=150&h=150&fit=crop' }
+        {
+            number: '500+',
+            label: 'Mentor Network',
+            description: 'Industry veterans & domain experts guiding your journey',
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
+            ),
+            gradient: 'from-blue-500 to-indigo-600'
+        },
+        {
+            number: '₹50M+',
+            label: 'Funding Access',
+            description: 'Capital connections with top-tier VCs & angel investors',
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ),
+            gradient: 'from-emerald-500 to-teal-600'
+        },
+        {
+            number: '1000+',
+            label: 'Portfolio Companies',
+            description: 'Thriving startups launched through our ecosystem',
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                </svg>
+            ),
+            gradient: 'from-violet-500 to-purple-600'
+        },
+        {
+            number: '80%',
+            label: 'Success Rate',
+            description: 'Of our alumni achieve product-market fit within 18 months',
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                </svg>
+            ),
+            gradient: 'from-amber-500 to-orange-600'
+        }
     ];
 
     const features = [
@@ -227,22 +267,46 @@ export default function Startup() {
             </section>
 
             {/* Key Stats Section */}
-            <section className="py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8 bg-gray-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            <section className="py-16 md:py-20 lg:py-24 px-4 md:px-6 lg:px-8 bg-white relative overflow-hidden">
+                {/* Background decorative elements */}
+                <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
+
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-12 md:mb-16">
+                        <p className="text-primary font-semibold text-sm tracking-widest uppercase mb-3">Our Impact</p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                            Numbers That Speak for Themselves
+                        </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                         {keyBenefits.map((benefit, idx) => (
                             <div
                                 key={idx}
-                                className="bg-white group rounded-xl p-6 md:p-8 text-center shadow-md hover:shadow-2xl transition-all duration-300 transform cursor-pointer border border-transparent hover:border-primary/20"
+                                className="group relative bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer"
                             >
-                                <div className="mb-4 flex justify-center">
-                                    <img src={benefit.image} alt={benefit.label} className="w-20 h-20 rounded-full object-cover shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-500" />
+                                {/* Gradient accent bar at top */}
+                                <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r ${benefit.gradient} rounded-b-full group-hover:w-full transition-all duration-500`}></div>
+
+                                {/* Icon */}
+                                <div className={`w-14 h-14 mx-auto mb-5 rounded-xl bg-gradient-to-br ${benefit.gradient} flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-500`}>
+                                    {benefit.icon}
                                 </div>
-                                <p className="text-2xl md:text-3xl font-extrabold text-slate-800 mb-2 group-hover:text-primary transition-colors">
+
+                                {/* Stat Number */}
+                                <p className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight group-hover:text-primary transition-colors duration-300">
                                     {benefit.number}
                                 </p>
-                                <p className="text-gray-600 text-sm md:text-base font-semibold">
+
+                                {/* Label */}
+                                <p className="text-gray-700 text-sm font-bold uppercase tracking-wider mb-3">
                                     {benefit.label}
+                                </p>
+
+                                {/* Description */}
+                                <p className="text-gray-400 text-xs leading-relaxed">
+                                    {benefit.description}
                                 </p>
                             </div>
                         ))}

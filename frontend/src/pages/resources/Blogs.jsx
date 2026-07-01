@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { blogPosts } from './BlogArticle';
 import p20 from "../../assets/p20.png";
 import p18 from "../../assets/p18.png";
-import { toast } from 'react-hot-toast';
 
 export default function Blogs() {
     const navigate = useNavigate();
@@ -58,6 +56,12 @@ export default function Blogs() {
         document.getElementById('blog-section')?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const openFeaturedTopic = (topicName) => {
+        if (topicName === 'AI & Machine Learning') {
+            navigate('/resources/blogs/1');
+        }
+    };
+
     const handleSubscribe = async (e) => {
         e.preventDefault();
         if (isSubscribed || isSubscribing || !email) return;
@@ -80,31 +84,18 @@ export default function Blogs() {
                 fetch(`${API}/api/subscription/subscribe`, { method: 'POST' });
             } else {
                 const data = await response.json();
-                toast.error(data.message || "Subscription failed");
+                alert(data.message || "Subscription failed");
             }
         } catch (err) {
             console.error("Error subscribing:", err);
-            toast.error("An error occurred. Please try again.");
+            alert("An error occurred. Please try again.");
         } finally {
             setIsSubscribing(false);
         }
     };
 
-    // Combine DB posts and static posts, deduplicating by title
-    // We prioritize static posts because they have structured content (sections/images)
-    const allPosts = [...dbBlogs, ...blogPosts].reduce((acc, current) => {
-        const x = acc.find(item => item.title === current.title);
-        if (!x) {
-            return acc.concat([current]);
-        } else {
-            // If we found a duplicate, and the current one is static (numeric id), use it instead
-            const isCurrentStatic = /^\d+$/.test(String(current.id));
-            if (isCurrentStatic) {
-                return acc.map(item => item.title === current.title ? current : item);
-            }
-            return acc;
-        }
-    }, []);
+    // Only DB posts — no more hardcoded duplicates
+    const allPosts = dbBlogs;
 
     // Filter by category and search
     const filteredPosts = allPosts.filter(post => {
@@ -233,7 +224,11 @@ export default function Blogs() {
                             { name: "Cybersecurity", image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=300" },
                             { name: "Digital Innovation", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=300" }
                         ].map((item, index) => (
-                            <div key={index} className="group cursor-pointer">
+                            <div
+                                key={index}
+                                onClick={() => openFeaturedTopic(item.name)}
+                                className={`group ${item.name === 'AI & Machine Learning' ? 'cursor-pointer' : 'cursor-default'}`}
+                            >
                                 <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 mx-auto rounded-full overflow-hidden border-2 sm:border-4 border-purple-200 group-hover:border-purple-500 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                                     <img
                                         src={item.image}
@@ -445,7 +440,7 @@ export default function Blogs() {
                                                 onClick={() => navigate(`/resources/blogs/${post.id}`)}
                                                 className="w-full py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] cursor-pointer"
                                             >
-                                                Read Article →
+                                                Read Article
                                             </button>
                                         </div>
                                     </div>

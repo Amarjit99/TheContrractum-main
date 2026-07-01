@@ -157,8 +157,8 @@ export default function Whitepapers() {
   // Filter whitepapers
   const filteredWhitepapers = whitepapers.filter(paper => {
     const matchesSearch = paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         paper.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()));
+      paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      paper.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || paper.category === selectedCategory;
     const matchesYear = selectedYear === "All" || paper.year === selectedYear;
     return matchesSearch && matchesCategory && matchesYear;
@@ -190,8 +190,8 @@ export default function Whitepapers() {
       {/* Hero Header with Background Image */}
       <div className="relative text-white py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=1920&h=600&fit=crop&q=80" 
+          <img
+            src="https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=1920&h=600&fit=crop&q=80"
             alt="Whitepapers"
             className="w-full h-full object-cover"
           />
@@ -221,7 +221,7 @@ export default function Whitepapers() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-        
+
         {/* Statistics Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow">
@@ -268,7 +268,7 @@ export default function Whitepapers() {
         {/* Search and Filters */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 mb-12">
           <div className="grid md:grid-cols-4 gap-6">
-            
+
             {/* Search */}
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -340,13 +340,13 @@ export default function Whitepapers() {
                   className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <img 
-                      src={paper.image} 
+                    <img
+                      src={paper.image}
                       alt={paper.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                    
+
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="bg-indigo-100 text-primary px-3 py-1 rounded-full text-xs font-bold border border-indigo-300">
                         {paper.publicationDate}
@@ -443,13 +443,13 @@ export default function Whitepapers() {
                   className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
                   <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={paper.image} 
+                    <img
+                      src={paper.image}
                       alt={paper.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                    
+
                     <span className="absolute top-4 left-4 bg-indigo-100 text-primary px-3 py-1 rounded-full text-xs font-bold border border-indigo-300">
                       {paper.publicationDate}
                     </span>
@@ -557,7 +557,7 @@ export default function Whitepapers() {
                   required
                   className="flex-1 px-6 py-4 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-white/50 font-medium"
                 />
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="bg-white text-blue-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 whitespace-nowrap"
@@ -599,7 +599,7 @@ export default function Whitepapers() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Subscribed Successfully!</h3>
             <p className="text-gray-600 mb-6">Thank you for joining our newsletter. You'll be the first to know when we publish new research and whitepapers.</p>
-            <button 
+            <button
               onClick={() => setShowSuccessPopup(false)}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
             >

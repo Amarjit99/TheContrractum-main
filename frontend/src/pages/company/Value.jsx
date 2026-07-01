@@ -264,14 +264,14 @@ export default function Values() {
                         Six core values guide every decision we make and define who we are as an organization. They shape our culture, drive our actions, and inspire our teams.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-start">
-                        <Link to="/careers/growth" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
+                        {/* <Link to="/careers/growth" className="group inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:scale-105 transform transition-all duration-300 shadow-2xl text-lg">
                             <Award className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
                             Discover Our Values
                         </Link>
                         <Link to="/team/culture" className="inline-flex items-center gap-3 px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/50 text-white font-bold rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 text-lg">
                             Culture & Impact
                             <Sparkles className="w-5 h-5" />
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </div>

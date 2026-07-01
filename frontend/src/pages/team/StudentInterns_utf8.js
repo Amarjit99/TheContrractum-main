@@ -4,7 +4,7 @@ import intern from "../../assets/intern.webp";
 import venkateshImg from "../../assets/venkatesh.jpeg";
 import ankitImg from "../../assets/ankit.png";
 import amarjitImg from "../../assets/amarjit.jpeg";
-
+import rahul from "../../assets/rahul.jpeg";
 import { useState, useEffect } from 'react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -38,6 +38,14 @@ export default function StudentInterns() {
 
     const staticInterns = [
         {
+                    name: "Rahul Kumar Rajak",
+                    role: "Software Web Development Project Intern",
+                    school: "Pondicherry University",
+                    image: rahul,
+                    quote: "Working on real-world projects from day one has been an incredible learning curve.",
+                    tags: ["React", "Express.js", "Web Devolopement", "MongoDB", "Node.js"],
+                },
+                {
             name: "Puttoju Venkatesh",
             role: "Software Web Development Project Intern",
             school: "Pondicherry University",

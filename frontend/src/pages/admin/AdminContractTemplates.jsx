@@ -1,13 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import {
   LayoutTemplate, Plus, Search, Pencil, Trash2, Eye, X, Save,
-  CheckCircle, RefreshCw, Tag, AlignLeft, ArrowLeft, Upload
+  CheckCircle, RefreshCw, Tag, AlignLeft, ArrowLeft, Upload,
+  Bold, Italic, List, Table, Underline, AlignCenter, AlignRight,
+  AlignJustify, ListOrdered, Code
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-
 import { useNavigate } from 'react-router-dom';
+import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -16,9 +18,32 @@ const TYPE_COLORS = {
   Intern:     'bg-purple-100 text-purple-700 border-purple-200',
   Freelancer: 'bg-amber-100 text-amber-700 border-amber-200',
   Vendor:     'bg-teal-100 text-teal-700 border-teal-200',
+  'Employment & HR Contracts': 'bg-blue-100 text-blue-700 border-blue-200',
+  'Business & Corporate Agreements': 'bg-purple-100 text-purple-700 border-purple-200',
+  'Software & IT Contracts': 'bg-amber-100 text-amber-700 border-amber-200',
+  'Marketing & Media Agreements': 'bg-teal-100 text-teal-700 border-teal-200',
+  'Financial & Legal Agreements': 'bg-rose-100 text-rose-700 border-rose-200',
+  'Sales & Client Agreements': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+  'Real Estate & Infrastructure Agreements': 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'Educational & Training Agreements': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  'Project Management & Operations Contracts': 'bg-violet-100 text-violet-700 border-violet-200',
+  'Intellectual Property Agreements': 'bg-sky-100 text-sky-700 border-sky-200'
 };
 
-const EMPTY = { name: '', description: '', type: 'Employee', content: '', isActive: true };
+const GRADIENTS = {
+  'Employment & HR Contracts': 'from-blue-500 to-indigo-500',
+  'Business & Corporate Agreements': 'from-purple-500 to-violet-500',
+  'Software & IT Contracts': 'from-amber-400 to-orange-500',
+  'Marketing & Media Agreements': 'from-teal-400 to-cyan-500',
+  'Financial & Legal Agreements': 'from-rose-500 to-red-500',
+  'Sales & Client Agreements': 'from-indigo-500 to-pink-500',
+  'Real Estate & Infrastructure Agreements': 'from-emerald-500 to-teal-500',
+  'Educational & Training Agreements': 'from-cyan-500 to-blue-500',
+  'Project Management & Operations Contracts': 'from-violet-500 to-purple-500',
+  'Intellectual Property Agreements': 'from-sky-500 to-cyan-500'
+};
+
+const EMPTY = { name: '', description: '', category: 'Employment & HR Contracts', type: 'Employment Agreement', content: '', isActive: true };
 
 export default function AdminContractTemplates() {
   const { admin } = useAdminAuth();
@@ -32,6 +57,133 @@ export default function AdminContractTemplates() {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(null);
+  
+  const [editorMode, setEditorMode] = useState('visual'); // 'visual' | 'code'
+  const editorRef = useRef(null);
+  const textareaRef = useRef(null);
+  const [savedRange, setSavedRange] = useState(null);
+  const lastUpdatedContentRef = useRef('');
+
+  const handleInput = (e) => {
+    const html = e.currentTarget.innerHTML;
+    lastUpdatedContentRef.current = html;
+    setForm(prev => ({ ...prev, content: html }));
+  };
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      if (editorRef.current && editorRef.current.contains(range.commonAncestorContainer)) {
+        setSavedRange(range);
+      }
+    }
+  };
+
+  const handleFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+    if (editorRef.current) {
+      const updatedHtml = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = updatedHtml;
+      setForm(prev => ({ ...prev, content: updatedHtml }));
+    }
+  };
+
+  const handleHeading = (tag) => {
+    document.execCommand('formatBlock', false, `<${tag}>`);
+    if (editorRef.current) {
+      const updatedHtml = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = updatedHtml;
+      setForm(prev => ({ ...prev, content: updatedHtml }));
+    }
+  };
+
+  const insertHtmlAtCursor = (html) => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const sel = window.getSelection();
+    if (savedRange) {
+      sel.removeAllRanges();
+      sel.addRange(savedRange);
+    }
+
+    if (sel.getRangeAt && sel.rangeCount) {
+      let range = sel.getRangeAt(0);
+      if (editorRef.current.contains(range.commonAncestorContainer)) {
+        range.deleteContents();
+        
+        const el = document.createElement("div");
+        el.innerHTML = html;
+        const frag = document.createDocumentFragment();
+        let node;
+        let lastNode;
+        while ((node = el.firstChild)) {
+          lastNode = frag.appendChild(node);
+        }
+        range.insertNode(frag);
+        
+        if (lastNode) {
+          const newRange = range.cloneRange();
+          newRange.setStartAfter(lastNode);
+          newRange.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          setSavedRange(newRange);
+        }
+      } else {
+        editorRef.current.innerHTML += html;
+      }
+    } else {
+      editorRef.current.innerHTML += html;
+    }
+    
+    const updatedHtml = editorRef.current.innerHTML;
+    lastUpdatedContentRef.current = updatedHtml;
+    setForm(prev => ({ ...prev, content: updatedHtml }));
+  };
+
+  const insertPlaceholderVal = (val) => {
+    if (editorMode === 'visual') {
+      insertHtmlAtCursor(val);
+    } else {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const replacement = val;
+        const newContent = text.substring(0, start) + replacement + text.substring(end);
+        setForm(prev => ({ ...prev, content: newContent }));
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(start + val.length, start + val.length);
+        }, 0);
+      } else {
+        setForm(prev => ({ ...prev, content: (prev.content || '') + val }));
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (editorRef.current) {
+      if (form.content === lastUpdatedContentRef.current) {
+        return;
+      }
+      editorRef.current.innerHTML = form.content || '';
+      lastUpdatedContentRef.current = form.content || '';
+    }
+  }, [form.content]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.innerHTML = form.content || '';
+      lastUpdatedContentRef.current = form.content || '';
+    }
+  }, [editorMode, modal]);
+
+  const subRole = (admin?.adminSubRole || '').toLowerCase().trim();
+  const isLegalOrSuper = subRole.includes('legal') || subRole.includes('compliance') || admin?.role === 'super-admin';
 
   const token = localStorage.getItem('adminToken') || admin?.token;
 
@@ -67,7 +219,7 @@ export default function AdminContractTemplates() {
     reader.readAsText(file);
     e.target.value = null; // Reset input
   };
-  const openEdit = (t) => { setSelected(t); setForm({ name: t.name, description: t.description || '', type: t.type, content: t.content, isActive: t.isActive }); setModal('edit'); };
+  const openEdit = (t) => { setSelected(t); setForm({ name: t.name, description: t.description || '', category: t.category || 'Employment & HR Contracts', type: t.type || 'Employment Agreement', content: t.content, isActive: t.isActive }); setModal('edit'); };
   const openPreview = (t) => { setSelected(t); setModal('preview'); };
 
   const handleSave = async () => {
@@ -115,7 +267,7 @@ export default function AdminContractTemplates() {
   const filtered = templates.filter(t => {
     const matchSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
       (t.description || '').toLowerCase().includes(search.toLowerCase());
-    const matchType = typeFilter === 'All' || t.type === typeFilter;
+    const matchType = typeFilter === 'All' || (t.category || 'Employment & HR Contracts') === typeFilter;
     return matchSearch && matchType;
   });
 
@@ -131,8 +283,8 @@ export default function AdminContractTemplates() {
           </button>
         </div>
         <div className="p-8 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="sm:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="sm:col-span-3">
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Template Name *</label>
               <input
                 type="text"
@@ -143,13 +295,27 @@ export default function AdminContractTemplates() {
               />
             </div>
             <div>
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Category *</label>
+              <select
+                value={form.category}
+                onChange={e => {
+                  const newCategory = e.target.value;
+                  const firstType = CONTRACT_CATEGORIES[newCategory]?.[0] || '';
+                  setForm({ ...form, category: newCategory, type: firstType });
+                }}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-gray-700"
+              >
+                {Object.keys(CONTRACT_CATEGORIES).map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+            <div>
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Contract Type *</label>
               <select
                 value={form.type}
                 onChange={e => setForm({ ...form, type: e.target.value })}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-gray-700"
               >
-                {['Employee', 'Intern', 'Freelancer', 'Vendor'].map(t => <option key={t}>{t}</option>)}
+                {(CONTRACT_CATEGORIES[form.category] || []).map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
@@ -163,7 +329,7 @@ export default function AdminContractTemplates() {
                 <option>Inactive</option>
               </select>
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-3">
               <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Description</label>
               <input
                 type="text"
@@ -173,21 +339,141 @@ export default function AdminContractTemplates() {
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all text-sm text-gray-700"
               />
             </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+            <div className="sm:col-span-2 space-y-2">
+              <label className="block text-xs font-black text-gray-400 uppercase tracking-widest flex justify-between items-center">
                 <span>Template Content * <span className="text-blue-500 font-medium normal-case tracking-normal ml-1">(HTML supported)</span></span>
                 <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-bold hover:bg-blue-100 transition-colors">
                   <Upload size={14} /> Upload HTML/TXT
                   <input type="file" accept=".txt,.html" className="hidden" onChange={handleFileUpload} />
                 </label>
               </label>
-              <textarea
-                rows={20}
-                value={form.content}
-                onChange={e => setForm({ ...form, content: e.target.value })}
-                placeholder="Enter the contract body here. You can use HTML tags and placeholders like {{employee_name}}, {{start_date}}, {{position}}, etc."
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none"
-              />
+              
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-gray-50 border border-gray-200/60 rounded-xl mb-2">
+                <div className="flex flex-wrap items-center gap-1">
+                  {editorMode === 'visual' ? (
+                    <>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('bold')} title="Bold" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('italic')} title="Italic" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('underline')} title="Underline" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Underline size={14} /></button>
+                      <div className="h-4 w-[1px] bg-gray-300 mx-1" />
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h1')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h2')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('p')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">P</button>
+                      <div className="h-4 w-[1px] bg-gray-300 mx-1" />
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertUnorderedList')} title="Bullet List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><List size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertOrderedList')} title="Numbered List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><ListOrdered size={14} /></button>
+                      <div className="h-4 w-[1px] bg-gray-300 mx-1" />
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyLeft')} title="Align Left" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignLeft size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyCenter')} title="Align Center" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignCenter size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyRight')} title="Align Right" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignRight size={14} /></button>
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyFull')} title="Justify" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignJustify size={14} /></button>
+                      <div className="h-4 w-[1px] bg-gray-300 mx-1" />
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => {
+                        const tableHtml = `<table style="width: 100%; border-collapse: collapse; margin: 16px 0; border: 1px solid #cbd5e1;"><thead><tr style="background: #f8fafc;"><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 1</th><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 2</th></tr></thead><tbody><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 1</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 2</td></tr><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 3</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 4</td></tr></tbody></table>`;
+                        insertHtmlAtCursor(tableHtml);
+                      }} title="Insert Table" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Table size={14} /></button>
+                    </>
+                  ) : (
+                    <>
+                      <button type="button" onClick={() => {
+                        const textarea = textareaRef.current;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const replacement = '<strong>' + text.substring(start, end) + '</strong>';
+                          setForm(prev => ({ ...prev, content: text.substring(0, start) + replacement + text.substring(end) }));
+                        }
+                      }} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
+                      <button type="button" onClick={() => {
+                        const textarea = textareaRef.current;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const replacement = '<em>' + text.substring(start, end) + '</em>';
+                          setForm(prev => ({ ...prev, content: text.substring(0, start) + replacement + text.substring(end) }));
+                        }
+                      }} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
+                      <button type="button" onClick={() => {
+                        const textarea = textareaRef.current;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const replacement = '<h1>' + text.substring(start, end) + '</h1>';
+                          setForm(prev => ({ ...prev, content: text.substring(0, start) + replacement + text.substring(end) }));
+                        }
+                      }} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
+                      <button type="button" onClick={() => {
+                        const textarea = textareaRef.current;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const replacement = '<h2>' + text.substring(start, end) + '</h2>';
+                          setForm(prev => ({ ...prev, content: text.substring(0, start) + replacement + text.substring(end) }));
+                        }
+                      }} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
+                    </>
+                  )}
+                  
+                  <div className="h-4 w-[1px] bg-gray-300 mx-1" />
+                  <select onChange={(e) => { if (e.target.value) { insertPlaceholderVal(e.target.value); e.target.value = ''; } }} className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 focus:outline-none">
+                    <option value="">{`{ } Insert Variable`}</option>
+                    <option value="{{employee_name}}">Employee Name</option>
+                    <option value="{{position}}">Job Title / Position</option>
+                    <option value="{{department}}">Department</option>
+                    <option value="{{salary}}">Salary / Stipend</option>
+                    <option value="{{start_date}}">Start Date</option>
+                    <option value="{{end_date}}">End Date</option>
+                    <option value="{{company_name}}">Company Name</option>
+                    <option value="{{company_address}}">Company Address</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-center bg-gray-200/60 p-0.5 rounded-lg border border-gray-300/20">
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode('visual')}
+                    className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'visual' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Visual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode('code')}
+                    className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'code' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    Code
+                  </button>
+                </div>
+              </div>
+
+              {editorMode === 'visual' ? (
+                <div className="relative border border-gray-200 rounded-xl overflow-hidden shadow-xs">
+                  <div
+                    ref={editorRef}
+                    contentEditable={true}
+                    onInput={handleInput}
+                    onBlur={handleInput}
+                    onKeyUp={saveSelection}
+                    onMouseUp={saveSelection}
+                    onFocus={saveSelection}
+                    className="w-full h-[400px] overflow-y-auto p-12 bg-white outline-none prose prose-sm max-w-none focus:ring-2 focus:ring-blue-500/20 transition-all overflow-x-hidden"
+                    style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8, color: '#1e293b' }}
+                  />
+                </div>
+              ) : (
+                <textarea
+                  ref={textareaRef}
+                  rows={16}
+                  value={form.content}
+                  onChange={e => setForm({ ...form, content: e.target.value })}
+                  placeholder="Enter the contract body here. You can use HTML tags and placeholders like {{employee_name}}, {{start_date}}, {{position}}, etc."
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all font-mono text-xs leading-relaxed text-gray-700 resize-none"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -214,7 +500,7 @@ export default function AdminContractTemplates() {
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100 shrink-0">
           <div>
             <h2 className="text-xl font-black text-gray-900">{selected?.name}</h2>
-            <span className={`mt-1 inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_COLORS[selected?.type]}`}>
+            <span className={`mt-1 inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${TYPE_COLORS[selected?.category || 'Employment & HR Contracts']}`}>
               {selected?.type}
             </span>
           </div>
@@ -231,9 +517,11 @@ export default function AdminContractTemplates() {
         </div>
         <div className="flex justify-end gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50/50 rounded-b-3xl shrink-0">
           <button onClick={() => setModal(null)} className="px-6 py-2.5 rounded-xl font-bold border border-gray-200 text-gray-600 hover:bg-gray-100 transition-all text-sm">Close</button>
-          <button onClick={() => openEdit(selected)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all text-sm">
-            <Pencil size={15} /> Edit Template
-          </button>
+          {isLegalOrSuper && (
+            <button onClick={() => openEdit(selected)} className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold bg-[#1e5cdc] text-white hover:bg-blue-700 transition-all text-sm">
+              <Pencil size={15} /> Edit Template
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -264,12 +552,14 @@ export default function AdminContractTemplates() {
             </p>
           </div>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/25 self-start sm:self-auto"
-        >
-          <Plus size={17} /> New Template
-        </button>
+        {isLegalOrSuper && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/25 self-start sm:self-auto"
+          >
+            <Plus size={17} /> New Template
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -284,18 +574,17 @@ export default function AdminContractTemplates() {
             className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium"
           />
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {['All', 'Employee', 'Intern', 'Freelancer', 'Vendor'].map(t => (
-            <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border ${
-                typeFilter === t ? 'bg-[#1e5cdc] text-white border-[#1e5cdc]' : 'bg-white text-gray-500 border-gray-100 hover:border-blue-300'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-1">
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          >
+            <option value="All">All Categories</option>
+            {Object.keys(CONTRACT_CATEGORIES).map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
         <button onClick={fetchTemplates} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-100 bg-white text-gray-500 hover:bg-gray-50 shrink-0">
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
@@ -314,23 +603,26 @@ export default function AdminContractTemplates() {
             <LayoutTemplate size={28} />
           </div>
           <p className="text-gray-600 font-bold">No templates found</p>
-          <button onClick={openCreate} className="flex items-center gap-2 bg-[#1e5cdc] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
-            <Plus size={16} /> Create First Template
-          </button>
+          {isLegalOrSuper && (
+            <button onClick={openCreate} className="flex items-center gap-2 bg-[#1e5cdc] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
+              <Plus size={16} /> Create First Template
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(t => (
             <div key={t._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all group flex flex-col overflow-hidden">
               {/* Card top accent */}
-              <div className={`h-1.5 w-full ${t.type === 'Employee' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : t.type === 'Intern' ? 'bg-gradient-to-r from-purple-500 to-violet-500' : t.type === 'Freelancer' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-teal-400 to-cyan-500'}`} />
+              <div className={`h-1.5 w-full bg-gradient-to-r ${GRADIENTS[t.category || 'Employment & HR Contracts'] || 'from-gray-500 to-slate-500'}`} />
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-black text-gray-900 text-sm leading-snug line-clamp-2 group-hover:text-[#1e5cdc] transition-colors">{t.name}</h3>
-                    {t.description && <p className="text-gray-500 text-xs mt-1 line-clamp-2 leading-relaxed">{t.description}</p>}
+                    <p className="text-[9px] font-black text-gray-400 mt-1 uppercase tracking-wider">{t.category || 'Employment & HR Contracts'}</p>
+                    {t.description && <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">{t.description}</p>}
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${TYPE_COLORS[t.type]}`}>
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${TYPE_COLORS[t.category || 'Employment & HR Contracts']}`}>
                     {t.type}
                   </span>
                 </div>
@@ -356,19 +648,23 @@ export default function AdminContractTemplates() {
                   >
                     <Eye size={13} /> Preview
                   </button>
-                  <button
-                    onClick={() => openEdit(t)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-all text-xs font-bold border border-gray-100 hover:border-indigo-100"
-                  >
-                    <Pencil size={13} /> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(t)}
-                    disabled={deleting === t._id}
-                    className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all border border-gray-100 hover:border-red-100 disabled:opacity-40"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {isLegalOrSuper && (
+                    <>
+                      <button
+                        onClick={() => openEdit(t)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-gray-50 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-all text-xs font-bold border border-gray-100 hover:border-indigo-100"
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(t)}
+                        disabled={deleting === t._id}
+                        className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-all border border-gray-100 hover:border-red-100 disabled:opacity-40"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

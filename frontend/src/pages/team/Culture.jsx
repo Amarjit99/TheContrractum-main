@@ -23,9 +23,7 @@ export default function Culture() {
             <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
               Where innovation, collaboration, and growth create a thriving workplace culture
             </p>
-            <Link to="/careers/life" className="inline-block bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-bold px-10 py-4 rounded-xl hover:from-teal-700 hover:to-cyan-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
-              Explore Our Culture
-            </Link>
+           
           </div>
         </div>
       </div>

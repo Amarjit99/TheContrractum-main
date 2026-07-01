@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 import { Save, Building2, Link2, Phone, Linkedin, Twitter, Facebook, Youtube } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminSettings() {
+  const { authFetch } = useAdminAuth();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
@@ -34,7 +36,7 @@ export default function AdminSettings() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch(`${API}/api/settings`);
+      const res = await authFetch(`${API}/api/settings`);
       const data = await res.json();
       if (res.ok && data) {
         setSettings({
@@ -57,7 +59,9 @@ export default function AdminSettings() {
         });
       }
     } catch (err) {
-      toast.error('Failed to load settings');
+      if (err.message !== 'Session expired. Please login again.') {
+        toast.error('Failed to load settings');
+      }
     } finally {
       setFetching(false);
     }

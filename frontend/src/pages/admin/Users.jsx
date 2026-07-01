@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
+import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
 import {
   Search, CheckCircle, Clock, Edit3, X, Plus, ShieldAlert,
   LayoutDashboard, FileText, Calendar, Send, UserCheck, Star,
@@ -66,42 +67,42 @@ const ROLE_DETAILS = {
   'Support Administrator': {
     description: 'Directs customer support queue routing, manages SLA rules configurations, monitors chat transcripts, and evaluates customer support ratings.',
     classification: 'Admin Level',
-    permissions: ['Customer Inquiry Routing', 'SLA Monitoring', 'Support Queue Supervision', 'Ticket Escalation Control']
+    permissions: ['Support Ticket Monitoring', 'Escalation Handling', 'SLA Administration', 'Customer Support Oversight']
   },
   'Marketing Administrator': {
     description: 'Monitors brand campaigns metrics, configures outreach triggers, executes marketing email operations, and aligns customer funnel stats.',
     classification: 'Admin Level',
-    permissions: ['Campaign Supervision', 'Content Distribution Management', 'Public Relations Monitoring', 'Social Media Administration']
+    permissions: ['Campaign Administration', 'Social Media Monitoring', 'Analytics Tracking', 'Brand Management']
   },
   'Event Administrator': {
     description: 'Controls online event registrations schedules, maps participant rosters, issues event certificates, and coordinates virtual venues.',
     classification: 'Admin Level',
-    permissions: ['Event Coordination', 'Attendee Registration Management', 'Venue & Logistics Supervision', 'Event Marketing Monitoring']
+    permissions: ['Event Management', 'Registration Monitoring', 'Webinar Administration', 'Event Coordination']
   },
   'Content Administrator': {
     description: 'Moderates public facing blog posts, catalogs digital media libraries, designs landing layout templates, and monitors tag structures.',
     classification: 'Admin Level',
-    permissions: ['Content Moderation', 'Editorial Queue Supervision', 'Asset Management', 'Publisher Access Monitoring']
+    permissions: ['Blog Administration', 'Media Management', 'Publication Workflow', 'Editorial Monitoring']
   },
   'Finance Administrator': {
     description: 'Tracks vendor invoice processing, configures payment portal webhooks, reviews payroll requests, and prepares revenue forecasts.',
     classification: 'Admin Level',
-    permissions: ['Budget & Expense Monitoring', 'Billing & Invoice Management', 'Vendor Payout Administration', 'Financial Reporting Supervision']
+    permissions: ['Billing Management', 'Invoice Administration', 'Payment Monitoring', 'Financial Reporting']
   },
   'Compliance Administrator': {
     description: 'Enforces system privacy laws compliance, manages data logs retention policies, checks user terms, and tracks regulatory disclosures.',
     classification: 'Admin Level',
-    permissions: ['Regulatory Policy Enforcement', 'Contract Auditing', 'Data Privacy Monitoring', 'Audit Log Supervision']
+    permissions: ['Legal Documentation', 'Audit Administration', 'Compliance Monitoring', 'Risk Management']
   },
   'User Access Administrator': {
     description: 'Handles new account approvals, regulates security token generation, implements account locks, and decides role modifications.',
     classification: 'Admin Level',
-    permissions: ['User Onboarding & Access Provisioning', 'Password Reset & Account Recovery', 'Role Assignment Verification', 'Session Management & Access Reviews']
+    permissions: ['User Account Management', 'Roles & Permissions', 'Authentication Monitoring', 'Access Control']
   },
   'Database Administrator': {
     description: 'Maintains database engine instances, manages backup storage catalogs, resolves slow queries, and oversees schema migrations.',
     classification: 'Admin Level',
-    permissions: ['DB Backup & Restore Schedules', 'Query Performance Monitoring', 'DB Schema Management', 'Replication & Sync Verification']
+    permissions: ['Database Monitoring', 'Backup Management', 'Data Security', 'Performance Optimization']
   },
 
   // Managers
@@ -254,8 +255,18 @@ const ROLE_DETAILS = {
   }
 };
 
+const getInitials = (name) => {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0][0].toUpperCase();
+};
+
 export default function AdminUsers() {
   const { admin } = useAdminAuth();
+  const Layout = admin?.role === 'super-admin' ? SuperAdminLayout : AdminLayout;
   const headers = useMemo(() => ({
     Authorization: `Bearer ${admin?.token}`,
     'Content-Type': 'application/json'
@@ -308,7 +319,7 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({
     name: '', email: '', mobile: '', role: '', password: '',
     isHeld: false, holdUntil: '', holdReason: '', adminSubRole: '', adminPermissions: 'view',
-    company: '', industry: '', jobTitle: ''
+    company: '', industry: '', jobTitle: '', employeeId: ''
   });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -316,7 +327,7 @@ export default function AdminUsers() {
     firstName: '', lastName: '', email: '', password: '', mobile: '',
     role: 'user', adminSubRole: 'HR Administrator', adminPermissions: 'view',
     isHeld: false, holdUntil: '', holdReason: '',
-    company: '', industry: '', jobTitle: ''
+    company: '', industry: '', jobTitle: '', employeeId: ''
   });
 
   const [holdingUser, setHoldingUser] = useState(null);
@@ -660,10 +671,10 @@ export default function AdminUsers() {
   };
 
   return (
-    <AdminLayout>
+    <Layout>
       {/* Split dashboard portal wrapper */}
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 -m-6 rounded-2xl overflow-hidden border border-gray-100">
-        
+
         {/* User Access Navigation Sidebar (Dark Blue theme) */}
         <aside className="w-full lg:w-72 bg-slate-900 text-slate-100 flex flex-col p-5 shrink-0 border-r border-slate-800">
           <div className="mb-8 flex items-center gap-3">
@@ -683,7 +694,8 @@ export default function AdminUsers() {
               { id: 'modules', icon: <Settings size={18} />, label: 'Company Modules & Tools Management' },
               { id: 'website-users', icon: <Users size={18} />, label: 'Website User Management' },
               { id: 'customer-accounts', icon: <Crown size={18} />, label: 'User & Customer Accounts' },
-              { id: 'staff-accounts', icon: <UserPlus size={18} />, label: 'Staff & Admin Accounts' },
+              { id: 'staff-accounts', icon: <UserPlus size={18} />, label: 'Staff / Employees' },
+              { id: 'admins-accounts', icon: <Shield size={18} />, label: 'Admin Accounts' },
               { id: 'security', icon: <Lock size={18} />, label: 'Access Control Settings' },
               { id: 'logs', icon: <Activity size={18} />, label: 'Authentication & Activity Logs' }
             ].map(tab => (
@@ -693,11 +705,10 @@ export default function AdminUsers() {
                   setActiveSubTab(tab.id);
                   setPage(1);
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer ${
-                  activeSubTab === tab.id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer ${activeSubTab === tab.id
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-                }`}
+                  }`}
               >
                 {tab.icon}
                 {tab.label}
@@ -714,7 +725,7 @@ export default function AdminUsers() {
 
         {/* Main Content Pane */}
         <main className="flex-1 flex flex-col min-w-0 bg-white">
-          
+
           {/* Header */}
           <header className="border-b border-gray-100 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-20">
             <div>
@@ -732,19 +743,21 @@ export default function AdminUsers() {
                 <FileSpreadsheet size={15} /> Export Report
               </button>
 
-              {activeSubTab === 'staff-accounts' && admin?.role === 'super-admin' && (
+              {(activeSubTab === 'staff-accounts' || activeSubTab === 'admins-accounts') && admin?.role === 'super-admin' && (
                 <button
                   onClick={() => {
                     setCreateFormData({
                       firstName: '', lastName: '', email: '', password: '', mobile: '',
-                      role: 'employee', adminSubRole: 'HR Executive', adminPermissions: 'view',
+                      role: activeSubTab === 'admins-accounts' ? 'admin' : 'employee',
+                      adminSubRole: activeSubTab === 'admins-accounts' ? 'System Administrator' : 'HR Executive',
+                      adminPermissions: 'view',
                       isHeld: false, holdUntil: '', holdReason: ''
                     });
                     setIsCreateModalOpen(true);
                   }}
                   className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
                 >
-                  <Plus size={15} /> Add Staff Account
+                  <Plus size={15} /> {activeSubTab === 'admins-accounts' ? 'Add Admin Account' : 'Add Staff Account'}
                 </button>
               )}
 
@@ -798,7 +811,7 @@ export default function AdminUsers() {
 
                     {/* Visual Charts row */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                      
+
                       {/* LineChart - User Growth */}
                       <div className="xl:col-span-2 bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                         <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-1.5">
@@ -857,17 +870,17 @@ export default function AdminUsers() {
 
                     {/* Inner Grids: Top Roles, Modules progress, Recent logs, Access summary */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                      
+
                       {/* Left: Top Roles & Modules */}
                       <div className="xl:col-span-2 space-y-6">
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* Top 5 Roles */}
                           <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                             <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-3">Top 5 Roles by Users</h3>
                             <div className="space-y-3">
                               {topRolesData.map((item, idx) => (
-                                <div key={idx} className="flex items-center justify-between text-xs p-2 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-150 transition-colors">
+                                <div key={idx} className="flex items-center justify-between text-xs p-2 bg-gray-50 border border-gray-100 rounded-xl hover:border-blue-100 transition-colors">
                                   <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${item.color}`}>{item.role}</span>
                                   <span className="font-bold text-gray-800">{item.count}</span>
                                 </div>
@@ -913,14 +926,13 @@ export default function AdminUsers() {
                               <tbody className="divide-y divide-gray-50 text-gray-600 font-medium">
                                 {recentAuthLogs.map((log, idx) => (
                                   <tr key={idx} className="hover:bg-gray-50/50">
-                                    <td className="py-2.5 px-3 font-bold text-gray-850">{log.name}</td>
+                                    <td className="py-2.5 px-3 font-bold text-gray-800">{log.name}</td>
                                     <td className="py-2.5 px-3">{log.event}</td>
                                     <td className="py-2.5 px-3 font-mono text-[10px]">{log.ip}</td>
                                     <td className="py-2.5 px-3 text-gray-400">{log.time}</td>
                                     <td className="py-2.5 px-3 text-right">
-                                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                                        log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                                      }`}>
+                                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${log.status === 'Success' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                                        }`}>
                                         {log.status}
                                       </span>
                                     </td>
@@ -935,7 +947,7 @@ export default function AdminUsers() {
 
                       {/* Right: Status donut and Access Summary */}
                       <div className="space-y-6">
-                        
+
                         {/* Status Donut */}
                         <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                           <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-3">Users by Status</h3>
@@ -1002,11 +1014,10 @@ export default function AdminUsers() {
                           {/* Super Admin Root Node */}
                           <button
                             onClick={() => setSelectedRole('Super Admin')}
-                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${
-                              selectedRole === 'Super Admin'
+                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${selectedRole === 'Super Admin'
                                 ? 'bg-blue-600 text-white font-bold shadow-xs'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-semibold'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2">
                               <Crown size={14} className={selectedRole === 'Super Admin' ? 'text-white' : 'text-amber-500'} />
@@ -1018,11 +1029,10 @@ export default function AdminUsers() {
                           {/* Admin Root Node */}
                           <button
                             onClick={() => setSelectedRole('Admin')}
-                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${
-                              selectedRole === 'Admin'
+                            className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs transition-all ${selectedRole === 'Admin'
                                 ? 'bg-blue-600 text-white font-bold shadow-xs'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-semibold'
-                            }`}
+                              }`}
                           >
                             <div className="flex items-center gap-2">
                               <Shield size={14} className={selectedRole === 'Admin' ? 'text-white' : 'text-blue-500'} />
@@ -1030,13 +1040,12 @@ export default function AdminUsers() {
                             </div>
                             <ChevronRight size={12} className={selectedRole === 'Admin' ? 'text-white' : 'text-gray-400'} />
                           </button>
-                                                   {/* Admins Folder */}
+                          {/* Admins Folder */}
                           <div>
                             <button
                               onClick={() => { toggleNode('Admins'); setSelectedRole('Admins'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Admins' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Admins' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Admins ? (
@@ -1058,11 +1067,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1081,9 +1089,8 @@ export default function AdminUsers() {
                           <div>
                             <button
                               onClick={() => { toggleNode('Managers'); setSelectedRole('Managers'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Managers' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Managers' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Managers ? (
@@ -1105,11 +1112,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1128,9 +1134,8 @@ export default function AdminUsers() {
                           <div>
                             <button
                               onClick={() => { toggleNode('Employees'); setSelectedRole('Employees'); }}
-                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${
-                                selectedRole === 'Employees' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-                              }`}
+                              className={`w-full text-left py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all ${selectedRole === 'Employees' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+                                }`}
                             >
                               <div className="flex items-center gap-2">
                                 {expandedNodes.Employees ? (
@@ -1152,11 +1157,10 @@ export default function AdminUsers() {
                                     <button
                                       key={role}
                                       onClick={() => setSelectedRole(role)}
-                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${
-                                        isSelected
+                                      className={`w-full text-left py-1.5 px-2.5 rounded-lg flex items-center justify-between text-xs transition-all ${isSelected
                                           ? 'bg-blue-600 text-white font-bold shadow-xs'
                                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-950'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-1.5 min-w-0">
                                         <span className="text-gray-300 font-mono text-[10px] select-none">{isLast ? '└─' : '├─'}</span>
@@ -1234,7 +1238,7 @@ export default function AdminUsers() {
                                     <h4 className="text-sm font-black text-gray-900">{title}</h4>
                                     <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5 block">{level}</span>
                                   </div>
-                                  <span className="text-[9px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-150 rounded">
+                                  <span className="text-[9px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded">
                                     Enterprise Role Node
                                   </span>
                                 </div>
@@ -1270,7 +1274,7 @@ export default function AdminUsers() {
                                           <th className="py-2.5 px-3">Main Responsibilities</th>
                                         </tr>
                                       </thead>
-                                      <tbody className="divide-y divide-gray-105 text-gray-650 font-medium">
+                                      <tbody className="divide-y divide-gray-100 text-gray-600 font-medium">
                                         {[
                                           { role: 'Super Admin', level: 'Full Enterprise Access', desc: 'Complete system control and governance' },
                                           { role: 'Admin', level: 'Department-Level Access', desc: 'Operational administration and management' },
@@ -1324,13 +1328,13 @@ export default function AdminUsers() {
                                       <div className="h-4 w-0.5 bg-gray-300"></div>
 
                                       {/* Node 5: Client Interaction */}
-                                      <div className="px-4 py-1.5 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-850 text-center">
+                                      <div className="px-4 py-1.5 rounded-lg border border-emerald-500 bg-emerald-50 text-emerald-800 text-center">
                                         <span className="text-[10px] uppercase font-bold block">Customer & Client Interaction</span>
                                       </div>
                                       <div className="h-4 w-0.5 bg-gray-300"></div>
 
                                       {/* Node 6: Escalations Loop */}
-                                      <div className="px-4 py-1.5 rounded-lg border border-dashed border-indigo-400 bg-indigo-50/50 text-indigo-850 text-center flex items-center gap-1">
+                                      <div className="px-4 py-1.5 rounded-lg border border-dashed border-indigo-400 bg-indigo-50/50 text-indigo-800 text-center flex items-center gap-1">
                                         <Activity size={10} className="text-indigo-500 animate-pulse" />
                                         <span className="text-[9px] uppercase font-bold block">Reports & Escalations Loop Back</span>
                                       </div>
@@ -1364,11 +1368,10 @@ export default function AdminUsers() {
                                   <h4 className="text-sm font-black text-gray-900">{selectedRole}</h4>
                                   <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 block">{roleInfo.classification}</span>
                                 </div>
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
-                                  roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-150' :
-                                  roleScope === 'view-delete' ? 'bg-amber-50 text-amber-600 border border-amber-150' :
-                                  'bg-gray-100 text-gray-600'
-                                }`}>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${roleScope === 'view-delete-edit' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' :
+                                    roleScope === 'view-delete' ? 'bg-amber-50 text-amber-600 border border-amber-150' :
+                                      'bg-gray-100 text-gray-600'
+                                  }`}>
                                   Scope: {roleScope}
                                 </span>
                               </div>
@@ -1389,9 +1392,8 @@ export default function AdminUsers() {
                                     return (
                                       <label
                                         key={perm}
-                                        className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                                          isChecked ? 'border-blue-150 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
-                                        } cursor-pointer`}
+                                        className={`flex items-center justify-between p-3 rounded-xl border transition-all ${isChecked ? 'border-blue-100 bg-blue-50/20' : 'border-gray-200 hover:bg-gray-50'
+                                          } cursor-pointer`}
                                       >
                                         <div className="flex items-center gap-2.5">
                                           <input
@@ -1406,9 +1408,8 @@ export default function AdminUsers() {
                                             <span className="text-[10px] text-gray-400 block mt-0.5">Grants operational clearance to this specific sub-module</span>
                                           </div>
                                         </div>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                          isChecked ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
-                                        }`}>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${isChecked ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
+                                          }`}>
                                           {isChecked ? 'Allowed' : 'Blocked'}
                                         </span>
                                       </label>
@@ -1441,16 +1442,15 @@ export default function AdminUsers() {
                                       <div key={u._id} className="flex justify-between items-center p-2.5 bg-gray-50 border border-gray-100 rounded-xl">
                                         <div className="flex items-center gap-2">
                                           <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-[10px]">
-                                            {u.name?.charAt(0).toUpperCase()}
+                                            {getInitials(u.name)}
                                           </div>
                                           <div>
                                             <span className="text-xs font-bold text-gray-800 block leading-tight">{u.name}</span>
                                             <span className="text-[10px] text-gray-400 block">{u.email}</span>
                                           </div>
                                         </div>
-                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                                          u.isHeld ? 'bg-red-50 text-red-650' : 'bg-emerald-50 text-emerald-650'
-                                        }`}>
+                                        <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                          }`}>
                                           {u.isHeld ? 'Suspended' : 'Active'}
                                         </span>
                                       </div>
@@ -1539,9 +1539,8 @@ export default function AdminUsers() {
                               <td className="py-3.5 px-4 font-medium text-gray-500">{u.email}</td>
                               <td className="py-3.5 px-4">{u.mobile || u.phone || 'N/A'}</td>
                               <td className="py-3.5 px-4">
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                  u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                                }`}>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                  }`}>
                                   {u.isHeld ? 'Suspended' : 'Active'}
                                 </span>
                               </td>
@@ -1613,7 +1612,7 @@ export default function AdminUsers() {
                                 <td className="py-3.5 px-4 whitespace-nowrap">
                                   <div className="flex items-center gap-2.5">
                                     <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
-                                      {u.name?.charAt(0).toUpperCase()}
+                                      {getInitials(u.name)}
                                     </div>
                                     <div>
                                       <p className="font-bold text-gray-900 text-xs">{u.name}</p>
@@ -1626,9 +1625,8 @@ export default function AdminUsers() {
                                 <td className="py-3.5 px-4 text-gray-600">{u.jobTitle || 'N/A'}</td>
                                 <td className="py-3.5 px-4">{u.mobile || u.phone || 'N/A'}</td>
                                 <td className="py-3.5 px-4">
-                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                    u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                                  }`}>
+                                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${u.isHeld ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                                    }`}>
                                     {u.isHeld ? 'Suspended' : 'Active'}
                                   </span>
                                 </td>
@@ -1660,7 +1658,7 @@ export default function AdminUsers() {
                                       ) : (
                                         <button
                                           onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }}
-                                          className="px-2 py-1 bg-red-50 text-red-650 font-bold hover:bg-red-150 rounded text-[10px]"
+                                          className="px-2 py-1 bg-red-50 text-red-600 font-bold hover:bg-red-100 rounded text-[10px]"
                                         >
                                           Hold
                                         </button>
@@ -1683,16 +1681,16 @@ export default function AdminUsers() {
                   </div>
                 )}
 
-                {/* VIEW 5: STAFF & ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {/* VIEW 5: STAFF / EMPLOYEES (REAL USER DIRECTORY) */}
                 {activeSubTab === 'staff-accounts' && (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-base font-bold text-gray-800">Staff & Admin Accounts Directory</h3>
-                        <p className="text-xs text-gray-500">Manage internal admin, manager, and employee accounts</p>
+                        <h3 className="text-base font-bold text-gray-800">Staff / Employees Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal manager and employee accounts</p>
                       </div>
                       <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
-                        {userData.users?.filter(u => u.role !== 'user').length || 0} Staff Members
+                        {userData.users?.filter(u => u.role === 'employee' || u.role === 'manager').length || 0} Staff Members
                       </span>
                     </div>
 
@@ -1701,6 +1699,7 @@ export default function AdminUsers() {
                         <thead>
                           <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
                             <th className="py-3.5 px-4">Staff Member</th>
+                            <th className="py-3.5 px-4">Employee ID</th>
                             <th className="py-3.5 px-4">Role / Classification</th>
                             <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
                             <th className="py-3.5 px-4">Verify Status</th>
@@ -1709,12 +1708,229 @@ export default function AdminUsers() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-gray-700">
-                          {userData.users?.filter(u => u.role !== 'user').map(u => (
+                          {userData.users?.filter(u => u.role === 'employee' || u.role === 'manager').map(u => (
                             <tr key={u._id} className="hover:bg-gray-50/50">
                               <td className="py-3.5 px-4 whitespace-nowrap">
                                 <div className="flex items-center gap-2.5">
                                   <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
-                                    {u.name?.charAt(0).toUpperCase()}
+                                    {getInitials(u.name)}
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-gray-900 text-xs">{u.name}</p>
+                                    <p className="text-[10px] text-gray-400 mt-0.5">{u.email}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 font-mono font-bold text-xs text-blue-600 uppercase">
+                                {u.employeeId || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4 uppercase font-bold text-[10px] text-gray-500">
+                                {u.role?.replace('-', ' ')}
+                              </td>
+                              <td className="py-3.5 px-4 font-semibold text-indigo-600">
+                                {u.adminSubRole || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {u.isHeld ? (
+                                  <span className="text-[9px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-150">On Hold</span>
+                                ) : u.isApproved ? (
+                                  <span className="text-[9px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-150">Verified</span>
+                                ) : (
+                                  <span className="text-[9px] font-bold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-150">Pending</span>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {admin?.role === 'super-admin' && u.role !== 'super-admin' ? (
+                                  u.isHeld ? (
+                                    <button onClick={() => handleReleaseHoldDirect(u)} className="text-[10px] font-bold text-emerald-600 hover:underline">
+                                      Release
+                                    </button>
+                                  ) : (
+                                    <button onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }} className="text-[10px] font-bold text-red-500 hover:underline">
+                                      Hold Account
+                                    </button>
+                                  )
+                                ) : '-'}
+                              </td>
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex justify-end gap-1">
+                                  {!u.isApproved && (
+                                    <button onClick={() => verifyUser(u._id, u.name, u.role)} className="px-2 py-1 bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 rounded text-[10px]">
+                                      Verify
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      setEditingUser(u);
+                                      setFormData({
+                                        name: u.name || '', email: u.email || '', mobile: u.mobile || u.phone || '',
+                                        role: u.role || 'user', password: '', isHeld: u.isHeld || false,
+                                        holdUntil: u.holdUntil ? u.holdUntil.split('T')[0] : '', holdReason: u.holdReason || '',
+                                        adminSubRole: u.adminSubRole || '', adminPermissions: u.adminPermissions || 'view',
+                                        company: u.company || '', industry: u.industry || '', jobTitle: u.jobTitle || '',
+                                        employeeId: u.employeeId || ''
+                                      });
+                                    }}
+                                    className="px-2 py-1 bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 rounded text-[10px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  {u.role !== 'super-admin' && (
+                                    <button onClick={() => deleteUser(u._id, u.name)} className="text-gray-400 hover:text-red-500 p-1 rounded">
+                                      <Trash2 size={13} />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 5.5: ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {activeSubTab === 'admins-accounts' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800">Admin Accounts Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal super-admin and admin accounts</p>
+                      </div>
+                      <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+                        {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').length || 0} Admin Members
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
+                            <th className="py-3.5 px-4">Admin Member</th>
+                            <th className="py-3.5 px-4">Employee ID</th>
+                            <th className="py-3.5 px-4">Role / Classification</th>
+                            <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
+                            <th className="py-3.5 px-4">Verify Status</th>
+                            <th className="py-3.5 px-4">Hold Schedule</th>
+                            <th className="py-3.5 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-gray-700">
+                          {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').map(u => (
+                            <tr key={u._id} className="hover:bg-gray-50/50">
+                              <td className="py-3.5 px-4 whitespace-nowrap">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
+                                    {getInitials(u.name)}
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-gray-900 text-xs">{u.name}</p>
+                                    <p className="text-[10px] text-gray-400 mt-0.5">{u.email}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 font-mono font-bold text-xs text-blue-600 uppercase">
+                                {u.employeeId || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4 uppercase font-bold text-[10px] text-gray-500">
+                                {u.role?.replace('-', ' ')}
+                              </td>
+                              <td className="py-3.5 px-4 font-semibold text-indigo-600">
+                                {u.adminSubRole || 'N/A'}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {u.isHeld ? (
+                                  <span className="text-[9px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-150">On Hold</span>
+                                ) : u.isApproved ? (
+                                  <span className="text-[9px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-150">Verified</span>
+                                ) : (
+                                  <span className="text-[9px] font-bold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-150">Pending</span>
+                                )}
+                              </td>
+                              <td className="py-3.5 px-4">
+                                {admin?.role === 'super-admin' && u.role !== 'super-admin' ? (
+                                  u.isHeld ? (
+                                    <button onClick={() => handleReleaseHoldDirect(u)} className="text-[10px] font-bold text-emerald-600 hover:underline">
+                                      Release
+                                    </button>
+                                  ) : (
+                                    <button onClick={() => { setHoldingUser(u); setHoldDirectData({ holdUntil: '', holdReason: '' }); }} className="text-[10px] font-bold text-red-500 hover:underline">
+                                      Hold Account
+                                    </button>
+                                  )
+                                ) : '-'}
+                              </td>
+                              <td className="py-3.5 px-4 text-right">
+                                <div className="flex justify-end gap-1">
+                                  {!u.isApproved && (
+                                    <button onClick={() => verifyUser(u._id, u.name, u.role)} className="px-2 py-1 bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 rounded text-[10px]">
+                                      Verify
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => {
+                                      setEditingUser(u);
+                                      setFormData({
+                                        name: u.name || '', email: u.email || '', mobile: u.mobile || u.phone || '',
+                                        role: u.role || 'user', password: '', isHeld: u.isHeld || false,
+                                        holdUntil: u.holdUntil ? u.holdUntil.split('T')[0] : '', holdReason: u.holdReason || '',
+                                        adminSubRole: u.adminSubRole || '', adminPermissions: u.adminPermissions || 'view',
+                                        company: u.company || '', industry: u.industry || '', jobTitle: u.jobTitle || '',
+                                        employeeId: u.employeeId || ''
+                                      });
+                                    }}
+                                    className="px-2 py-1 bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 rounded text-[10px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  {u.role !== 'super-admin' && (
+                                    <button onClick={() => deleteUser(u._id, u.name)} className="text-gray-400 hover:text-red-500 p-1 rounded">
+                                      <Trash2 size={13} />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 5.5: ADMIN ACCOUNTS (REAL USER DIRECTORY) */}
+                {activeSubTab === 'admins-accounts' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-base font-bold text-gray-800">Admin Accounts Directory</h3>
+                        <p className="text-xs text-gray-500">Manage internal super-admin and admin accounts</p>
+                      </div>
+                      <span className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+                        {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').length || 0} Admin Members
+                      </span>
+                    </div>
+
+                    <div className="bg-white border border-gray-150 rounded-2xl shadow-xs overflow-hidden">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50 text-gray-500 font-bold uppercase border-b border-gray-100">
+                            <th className="py-3.5 px-4">Admin Member</th>
+                            <th className="py-3.5 px-4">Role / Classification</th>
+                            <th className="py-3.5 px-4">Assigned Department Sub-Role</th>
+                            <th className="py-3.5 px-4">Verify Status</th>
+                            <th className="py-3.5 px-4">Hold Schedule</th>
+                            <th className="py-3.5 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 text-gray-700">
+                          {userData.users?.filter(u => u.role === 'admin' || u.role === 'super-admin').map(u => (
+                            <tr key={u._id} className="hover:bg-gray-50/50">
+                              <td className="py-3.5 px-4 whitespace-nowrap">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-200">
+                                    {getInitials(u.name)}
                                   </div>
                                   <div>
                                     <p className="font-bold text-gray-900 text-xs">{u.name}</p>
@@ -1900,10 +2116,9 @@ export default function AdminUsers() {
                                     <p className="text-[10px] text-gray-400 mt-0.5">{operatorEmail}</p>
                                   </td>
                                   <td className="py-3.5 px-4">
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                      log.action === 'Create' ? 'bg-blue-50 text-blue-600' :
-                                      log.action === 'Delete' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
-                                    }`}>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${log.action === 'Create' ? 'bg-blue-50 text-blue-600' :
+                                        log.action === 'Delete' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
+                                      }`}>
                                       {log.action}
                                     </span>
                                   </td>
@@ -1982,29 +2197,43 @@ export default function AdminUsers() {
                 </div>
               </div>
 
-              {['admin', 'manager', 'employee'].includes(formData.role) && (
+              {['admin', 'manager', 'employee', 'super-admin'].includes(formData.role) && (
                 <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Employee ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. EMP-WMS-2026-001"
+                      value={formData.employeeId}
+                      onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs outline-none uppercase font-mono"
+                    />
+                  </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Assign Sub-Role</label>
                     <select
                       value={formData.adminSubRole}
                       onChange={(e) => setFormData({ ...formData, adminSubRole: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white"
+                      disabled={formData.role === 'super-admin'}
                     >
                       <option value="">Select a Sub-Role</option>
                       {formData.role === 'admin' && ADMIN_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {formData.role === 'manager' && MANAGER_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {formData.role === 'employee' && EMPLOYEE_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      {formData.role === 'super-admin' && <option value="">N/A</option>}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
-                    <select value={formData.adminPermissions} onChange={(e) => setFormData({ ...formData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
-                      <option value="view">Only See (view)</option>
-                      <option value="view-delete">See and Delete (view-delete)</option>
-                      <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
-                    </select>
-                  </div>
+                  {formData.role !== 'super-admin' && (
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
+                      <select value={formData.adminPermissions} onChange={(e) => setFormData({ ...formData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+                        <option value="view">Only See (view)</option>
+                        <option value="view-delete">See and Delete (view-delete)</option>
+                        <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2111,29 +2340,43 @@ export default function AdminUsers() {
                 </div>
               </div>
 
-              {['admin', 'manager', 'employee'].includes(createFormData.role) && (
+              {['admin', 'manager', 'employee', 'super-admin'].includes(createFormData.role) && (
                 <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Employee ID</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. EMP-WMS-2026-001"
+                      value={createFormData.employeeId}
+                      onChange={(e) => setCreateFormData({ ...createFormData, employeeId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs outline-none uppercase font-mono"
+                    />
+                  </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Assign Sub-Role</label>
                     <select
                       value={createFormData.adminSubRole}
                       onChange={(e) => setCreateFormData({ ...createFormData, adminSubRole: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white"
+                      disabled={createFormData.role === 'super-admin'}
                     >
                       <option value="">Select a Sub-Role</option>
                       {createFormData.role === 'admin' && ADMIN_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {createFormData.role === 'manager' && MANAGER_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                       {createFormData.role === 'employee' && EMPLOYEE_SUB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      {createFormData.role === 'super-admin' && <option value="">N/A</option>}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
-                    <select value={createFormData.adminPermissions} onChange={(e) => setCreateFormData({ ...createFormData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
-                      <option value="view">Only See (view)</option>
-                      <option value="view-delete">See and Delete (view-delete)</option>
-                      <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
-                    </select>
-                  </div>
+                  {createFormData.role !== 'super-admin' && (
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Permissions Level</label>
+                      <select value={createFormData.adminPermissions} onChange={(e) => setCreateFormData({ ...createFormData, adminPermissions: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white">
+                        <option value="view">Only See (view)</option>
+                        <option value="view-delete">See and Delete (view-delete)</option>
+                        <option value="view-delete-edit">See, Delete and Edit (view-delete-edit)</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2168,7 +2411,7 @@ export default function AdminUsers() {
           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-red-50">
               <h2 className="text-xs font-bold text-red-700 uppercase tracking-wide">Suspend User Account</h2>
-              <button onClick={() => setHoldingUser(null)} className="text-gray-400 hover:text-gray-650 p-1 cursor-pointer">
+              <button onClick={() => setHoldingUser(null)} className="text-gray-400 hover:text-gray-600 p-1 cursor-pointer">
                 <X size={20} />
               </button>
             </div>
@@ -2197,6 +2440,6 @@ export default function AdminUsers() {
         </div>
       )}
 
-    </AdminLayout>
+    </Layout>
   );
 }

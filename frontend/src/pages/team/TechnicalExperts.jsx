@@ -118,11 +118,11 @@ export default function TechnicalExperts() {
                         <p className="text-gray-100 text-lg sm:text-xl mb-8 leading-relaxed max-w-3xl drop-shadow-2xl">
                             Our team of certified technical experts combines deep industry knowledge with cutting-edge solutions to drive your success
                         </p>
-                        <Link to="/team/connect-experts">
+                        {/* <Link to="/team/connect-experts">
                             <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-10 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-105 text-base sm:text-lg shadow-2xl">
                                 Connect with Our Experts
                             </button>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </div>
@@ -195,9 +195,7 @@ export default function TechnicalExperts() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-4">
-                            Core Capabilities
-                        </span>
+                        {/*  */}
                         <h2 className="text-4xl sm:text-5xl font-black mb-4 text-white">Targeted Expertise Areas</h2>
                         <p className="text-slate-300 text-lg max-w-2xl mx-auto">
                             Our specialists deliver customized solutions across multiple domains
@@ -277,9 +275,7 @@ export default function TechnicalExperts() {
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-wider mb-4">
-                            Our Impact
-                        </span>
+                        
                         <h2 className="text-4xl sm:text-5xl font-black mb-4 text-white">
                             Proven Excellence
                         </h2>
@@ -289,7 +285,7 @@ export default function TechnicalExperts() {
                         <div className="group relative bg-gradient-to-br from-primary/10 to-primary-light/10 border border-blue-500/30 rounded-2xl p-12 hover:border-blue-400/60 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm">
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary-light/0 group-hover:from-primary/5 group-hover:to-primary-light/5 rounded-2xl transition-all duration-300"></div>
                             <div className="relative">
-                                <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light mb-3">
+                                <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 mb-3">
                                     500+
                                 </p>
                                 <p className="text-xl font-bold text-slate-200">Successfully Delivered Projects</p>
@@ -309,7 +305,7 @@ export default function TechnicalExperts() {
                         <div className="group relative bg-gradient-to-br from-primary/10 to-primary-dark/10 border border-primary/30 rounded-2xl p-12 hover:border-primary-light/60 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm">
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:to-primary/5 rounded-2xl transition-all duration-300"></div>
                             <div className="relative">
-                                <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-light to-primary mb-3">
+                               <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-600 mb-3">
                                     50+
                                 </p>
                                 <p className="text-xl font-bold text-slate-200">Certified Experts</p>
