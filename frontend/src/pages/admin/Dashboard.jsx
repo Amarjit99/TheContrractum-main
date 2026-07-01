@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, TrendingDown, ChevronRight, Link as LinkIcon, Plus, CheckCircle2, Clock, AlertCircle, Calendar, Flag, X, Bell, Users, Check, FileText, Mail } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronRight, Link as LinkIcon, Plus, CheckCircle2, Clock, AlertCircle, Calendar, Flag, X, Bell, Users, Check, FileText, Mail, Award, Globe } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -45,14 +45,25 @@ const mockContacts = [
   { _id: 'mock-4', name: "David Wilson", email: "david@marketing.org", subject: "Partnership Opportunity", createdAt: new Date(Date.now() - 2000000000).toISOString() }
 ];
 
-const StatCardItem = ({ title, value, trendParams, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-xl p-3 sm:p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
-    <p className="text-xs sm:text-sm font-semibold text-gray-700">{title}</p>
-    <div className="flex items-end justify-between mt-2 sm:mt-3">
-      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">{value}</h3>
-      <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${trendColor}`}>
-        {trendText} {trendIcon}
+const StatCardItem = ({ title, value, trendIcon, trendColor, trendText, icon, borderClass }) => (
+  <div className={`bg-white rounded-2xl p-5 shadow-sm border-t-4 ${borderClass || 'border-t-blue-500'} border-x border-b border-gray-100 flex flex-col justify-between hover:shadow-md transition-all duration-300 relative overflow-hidden group`}>
+    <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-gray-50 rounded-full group-hover:scale-125 transition-transform duration-300 opacity-40 -z-0"></div>
+    <div className="flex justify-between items-start z-10">
+      <div>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</p>
+        <h3 className="text-2xl font-black text-gray-900 mt-2 tracking-tight">{value}</h3>
       </div>
+      {icon && (
+        <span className="p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-400 group-hover:bg-blue-50 group-hover:text-[#1e5cdc] transition-colors shrink-0">
+          {icon}
+        </span>
+      )}
+    </div>
+    <div className="flex items-center gap-1.5 mt-4 text-xs font-semibold z-10">
+      <span className={`px-2 py-0.5 rounded-full flex items-center gap-1 font-bold ${trendColor}`}>
+        {trendText} {trendIcon}
+      </span>
+      <span className="text-gray-400 font-semibold uppercase tracking-wider text-[9px]">vs last month</span>
     </div>
   </div>
 );
@@ -167,34 +178,51 @@ export default function Dashboard() {
             <h2 className="text-xs font-black text-blue-600 bg-blue-50/80 border border-blue-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
               Website Management (WMS) Metrics
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               <StatCardItem
                 title="Total Leads"
                 value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="▲ 12%"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Mail size={16} />}
+                borderClass="border-t-blue-500"
               />
               <StatCardItem
                 title="Blog Posts"
                 value={stats?.totalBlogs || "12"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Live"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-emerald-500"
               />
               <StatCardItem
-                title="Job Applications"
-                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
-                trendColor="text-emerald-500"
-                trendText={`${stats?.totalApplications || 0} New`}
-                trendIcon={<TrendingUp size={16} />}
+                title="Founders & Directors"
+                value={stats?.totalFounders || "0"}
+                trendColor="text-blue-600 bg-blue-50 border border-blue-100"
+                trendText="Core"
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-indigo-500"
+              />
+              <StatCardItem
+                title="Student Interns"
+                value={stats?.totalInterns || "0"}
+                trendColor="text-amber-600 bg-amber-50 border border-amber-100"
+                trendText="Active"
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-amber-500"
               />
               <StatCardItem
                 title="Total Visitors"
                 value={stats?.totalVisitors ? stats.totalVisitors.toLocaleString() : "0"}
-                trendColor="text-blue-500"
+                trendColor="text-teal-600 bg-teal-50 border border-teal-100"
                 trendText="Live"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Globe size={16} />}
+                borderClass="border-t-teal-500"
               />
             </div>
           </div>
@@ -204,34 +232,51 @@ export default function Dashboard() {
             <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
               Company Management (CMS) Metrics
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               <StatCardItem
                 title="Total Users"
                 value={stats?.totalUsers ? stats.totalUsers.toLocaleString() : "0"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Active"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-blue-600"
               />
               <StatCardItem
                 title="Active Partners"
                 value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
-                trendColor="text-emerald-500"
+                trendColor="text-amber-600 bg-amber-50 border border-amber-100"
                 trendText="1 Pending"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-indigo-600"
+              />
+              <StatCardItem
+                title="Job Applications"
+                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
+                trendText={`${stats?.totalApplications || 0} New`}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-purple-600"
               />
               <StatCardItem
                 title="Certificates"
                 value={stats?.totalCertificates || "0"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Issued"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Award size={16} />}
+                borderClass="border-t-teal-600"
               />
               <StatCardItem
                 title="ID Cards"
                 value={stats?.totalIdCards || "0"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Active"
-                trendIcon={<TrendingUp size={16} />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-pink-600"
               />
             </div>
           </div>
@@ -322,24 +367,13 @@ export default function Dashboard() {
                 WMS Operations & Activity
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                {/* Live Feedback Loops */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
+                {/* Live Feedback Loop */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-1">
                   <div className="p-4 border-b border-gray-50 flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800 text-sm">Live Feedback Loops</h3>
-                    <span className="text-[10px] font-bold text-gray-400">CONTACTS & APPS</span>
+                    <h3 className="font-semibold text-gray-800 text-sm">Live Feedback Loop</h3>
+                    <span className="text-[10px] font-bold text-gray-400">CONTACT RESPONSES</span>
                   </div>
                   <div className="p-2 flex-1 overflow-y-auto max-h-[200px] custom-scrollbar">
-                    {stats?.recentApplications?.map((app, i) => (
-                      <div key={`app-${i}`} className="flex flex-col py-2 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
-                        <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-bold text-gray-900 truncate max-w-[180px]">{app.fullName}</span>
-                          <span className="text-[9px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
-                      </div>
-                    ))}
                     {[...(stats?.recentContacts || []), ...mockContacts].slice(0, 5).map((c, i) => (
                       <div key={`contact-${i}`} className="flex flex-col py-2 px-3 hover:bg-blue-50 rounded-lg transition-colors border-b border-gray-50 last:border-0">
                         <div className="flex justify-between items-center mb-1">
@@ -353,7 +387,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Latest Blog Posts */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-1">
                   <div className="p-4 border-b border-gray-50 flex justify-between items-center">
                     <h3 className="font-semibold text-gray-800 text-sm">Latest Blog Posts</h3>
                     <button onClick={() => navigate('/admin/blogs')} className="text-[#1e5cdc] hover:text-blue-700 text-[10px] font-semibold flex items-center gap-0.5 bg-blue-50 px-2 py-1 rounded">
@@ -373,23 +407,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Open Positions */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-800 text-sm">Open Positions</h3>
-                  </div>
-                  <div className="flex flex-col gap-1.5 my-2">
-                    {mockJobs.map((job) => (
-                      <span key={job.id} className="text-[10px] font-semibold px-2 py-1 rounded bg-blue-50 text-[#1e5cdc] border border-blue-100 truncate">{job.title}</span>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => navigate('/admin/careers')}
-                    className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors mt-auto text-left"
-                  >
-                    Manage Openings →
-                  </button>
-                </div>
 
                 {/* Form Submissions Quick Stats */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col md:col-span-2">
@@ -423,10 +440,10 @@ export default function Dashboard() {
               <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
                 CMS Operations & Activity
               </h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {/* My Tasks Manager Widget */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col md:col-span-2">
                   <div className="flex justify-between items-center mb-3 border-b border-gray-50 pb-2">
                     <h3 className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
                       <CheckCircle2 size={16} className="text-indigo-600" /> Active Tasks
@@ -480,7 +497,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Partner Requests */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between md:col-span-1">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="font-semibold text-gray-800 text-sm">Partner Requests</h3>
                     <button onClick={() => navigate('/admin/partners')} className="text-indigo-600 hover:text-indigo-700 text-[10px] font-semibold bg-indigo-50 px-2 py-0.5 rounded">
@@ -494,7 +511,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Staff Registration Panel */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center justify-between">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center justify-between md:col-span-1">
                   <div>
                     <h3 className="font-semibold text-gray-800 text-sm">Corporate Registrations</h3>
                     <p className="text-[10px] text-gray-400 mt-0.5">Configure user accounts and staff access permissions.</p>
@@ -508,7 +525,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Active Credentials Summary */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 grid grid-cols-2 gap-4 md:col-span-1">
                   <div className="border-r border-gray-100 pr-2">
                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">ID Cards Created</span>
                     <span className="text-xl font-black text-gray-800 mt-1 block">{stats?.totalIdCards || 0}</span>
@@ -519,6 +536,47 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                {/* Open Positions */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col justify-between md:col-span-1">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-semibold text-gray-800 text-sm">Open Positions</h3>
+                  </div>
+                  <div className="flex flex-col gap-1.5 my-2">
+                    {mockJobs.map((job) => (
+                      <span key={job.id} className="text-[10px] font-semibold px-2 py-1 rounded bg-blue-50 text-[#1e5cdc] border border-blue-100 truncate">{job.title}</span>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => navigate('/admin/careers')}
+                    className="text-xs font-bold text-gray-500 hover:text-[#1e5cdc] transition-colors mt-auto text-left"
+                  >
+                    Manage Openings →
+                  </button>
+                </div>
+
+                {/* Latest Job Applications */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-2">
+                  <div className="p-4 border-b border-gray-50 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800 text-sm">Latest Job Applications</h3>
+                    <span className="text-[10px] font-bold text-gray-400">APPLICATIONS</span>
+                  </div>
+                  <div className="p-2 flex-1 overflow-y-auto max-h-[200px] custom-scrollbar">
+                    {stats?.recentApplications && stats.recentApplications.length > 0 ? (
+                      stats.recentApplications.map((app, i) => (
+                        <div key={`app-${i}`} className="flex flex-col py-2 px-3 hover:bg-emerald-50 rounded-lg transition-colors border-b border-gray-50 last:border-0 relative group">
+                          <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded">NEW APP</span>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs font-bold text-gray-900 truncate max-w-[180px]">{app.fullName}</span>
+                            <span className="text-[9px] text-gray-400 shrink-0">{new Date(app.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <span className="text-xs text-emerald-600 font-medium">{app.jobTitle}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-gray-400 text-center py-8">No recent job applications</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 

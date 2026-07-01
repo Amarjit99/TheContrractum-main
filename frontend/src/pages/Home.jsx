@@ -16,7 +16,7 @@ export default function Home() {
       <Services />
       <Blog />
       <Culture />
-      <Client />
+      {/* <Client /> */}
       <Testmonials />
       <Contact />
     </div>

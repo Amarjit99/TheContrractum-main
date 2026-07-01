@@ -72,7 +72,7 @@ export default function HeroSection() {
           <p className="text-gray-300 text-lg leading-relaxed">
             Empowering businesses with cutting-edge technology solutions,
             strategic consulting, and innovative services designed to drive
-            growth and digital transformation.
+            growth and digital transformation
           </p>
 
           {/* Action Buttons */}

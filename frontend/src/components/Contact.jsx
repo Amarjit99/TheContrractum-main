@@ -77,7 +77,7 @@ const Registration = () => {
         setStatus("error");
         setErrorMsg(data.error || "Something went wrong.");
       }
-    } catch {
+    } catch (err) {
       setStatus("error");
       setErrorMsg("Could not reach the server. Please try again later.");
     }
@@ -170,12 +170,12 @@ const Registration = () => {
                 required
                 className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium"
               >
-                <option value="" className="bg-gray-900">Select Inquiry Category</option>
-                <option value="Internship" className="bg-gray-900">Internship</option>
-                <option value="Mentorship" className="bg-gray-900">Mentorship</option>
-                <option value="Counseling" className="bg-gray-900">Counseling</option>
-                <option value="Job" className="bg-gray-900">Job</option>
-                <option value="Others" className="bg-gray-900">Others</option>
+                <option value="" className="bg-gray-900 text-gray-400">Select Inquiry Category</option>
+                <option value="Internship" className="bg-gray-900 text-white">Internship</option>
+                <option value="Mentorship" className="bg-gray-900 text-white">Mentorship</option>
+                <option value="Counseling" className="bg-gray-900 text-white">Counseling</option>
+                <option value="Job" className="bg-gray-900 text-white">Job</option>
+                <option value="Others" className="bg-gray-900 text-white">Others</option>
               </select>
             </div>
 

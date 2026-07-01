@@ -11,7 +11,20 @@ const contactSchema = new mongoose.Schema(
     message: { type: String, required: true, trim: true },
     country: { type: String, trim: true },
     preferredContactMethod: { type: String, trim: true },
-    status: { type: String, enum: ['New', 'Reviewed', 'Followed Up', 'Resolved'], default: 'New' },
+    status: { 
+      type: String, 
+      default: 'New', 
+      enum: ['New', 'Under Review', 'In Progress', 'Follow-Up Pending', 'Resolved', 'Reviewed', 'Followed Up'] 
+    },
+    priority: { 
+      type: String, 
+      default: 'Low', 
+      enum: ['Low', 'Medium', 'High'] 
+    },
+    assignedTo: { 
+      type: String, 
+      default: 'Unassigned' 
+    },
     notes: { type: String, default: '' },
     assignedStaff: { type: String, default: '' }
   },

@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
   pincode: { type: String, trim: true, default: '' },
 
   role: { type: String, enum: ['user', 'employee', 'manager', 'admin', 'super-admin'], default: 'user' },
+  employeeId: { type: String, trim: true, default: '' },
   isApproved: { type: Boolean, default: false },
   adminSubRole: { type: String, enum: [
     '',

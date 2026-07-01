@@ -462,9 +462,9 @@ export default function Events() {
         <div className="flex items-center justify-center gap-4 mb-8">
           <button
             onClick={() => setSelectedType("upcoming")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedType === "upcoming"
-              ? "bg-gray-600 text-white shadow-lg scale-105"
-              : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+            className={`px-6 py-3 rounded-lg font-bold transition-all border-2 ${selectedType === "upcoming"
+              ? "bg-blue-200 text-black border-blue-400 shadow-md scale-105 hover:bg-blue-300 hover:text-black hover:border-blue-500 hover:scale-108 hover:shadow-lg"
+              : "bg-white text-black border-slate-300 shadow-sm hover:bg-blue-300 hover:text-black hover:border-blue-500 hover:scale-108 hover:shadow-lg"
               }`}
           >
             <span className="flex items-center gap-2">
@@ -476,9 +476,9 @@ export default function Events() {
           </button>
           <button
             onClick={() => setSelectedType("past")}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${selectedType === "past"
-              ? "bg-primary text-white shadow-lg"
-              : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+            className={`px-6 py-3 rounded-lg font-bold transition-all border-2 ${selectedType === "past"
+              ? "bg-blue-200 text-black border-blue-400 shadow-md scale-105 hover:bg-blue-300 hover:text-black hover:border-blue-500 hover:scale-108 hover:shadow-lg"
+              : "bg-white text-black border-slate-300 shadow-sm hover:bg-blue-300 hover:text-black hover:border-blue-500 hover:scale-108 hover:shadow-lg"
               }`}
           >
             <span className="flex items-center gap-2">

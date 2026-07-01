@@ -85,12 +85,12 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-20">
-          Our Feature
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-20 text-center">
+          Why Choose The Contractum
         </h2>
 
         {/* Feature Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-10 relative">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12 xl:gap-8 justify-center relative">
 
           {features.map((item, index) => (
             <div key={index} className="group relative flex flex-col items-center cursor-pointer">

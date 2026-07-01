@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import SuperAdminLayout from '../../components/admin/SuperAdminLayout';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Link as LinkIcon, ChevronRight, UserPlus, CheckCircle2, Clock, Trash2, Mail, ShieldAlert } from 'lucide-react';
+import { TrendingUp, Link as LinkIcon, ChevronRight, UserPlus, CheckCircle2, Clock, Trash2, Mail, ShieldAlert, Users, FileText, Award, Globe } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -34,14 +34,24 @@ const mockBlogs = [
   { id: 3, title: "Strategic Innovation: Staying Ahead in a Competitive Market", status: "Draft" },
 ];
 
-const StatCardItem = ({ title, value, trendIcon, trendColor, trendText }) => (
-  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
-    <p className="text-sm font-semibold text-gray-500 mb-3">{title}</p>
-    <div className="flex items-center justify-between">
-      <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight">{value}</h3>
-      <div className={`flex items-center gap-1 text-[13px] font-bold ${trendColor} bg-emerald-50/50 px-2 py-1 rounded-lg`}>
-        {trendText} {trendIcon}
+const StatCardItem = ({ title, value, trendIcon, trendColor, trendText, icon, borderClass }) => (
+  <div className={`bg-white rounded-2xl p-5 shadow-sm border-t-4 ${borderClass || 'border-t-blue-500'} border-x border-b border-gray-100 flex flex-col justify-between hover:shadow-md transition-all duration-300 relative overflow-hidden group`}>
+    <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-gray-50 rounded-full group-hover:scale-125 transition-transform duration-300 opacity-40 -z-0"></div>
+    <div className="flex justify-between items-start z-10">
+      <div>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{title}</p>
+        <h3 className="text-2xl font-black text-gray-900 mt-2 tracking-tight">{value}</h3>
       </div>
+      {icon && (
+        <span className="p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-400 group-hover:bg-blue-50 group-hover:text-[#1e5cdc] transition-colors shrink-0">
+          {icon}
+        </span>
+      )}
+    </div>
+    <div className="flex items-center gap-1.5 mt-4 text-xs font-semibold z-10">
+      <span className={`px-2 py-0.5 rounded-full flex items-center gap-1 font-bold ${trendColor}`}>
+        {trendText} {trendIcon}
+      </span>
     </div>
   </div>
 );
@@ -126,34 +136,51 @@ export default function SuperAdminDashboard() {
             <h2 className="text-xs font-black text-blue-600 bg-blue-50/80 border border-blue-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
               Website Management (WMS) Metrics
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               <StatCardItem
                 title="Total Leads"
                 value={stats?.totalContacts ? (1245 + stats.totalContacts).toLocaleString() : "1,245"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="▲ 12%"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Mail size={16} />}
+                borderClass="border-t-blue-500"
               />
               <StatCardItem
                 title="Blog Posts"
                 value={stats?.totalBlogs || "12"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Live"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-emerald-500"
               />
               <StatCardItem
-                title="Job Applications"
-                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
-                trendColor="text-emerald-500"
-                trendText="New"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                title="Founders & Directors"
+                value={stats?.totalFounders || "0"}
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
+                trendText="Core"
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-purple-500"
+              />
+              <StatCardItem
+                title="Student Interns"
+                value={stats?.totalInterns || "0"}
+                trendColor="text-emerald-650 bg-emerald-50 border border-emerald-100"
+                trendText="Active"
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Award size={16} />}
+                borderClass="border-t-amber-500"
               />
               <StatCardItem
                 title="Total Visitors"
                 value={stats?.totalVisitors ? stats.totalVisitors.toLocaleString() : "0"}
-                trendColor="text-blue-500"
+                trendColor="text-[#1e5cdc] bg-blue-50 border border-blue-100"
                 trendText="Live"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Globe size={16} />}
+                borderClass="border-t-teal-500"
               />
             </div>
           </div>
@@ -163,34 +190,51 @@ export default function SuperAdminDashboard() {
             <h2 className="text-xs font-black text-indigo-600 bg-indigo-50/80 border border-indigo-100/50 px-3 py-1.5 rounded-lg inline-block uppercase tracking-wider">
               Company Management (CMS) Metrics
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               <StatCardItem
                 title="Total Users"
                 value={stats?.totalUsers || "245"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Active"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Users size={16} />}
+                borderClass="border-t-indigo-650"
               />
               <StatCardItem
                 title="Active Partners"
                 value={stats?.totalPartners ? (stats.totalPartners + 4) : "4"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Partners"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Globe size={16} />}
+                borderClass="border-t-blue-600"
+              />
+              <StatCardItem
+                title="Job Applications"
+                value={stats?.totalApplications ? (121 + stats.totalApplications).toLocaleString() : "121"}
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
+                trendText="New"
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-purple-600"
               />
               <StatCardItem
                 title="Certificates"
                 value={stats?.totalCertificates || "0"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Issued"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<Award size={16} />}
+                borderClass="border-t-teal-600"
               />
               <StatCardItem
                 title="ID Cards"
                 value={stats?.totalIdCards || "0"}
-                trendColor="text-emerald-500"
+                trendColor="text-emerald-600 bg-emerald-50 border border-emerald-100"
                 trendText="Active"
-                trendIcon={<TrendingUp size={14} className="rotate-45" />}
+                trendIcon={<TrendingUp size={12} />}
+                icon={<FileText size={16} />}
+                borderClass="border-t-pink-600"
               />
             </div>
           </div>

@@ -26,6 +26,119 @@ const STATIC_APPLICATION_PROCESS = [
     'Offer letter and onboarding within 7 business days',
 ];
 
+const JOB_DETAIL_TEMPLATES = [
+    {
+        match: /business development manager/i,
+        roles: [
+            'Identify and create new business opportunities',
+            'Build long-term client relationships and partnerships',
+            'Work with internal teams to convert leads into revenue',
+            'Prepare proposals, pitches, and sales follow-ups',
+            'Track pipeline progress and hit monthly targets',
+        ],
+        skills: ['Sales Strategy', 'Client Communication', 'Lead Generation', 'Negotiation', 'CRM Tools'],
+        qualification: 'Bachelor’s degree in Business, Marketing, or a related field',
+        experience: '1–5 years of experience in business development or sales',
+        salary: 'Competitive salary with incentives based on performance',
+    },
+    {
+        match: /content writer/i,
+        roles: [
+            'Write engaging blogs, website copy, and campaign content',
+            'Research topics and create SEO-friendly drafts',
+            'Collaborate with designers and marketers on content plans',
+            'Edit and proofread for clarity, tone, and accuracy',
+        ],
+        skills: ['Content Writing', 'SEO', 'Editing', 'Research', 'Storytelling'],
+        qualification: 'Any undergraduate degree with strong writing skills',
+        experience: 'Freshers and early-career writers can apply',
+        salary: 'Stipend or project-based compensation depending on experience',
+    },
+    {
+        match: /corporate ambassador/i,
+        roles: [
+            'Represent TheContractum across college and community events',
+            'Drive brand awareness and student engagement',
+            'Coordinate outreach campaigns with the marketing team',
+            'Share opportunities and collect referrals',
+        ],
+        skills: ['Communication', 'Networking', 'Brand Representation', 'Event Coordination'],
+        qualification: 'Current student or recent graduate with strong communication skills',
+        experience: 'No prior work experience required',
+        salary: 'Performance incentives with certificate and recommendation support',
+    },
+    {
+        match: /social media marketer/i,
+        roles: [
+            'Plan and manage daily social media content',
+            'Grow engagement across Instagram, LinkedIn, and other channels',
+            'Track performance metrics and optimize campaigns',
+            'Create content ideas that align with brand goals',
+        ],
+        skills: ['Social Media', 'Content Creation', 'Analytics', 'Canva', 'Campaign Planning'],
+        qualification: 'Any degree; marketing or media background is a plus',
+        experience: '0–2 years of social media or digital marketing experience',
+        salary: 'Stipend plus performance-based growth opportunities',
+    },
+    {
+        match: /social media internship/i,
+        roles: [
+            'Support day-to-day social media execution',
+            'Create posts, captions, and simple creatives',
+            'Engage with audiences and monitor responses',
+            'Learn campaign tracking and performance analysis',
+        ],
+        skills: ['Social Media', 'Content Creation', 'Learning Mindset', 'Analytics'],
+        qualification: 'Open to students and recent graduates',
+        experience: 'No experience required',
+        salary: 'Internship with certificate and mentorship support',
+    },
+    {
+        match: /software development engineer \(sde i\)/i,
+        roles: [
+            'Build and ship front-end and back-end features',
+            'Write clean, maintainable code',
+            'Participate in code reviews and debugging',
+            'Collaborate with product and design teams',
+        ],
+        skills: ['React.js', 'JavaScript', 'Node.js', 'MongoDB', 'REST APIs'],
+        qualification: 'B.Tech / B.E. in Computer Science or equivalent',
+        experience: '0–2 years of software development experience',
+        salary: 'Competitive full-time compensation',
+    },
+    {
+        match: /software development engineer \(sde ii\)/i,
+        roles: [
+            'Lead the delivery of complex features end-to-end',
+            'Mentor junior engineers and improve code quality',
+            'Design scalable backend and frontend systems',
+            'Drive technical discussions and architecture decisions',
+        ],
+        skills: ['System Design', 'React.js', 'Node.js', 'Databases', 'AWS'],
+        qualification: 'B.Tech / M.Tech in Computer Science or equivalent',
+        experience: '2–5 years of relevant development experience',
+        salary: 'Competitive compensation with growth opportunities',
+    },
+    {
+        match: /backend developer|sde iii/i,
+        roles: [
+            'Architect scalable backend services and APIs',
+            'Optimize performance, reliability, and observability',
+            'Lead backend development standards and reviews',
+            'Work closely with product teams on technical feasibility',
+        ],
+        skills: ['Backend Architecture', 'Microservices', 'Node.js', 'Kubernetes', 'Databases'],
+        qualification: 'B.Tech / M.Tech / MCA in Computer Science or equivalent',
+        experience: '5+ years of backend engineering experience',
+        salary: 'Senior-level compensation with leadership growth',
+    },
+];
+
+const getJobDetailTemplate = (title = '', department = '') => {
+    const source = `${title} ${department}`;
+    return JOB_DETAIL_TEMPLATES.find(template => template.match.test(source)) || null;
+};
+
 // Static job bios for the hardcoded careers (ids 1-9)
 const staticJobsData = {
     1: {
@@ -257,10 +370,10 @@ export default function JobApplication() {
         const loadJob = async () => {
             setJobLoading(true);
 
-            // Check if it's a numeric id (static job)
-            const numericId = parseInt(jobId, 10);
-            if (!isNaN(numericId) && staticJobsData[numericId]) {
-                const j = staticJobsData[numericId];
+            // Only treat a purely numeric route param as a static job id.
+            const isStaticJobId = /^\d+$/.test(jobId);
+            if (isStaticJobId && staticJobsData[jobId]) {
+                const j = staticJobsData[jobId];
                 setJob({ ...j, _isStatic: true });
                 setFormData(prev => ({ ...prev, positionApplied: j.title }));
                 setJobLoading(false);
@@ -272,8 +385,16 @@ export default function JobApplication() {
                 const res = await fetch(`${API}/api/cms/jobs/${jobId}`);
                 if (!res.ok) throw new Error('Not found');
                 const data = await res.json();
+                const template = getJobDetailTemplate(data.title, data.department) || {};
                 setJob({
+                    ...template,
                     ...data,
+                    roles: data.roles?.length ? data.roles : template.roles || [],
+                    skills: data.skills?.length ? data.skills : template.skills || [],
+                    qualification: data.qualification || template.qualification || '',
+                    experience: data.experience || template.experience || '',
+                    salary: data.salary || template.salary || '',
+                    benefits: data.benefits?.length ? data.benefits : template.benefits || [],
                     company: 'TheContractum',
                     _isStatic: false,
                 });
@@ -288,6 +409,12 @@ export default function JobApplication() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // Add phone number validation
+        if (name === "phone" && value.length > 10) {
+            return; // Prevent updating if phone number exceeds 10 digits
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
@@ -300,7 +427,7 @@ export default function JobApplication() {
         setStatus({ loading: true, success: false, error: null });
 
         const phoneWithCode = `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`;
-        
+
         const data = new FormData();
         data.append('fullName', formData.fullName);
         data.append('email', formData.email);
@@ -512,7 +639,8 @@ export default function JobApplication() {
                     </div>
 
                     {/* Application Form Sidebar */}
-                    <div className="lg:col-span-1">
+                <div className="grid lg:grid-cols-30 gap-8">
+    <div className="lg:col-span-15">
                         <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100 sticky top-24">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Job Application Form</h3>
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -625,6 +753,7 @@ export default function JobApplication() {
                                 </p>
                             </form>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

@@ -13,6 +13,7 @@ const QuoteApplication = require('../models/QuoteApplication');
 const SupportTicket = require('../models/SupportTicket');
 const NewsletterSubscription = require('../models/NewsletterSubscription');
 const Intern = require('../models/Intern');
+const Founder = require('../models/Founder');
 const Affiliate = require('../models/Affiliate');
 const Survey = require('../models/Survey');
 const Referral = require('../models/Referral');
@@ -40,7 +41,8 @@ router.get('/stats', async (req, res) => {
     const [
       totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
-      totalCertificates, totalIdCards
+      totalCertificates, totalIdCards,
+      totalFounders, totalInterns
     ] = await Promise.all([
       User.countDocuments(),
       Contact.countDocuments(),
@@ -49,7 +51,9 @@ router.get('/stats', async (req, res) => {
       Partner.countDocuments(),
       Blog.countDocuments(),
       Certificate.countDocuments(),
-      IdCard.countDocuments()
+      IdCard.countDocuments(),
+      Founder.countDocuments(),
+      Intern.countDocuments()
     ]);
 
     const recentContacts = await Contact.find().sort({ createdAt: -1 }).limit(10);
@@ -59,6 +63,7 @@ router.get('/stats', async (req, res) => {
       totalUsers, totalContacts, totalVisitors,
       totalApplications, totalPartners, totalBlogs,
       totalCertificates, totalIdCards,
+      totalFounders, totalInterns,
       recentContacts, recentApplications
     });
   } catch (err) {
@@ -223,18 +228,22 @@ router.get('/users', async (req, res) => {
       User.countDocuments(query),
     ]);
 
-    // If fetching admins, merge with AdminDetail (admindb) data
-    if (role === 'admin') {
-      const adminDetails = await AdminDetail.find({ email: { $in: users.map(u => u.email) } });
+    // Merge with AdminDetail (admindb) data for any admin/staff users in the list
+    const staffEmails = users.filter(u => ['admin', 'manager', 'employee'].includes(u.role)).map(u => u.email);
+    if (staffEmails.length > 0) {
+      const adminDetails = await AdminDetail.find({ email: { $in: staffEmails } });
       users = users.map(u => {
-        const detail = adminDetails.find(d => d.email === u.email);
-        if (detail) {
-          return {
-            ...u.toObject(),
-            adminSubRole: detail.adminSubRole,
-            adminPermissions: detail.adminPermissions,
-            joiningDate: detail.joiningDate
-          };
+        if (['admin', 'manager', 'employee'].includes(u.role)) {
+          const detail = adminDetails.find(d => d.email === u.email);
+          if (detail) {
+            return {
+              ...u.toObject(),
+              adminSubRole: detail.adminSubRole,
+              adminPermissions: detail.adminPermissions,
+              joiningDate: detail.joiningDate,
+              employeeId: detail.employeeId || u.employeeId || ''
+            };
+          }
         }
         return u;
       });
@@ -255,7 +264,8 @@ router.post('/users', async (req, res) => {
     const { 
       firstName, lastName, email, password, mobile, role, 
       adminSubRole, adminPermissions, joiningDate, isApproved,
-      isHeld, holdUntil, holdReason, company, industry, jobTitle 
+      isHeld, holdUntil, holdReason, company, industry, jobTitle,
+      employeeId
     } = req.body;
 
     if (!firstName || !lastName || !email || !password || !mobile) {
@@ -276,6 +286,7 @@ router.post('/users', async (req, res) => {
       password, // Hashes automatically via userSchema.pre('save')
       mobile,
       role: role || 'user',
+      employeeId: employeeId || '',
       isApproved: isApproved !== undefined ? isApproved : true,
       adminSubRole: ['admin', 'manager', 'employee'].includes(role) ? (adminSubRole || 'System Administrator') : '',
       adminPermissions: ['admin', 'manager', 'employee'].includes(role) ? (adminPermissions || 'view') : 'view',
@@ -291,6 +302,7 @@ router.post('/users', async (req, res) => {
     if (['admin', 'manager', 'employee'].includes(user.role)) {
       await AdminDetail.create({
         userId: user._id,
+        employeeId: user.employeeId || '',
         name,
         email,
         adminSubRole: user.adminSubRole || 'System Administrator',
@@ -311,7 +323,7 @@ router.put('/users/:id/role', async (req, res) => {
     const { 
       role, isApproved, joiningDate, password, name, email, mobile,
       isHeld, holdUntil, holdReason, adminSubRole, adminPermissions,
-      company, industry, jobTitle
+      company, industry, jobTitle, employeeId
     } = req.body;
     
     const targetUser = await User.findById(req.params.id);
@@ -346,6 +358,7 @@ router.put('/users/:id/role', async (req, res) => {
     if (company !== undefined) update.company = company;
     if (industry !== undefined) update.industry = industry;
     if (jobTitle !== undefined) update.jobTitle = jobTitle;
+    if (employeeId !== undefined) update.employeeId = employeeId;
 
     if (name) {
       update.name = name;
@@ -370,7 +383,8 @@ router.put('/users/:id/role', async (req, res) => {
         email: user.email,
         adminSubRole: user.adminSubRole || 'System Administrator',
         adminPermissions: user.adminPermissions || 'view',
-        joiningDate: user.joiningDate || new Date().toISOString()
+        joiningDate: user.joiningDate || new Date().toISOString(),
+        employeeId: user.employeeId || ''
       };
       await AdminDetail.findOneAndUpdate(
         { $or: [{ userId: user._id }, { email: user.email }] },
@@ -456,6 +470,16 @@ router.delete('/users/:id', async (req, res) => {
   }
 });
 
+// GET /api/admin/contacts/stats — Fetch all contacts for analytical metrics
+router.get('/contacts/stats', async (req, res) => {
+  try {
+    const allContacts = await Contact.find().sort({ createdAt: -1 });
+    res.json(allContacts);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch contacts statistics', error: err.message });
+  }
+});
+
 // GET /api/admin/contacts — All contact submissions
 router.get('/contacts', async (req, res) => {
   try {
@@ -468,6 +492,42 @@ router.get('/contacts', async (req, res) => {
     res.json({ contacts, total, page, pages: Math.ceil(total / limit) });
   } catch {
     res.status(500).json({ message: 'Failed to fetch contacts' });
+  }
+});
+
+// PUT /api/admin/contacts/:id — Update lead workflow details (status, priority, assignedTo)
+router.put('/contacts/:id', async (req, res) => {
+  try {
+    const { status, priority, assignedTo } = req.body;
+    const update = {};
+    if (status) update.status = status;
+    if (priority) update.priority = priority;
+    if (assignedTo !== undefined) update.assignedTo = assignedTo;
+
+    const contact = await Contact.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!contact) return res.status(404).json({ message: 'Contact lead not found' });
+
+    // Save to System AuditLog for tracking
+    try {
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.create({
+        adminId: req.user._id || req.user.id,
+        adminName: req.user.name || req.user.email || 'System Admin',
+        adminRole: req.user.role || '',
+        action: 'Status Change',
+        entity: 'Contact',
+        targetType: 'Contact',
+        targetId: contact._id.toString(),
+        details: `Updated contact workflow for ${contact.name}: Status=${contact.status}, Priority=${contact.priority}, AssignedTo=${contact.assignedTo}`,
+        ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress || ''
+      });
+    } catch (e) {
+      console.error('Audit logging failed for contact update:', e);
+    }
+
+    res.json(contact);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update contact workflow details', error: err.message });
   }
 });
 
@@ -584,7 +644,6 @@ router.post('/approve-registration/:id', async (req, res) => {
     const firstName = reg.firstName || reg.name?.split(' ')[0] || 'Admin';
     const lastName = reg.lastName || reg.name?.split(' ').slice(1).join(' ') || 'Staff';
     const mobile = reg.mobile || '0000000000';
-
     const adminSubRoles = [
       'System Administrator', 'HR Administrator', 'Operations Administrator', 'Website Administrator', 'CRM Administrator', 'Support Administrator', 'Marketing Administrator', 'Event Administrator', 'Content Administrator', 'Finance Administrator', 'Compliance Administrator', 'User Access Administrator', 'Database Administrator'
     ];
@@ -595,10 +654,83 @@ router.post('/approve-registration/:id', async (req, res) => {
       'HR Executive', 'Operations Executive', 'Project Coordinator', 'Sales Executive', 'Marketing Executive', 'Business Development Executive', 'Customer Support Executive', 'Technical Support Executive', 'Content Executive', 'Event Coordinator', 'CRM Executive', 'Finance Executive', 'Compliance Executive', 'Training Coordinator', 'Data Entry & Documentation Executive'
     ];
 
+    const allOfficialRoles = [...adminSubRoles, ...managerSubRoles, ...employeeSubRoles];
+
+    let subRole = reg.adminSubRole || 'System Administrator';
+    const cleanKey = subRole.toLowerCase().trim();
+
+    // 1. Check for exact case-insensitive match in all 42 official roles
+    const exactMatch = allOfficialRoles.find(r => r.toLowerCase() === cleanKey);
+    if (exactMatch) {
+      subRole = exactMatch;
+    } else {
+      // 2. Mappings for legacy shorthands and abbreviations
+      const legacyRoleMap = {
+        'system': 'System Administrator',
+        'system admin': 'System Administrator',
+        'sysadmin': 'System Administrator',
+        'hr': 'HR Administrator',
+        'hr admin': 'HR Administrator',
+        'operations': 'Operations Administrator',
+        'operations admin': 'Operations Administrator',
+        'ops': 'Operations Administrator',
+        'ops admin': 'Operations Administrator',
+        'website': 'Website Administrator',
+        'website admin': 'Website Administrator',
+        'web': 'Website Administrator',
+        'web admin': 'Website Administrator',
+        'crm': 'CRM Administrator',
+        'crm admin': 'CRM Administrator',
+        'support': 'Support Administrator',
+        'support admin': 'Support Administrator',
+        'marketing': 'Marketing Administrator',
+        'marketing admin': 'Marketing Administrator',
+        'event': 'Event Administrator',
+        'event admin': 'Event Administrator',
+        'content': 'Content Administrator',
+        'content admin': 'Content Administrator',
+        'finance': 'Finance Administrator',
+        'finance admin': 'Finance Administrator',
+        'compliance': 'Compliance Administrator',
+        'compliance admin': 'Compliance Administrator',
+        'user access': 'User Access Administrator',
+        'user access admin': 'User Access Administrator',
+        'database': 'Database Administrator',
+        'database admin': 'Database Administrator',
+        'db': 'Database Administrator',
+        'db admin': 'Database Administrator',
+        'dba': 'Database Administrator',
+        'tr': 'Training Coordinator'
+      };
+
+      if (legacyRoleMap[cleanKey]) {
+        subRole = legacyRoleMap[cleanKey];
+      } else {
+        // 3. Fallback partial matching
+        if (cleanKey.includes('system') || cleanKey.includes('sys')) subRole = 'System Administrator';
+        else if (cleanKey.includes('ops') || cleanKey.includes('operation')) subRole = 'Operations Administrator';
+        else if (cleanKey.includes('web') || cleanKey.includes('site')) subRole = 'Website Administrator';
+        else if (cleanKey.includes('crm')) subRole = 'CRM Administrator';
+        else if (cleanKey.includes('support')) subRole = 'Support Administrator';
+        else if (cleanKey.includes('marketing') || cleanKey.includes('mkt')) subRole = 'Marketing Administrator';
+        else if (cleanKey.includes('event')) subRole = 'Event Administrator';
+        else if (cleanKey.includes('content')) subRole = 'Content Administrator';
+        else if (cleanKey.includes('finance') || cleanKey.includes('fin')) subRole = 'Finance Administrator';
+        else if (cleanKey.includes('compliance') || cleanKey.includes('legal')) subRole = 'Compliance Administrator';
+        else if (cleanKey.includes('access') || cleanKey.includes('perm')) subRole = 'User Access Administrator';
+        else if (cleanKey.includes('database') || cleanKey.includes('db')) subRole = 'Database Administrator';
+        else if (cleanKey.includes('hr') || cleanKey.includes('recruitment')) subRole = 'HR Administrator';
+        else {
+          subRole = 'System Administrator';
+        }
+      }
+    }
+
+
     let derivedRole = 'admin';
-    if (adminSubRoles.includes(reg.adminSubRole)) derivedRole = 'admin';
-    else if (managerSubRoles.includes(reg.adminSubRole)) derivedRole = 'manager';
-    else if (employeeSubRoles.includes(reg.adminSubRole)) derivedRole = 'employee';
+    if (adminSubRoles.includes(subRole)) derivedRole = 'admin';
+    else if (managerSubRoles.includes(subRole)) derivedRole = 'manager';
+    else if (employeeSubRoles.includes(subRole)) derivedRole = 'employee';
 
     // 1. Create the User (authentication)
     const user = await User.create({
@@ -609,18 +741,20 @@ router.post('/approve-registration/:id', async (req, res) => {
       role: derivedRole,
       isApproved: true,
       mobile: mobile,
-      adminSubRole: reg.adminSubRole,
-      joiningDate: reg.joiningDate
+      adminSubRole: subRole,
+      joiningDate: reg.joiningDate || new Date().toISOString(),
+      employeeId: reg.employeeId || ''
     });
 
     // 2. Create the Admin Detail (stored in admindb collection)
     await AdminDetail.create({
       userId: user._id,
+      employeeId: reg.employeeId || '',
       name: `${firstName} ${lastName}`,
       email: reg.email,
-      adminSubRole: reg.adminSubRole,
-      adminPermissions: reg.adminPermissions,
-      joiningDate: reg.joiningDate,
+      adminSubRole: subRole,
+      adminPermissions: reg.adminPermissions || 'view',
+      joiningDate: reg.joiningDate || new Date().toISOString(),
       registrationId: reg._id
     });
 
