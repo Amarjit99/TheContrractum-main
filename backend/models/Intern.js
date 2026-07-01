@@ -6,7 +6,8 @@ const internSchema = new mongoose.Schema({
   collegeName: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },
-  tags: { type: [String], default: [] }
+  tags: { type: [String], default: [] },
+  batchYear: { type: String, required: true, default: new Date().getFullYear().toString() }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Intern', internSchema);

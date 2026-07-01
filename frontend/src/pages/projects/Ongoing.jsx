@@ -8,7 +8,7 @@ export default function OngoingProjects() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedPriority, setSelectedPriority] = useState("All");
-  const [sortBy, setSortBy] = useState("progress");
+  const [sortBy, setSortBy] = useState("date");
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const categories = ["All", "Government", "Healthcare", "Enterprise", "E-Commerce", "Finance", "Education"];
@@ -41,27 +41,29 @@ export default function OngoingProjects() {
   }, []);
 
   // Filter and sort projects
-  const filteredProjects = projectsData
+  const filteredProjects = (projectsData || [])
     .filter(project => {
-      const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           project.client.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (project.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (project.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (project.client || "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All" || project.category === selectedCategory;
       const matchesPriority = selectedPriority === "All" || project.priority === selectedPriority;
       return matchesSearch && matchesCategory && matchesPriority;
     })
     .sort((a, b) => {
-      if (sortBy === "progress") return b.progress - a.progress;
-      if (sortBy === "date") return new Date(b.startDate) - new Date(a.startDate);
-      if (sortBy === "budget") return parseFloat((b.budget||"0").replace(/[$,]/g, '')) - parseFloat((a.budget||"0").replace(/[$,]/g, ''));
+      if (sortBy === "progress") return (b.progress || 0) - (a.progress || 0);
+      if (sortBy === "date") {
+        return (b.id || b._id || "").toString().localeCompare((a.id || a._id || "").toString());
+      }
+      if (sortBy === "budget") return parseFloat((b.budget||"0").toString().replace(/[$,]/g, '')) - parseFloat((a.budget||"0").toString().replace(/[$,]/g, ''));
       return 0;
     });
 
   // Calculate statistics
-  const totalProjects = projectsData.length;
-  const avgProgress = Math.round(projectsData.reduce((sum, p) => sum + p.progress, 0) / totalProjects);
-  const totalTeamMembers = projectsData.reduce((sum, p) => sum + p.teamSize, 0);
-  const criticalProjects = projectsData.filter(p => p.priority === "Critical").length;
+  const totalProjects = (projectsData || []).length;
+  const avgProgress = totalProjects > 0 ? Math.round((projectsData || []).reduce((sum, p) => sum + (p.progress || 0), 0) / totalProjects) : 0;
+  const totalTeamMembers = (projectsData || []).reduce((sum, p) => sum + (p.teamSize || 0), 0);
+  const criticalProjects = (projectsData || []).filter(p => p.priority === "Critical").length;
 
   const getProgressColor = (progress) => {
     if (progress >= 75) return "bg-green-500";
@@ -325,7 +327,7 @@ export default function OngoingProjects() {
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">Budget</p>
-                      <p className="text-sm font-semibold text-slate-800">{project.budget}</p>
+                      <p className="text-sm font-semibold text-slate-800">{project.budget && !project.budget.toString().startsWith('$') ? `$${project.budget}` : project.budget}</p>
                     </div>
                   </div>
 
@@ -333,7 +335,7 @@ export default function OngoingProjects() {
                   <div className="mb-4">
                     <p className="text-xs text-slate-500 mb-2 font-semibold">Technologies:</p>
                     <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, index) => (
+                      {(project.technologies || []).map((tech, index) => (
                         <span
                           key={index}
                           className="bg-primary/10 text-primary text-xs px-2 py-1 rounded font-medium"

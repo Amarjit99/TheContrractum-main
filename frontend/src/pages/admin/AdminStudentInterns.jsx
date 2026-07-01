@@ -23,7 +23,8 @@ export default function AdminStudentInterns() {
     collegeName: '',
     description: '',
     image: null,
-    tags: ''
+    tags: '',
+    batchYear: new Date().getFullYear().toString()
   });
 
   const fetchInterns = useCallback(async () => {
@@ -65,7 +66,8 @@ export default function AdminStudentInterns() {
       collegeName: '',
       description: '',
       image: null,
-      tags: ''
+      tags: '',
+      batchYear: new Date().getFullYear().toString()
     });
     setImagePreview(null);
     setEditingIntern(null);
@@ -78,10 +80,10 @@ export default function AdminStudentInterns() {
       role: intern.role,
       collegeName: intern.collegeName,
       description: intern.description,
-      image: null,
-      tags: intern.tags ? intern.tags.join(', ') : ''
-    });
-    setImagePreview(intern.image && intern.image.includes('/uploads/') ? `${API}${intern.image}` : intern.image);
+      tags: intern.tags ? intern.tags.join(', ') : '',
+      batchYear: intern.batchYear || new Date().getFullYear().toString(),
+      image: null
+    });setImagePreview(intern.image && intern.image.includes('/uploads/') ? `${API}${intern.image}` : intern.image);
     setIsModalOpen(true);
   };
 
@@ -112,6 +114,7 @@ export default function AdminStudentInterns() {
     data.append('role', formData.role);
     data.append('collegeName', formData.collegeName);
     data.append('description', formData.description);
+    data.append('batchYear', formData.batchYear);
     if (formData.image) {
       data.append('image', formData.image);
     }
@@ -163,7 +166,7 @@ export default function AdminStudentInterns() {
               className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
             />
           </div>
-          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
+          <button onClick={() => { resetForm(); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0 cursor-pointer">
             <Plus size={16} /> Add Intern
           </button>
         </div>
@@ -174,17 +177,18 @@ export default function AdminStudentInterns() {
           <table className="w-full text-sm">
             <thead className="bg-[#f8fafc] border-b border-gray-100">
               <tr>
-                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">Intern</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">Name</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell text-xs sm:text-sm">Role</th>
                 <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 hidden md:table-cell text-xs sm:text-sm">College</th>
+                <th className="text-left text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 hidden md:table-cell text-xs sm:text-sm">Batch</th>
                 <th className="text-right text-gray-500 font-semibold px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {loading ? (
-                <tr><td colSpan="4" className="text-center py-8 text-gray-500">Loading interns...</td></tr>
+                <tr><td colSpan="5" className="text-center py-8 text-gray-500">Loading interns...</td></tr>
               ) : filteredInterns.length === 0 ? (
-                <tr><td colSpan="4" className="text-center py-8 text-gray-500">No interns found.</td></tr>
+                <tr><td colSpan="5" className="text-center py-8 text-gray-500">No interns found.</td></tr>
               ) : (
                 filteredInterns.map(i => (
                   <tr key={i._id} className="hover:bg-gray-50 transition-colors">
@@ -197,14 +201,15 @@ export default function AdminStudentInterns() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 hidden sm:table-cell text-xs sm:text-sm">{i.role}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 font-medium hidden sm:table-cell text-xs sm:text-sm">{i.role}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 hidden md:table-cell text-xs sm:text-sm">{i.collegeName}</td>
+                    <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-500 hidden md:table-cell text-xs sm:text-sm font-semibold">
+                      <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs">{i.batchYear || new Date().getFullYear().toString()}</span>
+                    </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => handleEdit(i)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"><Edit size={16} /></button>
-                        {!["Puttoju Venkatesh", "Ankit Kumar", "Amarjeet P", "Rahul Singh"].includes(i.name) && (
-                          <button onClick={() => handleDelete(i._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} /></button>
-                        )}
+                        <button onClick={() => handleDelete(i._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} /></button>
                       </div>
                     </td>
                   </tr>
@@ -221,7 +226,7 @@ export default function AdminStudentInterns() {
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
             <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
               <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingIntern ? 'Edit Intern' : 'Add New Intern'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                 <X size={20} />
               </button>
             </div>
@@ -257,9 +262,20 @@ export default function AdminStudentInterns() {
                   <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" rows={3} placeholder="What should people know about their work?" />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Skills (comma separated)</label>
-                  <input type="text" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. React, Node.js, MongoDB" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Skills (comma separated)</label>
+                    <input type="text" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. React, Node.js, MongoDB" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Batch Year</label>
+                    <select required value={formData.batchYear} onChange={e => setFormData({ ...formData, batchYear: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
+                      {[...Array(41)].map((_, i) => {
+                        const year = 2040 - i;
+                        return <option key={year} value={year.toString()}>{year}</option>
+                      })}
+                    </select>
+                  </div>
                 </div>
 
                 <div>
@@ -289,8 +305,8 @@ export default function AdminStudentInterns() {
                 </div>
 
                 <div className="pt-4 flex items-center justify-end gap-3 mt-6">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                  <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">Cancel</button>
+                  <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-[#1e5cdc] hover:bg-blue-700 rounded-lg transition-colors shadow-sm cursor-pointer">
                     {editingIntern ? 'Update Intern' : 'Save Intern'}
                   </button>
                 </div>

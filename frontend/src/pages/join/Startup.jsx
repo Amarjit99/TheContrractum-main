@@ -203,7 +203,7 @@ export default function Startup() {
             title: 'Mentorship Matching',
             prize: 'Expert Guidance',
             timeline: 'Monthly',
-            image: 'https://images.unsplash.com/photo-1563206965-74185b417601?w=300&h=200&fit=crop',
+            image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop',
             extraPoints: [
                 'Direct access to research scholars',
                 'Professional portfolio reviews',

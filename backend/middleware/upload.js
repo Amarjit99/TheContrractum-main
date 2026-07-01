@@ -18,6 +18,8 @@ const storage = multer.diskStorage({
       uploadPath = 'uploads/news';
     } else if (req.originalUrl.includes('certificates')) {
       uploadPath = 'uploads/certificates';
+    } else if (req.originalUrl.includes('volunteer-stories')) {
+      uploadPath = 'uploads/volunteers';
     } else if (req.originalUrl.includes('applications')) {
       uploadPath = 'uploads/resumes';
     }

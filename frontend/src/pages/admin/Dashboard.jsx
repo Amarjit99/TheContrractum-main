@@ -303,12 +303,12 @@ export default function Dashboard() {
                   <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
@@ -367,7 +367,6 @@ export default function Dashboard() {
                 WMS Operations & Activity
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
                 {/* Live Feedback Loop */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:col-span-1">
                   <div className="p-4 border-b border-gray-50 flex justify-between items-center">
@@ -407,6 +406,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                 </div>
+
 
                 {/* Form Submissions Quick Stats */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col md:col-span-2">
@@ -448,21 +448,21 @@ export default function Dashboard() {
                     <h3 className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
                       <CheckCircle2 size={16} className="text-indigo-600" /> Active Tasks
                     </h3>
-                    <button 
-                      onClick={() => navigate('/admin/tasks')} 
+                    <button
+                      onClick={() => navigate('/admin/tasks')}
                       className="text-[10px] font-bold text-indigo-600 hover:underline bg-indigo-50 px-2 py-0.5 rounded"
                     >
                       Kanban Board →
                     </button>
                   </div>
-                  
+
                   {/* Quick Add Form */}
                   <form onSubmit={handleAddQuickTask} className="flex gap-2 mb-2">
-                    <input 
+                    <input
                       value={quickTaskTitle}
                       onChange={e => setQuickTaskTitle(e.target.value)}
-                      type="text" 
-                      placeholder="Quick add task..." 
+                      type="text"
+                      placeholder="Quick add task..."
                       className="flex-1 px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white text-xs outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all"
                     />
                     <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1 rounded-lg flex items-center justify-center gap-1 transition-colors shrink-0">
@@ -477,7 +477,7 @@ export default function Dashboard() {
                       tasks.filter(t => t.status !== 'Completed').slice(0, 4).map(task => {
                         return (
                           <div key={task._id} className="flex items-start gap-2 p-1.5 bg-gray-50/50 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100/50">
-                            <button 
+                            <button
                               type="button"
                               onClick={() => handleToggleTask(task._id, task.status)}
                               className="w-3.5 h-3.5 rounded border border-gray-300 hover:border-gray-400 bg-white flex items-center justify-center transition-all mt-0.5 shrink-0"
@@ -516,8 +516,8 @@ export default function Dashboard() {
                     <h3 className="font-semibold text-gray-800 text-sm">Corporate Registrations</h3>
                     <p className="text-[10px] text-gray-400 mt-0.5">Configure user accounts and staff access permissions.</p>
                   </div>
-                  <button 
-                    onClick={() => navigate('/admin/registration')} 
+                  <button
+                    onClick={() => navigate('/admin/registration')}
                     className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-indigo-700 transition shrink-0"
                   >
                     Add Staff
@@ -596,11 +596,10 @@ export default function Dashboard() {
                 ) : (
                   notifications.map((notif) => (
                     <div key={notif._id} className="flex gap-3 p-3 bg-gray-50/50 hover:bg-gray-50 rounded-xl transition-all border border-gray-100">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-white font-bold text-xs ${
-                        notif.type === 'auth' || notif.type === 'admin' ? 'bg-red-500' :
-                        notif.type === 'submission' || notif.type === 'contact' ? 'bg-blue-500' :
-                        notif.type === 'certificate' ? 'bg-teal-500' : 'bg-indigo-500'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-white font-bold text-xs ${notif.type === 'auth' || notif.type === 'admin' ? 'bg-red-500' :
+                          notif.type === 'submission' || notif.type === 'contact' ? 'bg-blue-500' :
+                            notif.type === 'certificate' ? 'bg-teal-500' : 'bg-indigo-500'
+                        }`}>
                         {(notif.type || 'S').charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">

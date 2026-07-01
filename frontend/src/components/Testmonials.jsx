@@ -96,8 +96,8 @@ export default function TestimonialsSection() {
                 key={i}
                 onClick={() => goTo(i)}
                 className={`h-2 rounded-full transition-all duration-300 ${i === current
-                    ? "w-8 bg-indigo-600"
-                    : "w-2 bg-gray-300 hover:bg-indigo-300"
+                  ? "w-8 bg-indigo-600"
+                  : "w-2 bg-gray-300 hover:bg-indigo-300"
                   }`}
                 aria-label={`Go to testimonial ${i + 1}`}
               />

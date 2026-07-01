@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function OurClients() {
   const clients = [
@@ -43,8 +44,30 @@ export default function OurClients() {
   ];
 
   const [startIndex, setStartIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
-  // Auto-rotation removed; navigation is manual via Prev/Next buttons
+  const goTo = useCallback(
+    (index) => {
+      if (animating) return;
+      setAnimating(true);
+      setTimeout(() => {
+        setStartIndex((index + clients.length) % clients.length);
+        setAnimating(false);
+      }, 300);
+    },
+    [animating, clients.length]
+  );
+
+  const prev = () => goTo(startIndex - 1);
+  const next = useCallback(() => goTo(startIndex + 1), [startIndex, goTo]);
+
+  // Auto rotate every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      next();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [next]);
 
   // Get 3 visible clients
   const visibleClients = Array.from({ length: 3 }, (_, i) =>
@@ -89,16 +112,29 @@ export default function OurClients() {
           </p> */}
         </div>
 
-        {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-16">
-          100% <span className="relative">
-            Satisfied Clients
-            <span className="absolute -top-2 -right-4 w-2 h-2 bg-primary rounded-full"></span>
-          </span>
-        </h2>
+        {/* Heading & Progress Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-16 gap-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+            100% <span className="relative">
+              Satisfied Clients
+              <span className="absolute -top-2 -right-4 w-2 h-2 bg-primary rounded-full"></span>
+            </span>
+          </h2>
+
+          {/* Progress bar */}
+          <div className="w-full max-w-xs h-1 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              key={startIndex}
+              className="h-full bg-primary rounded-full"
+              style={{
+                animation: "progressBar 5s linear forwards",
+              }}
+            />
+          </div>
+        </div>
 
         {/* Client Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 transition-all duration-700">
+        <div className={`grid md:grid-cols-2 lg:grid-cols-3 gap-10 transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"}`}>
 
           {visibleClients.map((client, index) => (
             <div
@@ -126,7 +162,41 @@ export default function OurClients() {
 
         </div>
 
+        {/* Slider Controls */}
+        <div className="mt-12 flex justify-between items-center">
+          {/* Left Arrow */}
+          <button
+            onClick={prev}
+            aria-label="Previous client"
+            className="w-14 h-14 flex items-center justify-center rounded-xl text-white shadow-lg hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 cursor-pointer"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #2563eb)" }}
+          >
+            <ArrowLeft size={22} />
+          </button>
+
+          {/* Client counter */}
+          <span className="text-gray-500 font-medium text-sm tracking-widest">
+            {String(startIndex + 1).padStart(2, "0")} / {String(clients.length).padStart(2, "0")}
+          </span>
+
+          {/* Right Arrow */}
+          <button
+            onClick={next}
+            aria-label="Next client"
+            className="w-14 h-14 flex items-center justify-center rounded-xl text-white shadow-lg hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 cursor-pointer"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #2563eb)" }}
+          >
+            <ArrowRight size={22} />
+          </button>
+        </div>
+
       </div>
+      <style>{`
+        @keyframes progressBar {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+      `}</style>
     </section>
   );
 }

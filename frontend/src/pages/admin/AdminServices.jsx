@@ -125,7 +125,7 @@ export default function AdminServices() {
     <AdminLayout>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-2">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Services Portfolio</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Services Dashboard</h1>
           <p className="text-gray-500 text-xs sm:text-sm mt-1">Manage public service offerings and details</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -180,11 +180,9 @@ export default function AdminServices() {
                       <button onClick={() => openEditModal(s)} className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Service">
                         <Edit size={16} />
                       </button>
-                      {!['CS & IT Services', 'GIS Solutions', 'MRAS Services', 'E-Commerce Platforms', 'HR Tech Solutions', 'Digital Marketing', 'BPO Services', 'Telecommunication', 'Network Infrastructure', 'Cloud Integration'].includes(s.title) && (
-                        <button onClick={() => handleDelete(s._id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 size={18} />
-                        </button>
-                      )}
+                      <button onClick={() => handleDelete(s._id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 size={18} />
+                      </button>
                     </td>
                   </tr>
                 ))

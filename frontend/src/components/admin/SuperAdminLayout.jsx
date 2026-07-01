@@ -73,11 +73,10 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
             <div key={item.id} className="space-y-1">
               <button
                 onClick={(e) => toggleSubmenu(e, item.id)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isChildActive
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isChildActive
                     ? 'bg-white/10 text-white shadow-sm'
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-blue-200">
@@ -99,11 +98,10 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
                         key={subItem.id}
                         to={subItem.to}
                         onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
-                          isSubActive
+                        className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${isSubActive
                             ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
                             : 'text-blue-100 hover:bg-white/5 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                           {subItem.icon}
@@ -123,11 +121,10 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
             <Link
               to={item.to}
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                isActive
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
                   ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
                   : 'text-blue-100 hover:bg-white/10 hover:text-white'
-              }`}
+                }`}
             >
               <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                 {item.icon}

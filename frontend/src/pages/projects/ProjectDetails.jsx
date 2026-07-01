@@ -182,7 +182,7 @@ export default function ProjectDetails() {
                 Key Features
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {project.keyFeatures.map((feature, index) => (
+                {(project.keyFeatures || []).map((feature, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <CheckCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700 font-medium">{feature}</span>
@@ -200,7 +200,7 @@ export default function ProjectDetails() {
                 Project Objectives
               </h2>
               <div className="space-y-3">
-                {project.objectives.map((objective, index) => (
+                {(project.objectives || []).map((objective, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
                     <Target className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700">{objective}</span>
@@ -218,7 +218,7 @@ export default function ProjectDetails() {
                 Key Challenges
               </h2>
               <div className="space-y-3">
-                {project.challenges.map((challenge, index) => (
+                {(project.challenges || []).map((challenge, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
                     <TrendingUp className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700">{challenge}</span>
@@ -236,7 +236,7 @@ export default function ProjectDetails() {
                 Project Milestones
               </h2>
               <div className="space-y-4">
-                {project.milestones.map((milestone, index) => (
+                {(project.milestones || []).map((milestone, index) => (
                   <div key={index} className="relative pl-8 pb-4 border-l-2 border-slate-300 last:border-l-0 last:pb-0">
                     <div className={`absolute left-0 top-0 -translate-x-1/2 w-4 h-4 rounded-full border-2 ${
                       milestone.status === "Completed" ? "bg-green-500 border-green-500" :
@@ -270,7 +270,7 @@ export default function ProjectDetails() {
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 sticky top-24">
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech, index) => (
+                {(project.technologies || []).map((tech, index) => (
                   <span
                     key={index}
                     className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-md"
