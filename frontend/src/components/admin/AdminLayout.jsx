@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake, HeartHandshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity, CheckSquare
+  Search, Bell, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity, CheckSquare
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -66,7 +66,7 @@ const MENU_ITEMS = [
   { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
 ];
 
-const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout }) => {
+const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => {
   const [openNestedMenus, setOpenNestedMenus] = useState({});
 
   const toggleNestedSubmenu = (e, id) => {
@@ -191,13 +191,23 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
   return (
     <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
       {/* Brand area */}
-      <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
-        <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
-        <div className="z-10">
-          <p className="text-[#1e5cdc] text-xs font-bold">Admin Panel</p>
-          {admin?.adminSubRole && <p className="text-gray-500 text-[10px] font-medium leading-none mt-0.5">{admin.adminSubRole}</p>}
+      <div className="px-6 py-5 flex items-center justify-between bg-white relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
+          <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
+          <div className="z-10">
+            <p className="text-[#1e5cdc] text-xs font-bold uppercase tracking-tight">
+              {admin?.role === 'super-admin' ? 'Super Admin' : 'Admin Panel'}
+            </p>
+            {admin?.adminSubRole && <p className="text-gray-500 text-[10px] font-medium leading-none mt-0.5">{admin.adminSubRole}</p>}
+          </div>
         </div>
+        <button
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          className="p-1.5 hover:bg-gray-100 rounded text-gray-500 cursor-pointer hidden lg:block relative z-10"
+        >
+          {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+        </button>
       </div>
 
       {/* Nav */}
@@ -219,24 +229,34 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
             return (
               <div key={item.id} className="space-y-1">
                 <button
-                  onClick={(e) => toggleSubmenu(e, item.id)}
+                  onClick={(e) => {
+                    if (sidebarCollapsed) {
+                      setSidebarCollapsed(false);
+                      if (!openMenus[item.id]) {
+                        toggleSubmenu(e, item.id);
+                      }
+                    } else {
+                      toggleSubmenu(e, item.id);
+                    }
+                  }}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isChildActive
                     ? 'bg-white/10 text-white shadow-sm'
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
                     }`}
+                  title={item.label}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-blue-200">
                       {item.icon}
                     </span>
-                    {item.label}
+                    <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{item.label}</span>
                   </div>
-                  <span className="opacity-70">
+                  <span className={`opacity-70 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
                     {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                   </span>
                 </button>
 
-                {isOpen && item.subItems && (
+                {isOpen && !sidebarCollapsed && item.subItems && (
                   <div className="pl-6 pr-2 py-1 space-y-1 transition-all duration-200">
                     {item.subItems.map(subItem => {
                       if (subItem.hasSubmenu) {
@@ -253,14 +273,15 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                                 ? 'bg-white/10 text-white shadow-sm font-semibold'
                                 : 'text-blue-100 hover:bg-white/10 hover:text-white'
                                 }`}
+                              title={subItem.label}
                             >
                               <div className="flex items-center gap-3">
                                 <span className="text-blue-200">
                                   {subItem.icon}
                                 </span>
-                                {subItem.label}
+                                <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{subItem.label}</span>
                               </div>
-                              <span className="opacity-70">
+                              <span className={`opacity-70 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
                                 {isNestedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                               </span>
                             </button>
@@ -278,11 +299,12 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                                         ? 'bg-white text-[#1e5cdc] shadow-md font-semibold transform scale-[1.01]'
                                         : 'text-blue-105 hover:bg-white/5 hover:text-white'
                                         }`}
+                                      title={nestedItem.label}
                                     >
                                       <span className={`${isDeepActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                                         {nestedItem.icon}
                                       </span>
-                                      {nestedItem.label}
+                                      <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{nestedItem.label}</span>
                                     </Link>
                                   );
                                 })}
@@ -302,11 +324,12 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                             ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
                             : 'text-blue-105 hover:bg-white/5 hover:text-white'
                             }`}
+                          title={subItem.label}
                         >
                           <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                             {subItem.icon}
                           </span>
-                          {subItem.label}
+                          <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{subItem.label}</span>
                         </Link>
                       );
                     })}
@@ -325,11 +348,12 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
                   ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
                   : 'text-blue-100 hover:bg-white/10 hover:text-white'
                   }`}
+                title={item.label}
               >
                 <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                   {item.icon}
                 </span>
-                {item.label}
+                <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{item.label}</span>
               </Link>
             </div>
           );
@@ -338,8 +362,9 @@ const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, ha
 
       {/* Logout button at bottom */}
       <div className="p-4 border-t border-blue-500/30">
-        <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20">
-          Logout
+        <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20" title="Logout">
+          <LogOut size={16} className="shrink-0" />
+          <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>Logout</span>
         </button>
       </div>
     </div>
@@ -361,6 +386,7 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState(() => {
     const initial = {};
     MENU_ITEMS.forEach(item => {
@@ -494,8 +520,8 @@ export default function AdminLayout({ children }) {
   return (
     <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block w-64 shrink-0 h-full shadow-xl z-20">
-        <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
+      <div className={`hidden lg:block ${sidebarCollapsed ? 'w-20' : 'w-64'} shrink-0 h-full shadow-xl z-20 transition-all duration-300`}>
+        <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
       </div>
 
       {/* Mobile Sidebar Overlay */}
@@ -503,7 +529,7 @@ export default function AdminLayout({ children }) {
         <>
           <div className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-64 z-50 lg:hidden shadow-2xl transition-transform transform translate-x-0">
-            <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
+            <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => {}} />
           </div>
         </>
       )}

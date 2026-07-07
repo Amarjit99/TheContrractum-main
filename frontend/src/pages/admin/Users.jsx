@@ -7,7 +7,7 @@ import {
   LayoutDashboard, FileText, Calendar, Send, UserCheck, Star,
   Award, Shield, Mail, MessageSquare, RefreshCw, BarChart2, FileSpreadsheet,
   Users, UserPlus, Bell, Lock, Key, Settings, Trash2, Eye, ShieldCheck, Activity, Globe,
-  ChevronRight, ChevronDown, Folder, FolderOpen, Crown
+  ChevronRight, ChevronLeft, ChevronDown, Folder, FolderOpen, Crown
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -274,6 +274,7 @@ export default function AdminUsers() {
 
   // Sub-Navigation Tabs: 'overview' | 'roles' | 'modules' | 'website-users' | 'customer-accounts' | 'staff-accounts' | 'security' | 'logs'
   const [activeSubTab, setActiveSubTab] = useState('overview');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Role Hierarchy explorer states
   const [selectedRole, setSelectedRole] = useState('System Administrator');
@@ -673,18 +674,26 @@ export default function AdminUsers() {
   return (
     <Layout>
       {/* Split dashboard portal wrapper */}
-      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 -m-6 rounded-2xl overflow-hidden border border-gray-100">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-5.5rem)] bg-gray-50 -mx-6 -mb-6 mt-3 rounded-2xl overflow-hidden border border-gray-100">
 
         {/* User Access Navigation Sidebar (Dark Blue theme) */}
-        <aside className="w-full lg:w-72 bg-slate-900 text-slate-100 flex flex-col p-5 shrink-0 border-r border-slate-800">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="p-2.5 bg-blue-600 rounded-xl">
-              <Shield size={22} className="text-white" />
+        <aside className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} bg-slate-900 text-slate-100 flex flex-col p-5 shrink-0 border-r border-slate-800 transition-all duration-300`}>
+          <div className="mb-8 flex items-center justify-between">
+            <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
+              <div className="p-2.5 bg-blue-600 rounded-xl">
+                <Shield size={22} className="text-white" />
+              </div>
+              <div>
+                <h2 className="font-bold text-base leading-tight">User Access</h2>
+                <span className="text-xs text-blue-400 font-semibold tracking-wider uppercase">CMS Controls</span>
+              </div>
             </div>
-            <div>
-              <h2 className="font-bold text-base leading-tight">User Access</h2>
-              <span className="text-xs text-blue-400 font-semibold tracking-wider uppercase">CMS Controls</span>
-            </div>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1 hover:bg-slate-800 rounded text-slate-400 cursor-pointer hidden lg:block"
+            >
+              {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
           </div>
 
           <nav className="flex-1 space-y-1">
@@ -709,17 +718,34 @@ export default function AdminUsers() {
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
                   }`}
+                title={tab.label}
               >
                 {tab.icon}
-                {tab.label}
+                {!sidebarCollapsed && <span className="truncate">{tab.label}</span>}
+                {sidebarCollapsed && <span className="truncate lg:hidden">{tab.label}</span>}
               </button>
             ))}
           </nav>
 
           <div className="mt-8 pt-6 border-t border-slate-800 text-[11px] text-slate-500 font-medium">
-            Authorized admin:
-            <p className="text-slate-300 font-semibold text-xs mt-1 truncate">{admin?.name || 'Access Manager'}</p>
-            <p className="text-blue-400 font-semibold text-[10px] uppercase tracking-wide truncate">{admin?.adminSubRole || 'User Administrator'}</p>
+            {!sidebarCollapsed ? (
+              <>
+                Authorized admin:
+                <p className="text-slate-300 font-semibold text-xs mt-1 truncate">{admin?.name || 'Access Manager'}</p>
+                <p className="text-blue-400 font-semibold text-[10px] uppercase tracking-wide truncate">{admin?.adminSubRole || 'User Administrator'}</p>
+              </>
+            ) : (
+              <>
+                <div className="lg:hidden">
+                  Authorized admin:
+                  <p className="text-slate-300 font-semibold text-xs mt-1 truncate">{admin?.name || 'Access Manager'}</p>
+                  <p className="text-blue-400 font-semibold text-[10px] uppercase tracking-wide truncate">{admin?.adminSubRole || 'User Administrator'}</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs mx-auto hidden lg:flex" title={admin?.name || 'Access Manager'}>
+                  {(admin?.name || 'A')[0]}
+                </div>
+              </>
+            )}
           </div>
         </aside>
 

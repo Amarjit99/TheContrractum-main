@@ -7,7 +7,8 @@ import {
     LayoutDashboard, Users, Link as LinkIcon, Compass, 
     Activity, Wallet, Gift, Folder, LineChart, Bell, 
     Shield, Settings, Plus, CheckCircle, XCircle, Clock, 
-    AlertTriangle, Download, Copy, Check, Filter, Calendar, Info
+    AlertTriangle, Download, Copy, Check, Filter, Calendar, Info,
+    ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { 
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis, 
@@ -28,6 +29,7 @@ export default function AdminAffiliates() {
 
     // Submenu / Tab selection
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     
     // Core data states
     const [applications, setApplications] = useState([]);
@@ -530,17 +532,25 @@ export default function AdminAffiliates() {
             <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8rem)] mt-2">
                 
                 {/* 1. Left Sub-Sidebar Panel */}
-                <div className="w-full lg:w-64 shrink-0 bg-[#0b0f19] text-gray-300 rounded-3xl p-5 shadow-2xl border border-gray-800 flex flex-col justify-between">
+                <div className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'} shrink-0 bg-[#0b0f19] text-gray-300 rounded-3xl p-5 shadow-2xl border border-gray-800 flex flex-col justify-between transition-all duration-300`}>
                     <div>
                         {/* Sub-brand tag */}
-                        <div className="flex items-center gap-3 px-3 py-4 mb-6 border-b border-gray-800">
-                            <span className="p-2 bg-[#6366f1]/20 text-[#6366f1] rounded-xl">
-                                <LayoutDashboard size={20} />
-                            </span>
-                            <div>
-                                <h3 className="text-white text-base font-black tracking-tight leading-none">AffiliateMarketing</h3>
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Marketing System</span>
+                        <div className="flex items-center justify-between px-3 py-4 mb-6 border-b border-gray-800">
+                            <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
+                                <span className="p-2 bg-[#6366f1]/20 text-[#6366f1] rounded-xl">
+                                    <LayoutDashboard size={20} />
+                                </span>
+                                <div>
+                                    <h3 className="text-white text-base font-black tracking-tight leading-none">AffiliateMarketing</h3>
+                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Marketing System</span>
+                                </div>
                             </div>
+                            <button
+                                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                                className="p-1 hover:bg-gray-800 rounded text-gray-500 cursor-pointer hidden lg:block"
+                            >
+                                {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                            </button>
                         </div>
 
                         {/* List Menu */}
@@ -556,13 +566,14 @@ export default function AdminAffiliates() {
                                             ? 'bg-gradient-to-r from-[#6366f1] to-[#4f46e5] text-white shadow-lg shadow-[#6366f1]/20' 
                                             : 'hover:bg-gray-800/50 hover:text-white text-gray-400'
                                         }`}
+                                        title={item.label}
                                     >
                                         <div className="flex items-center gap-3">
                                             {item.icon}
-                                            <span>{item.label}</span>
+                                            <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{item.label}</span>
                                         </div>
                                         {item.badge && (
-                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${sidebarCollapsed ? 'lg:hidden' : ''} ${
                                                 isActive ? 'bg-white text-[#6366f1]' : 'bg-[#ef4444] text-white'
                                             }`}>
                                                 {item.badge}
