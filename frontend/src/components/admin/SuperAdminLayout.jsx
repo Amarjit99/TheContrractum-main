@@ -32,6 +32,7 @@ const MENU_ITEMS = [
       { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
       { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
       { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
+      { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' }
     ]
   },
   {
@@ -45,12 +46,11 @@ const MENU_ITEMS = [
       { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
       { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
       { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={18} />, label: 'ID Cards' },
-      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' },
+      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' }
     ]
   },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
-  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-  { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
+  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' }
 ];
 
 const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => (

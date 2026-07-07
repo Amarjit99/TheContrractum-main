@@ -975,14 +975,11 @@ router.put('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req
     }
 });
 
-// Delete a contract (only Draft or Rejected)
+// Delete a contract
 router.delete('/:id', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
         const contract = await Contract.findById(req.params.id);
         if (!contract) return res.status(404).json({ message: 'Contract not found' });
-        if (!['Draft', 'Rejected'].includes(contract.status)) {
-            return res.status(403).json({ message: 'Only Draft or Rejected contracts can be deleted.' });
-        }
         await Contract.findByIdAndDelete(req.params.id);
         res.json({ message: 'Contract deleted successfully' });
     } catch (err) {
