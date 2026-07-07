@@ -112,6 +112,10 @@ export default function AdminFounders() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!editingFounder && !formData.image) {
+      toast.error("Profile Image is required.");
+      return;
+    }
     const data = new FormData();
     data.append('name', formData.name);
     data.append('role', formData.role);
@@ -221,9 +225,7 @@ export default function AdminFounders() {
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
                       <div className="flex items-center justify-end gap-1 sm:gap-2">
                         <button onClick={() => handleEdit(f)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"><Edit size={16} /></button>
-                        {!["Rajesh Kumar", "Priya Sharma", "Arjun Patel", "Jitendra Singh"].includes(f.name) && (
-                          <button onClick={() => handleDelete(f._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} /></button>
-                        )}
+                        <button onClick={() => handleDelete(f._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"><Trash2 size={16} /></button>
                       </div>
                     </td>
                   </tr>
@@ -331,7 +333,6 @@ export default function AdminFounders() {
                         onChange={handleFileChange}
                         className="hidden"
                         id="founder-image-upload"
-                        required={!editingFounder}
                       />
                       <label htmlFor="founder-image-upload" className="cursor-pointer bg-blue-50 text-[#1e5cdc] px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors inline-block">
                         Choose Image from Computer

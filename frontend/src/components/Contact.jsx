@@ -98,8 +98,8 @@ const Registration = () => {
 
         <div className="relative z-10 max-w-md mx-auto w-full">
           <div className="mb-8">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-primary-dark to-primary text-white text-xs font-bold uppercase tracking-widest rounded-full mb-4">
-              Contact Us
+            <span className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4 block">
+              CONTACT US
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Let's Start a <br /> Conversation
@@ -118,7 +118,7 @@ const Registration = () => {
                 onChange={handleChange}
                 placeholder="Name"
                 required
-                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
               />
             </div>
 
@@ -130,7 +130,7 @@ const Registration = () => {
                 onChange={handleChange}
                 placeholder="Email"
                 required
-                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
               />
             </div>
 
@@ -141,7 +141,7 @@ const Registration = () => {
                   value={form.countryIndex}
                   onChange={handleChange}
                   title={COUNTRIES[form.countryIndex] ? COUNTRIES[form.countryIndex].name : ''}
-                  className="w-28 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 cursor-pointer font-medium"
+                  className="w-28 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 cursor-pointer font-medium"
                 >
                   {COUNTRIES.map((c, i) => (
                     <option key={i} value={i} className="bg-gray-900" title={c.name}>{c.code} ({c.iso})</option>
@@ -158,7 +158,7 @@ const Registration = () => {
                 value={form.phone}
                 onChange={handleChange}
                 placeholder="Mobile Number"
-                className="flex-1 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 min-w-0 font-medium"
+                className="flex-1 p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 min-w-0 font-medium"
               />
             </div>
 
@@ -168,7 +168,7 @@ const Registration = () => {
                 value={form.subject}
                 onChange={handleChange}
                 required
-                className={`w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium ${form.subject ? 'text-white' : 'text-gray-400'}`}
+                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 appearance-none cursor-pointer font-medium"
               >
                 <option value="" className="bg-gray-900 text-gray-400">Select Inquiry Category</option>
                 <option value="Internship" className="bg-gray-900 text-white">Internship</option>
@@ -188,7 +188,7 @@ const Registration = () => {
                   onChange={handleChange}
                   placeholder="Specify Inquiry Category"
                   required
-                  className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
+                  className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 font-medium"
                 />
               </div>
             )}
@@ -201,7 +201,7 @@ const Registration = () => {
                 placeholder="Message"
                 rows="4"
                 required
-                className="w-full p-4 bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:border-white/30 rounded-xl outline-none focus:border-red-500 focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none font-medium"
+                className="w-full p-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl outline-none focus:border-white focus:bg-white/20 transition-all duration-300 placeholder:text-gray-400 resize-none font-medium"
               ></textarea>
             </div>
 
@@ -217,7 +217,7 @@ const Registration = () => {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="flex-1 px-6 sm:px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300 text-center"
+                className="flex-1 bg-transparent border border-white text-white hover:bg-white hover:text-black px-6 sm:px-8 py-4 font-bold tracking-wide rounded-xl transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-60 disabled:cursor-not-allowed text-center cursor-pointer"
               >
                 {status === "loading" ? "SENDING..." : "SEND MESSAGE"}
               </button>
@@ -225,7 +225,7 @@ const Registration = () => {
               <button
                 type="reset"
                 onClick={handleReset}
-                className="flex-1 px-6 sm:px-8 py-4 border-2 border-white/30 font-bold hover:bg-white/10 rounded-xl transition-all duration-300 text-center"
+                className="flex-1 bg-transparent border border-white text-white hover:bg-white hover:text-black px-6 sm:px-8 py-4 font-bold tracking-wide rounded-xl transition-all duration-300 transform hover:-translate-y-1 text-center cursor-pointer"
               >
                 RESET
               </button>
@@ -242,7 +242,7 @@ const Registration = () => {
 
         <div className="relative z-10 max-w-md mx-auto w-full">
           <div className="mb-8">
-            <span className="inline-block px-4 py-2 bg-red-100 text-primary text-xs font-bold uppercase tracking-widest rounded-full mb-4">
+            <span className="inline-block px-4 py-2 bg-red-100 text-red-600 text-xs font-bold uppercase tracking-widest rounded-full mb-4">
               Contact Information
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 text-gray-900">We're Here to Help</h2>
@@ -256,12 +256,12 @@ const Registration = () => {
             {/* Email */}
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 border border-gray-100">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-red-500 to-primary-light p-4 rounded-xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="bg-gradient-to-br from-[#f43f5e] to-[#fb7185] p-4 rounded-xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <img src={email} alt="Email" className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-lg text-gray-900 mb-2">Email Address</h4>
-                  <a href="mailto:info@thecontractum.com" className="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-2 group">
+                  <a href="mailto:info@thecontractum.com" className="text-gray-600 hover:text-black transition-colors font-medium flex items-center gap-2 group">
                     info@thecontractum.com
                     <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -274,12 +274,12 @@ const Registration = () => {
             {/* Phone */}
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 border border-gray-100">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-primary to-primary p-4 rounded-xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="bg-white border border-gray-100 p-4 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-md">
                   <img src={phone} alt="Phone" className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-lg text-gray-900 mb-2">Phone Number</h4>
-                  <a href="tel:+919680534740" className="text-gray-600 hover:text-primary transition-colors font-medium flex items-center gap-2 group">
+                  <a href="tel:+919680534740" className="text-gray-600 hover:text-black transition-colors font-medium flex items-center gap-2 group">
                     +91 96805-34740
                     <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -292,7 +292,7 @@ const Registration = () => {
             {/* Address */}
             <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 border border-gray-100">
               <div className="flex items-start gap-4">
-                <div className="bg-gradient-to-br from-purple-500 to-primary-light p-4 rounded-xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="bg-gradient-to-br from-[#a855f7] to-[#f43f5e] p-4 rounded-xl text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <img src={location} alt="Location" className="w-6 h-6" />
                 </div>
                 <div className="flex-1">

@@ -8,10 +8,10 @@ const seedData = [
     title: "National Healthcare Management System",
     client: "Ministry of Health",
     category: "Healthcare",
-    completedDate: "December 2025",
+    completedDate: "31-12-25",
     duration: "12 months",
     teamSize: 18,
-    budget: "$850,000",
+    budget: "850,000",
     rating: 5,
     technologies: ["React", "Node.js", "PostgreSQL", "AWS", "Redis"],
     image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop",
@@ -49,10 +49,10 @@ const seedData = [
     title: "Smart Banking Mobile Application",
     client: "Global Bank Corp.",
     category: "Finance",
-    completedDate: "January 2026",
+    completedDate: "31-01-26",
     duration: "10 months",
     teamSize: 14,
-    budget: "$620,000",
+    budget: "620,000",
     rating: 5,
     technologies: ["React Native", "Java", "Oracle", "Microservices", "Kubernetes"],
     image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=500&fit=crop",
@@ -90,10 +90,10 @@ const seedData = [
     title: "E-Commerce Platform for Retail Chain",
     client: "MegaMart Retail",
     category: "E-Commerce",
-    completedDate: "November 2025",
+    completedDate: "30-11-25",
     duration: "8 months",
     teamSize: 12,
-    budget: "$450,000",
+    budget: "450,000",
     rating: 4,
     technologies: ["React", "Node.js", "MongoDB", "Elasticsearch", "AWS"],
     image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&h=500&fit=crop",
@@ -131,10 +131,10 @@ const seedData = [
     title: "Educational Management System",
     client: "State Education Board",
     category: "Education",
-    completedDate: "October 2025",
+    completedDate: "31-10-25",
     duration: "14 months",
     teamSize: 16,
-    budget: "$720,000",
+    budget: "720,000",
     rating: 5,
     technologies: ["React", "Python", "MySQL", "WebRTC", "Docker"],
     image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800&h=500&fit=crop",
@@ -172,10 +172,10 @@ const seedData = [
     title: "Supply Chain Logistics Platform",
     client: "TransLog International",
     category: "Logistics",
-    completedDate: "September 2025",
+    completedDate: "30-09-25",
     duration: "11 months",
     teamSize: 13,
-    budget: "$580,000",
+    budget: "580,000",
     rating: 5,
     technologies: ["React", "Java", "PostgreSQL", "Kafka", "Kubernetes"],
     image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=500&fit=crop",
@@ -213,10 +213,10 @@ const seedData = [
     title: "Smart City Infrastructure Dashboard",
     client: "City Municipal Corporation",
     category: "Government",
-    completedDate: "August 2025",
+    completedDate: "31-08-25",
     duration: "15 months",
     teamSize: 20,
-    budget: "$950,000",
+    budget: "950,000",
     rating: 5,
     technologies: ["React", "Python", "PostgreSQL", "IoT", "GIS", "AWS"],
     image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=500&fit=crop",
@@ -254,10 +254,10 @@ const seedData = [
     title: "Corporate HR Management Suite",
     client: "MegaCorp Enterprises",
     category: "Enterprise",
-    completedDate: "July 2025",
+    completedDate: "31-07-25",
     duration: "9 months",
     teamSize: 11,
-    budget: "$420,000",
+    budget: "420,000",
     rating: 4,
     technologies: ["React", "Node.js", "MongoDB", "Redis", "Docker"],
     image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=500&fit=crop",
@@ -295,10 +295,10 @@ const seedData = [
     title: "Telemedicine Consultation Platform",
     client: "HealthConnect Inc.",
     category: "Healthcare",
-    completedDate: "June 2025",
+    completedDate: "30-06-25",
     duration: "7 months",
     teamSize: 10,
-    budget: "$380,000",
+    budget: "380,000",
     rating: 5,
     technologies: ["React", "Node.js", "WebRTC", "MongoDB", "AWS"],
     image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=500&fit=crop",
@@ -337,13 +337,13 @@ const seedData = [
 // GET: Fetch all completed projects with auto-seed capability
 router.get('/', async (req, res) => {
   try {
-    let projects = await CompletedProject.find();
+    let projects = await CompletedProject.find().sort({ _id: -1 });
 
     // Auto-seed or Reseed if data lacks fullDescription
     if (projects.length === 0 || !projects[0].fullDescription) {
       await CompletedProject.deleteMany({});
       await CompletedProject.insertMany(seedData);
-      projects = await CompletedProject.find();
+      projects = await CompletedProject.find().sort({ _id: -1 });
     }
 
     const mapped = projects.map(p => ({

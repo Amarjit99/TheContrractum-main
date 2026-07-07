@@ -104,8 +104,8 @@ export default function HeroSection() {
             key={idx}
             onClick={() => setBgIndex(idx)}
             className={`h-1.5 rounded-full transition-all duration-300 ${bgIndex === idx
-                ? "w-8 bg-white"
-                : "w-2 bg-white/40 hover:bg-white/60"
+              ? "w-8 bg-white"
+              : "w-2 bg-white/40 hover:bg-white/60"
               }`}
           />
         ))}

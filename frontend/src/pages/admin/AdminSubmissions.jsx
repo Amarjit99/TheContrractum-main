@@ -109,6 +109,7 @@ export default function AdminSubmissions() {
 
   // Sub-Navigation Tabs: 'overview' | 'contact' | 'demo' | etc.
   const [activeSubTab, setActiveSubTab] = useState('overview');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -631,18 +632,26 @@ export default function AdminSubmissions() {
       )}
 
       {/* Outer Flex Container for Sidebar + Workspace */}
-      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50/50 -m-6 rounded-2xl overflow-hidden border border-gray-150 shadow-sm mt-1">
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-5.5rem)] bg-gray-50/50 -mx-6 -mb-6 mt-3 rounded-2xl overflow-hidden border border-gray-150 shadow-sm">
         
         {/* Left Side Subcategory Sub-Sidebar */}
-        <aside className="w-full lg:w-72 bg-white flex flex-col p-5 shrink-0 border-r border-gray-150">
-          <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
-            <div className="p-2.5 bg-[#1e5cdc]/10 text-[#1e5cdc] rounded-xl">
-              <ClipboardList size={22} />
+        <aside className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} bg-white flex flex-col p-5 shrink-0 border-r border-gray-150 transition-all duration-300`}>
+          <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
+              <div className="p-2.5 bg-[#1e5cdc]/10 text-[#1e5cdc] rounded-xl">
+                <ClipboardList size={22} />
+              </div>
+              <div>
+                <h2 className="font-extrabold text-gray-800 text-sm tracking-tight leading-none">Submissions</h2>
+                <span className="text-[9px] text-[#1e5cdc] font-black tracking-widest uppercase block mt-1">Contractum CRM</span>
+              </div>
             </div>
-            <div>
-              <h2 className="font-extrabold text-gray-800 text-sm tracking-tight leading-none">Submissions</h2>
-              <span className="text-[9px] text-[#1e5cdc] font-black tracking-widest uppercase block mt-1">Contractum CRM</span>
-            </div>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1.5 hover:bg-gray-100 rounded text-gray-400 cursor-pointer hidden lg:block"
+            >
+              {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
           </div>
 
           <nav className="flex-1 space-y-1 overflow-y-auto max-h-[65vh] pr-1 custom-scrollbar">
@@ -653,12 +662,14 @@ export default function AdminSubmissions() {
                   ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
+              title="Overview Dashboard"
             >
               <LayoutDashboard size={16} />
-              Overview Dashboard
+              {!sidebarCollapsed && <span>Overview Dashboard</span>}
+              {sidebarCollapsed && <span className="lg:hidden">Overview Dashboard</span>}
             </button>
 
-            <div className="pt-4 pb-1 text-[9px] font-black text-gray-400 uppercase tracking-widest px-2">Forms List</div>
+            <div className={`pt-4 pb-1 text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>Forms List</div>
 
             {FORM_CATEGORIES.map(cat => {
               const stat = formStats.find(s => 
@@ -686,13 +697,14 @@ export default function AdminSubmissions() {
                       ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
+                  title={cat.name}
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     <FileText size={15} className={`shrink-0 ${activeSubTab === cat.id ? 'text-white' : 'text-gray-400'}`} />
-                    <span className="truncate">{cat.name}</span>
+                    <span className={`truncate ${sidebarCollapsed ? 'lg:hidden' : ''}`}>{cat.name}</span>
                   </div>
                   {count > 0 && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${sidebarCollapsed ? 'lg:hidden' : ''} ${
                       activeSubTab === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
                     }`}>
                       {count}
@@ -704,8 +716,22 @@ export default function AdminSubmissions() {
           </nav>
 
           <div className="mt-6 pt-4 border-t border-gray-100 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-            Total Responses:
-            <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
+            {!sidebarCollapsed ? (
+              <>
+                Total Responses:
+                <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
+              </>
+            ) : (
+              <>
+                <div className="lg:hidden">
+                  Total Responses:
+                  <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-[#1e5cdc]/15 text-[#1e5cdc] flex items-center justify-center font-bold text-xs mx-auto hidden lg:flex" title={`Total Responses: ${statsOverview.total || 0}`}>
+                  {statsOverview.total || 0}
+                </div>
+              </>
+            )}
           </div>
         </aside>
 

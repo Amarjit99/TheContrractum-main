@@ -19,6 +19,7 @@ import AdminPartners from './pages/admin/AdminPartners';
 import AdminServices from './pages/admin/AdminServices';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminStudentInterns from './pages/admin/AdminStudentInterns';
+import AdminVolunteers from './pages/admin/AdminVolunteers';
 import AdminFounders from './pages/admin/AdminFounders';
 import AdminFormLinks from './pages/admin/AdminFormLinks';
 import AdminSubmissions from './pages/admin/AdminSubmissions';
@@ -47,6 +48,7 @@ import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 
 import AboutUs from './pages/company/AboutUs';
 import Vision from './pages/company/Vision';
+import OurImpact from './pages/company/Impact';
 import Mission from './pages/company/Mission';
 import Value from './pages/company/Value';
 import Founder from './pages/company/Founder';
@@ -54,7 +56,12 @@ import Leadership from './pages/company/Leadership';
 import OurJourney from './pages/company/OurJourney';
 import CodeOfConduct from './pages/company/CodeOfConduct';
 import EmployeeId from './pages/company/EmployeeId';
-
+import CompanyContracts from './pages/company/CompanyContracts';
+import ReferralDashboard from './pages/company/ReferralDashboard';
+import CookiePolicy from './pages/company/CookieUsage';
+import PrivacyPolicy from './pages/company/DataProtection';
+import TermsOfService from './pages/company/TermsOfService';
+import LearnMore from './pages/company/LearnMore';
 
 // //////////////////Team Pages///////////////////////////////////
 import CoreTeam from './pages/team/CoreTeam';
@@ -122,6 +129,8 @@ import Testimonials from './pages/projects/Testimonials';
 import ProjectDetails from './pages/projects/ProjectDetails';
 import CompletedProjectDetails from './pages/projects/CompletedProjectDetails';
 import CaseStudyDetails from './pages/projects/CaseStudyDetails';
+import ResearchDetails from './pages/projects/ResearchDetails';
+import TestimonialDetails from './pages/projects/TestimonialDetails';
 import ScheduleConsultation from './pages/projects/ScheduleConsultation';
 
 //////////////////// Resources Pages//////////////////////////////////
@@ -188,6 +197,7 @@ export default function App() {
                 <Route path="/admin/analytics" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'System Administrator', 'Marketing Manager', 'Marketing Administrator', 'Marketing Executive']}><AdminAnalytics /></AdminProtectedRoute>} />
                 <Route path="/admin/settings" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'System Administrator', 'Database Administrator', 'Technical Manager']}><AdminSettings /></AdminProtectedRoute>} />
                 <Route path="/admin/student-interns" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Training Coordinator', 'Training & Development Manager']}><AdminStudentInterns /></AdminProtectedRoute>} />
+                <Route path="/admin/volunteers" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Training Coordinator', 'Training & Development Manager']}><AdminVolunteers /></AdminProtectedRoute>} />
                 <Route path="/admin/founders" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive']}><AdminFounders /></AdminProtectedRoute>} />
                 <Route path="/admin/form-links" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Support Manager', 'Support Administrator', 'CRM & Lead Manager', 'CRM Administrator', 'Customer Support Executive']}><AdminFormLinks /></AdminProtectedRoute>} />
                 <Route path="/admin/notifications" element={<AdminProtectedRoute><AdminNotifications /></AdminProtectedRoute>} />
@@ -197,7 +207,7 @@ export default function App() {
                 <Route path="/admin/news" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminNews /></AdminProtectedRoute>} />
                 <Route path="/admin/id-cards" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive']}><AdminIdCards /></AdminProtectedRoute>} />
                 <Route path="/admin/referrals" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive', 'HR', 'HR Administrator', 'HR Manager']}><AdminReferrals /></AdminProtectedRoute>} />
-                <Route path="/admin/projects" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Project Manager', 'Project Coordinator', 'TR']}><AdminProjects /></AdminProtectedRoute>} />
+                <Route path="/admin/projects" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Project Manager', 'Project Coordinator', 'TR', 'Operations Administrator', 'Website Administrator', 'Operations Manager', 'Operations Executive']}><AdminProjects /></AdminProtectedRoute>} />
                 <Route path="/admin/affiliates" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive']}><AdminAffiliates /></AdminProtectedRoute>} />
                 <Route path="/admin/contracts" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><AdminContracts /></AdminProtectedRoute>} />
                 <Route path="/admin/certificates" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive']}><AdminCertificates /></AdminProtectedRoute>} />
@@ -208,18 +218,19 @@ export default function App() {
                 <Route path="/admin/contracts/view/:id" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><ContractEditor /></AdminProtectedRoute>} />
                 <Route path="/admin/contracts/templates" element={<AdminProtectedRoute allowedSubRoles={['Legal', 'Compliance Administrator', 'Compliance Manager', 'Compliance Executive', 'HR', 'HR Administrator', 'HR Manager', 'Manager']}><AdminContractTemplates /></AdminProtectedRoute>} />
 
-                {/*//////////////////// Company Routes////////// */}
-                {/*//////////////////// Company Routes ////////////////////*/}
+                {/* ///////////////////////// Company Routes///////////////////////// */}
+                <Route path="/company/our-impact" element={<OurImpact />} />
+                <Route path="/company/learn-more" element={<LearnMore />} />
 
-<Route path="/company/about-us" element={<AboutUs />} />
-<Route path="/company/vision" element={<Vision />} />
-<Route path="/company/mission" element={<Mission />} />
-<Route path="/company/values" element={<Value />} />
-<Route path="/company/founders" element={<Founder />} />
-<Route path="/company/management" element={<Leadership />} />
-<Route path="/company/our-journey" element={<OurJourney />} />
-<Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
-<Route path="/company/employee-id" element={<EmployeeId />} />
+                <Route path="/company/about-us" element={<AboutUs />} />
+                <Route path="/company/vision" element={<Vision />} />
+                <Route path="/company/mission" element={<Mission />} />
+                <Route path="/company/values" element={<Value />} />
+                <Route path="/company/founders" element={<Founder />} />
+                <Route path="/company/management" element={<Leadership />} />
+                <Route path="/company/our-journey" element={<OurJourney />} />
+                <Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
+                <Route path="/company/employee-id" element={<EmployeeId />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />
@@ -289,7 +300,9 @@ export default function App() {
                 <Route path="/projects/case-studies" element={<CaseStudies />} />
                 <Route path="/projects/case-studies/:id" element={<CaseStudyDetails />} />
                 <Route path="/projects/research" element={<Research />} />
+                <Route path="/projects/research/:id" element={<ResearchDetails />} />
                 <Route path="/projects/testimonials" element={<Testimonials />} />
+                <Route path="/projects/testimonials/:id" element={<TestimonialDetails />} />
                 <Route path="/projects/schedule-consultation" element={<ScheduleConsultation />} />
 
 
@@ -298,6 +311,7 @@ export default function App() {
                 <Route path="/resources/blogs/:id" element={<BlogArticle />} />
                 <Route path="/resources/news" element={<News />} />
                 <Route path="/resources/events" element={<Events />} />
+                <Route path="/events" element={<Events />} />
                 <Route path="/resources/csr" element={<CSR />} />
                 <Route path="/resources/csr-report" element={<CSRReport />} />
                 <Route path="/resources/whitepapers" element={<Whitepapers />} />

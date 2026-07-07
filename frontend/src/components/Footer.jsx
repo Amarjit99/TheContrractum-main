@@ -152,7 +152,7 @@ const Footer = () => {
                   { label: "Referral Dashboard", to: "/company/referral-dashboard" },
                 ].map(({ label, to }) => (
                   <li key={to}>
-                    <Link to={to} className={navLinkClass}>
+                    <Link to={to} className={navLinkClass} onClick={() => window.scrollTo(0, 0)}>
                       <Dot />
                       {label}
                     </Link>
@@ -193,7 +193,7 @@ const Footer = () => {
                   { label: "Explore Solutions", to: "/solutions/business" },
                 ].map(({ label, to }) => (
                   <li key={to}>
-                    <Link to={to} className={navLinkClass}>
+                    <Link to={to} className={navLinkClass} onClick={() => window.scrollTo(0, 0)}>
                       <Dot />
                       {label}
                     </Link>
@@ -219,7 +219,7 @@ const Footer = () => {
                   { label: "Manufacturing", to: "/industries/manufacturing" },
                 ].map(({ label, to }) => (
                   <li key={to}>
-                    <Link to={to} className={navLinkClass}>
+                    <Link to={to} className={navLinkClass} onClick={() => window.scrollTo(0, 0)}>
                       <Dot />
                       {label}
                     </Link>
@@ -246,12 +246,12 @@ const Footer = () => {
                   { label: "Campus Recruitment", to: "/careers/campus" },
                   { label: "Growth & Training", to: "/careers/growth" },
                   { label: "Employee Benefits", to: "/careers/benefits" },
-                  { label: "Youth Development (YTDP)", to: "/careers/ytdp" },
+                  { label: "Young Talent Development Program (YTDP)", to: "/careers/ytdp" },
                   { label: "CSR Initiatives", to: "/careers/csr" },
                   { label: "Verify Certificates", to: "/careers/certificates" },
                 ].map(({ label, to }) => (
                   <li key={to}>
-                    <Link to={to} className={navLinkClass}>
+                    <Link to={to} className={navLinkClass} onClick={() => window.scrollTo(0, 0)}>
                       <Dot />
                       {label}
                     </Link>
@@ -276,16 +276,15 @@ const Footer = () => {
                   { label: "Leadership Team", to: "/company/leadership" },
                   { label: "Founders & Management", to: "/company/leadership/founders" },
                   { label: "Our Journey", to: "/company/our-journey" },
-                  { label: "Why Choose Us", to: "/company/why-choose-us" },
                   { label: "Core Team", to: "/team/core-team" },
                   { label: "Corporate Culture", to: "/team/culture" },
                   { label: "Collaborate With Us", to: "/join/collaborate" },
                   { label: "Startup Accelerator", to: "/join/startup" },
                   { label: "Volunteer Application", to: "/join/volunteer" },
-                  { label: "Affiliate Portal", to: "/join/affiliate" },
+                  { label: "Affiliate Marketing", to: "/join/affiliate" },
                 ].map(({ label, to }) => (
                   <li key={to}>
-                    <Link to={to} className={navLinkClass}>
+                    <Link to={to} className={navLinkClass} onClick={() => window.scrollTo(0, 0)}>
                       <Dot />
                       {label}
                     </Link>
@@ -351,9 +350,9 @@ const Footer = () => {
           </p>
           <VisitorCounter />
           <div className="flex flex-wrap justify-center gap-4 text-xs font-semibold text-gray-400 text-center">
-            <Link to="/company/privacy-policy" className="hover:text-red-400 transition-colors">Privacy Policy</Link>
-            <Link to="/company/terms-of-service" className="hover:text-red-400 transition-colors">Terms of Service</Link>
-            <Link to="/company/cookie-policy" className="hover:text-red-400 transition-colors">Cookie Policy</Link>
+            <Link to="/company/privacy-policy" className="hover:text-red-400 transition-colors" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link>
+            <Link to="/company/terms-of-service" className="hover:text-red-400 transition-colors" onClick={() => window.scrollTo(0, 0)}>Terms of Service</Link>
+            <Link to="/company/cookie-policy" className="hover:text-red-400 transition-colors" onClick={() => window.scrollTo(0, 0)}>Cookie Policy</Link>
           </div>
         </div>
       </div>
