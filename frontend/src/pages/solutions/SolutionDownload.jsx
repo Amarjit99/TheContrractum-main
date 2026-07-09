@@ -24,7 +24,14 @@ const SolutionDownload = () => {
     // Mapping service IDs to PDF brochure files
     const brochureFiles = {
         gis: "GIS.pdf",
-        csit: "CSIT.pdf"
+        csit: "CSIT.pdf",
+        mras: "MRAS.pdf",
+        ecommerce: "ECommerce.pdf",
+        telecom: "Telecom.pdf",
+        hrtech: "HRTech.pdf",
+        bpo: "BPO.pdf",
+        cloud: "Cloud.pdf",
+        network: "Network.pdf"
     };
 
     const serviceTitle = serviceNames[serviceParam] || "Our Business Solutions";

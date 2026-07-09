@@ -3564,6 +3564,53 @@ function reverseLinkedList(head) {
                       </div>
                     )}
 
+                    {/* Candidate Professional Info Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Key Skills</h4>
+                        <p className="text-xs font-semibold text-gray-900">{selectedApp.skills || 'Not specified'}</p>
+                      </div>
+                      
+                      {selectedApp.collegeName ? (
+                        <>
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">College / University</h4>
+                            <p className="text-xs font-semibold text-gray-900">{selectedApp.collegeName}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Graduation / Year of Study</h4>
+                            <p className="text-xs font-semibold text-gray-900">{selectedApp.graduationYear}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Experience</h4>
+                          <p className="text-xs font-semibold text-gray-900">{selectedApp.experience || 'Not specified'}</p>
+                        </div>
+                      )}
+
+                      {selectedApp.linkedInProfile && (
+                        <div className="md:col-span-2">
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">LinkedIn Profile</h4>
+                          <a 
+                            href={selectedApp.linkedInProfile.startsWith('http') ? selectedApp.linkedInProfile : `https://${selectedApp.linkedInProfile}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1"
+                          >
+                            {selectedApp.linkedInProfile}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedApp.whyJoinYTDP && (
+                      <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+                        <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wide mb-1.5">Why join YTDP Program?</h4>
+                        <p className="text-xs text-blue-900 leading-relaxed font-semibold">{selectedApp.whyJoinYTDP}</p>
+                      </div>
+                    )}
+
                     <div className="flex gap-4 items-center font-bold">
                       <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wide">Candidate Resume File</h4>
                       {selectedApp.resume ? (

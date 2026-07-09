@@ -280,7 +280,7 @@ export default function DigitalMarketing() {
                             Get A Quote
                         </Link>
                         <Link
-                            to="/solutions/download?service=digital-marketing"
+                            to="/solutions/info?service=digital-marketing"
                             className="bg-white/5 hover:bg-white/10 text-white font-black px-12 py-5 rounded-2xl transition-all border border-white/20 backdrop-blur-md text-lg uppercase tracking-widest"
                         >
                             Download Guide

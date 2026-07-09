@@ -8,7 +8,10 @@ const miniEventSchema = new mongoose.Schema({
   capacity: { type: Number, required: true },
   imageUrl: { type: String, default: '' },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  featured: { type: Boolean, default: false },
+  type: { type: String, default: 'upcoming' }, // 'upcoming' or 'past'
+  registeredCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('MiniEvent', miniEventSchema);

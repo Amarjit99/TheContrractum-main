@@ -177,7 +177,7 @@ export default function YTDP() {
                     <p className="text-blue-100 text-xl font-medium mb-12">
                         Join the Young Talent Development Program and be the change you want to see.
                     </p>
-                    <Link to="/contact/touch" className="bg-[#e31e24] hover:bg-red-700 text-white font-black py-5 px-14 rounded-2xl transition-all shadow-2xl text-xl inline-flex items-center gap-3">
+                    <Link to="/careers/jobs" className="bg-[#e31e24] hover:bg-red-700 text-white font-black py-5 px-14 rounded-2xl transition-all shadow-2xl text-xl inline-flex items-center gap-3">
                         Apply Now <Rocket size={24} />
                     </Link>
                 </div>

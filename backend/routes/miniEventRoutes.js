@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const MiniEvent = require('../models/MiniEvent');
+const EventRegistration = require('../models/EventRegistration');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -128,9 +129,25 @@ router.post('/:id/rsvp', protect, async (req, res) => {
 // @access  Private/Admin
 router.get('/:id/participants', protect, adminOnly, async (req, res) => {
   try {
-    const event = await MiniEvent.findById(req.params.id).populate('attendees', 'firstName lastName email mobile avatar');
+    const registrations = await EventRegistration.find({ eventId: req.params.id }).sort('-createdAt');
+    res.json(registrations);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// @desc    Toggle featured status of an event
+// @route   PATCH /api/mini-events/:id/toggle-featured
+// @access  Private/Admin
+router.patch('/:id/toggle-featured', protect, adminOnly, async (req, res) => {
+  try {
+    const event = await MiniEvent.findById(req.params.id);
     if (!event) return res.status(404).json({ message: 'Event not found' });
-    res.json(event.attendees);
+
+    event.featured = !event.featured;
+    await event.save();
+
+    res.json(event);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
