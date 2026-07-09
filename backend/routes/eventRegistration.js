@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const EventRegistration = require("../models/EventRegistration");
+const MiniEvent = require("../models/MiniEvent");
 const Notification = require("../models/Notification");
 
 // @route   POST api/event-registrations
@@ -9,6 +10,7 @@ const Notification = require("../models/Notification");
 router.post("/", async (req, res) => {
   try {
     const {
+      eventId,
       eventName,
       eventDate,
       eventTime,
@@ -23,11 +25,20 @@ router.post("/", async (req, res) => {
       paymentDetails
     } = req.body;
 
-    if (!eventName || !firstName || !lastName || !email || !phone) {
+    if (!eventId || !eventName || !firstName || !lastName || !email || !phone) {
       return res.status(400).json({ message: "Please enter all required fields" });
     }
 
+    const event = await MiniEvent.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    if ((event.registeredCount || 0) >= event.capacity) {
+      return res.status(400).json({ message: "Event is full" });
+    }
+
     const newRegistration = new EventRegistration({
+      eventId,
       eventName,
       eventDate,
       eventTime,
@@ -43,6 +54,9 @@ router.post("/", async (req, res) => {
     });
 
     await newRegistration.save();
+    
+    event.registeredCount = (event.registeredCount || 0) + 1;
+    await event.save();
 
     // Create Notification
     await Notification.create({

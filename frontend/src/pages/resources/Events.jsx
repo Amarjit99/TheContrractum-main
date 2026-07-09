@@ -1,228 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from 'react-hot-toast';
 
-// Events Data
-const staticEvents = [
-  {
-    id: 1,
-    title: "AI & Machine Learning Summit 2026",
-    date: "2026-03-15",
-    time: "9:00 AM - 6:00 PM",
-    location: "Tech Convention Center, San Francisco",
-    category: "Conference",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop",
-    description: "Join industry leaders and AI experts for a full-day summit exploring the latest advancements in artificial intelligence, machine learning, and deep learning. Network with 500+ professionals and attend hands-on workshops.",
-    speaker: "Dr. Andrew Chen, Chief AI Scientist",
-    seatsAvailable: 150,
-    totalSeats: 500,
-    price: "Free",
-    registrationLink: "#",
-    featured: true,
-    tags: ["AI", "Machine Learning", "Technology"]
-  },
-  {
-    id: 2,
-    title: "Cloud Computing Workshop: AWS & Azure",
-    date: "2026-03-22",
-    time: "2:00 PM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Workshop",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop",
-    description: "Hands-on workshop covering cloud architecture, deployment strategies, and best practices for AWS and Azure. Learn from certified cloud architects and get practical experience with real-world scenarios.",
-    speaker: "Sarah Johnson, Senior Cloud Architect",
-    seatsAvailable: 75,
-    totalSeats: 100,
-    price: "$49",
-    registrationLink: "#",
-    featured: true,
-    tags: ["Cloud Computing", "AWS", "Azure"]
-  },
-  {
-    id: 3,
-    title: "Cybersecurity Awareness Training",
-    date: "2026-03-28",
-    time: "10:00 AM - 1:00 PM",
-    location: "TheContractum Headquarters, Building A",
-    category: "Training",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop",
-    description: "Essential cybersecurity training for businesses covering threat detection, data protection, and incident response. Learn how to protect your organization from modern cyber threats.",
-    speaker: "Michael Zhang, Cybersecurity Expert",
-    seatsAvailable: 40,
-    totalSeats: 50,
-    price: "Free for Members",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Cybersecurity", "Security", "Training"]
-  },
-  {
-    id: 4,
-    title: "Startup Pitch Night & Networking",
-    date: "2026-04-05",
-    time: "6:00 PM - 9:00 PM",
-    location: "Innovation Hub, Downtown",
-    category: "Networking",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200&h=600&fit=crop",
-    description: "Watch innovative startups pitch their ideas to investors and industry experts. Network with entrepreneurs, investors, and tech enthusiasts. Light refreshments provided.",
-    speaker: "Multiple Startup Founders",
-    seatsAvailable: 200,
-    totalSeats: 250,
-    price: "Free",
-    registrationLink: "#",
-    featured: true,
-    tags: ["Startup", "Networking", "Investment"]
-  },
-  {
-    id: 5,
-    title: "Blockchain & Web3 Developer Bootcamp",
-    date: "2026-04-12",
-    time: "9:00 AM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Bootcamp",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=600&fit=crop",
-    description: "Intensive bootcamp for developers wanting to build on blockchain. Learn Solidity, smart contracts, DApp development, and Web3 integration. Includes certification upon completion.",
-    speaker: "Dr. Priya Sharma, Blockchain Architect",
-    seatsAvailable: 30,
-    totalSeats: 50,
-    price: "$299",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Blockchain", "Web3", "Development"]
-  },
-  {
-    id: 6,
-    title: "Digital Transformation Panel Discussion",
-    date: "2026-04-18",
-    time: "3:00 PM - 5:00 PM",
-    location: "Business Center, Room 301",
-    category: "Webinar",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&h=600&fit=crop",
-    description: "Industry leaders discuss digital transformation strategies, challenges, and success stories. Q&A session with panel experts from Fortune 500 companies.",
-    speaker: "Panel of 5 Industry Leaders",
-    seatsAvailable: 120,
-    totalSeats: 150,
-    price: "Free",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Digital Transformation", "Business", "Strategy"]
-  },
-  {
-    id: 7,
-    title: "Data Science & Analytics Masterclass",
-    date: "2026-02-10",
-    time: "10:00 AM - 4:00 PM",
-    location: "Data Science Institute, Boston",
-    category: "Masterclass",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
-    description: "Comprehensive masterclass covering data analysis, visualization, predictive modeling, and machine learning algorithms. Hands-on projects with real datasets.",
-    speaker: "Dr. Robert Taylor, Data Scientist",
-    attendees: 180,
-    totalSeats: 200,
-    price: "$199",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Data Science", "Analytics", "Machine Learning"],
-    highlights: ["180 attendees", "4.9/5 rating", "98% would recommend"]
-  },
-  {
-    id: 8,
-    title: "Tech Innovation Expo 2025",
-    date: "2025-12-08",
-    time: "9:00 AM - 7:00 PM",
-    location: "Convention Center, Las Vegas",
-    category: "Conference",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&h=600&fit=crop",
-    description: "The largest tech expo of 2025 showcasing cutting-edge innovations in AI, robotics, IoT, and quantum computing. Featured 50+ exhibitors and 20+ speakers.",
-    speaker: "Multiple Industry Experts",
-    attendees: 2500,
-    totalSeats: 3000,
-    price: "$99",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Innovation", "Technology", "Expo"],
-    highlights: ["2500+ attendees", "50+ exhibitors", "20+ speakers", "Best Tech Event 2025"]
-  },
-  {
-    id: 9,
-    title: "DevOps Best Practices Workshop",
-    date: "2026-01-25",
-    time: "1:00 PM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Workshop",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=600&fit=crop",
-    description: "Learn CI/CD pipelines, containerization with Docker, Kubernetes orchestration, and infrastructure as code. Practical workshop with live demos.",
-    speaker: "James Wilson, DevOps Lead",
-    attendees: 95,
-    totalSeats: 100,
-    price: "$79",
-    registrationLink: "#",
-    featured: false,
-    tags: ["DevOps", "CI/CD", "Docker", "Kubernetes"],
-    highlights: ["95 participants", "Hands-on labs", "Certificate awarded"]
-  },
-  {
-    id: 10,
-    title: "UX/UI Design Sprint Challenge",
-    date: "2026-04-25",
-    time: "9:00 AM - 6:00 PM",
-    location: "Design Studio, New York",
-    category: "Workshop",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop",
-    description: "Intensive one-day design sprint where teams compete to solve real-world UX challenges. Win prizes and get feedback from top designers. Portfolio-worthy projects guaranteed.",
-    speaker: "Emma Davis, Lead UX Designer",
-    seatsAvailable: 60,
-    totalSeats: 80,
-    price: "$149",
-    registrationLink: "#",
-    featured: false,
-    tags: ["UX", "UI", "Design", "Challenge"]
-  },
-  {
-    id: 11,
-    title: "IoT & Smart Cities Conference",
-    date: "2026-05-08",
-    time: "9:00 AM - 5:00 PM",
-    location: "Smart City Center, Singapore",
-    category: "Conference",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1200&h=600&fit=crop",
-    description: "Explore the future of smart cities with IoT sensors, 5G connectivity, and AI-powered urban management. Case studies from leading smart city projects worldwide.",
-    speaker: "Multiple IoT Experts",
-    seatsAvailable: 300,
-    totalSeats: 400,
-    price: "$199",
-    registrationLink: "#",
-    featured: true,
-    tags: ["IoT", "Smart Cities", "5G"]
-  },
-  {
-    id: 12,
-    title: "Women in Tech Leadership Forum",
-    date: "2026-05-15",
-    time: "2:00 PM - 6:00 PM",
-    location: "Leadership Center, Seattle",
-    category: "Networking",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop",
-    description: "Empowering women in technology through leadership development, mentorship, and networking. Hear from successful women leaders and build valuable connections.",
-    speaker: "Panel of Women Tech Leaders",
-    seatsAvailable: 100,
-    totalSeats: 150,
-    price: "Free",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Leadership", "Diversity", "Networking"]
-  }
-];
+// Removed static mock events
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -282,26 +61,46 @@ export default function Events() {
   }, [lastScrollY]);
 
   // Fetch Events from API
-  useEffect(() => {
-    const fetchEvents = async () => {
+  const fetchEvents = async () => {
       try {
         const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await fetch(`${API}/api/resource-events`);
+        const response = await fetch(`${API}/api/mini-events`);
         const data = await response.json();
+        
         if (Array.isArray(data)) {
-            // Combine with static events or just use DB events
-            // User wants "reflect on the featured events subsection", so we combine
-            setEvents([...data, ...staticEvents]);
+            const now = new Date();
+            const processedEvents = data.map(event => {
+              const eventDate = new Date(event.dateTime || event.createdAt || now);
+              const isPast = eventDate < now;
+              return {
+                ...event,
+                id: event._id,
+                date: event.dateTime,
+                time: eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                image: event.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop',
+                type: isPast ? 'past' : event.type,
+                featured: isPast ? false : event.featured,
+                category: "Event",
+                speaker: event.creator?.name || "TBA",
+                totalSeats: event.capacity || 100,
+                seatsAvailable: Math.max(0, (event.capacity || 100) - (event.registeredCount || 0)),
+                price: "Free",
+                tags: []
+              };
+            });
+            setEvents(processedEvents);
         } else {
-            setEvents(staticEvents);
+            setEvents([]);
         }
       } catch (err) {
         console.error("Error fetching events:", err);
-        setEvents(staticEvents);
+        setEvents([]);
       } finally {
         setLoading(false);
       }
     };
+  
+  useEffect(() => {
     fetchEvents();
   }, []);
 
@@ -452,6 +251,7 @@ export default function Events() {
       const fullPhone = `${countryCode} ${formData.phone}`;
       
       const payload = {
+        eventId: selectedEvent.id,
         eventName: selectedEvent.title,
         eventDate: selectedEvent.date,
         eventTime: selectedEvent.time,
@@ -477,6 +277,9 @@ export default function Events() {
         setShowRegisterSuccess(true);
         setFormData({ firstName: "", lastName: "", email: "", phone: "", organization: "" });
         setTimeout(() => setShowRegisterSuccess(false), 5000);
+        
+        // Re-fetch events to update the seat count on the UI
+        fetchEvents();
       } else {
         const data = await response.json();
         alert(data.message || "Registration failed");
@@ -742,8 +545,8 @@ export default function Events() {
                       <span className="text-lg font-bold text-primary">{event.price}</span>
                     </div>
 
-                    <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg">
-                      Register Now →
+                    <button onClick={() => handleRegisterClick(event)} disabled={event.seatsAvailable <= 0} className={`w-full py-3 rounded-full font-semibold transition-all duration-300 shadow-md ${event.seatsAvailable <= 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg'}`}>
+                      {event.seatsAvailable <= 0 ? "Sold Out" : "Register Now →"}
                     </button>
                   </div>
                 </div>
@@ -819,8 +622,8 @@ export default function Events() {
                         </span>
                         <span className="font-bold text-primary">{event.price}</span>
                       </div>
-                      <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-2.5 rounded-full font-semibold hover:bg-red-700 transition-all duration-300">
-                        Register Now
+                      <button onClick={() => handleRegisterClick(event)} disabled={event.seatsAvailable <= 0} className={`w-full py-2.5 rounded-full font-semibold transition-all duration-300 ${event.seatsAvailable <= 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700'}`}>
+                        {event.seatsAvailable <= 0 ? "Sold Out" : "Register Now"}
                       </button>
                     </>
                   ) : (

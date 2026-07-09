@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const eventRegistrationSchema = new mongoose.Schema(
   {
+    eventId: { type: mongoose.Schema.Types.ObjectId, ref: "MiniEvent" },
     eventName: { type: String, required: true, trim: true },
     eventDate: { type: String, required: true, trim: true },
     eventTime: { type: String, required: true, trim: true },

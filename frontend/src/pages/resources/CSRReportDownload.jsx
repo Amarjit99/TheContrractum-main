@@ -39,11 +39,10 @@ const CSRReportDownload = () => {
         }
 
         // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email) {
             newErrors.email = "Email address is required";
-        } else if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Please enter a valid email address";
+        } else if (!formData.email.endsWith("@gmail.com")) {
+            newErrors.email = "Please use a @gmail.com email address";
         }
 
         // Phone validation (exactly 10 digits required)
@@ -73,16 +72,15 @@ const CSRReportDownload = () => {
             const country = COUNTRIES[formData.countryIndex];
             const fullPhone = `${country.code} ${formData.contact}`;
 
-            // 1. Capture the lead in the backend under the Contacts collection
-            const response = await fetch(`${API}/api/contact`, {
+            // 1. Capture the lead in the backend CSR report downloads collection
+            const response = await fetch(`${API}/api/csr/report-download`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
-                    phone: fullPhone,
-                    subject: "CSR Report Download Request",
-                    message: `User requested the Sustainability & Impact Report 2024 via the CSR download form.`
+                    contact: formData.contact,
+                    country: country.iso
                 })
             });
 

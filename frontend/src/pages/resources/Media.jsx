@@ -105,6 +105,11 @@ export default function Media() {
       return;
     }
 
+    if (!mediaKitLead.email.toLowerCase().endsWith('@gmail.com')) {
+      toast.error("Please provide a valid @gmail.com email address.");
+      return;
+    }
+
     setIsSubmittingKit(true);
     try {
       const API = import.meta.env.VITE_API_URL || "http://localhost:5000";

@@ -134,6 +134,7 @@ export default function Telecom() {
                                 loading="lazy"
                                 className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
+                            </div>
                         </div>
                     </div>
                 </div>

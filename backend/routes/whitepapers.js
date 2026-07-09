@@ -5,6 +5,19 @@ const Whitepaper = require('../models/Whitepaper');
 const WhitepaperRequest = require('../models/WhitepaperRequest');
 const Notification = require('../models/Notification');
 
+// @route   GET /api/whitepapers/requests
+// @desc    Get all whitepaper requests (Admin)
+// @access  Public
+router.get('/requests', async (req, res) => {
+  try {
+    const requests = await WhitepaperRequest.find().sort({ createdAt: -1 }).populate('whitepaperId', 'title');
+    res.json(requests);
+  } catch (err) {
+    console.error('Fetch whitepaper requests error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 // @route   GET /api/whitepapers
 // @desc    Get all whitepapers
 // @access  Public
@@ -174,10 +187,17 @@ router.get('/:id/download', async (req, res) => {
 // @access  Public
 router.post('/:id/request', async (req, res) => {
   try {
-    const { fullName, email, company, jobTitle } = req.body;
+    const { fullName, email, contact, company, jobTitle } = req.body;
     
-    if (!fullName || !email || !company) {
-      return res.status(400).json({ message: 'Name, email, and company are required fields.' });
+    if (!fullName || !email || !contact || !company) {
+      return res.status(400).json({ message: 'Name, email, contact, and company are required fields.' });
+    }
+
+    if (!email.endsWith("@gmail.com")) {
+      return res.status(400).json({ message: "Only @gmail.com email addresses are allowed." });
+    }
+    if (contact.replace(/\D/g, "").length !== 10) {
+      return res.status(400).json({ message: "Contact number must be exactly 10 digits." });
     }
 
     const whitepaper = await Whitepaper.findById(req.params.id);
@@ -190,6 +210,7 @@ router.post('/:id/request', async (req, res) => {
       whitepaperId: whitepaper._id,
       fullName,
       email,
+      contact,
       company,
       jobTitle: jobTitle || ''
     });

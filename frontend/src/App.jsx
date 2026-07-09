@@ -14,6 +14,7 @@ import AdminRegistrationPage from './pages/admin/AdminRegistrationPage';
 import AdminContacts from './pages/admin/Contacts';
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminBlogs from './pages/admin/AdminBlogs';
+import AdminResources from './pages/admin/AdminResources';
 import AdminCareers from './pages/admin/AdminCareers';
 import AdminPartners from './pages/admin/AdminPartners';
 import AdminServices from './pages/admin/AdminServices';
@@ -196,7 +197,8 @@ export default function App() {
                 <Route path="/admin/users" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive', 'System Administrator', 'User Access Administrator', 'Compliance Administrator']}><AdminUsers /></AdminProtectedRoute>} />
                 <Route path="/admin/contacts" element={<AdminProtectedRoute allowedSubRoles={['Support Manager', 'Support Administrator', 'Customer Support Executive', 'CRM & Lead Manager', 'CRM Administrator', 'CRM Executive', 'Manager', 'Sales Manager', 'Sales Executive']}><AdminContacts /></AdminProtectedRoute>} />
                 <Route path="/admin/services" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Technical Manager', 'Website Administrator', 'Technical Support Executive', 'TR']}><AdminServices /></AdminProtectedRoute>} />
-                <Route path="/admin/blogs" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator']}><AdminBlogs /></AdminProtectedRoute>} />
+                <Route path="/admin/blogs" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator', 'Marketing Administrator', 'Marketing Manager', 'Marketing Executive']}><AdminBlogs /></AdminProtectedRoute>} />
+                <Route path="/admin/resources" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'Content Manager', 'Content Administrator', 'Content Executive', 'Website Administrator', 'Marketing Administrator', 'Marketing Manager', 'Marketing Executive']}><AdminResources /></AdminProtectedRoute>} />
                 <Route path="/admin/careers" element={<AdminProtectedRoute allowedSubRoles={['HR', 'HR Administrator', 'HR Manager', 'HR Executive']}><AdminCareers /></AdminProtectedRoute>} />
                 <Route path="/admin/partners" element={<AdminProtectedRoute allowedSubRoles={['Finance', 'Finance Administrator', 'Finance Manager', 'Finance Executive', 'Business Development Manager', 'Business Development Executive', 'Manager']}><AdminPartners /></AdminProtectedRoute>} />
                 <Route path="/admin/analytics" element={<AdminProtectedRoute allowedSubRoles={['Manager', 'System Administrator', 'Marketing Manager', 'Marketing Administrator', 'Marketing Executive']}><AdminAnalytics /></AdminProtectedRoute>} />

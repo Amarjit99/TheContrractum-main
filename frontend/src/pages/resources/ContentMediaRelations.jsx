@@ -12,26 +12,42 @@ export default function ContentMediaRelations() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.email || !formData.message) {
       toast.error("Please fill in all required fields.");
       return;
     }
 
+    if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
+      toast.error("Please provide a valid @gmail.com email address.");
+      return;
+    }
+
     setIsSubmitting(true);
-    // Simulate API request
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setShowSuccessModal(true);
-      setFormData({
-        fullName: "",
-        outlet: "",
-        email: "",
-        subject: "",
-        message: ""
+    try {
+      const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API}/api/media/relations-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
       });
-    }, 1200);
+
+      if (response.ok) {
+        setShowSuccessModal(true);
+        setFormData({
+          fullName: "", outlet: "", email: "", subject: "", message: ""
+        });
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Failed to submit inquiry.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

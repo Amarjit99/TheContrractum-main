@@ -6,6 +6,7 @@ const Notification = require('../models/Notification');
 const MediaItem = require('../models/MediaItem');
 const PressRelease = require('../models/PressRelease');
 const MediaCoverage = require('../models/MediaCoverage');
+const MediaRelationRequest = require('../models/MediaRelationRequest');
 
 // @route   POST /api/media/kit-request
 // @desc    Request download of corporate media kit (lead capture)
@@ -16,6 +17,10 @@ router.post('/kit-request', async (req, res) => {
     
     if (!fullName || !email || !company) {
       return res.status(400).json({ message: 'Name, email, and company are required fields.' });
+    }
+
+    if (!email.toLowerCase().endsWith('@gmail.com')) {
+      return res.status(400).json({ message: 'Only @gmail.com email addresses are allowed.' });
     }
 
     // Save lead details to database
@@ -44,6 +49,66 @@ router.post('/kit-request', async (req, res) => {
     });
   } catch (err) {
     console.error('Media kit request error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   POST /api/media/relations-request
+// @desc    Submit a media relations inquiry
+// @access  Public
+router.post('/relations-request', async (req, res) => {
+  try {
+    const { fullName, outlet, email, subject, message } = req.body;
+    
+    if (!fullName || !email || !message) {
+      return res.status(400).json({ message: 'Name, email, and message are required fields.' });
+    }
+
+    if (!email.toLowerCase().endsWith('@gmail.com')) {
+      return res.status(400).json({ message: 'Only @gmail.com email addresses are allowed.' });
+    }
+
+    const newRelationRequest = new MediaRelationRequest({
+      fullName, outlet, email, subject, message
+    });
+    await newRelationRequest.save();
+
+    await Notification.create({
+      type: 'Media Inquiry',
+      title: 'New Media Relations Request',
+      message: `${fullName} submitted a media inquiry.`,
+      link: '/admin/media'
+    });
+
+    res.status(201).json({ success: true, message: 'Inquiry submitted successfully!' });
+  } catch (err) {
+    console.error('Media relations request error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   GET /api/media/kit-requests
+// @desc    Get all media kit requests for the dashboard
+// @access  Public
+router.get('/kit-requests', async (req, res) => {
+  try {
+    const requests = await MediaKitRequest.find().sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (err) {
+    console.error('Fetch media kit requests error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   GET /api/media/relations-requests
+// @desc    Get all media relations inquiries for the dashboard
+// @access  Public
+router.get('/relations-requests', async (req, res) => {
+  try {
+    const requests = await MediaRelationRequest.find().sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (err) {
+    console.error('Fetch media relations requests error:', err);
     res.status(500).json({ message: 'Server Error' });
   }
 });
@@ -223,6 +288,48 @@ router.get('/coverage', async (req, res) => {
     res.json(coverage);
   } catch (err) {
     console.error('Fetch media coverage error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   POST /api/media
+// @desc    Create a new media item
+// @access  Private
+router.post('/', async (req, res) => {
+  try {
+    const newItem = new MediaItem(req.body);
+    const savedItem = await newItem.save();
+    res.status(201).json(savedItem);
+  } catch (err) {
+    console.error('Create media item error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   PUT /api/media/:id
+// @desc    Update a media item
+// @access  Private
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedItem = await MediaItem.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedItem) return res.status(404).json({ message: 'Media item not found' });
+    res.json(updatedItem);
+  } catch (err) {
+    console.error('Update media item error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   DELETE /api/media/:id
+// @desc    Delete a media item
+// @access  Private
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedItem = await MediaItem.findByIdAndDelete(req.params.id);
+    if (!deletedItem) return res.status(404).json({ message: 'Media item not found' });
+    res.json({ message: 'Media item deleted' });
+  } catch (err) {
+    console.error('Delete media item error:', err);
     res.status(500).json({ message: 'Server Error' });
   }
 });

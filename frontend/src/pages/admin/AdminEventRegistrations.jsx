@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Calendar, Users, Eye, Loader2, Mail, Phone, Building, Plus, X, Tag, Image as ImageIcon, MapPin, Type, DollarSign, MessageSquare, User } from 'lucide-react';
+import { ArrowLeft, Search, Calendar, Users, Eye, Loader2, Mail, Phone, Building, Plus, X, Tag, Image as ImageIcon, MapPin, Type, DollarSign, MessageSquare, User } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function AdminEventRegistrations() {
     const { admin } = useAdminAuth();
+    const navigate = useNavigate();
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -107,6 +109,14 @@ export default function AdminEventRegistrations() {
     return (
         <AdminLayout>
             <div className="py-8">
+                <div className="mb-4">
+                    <button 
+                        onClick={() => navigate('/admin/resources')} 
+                        className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-[#1e5cdc] transition-colors"
+                    >
+                        <ArrowLeft size={16} /> Back to Resource Management
+                    </button>
+                </div>
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between mb-6 sm:mb-8">
                     <div className="flex flex-col gap-1 sm:gap-2">

@@ -15,7 +15,7 @@ export default function Whitepapers() {
 
   // Modals state
   const [selectedPaperForAccess, setSelectedPaperForAccess] = useState(null);
-  const [leadData, setLeadData] = useState({ fullName: "", email: "", company: "", jobTitle: "" });
+  const [leadData, setLeadData] = useState({ fullName: "", email: "", contact: "", company: "", jobTitle: "" });
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
 
   const [selectedPaperForDetails, setSelectedPaperForDetails] = useState(null);
@@ -75,8 +75,18 @@ export default function Whitepapers() {
   // Submit request / Lead capture form
   const handleLeadSubmit = async (e) => {
     e.preventDefault();
-    if (!leadData.fullName || !leadData.email || !leadData.company) {
+    if (!leadData.fullName || !leadData.email || !leadData.contact || !leadData.company) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (!leadData.email.endsWith("@gmail.com")) {
+      toast.error("Only @gmail.com email addresses are allowed.");
+      return;
+    }
+
+    if (leadData.contact.replace(/\D/g, "").length !== 10) {
+      toast.error("Contact number must be exactly 10 digits.");
       return;
     }
 
@@ -100,7 +110,7 @@ export default function Whitepapers() {
         window.open(data.pdfUrl, '_blank');
         
         // Reset lead form and close access modal
-        setLeadData({ fullName: "", email: "", company: "", jobTitle: "" });
+        setLeadData({ fullName: "", email: "", contact: "", company: "", jobTitle: "" });
         setSelectedPaperForAccess(null);
         setSelectedPaperForDetails(null); // close details modal if it was open
       } else {
@@ -555,7 +565,7 @@ export default function Whitepapers() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="flex-1 px-6 py-4 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-white/50 font-medium"
+                  className="flex-1 px-6 py-4 rounded-lg text-white bg-white/20 border border-white/30 placeholder-white/70 focus:outline-none focus:ring-4 focus:ring-white/50 font-medium"
                 />
                 <button
                   type="submit"
@@ -670,14 +680,31 @@ export default function Whitepapers() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Work Email *
+                  Work Email (Gmail Only) *
                 </label>
                 <input
                   type="email"
                   required
-                  placeholder="e.g. john@company.com"
+                  placeholder="e.g. john@gmail.com"
                   value={leadData.email}
                   onChange={(e) => setLeadData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Contact Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="10-digit number"
+                  value={leadData.contact}
+                  onChange={(e) => {
+                    const cleanVal = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    setLeadData(prev => ({ ...prev, contact: cleanVal }));
+                  }}
                   className="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-slate-800 text-sm font-medium"
                 />
               </div>

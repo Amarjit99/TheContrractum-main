@@ -155,6 +155,7 @@ app.use("/api/tasks", require("./routes/tasks"));
 app.use("/api/whitepapers", require("./routes/whitepapers"));
 app.use("/api/reports", require("./routes/reports"));
 app.use("/api/media", require("./routes/media"));
+app.use("/api/csr", require("./routes/csrRoutes"));
 
 
 // Serve static files
