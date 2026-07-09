@@ -52,7 +52,6 @@ const MENU_ITEMS = [
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
   { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' }
 ];
-
 const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => (
   <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
     <div className="px-6 py-5 flex items-center justify-between bg-white relative overflow-hidden">
@@ -92,8 +91,8 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
                   }
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isChildActive
-                    ? 'bg-white/10 text-white shadow-sm'
-                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  ? 'bg-white/10 text-white shadow-sm'
+                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
                   }`}
                 title={item.label}
               >
@@ -120,8 +119,8 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
                         to={subItem.to}
                         onClick={() => setSidebarOpen(false)}
                         className={`flex items-center gap-3 pl-8 pr-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${isSubActive
-                            ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
-                            : 'text-blue-100 hover:bg-white/5 hover:text-white'
+                          ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
+                          : 'text-blue-100 hover:bg-white/5 hover:text-white'
                           }`}
                         title={subItem.label}
                       >
@@ -146,8 +145,8 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
               to={item.to}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                  ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
-                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
+                : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }`}
               title={item.label}
             >
@@ -291,7 +290,7 @@ export default function SuperAdminLayout({ children }) {
         <>
           <div className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-72 z-50 lg:hidden shadow-2xl transition-transform transform translate-x-0">
-            <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => {}} />
+            <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => { }} />
           </div>
         </>
       )}
@@ -394,7 +393,7 @@ export default function SuperAdminLayout({ children }) {
             </div>
 
             <div className="relative">
-              <div 
+              <div
                 className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group"
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
@@ -438,7 +437,7 @@ export default function SuperAdminLayout({ children }) {
                     </div>
                   </div>
                   <div className="p-2 space-y-0.5">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/profile');
@@ -447,7 +446,7 @@ export default function SuperAdminLayout({ children }) {
                     >
                       <User size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> My Profile
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/analytics');
@@ -456,7 +455,7 @@ export default function SuperAdminLayout({ children }) {
                     >
                       <Activity size={16} className="text-gray-400 group-hover:text-[#1e5cdc] transition-colors" /> Activity Log
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         navigate('/admin/settings');
@@ -468,7 +467,7 @@ export default function SuperAdminLayout({ children }) {
                   </div>
                   <div className="h-[1px] bg-gray-100 w-full"></div>
                   <div className="p-2 bg-gray-50/30">
-                    <button 
+                    <button
                       onClick={() => {
                         setShowProfileMenu(false);
                         handleLogout();

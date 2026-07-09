@@ -25,7 +25,7 @@ router.get('/', protect, checkSubRole(['HR']), async (req, res) => {
     if (department) query.department = { $regex: department, $options: 'i' };
 
     const users = await User.find(query).select(
-      'name firstName lastName email mobile jobTitle department city state country pincode dob joiningDate bio skills gender'
+      'name firstName lastName email mobile jobTitle department street city state country pincode dob joiningDate bio skills gender'
     );
     res.json(users);
   } catch (err) {

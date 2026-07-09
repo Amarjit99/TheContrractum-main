@@ -6,13 +6,52 @@ import {
   FileText, ClipboardList, Info, Eye, EyeOff, RefreshCw,
   CheckCircle, LayoutTemplate, ChevronDown, Upload, XCircle, Pencil,
   Mail, Bold, Italic, List, Table, Underline, AlignLeft, AlignCenter,
-  AlignRight, AlignJustify, ListOrdered, Code, Trash2
+  AlignRight, AlignJustify, ListOrdered, Code, Trash2,
+  // Word-like toolbar additions
+  Undo2, Redo2, Strikethrough, Subscript, Superscript,
+  Highlighter, Eraser, Link2, Image as ImageInsert,
+  Minus, Search, Printer, Type
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// Corporate letterhead HTML — used in editor, preview, and PDF
+const getLetterheadHTML = () => `<div style="position:relative;border-bottom:2px solid #1a408c;padding-bottom:15px;margin-bottom:30px;font-family:Arial,sans-serif;text-align:left;margin-top:1px;margin-left:1px;margin-right:1px;">
+  <div style="position:absolute;top:0;left:0;width:150px;height:120px;overflow:hidden;z-index:1;pointer-events:none;">
+    <svg width="150" height="120" viewBox="0 0 150 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0 L110 0 L50 120 L0 120 Z" fill="#1a408c"/>
+      <path d="M115 0 L135 0 L75 120 L55 120 Z" fill="#f1a80a"/>
+    </svg>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2;padding-top:15px;">
+    <div style="margin-left:25px;margin-top:0;">
+      <img src="${API}/uploads/main-logo.jpg" alt="The Contractum Logo" style="height:75px;width:75px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.15);" />
+    </div>
+    <div style="text-align:right;color:#1a408c;font-size:10.5px;line-height:1.4;font-family:sans-serif;padding-right:12px;">
+      <h2 style="margin:0;font-size:14px;font-weight:800;color:#1a408c;text-transform:uppercase;letter-spacing:0.5px;">Contractum Integral Solution Pvt. Limited</h2>
+      <p style="margin:2px 0 0 0;color:#1a408c;">Head office: Plot No.169, Ground Floor, Ganesh Nagar, Kota Rajasthan</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Pin: 324005, Phone: +91-9216654754</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Email address: jitendra@thecontractum.com</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Website: www.thecontractum.com</p>
+      <p style="margin:1px 0 0 0;font-weight:bold;color:#1a408c;">CIN: U72900RJ2017PTC057530</p>
+    </div>
+  </div>
+</div>`;
+
+// Replaces {{company_logo}} in content with the letterhead HTML, prepending if missing
+const injectLetterhead = (content) => {
+  if (!content) return content;
+  let result = content;
+  // Check if the letterhead is already rendered (from a previous save)
+  const alreadyHasLetterhead = result.includes('Contractum Integral Solution Pvt. Limited') && result.includes('main-logo.jpg');
+  if (!result.includes('{{company_logo}}') && !alreadyHasLetterhead) {
+    result = '{{company_logo}}' + result;
+  }
+  return result.replace(/\{\{company_logo\}\}/g, getLetterheadHTML());
+};
 
 const TYPE_BADGE = {
   Employee: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -104,6 +143,24 @@ export default function ContractEditor() {
   });
   const [appliedTemplateId, setAppliedTemplateId] = useState('');
   const [rawTemplateContent, setRawTemplateContent] = useState('');
+
+  // ---- Rich Text Editor State ----
+  const [fontFamily, setFontFamily] = useState('Georgia');
+  const [fontSize, setFontSize] = useState('14');
+  const [textColor, setTextColor] = useState('#000000');
+  const [highlightColor, setHighlightColor] = useState('#ffff00');
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('https://');
+  const [linkText, setLinkText] = useState('');
+  const [showFindReplace, setShowFindReplace] = useState(false);
+  const [findText, setFindText] = useState('');
+  const [replaceText, setReplaceText] = useState('');
+  
+  // Word pages view layout state
+  const [showRuler, setShowRuler] = useState(true);
+  const [showMargins, setShowMargins] = useState(true);
+  const [pageColor, setPageColor] = useState('#ffffff');
+  const [zoomScale, setZoomScale] = useState(1);
 
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -229,6 +286,426 @@ export default function ContractEditor() {
     setFormData(prev => ({ ...prev, content: html }));
   };
 
+  // Handle Enter key in the visual editor to insert proper paragraph elements
+  // (instead of browser-default <div> tags)
+  // Shift+Enter = soft line break (<br>)
+  // Enter = new paragraph (<p>) — like Word
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+
+      if (e.shiftKey) {
+        // Shift+Enter: soft line break
+        const br = document.createElement('br');
+        range.insertNode(br);
+        // Move cursor after the br
+        const newRange = document.createRange();
+        newRange.setStartAfter(br);
+        newRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      } else {
+        // Enter: insert a new paragraph
+        const p = document.createElement('p');
+        p.appendChild(document.createElement('br')); // empty p needs a br to be focusable
+        range.insertNode(p);
+        // Move cursor into the new paragraph
+        const newRange = document.createRange();
+        newRange.setStart(p, 0);
+        newRange.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+      }
+
+      // Sync content back to state
+      if (editorRef.current) {
+        const updatedHtml = editorRef.current.innerHTML;
+        lastUpdatedContentRef.current = updatedHtml;
+        setFormData(prev => ({ ...prev, content: updatedHtml }));
+      }
+    }
+  };
+
+  // ---- Rich Text Editor Handlers ----
+
+  const handleFontFamilyChange = (family) => {
+    setFontFamily(family);
+    if (editorRef.current) editorRef.current.focus();
+    document.execCommand('fontName', false, family);
+    if (editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = html;
+      setFormData(prev => ({ ...prev, content: html }));
+    }
+  };
+
+  const handleFontSizeChange = (size) => {
+    setFontSize(size);
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+    // Workaround: execCommand fontSize only accepts 1-7, so we set 7 then swap to a span with real px
+    document.execCommand('fontSize', false, '7');
+    editorRef.current.querySelectorAll('font[size="7"]').forEach(el => {
+      const span = document.createElement('span');
+      span.style.fontSize = `${size}px`;
+      span.innerHTML = el.innerHTML;
+      el.parentNode.replaceChild(span, el);
+    });
+    const html = editorRef.current.innerHTML;
+    lastUpdatedContentRef.current = html;
+    setFormData(prev => ({ ...prev, content: html }));
+  };
+
+  const handleTextColorChange = (color) => {
+    setTextColor(color);
+    if (editorRef.current) editorRef.current.focus();
+    document.execCommand('foreColor', false, color);
+    if (editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = html;
+      setFormData(prev => ({ ...prev, content: html }));
+    }
+  };
+
+  const handleHighlightColorChange = (color) => {
+    setHighlightColor(color);
+    if (editorRef.current) editorRef.current.focus();
+    document.execCommand('hiliteColor', false, color);
+    if (editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = html;
+      setFormData(prev => ({ ...prev, content: html }));
+    }
+  };
+
+  const handleInsertLink = () => {
+    if (!linkUrl || !linkUrl.trim()) { toast.error('Please enter a URL'); return; }
+    if (editorRef.current) editorRef.current.focus();
+    if (savedRange) {
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRange);
+    }
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
+      document.execCommand('createLink', false, linkUrl);
+      editorRef.current?.querySelectorAll('a:not([target])').forEach(a => {
+        a.target = '_blank';
+        a.style.color = '#1e5cdc';
+        a.style.textDecoration = 'underline';
+      });
+    } else {
+      const display = linkText.trim() || linkUrl;
+      insertHtmlAtCursor(`<a href="${linkUrl}" target="_blank" style="color:#1e5cdc;text-decoration:underline;">${display}</a>`);
+    }
+    if (editorRef.current) {
+      const html = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = html;
+      setFormData(prev => ({ ...prev, content: html }));
+    }
+    setShowLinkDialog(false);
+    setLinkUrl('https://');
+    setLinkText('');
+  };
+
+  const handleInsertImage = () => {
+    const url = window.prompt('Enter image URL (direct link to an image):');
+    if (!url) return;
+    if (editorRef.current) editorRef.current.focus();
+    insertHtmlAtCursor(`<img src="${url}" alt="Inserted Image" style="max-width:100%;height:auto;display:block;margin:12px 0;border-radius:6px;" />`);
+  };
+
+  const handleInsertHR = () => {
+    if (editorRef.current) editorRef.current.focus();
+    insertHtmlAtCursor('<hr style="border:none;border-top:2px solid #e2e8f0;margin:24px 0;" />');
+  };
+
+  const handlePrint = () => {
+    if (!editorRef.current) return;
+    const content = editorRef.current.innerHTML;
+    const printWin = window.open('', '_blank');
+    printWin.document.write(`<!DOCTYPE html><html><head><title>${formData.title || 'Contract'}</title>
+      <style>
+        body { font-family: Georgia, serif; line-height: 1.8; color: #1e293b; max-width: 794px; margin: 0 auto; padding: 48px; }
+        h1,h2,h3 { color: #0f172a; } table { width: 100%; border-collapse: collapse; }
+        td, th { border: 1px solid #cbd5e1; padding: 8px; } @media print { body { padding: 0.5in; } }
+      </style>
+    </head><body>${content}</body></html>`);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); }, 400);
+  };
+
+  const handleFind = () => {
+    if (!findText || !editorRef.current) return;
+    const esc = findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const highlighted = editorRef.current.innerHTML.replace(
+      new RegExp(esc, 'gi'),
+      m => `<mark style="background:#fef08a;padding:1px 2px;border-radius:2px;">${m}</mark>`
+    );
+    editorRef.current.innerHTML = highlighted;
+    lastUpdatedContentRef.current = highlighted;
+    setFormData(prev => ({ ...prev, content: highlighted }));
+    toast.success(`Highlighted "${findText}"`);
+  };
+
+  const handleReplaceAll = () => {
+    if (!findText || !editorRef.current) return;
+    const esc = findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const replaced = editorRef.current.innerHTML.replace(new RegExp(esc, 'gi'), replaceText);
+    editorRef.current.innerHTML = replaced;
+    lastUpdatedContentRef.current = replaced;
+    setFormData(prev => ({ ...prev, content: replaced }));
+    toast.success(`Replaced all "${findText}" → "${replaceText}"`);
+  };
+
+  // Reusable full Word-like toolbar
+  const renderEditorToolbar = () => {
+    const btn = 'p-1.5 hover:bg-gray-200 text-gray-600 rounded-lg transition-colors flex items-center justify-center';
+    const dvdr = <div className="h-4 w-[1px] bg-gray-300 mx-0.5 shrink-0" />;
+    const wordCount = formData.content.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean).length;
+    const charCount = formData.content.replace(/<[^>]*>/g, '').length;
+    return (
+      <div className="space-y-1.5 p-2 bg-gray-50 border border-gray-200/60 rounded-xl mb-2">
+        {/* === ROW 1: Text Formatting === */}
+        <div className="flex flex-wrap items-center gap-0.5">
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('undo')} title="Undo (Ctrl+Z)" className={btn}><Undo2 size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('redo')} title="Redo (Ctrl+Y)" className={btn}><Redo2 size={14}/></button>
+          {dvdr}
+          {/* Font Family */}
+          <select value={fontFamily} onChange={e=>handleFontFamilyChange(e.target.value)} title="Font Family"
+            className="px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs text-gray-700 focus:outline-none cursor-pointer" style={{maxWidth:'120px'}}>
+            {['Georgia','Arial','Times New Roman','Calibri','Verdana','Courier New','Trebuchet MS','Garamond'].map(f=>(
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
+          {/* Font Size */}
+          <select value={fontSize} onChange={e=>handleFontSizeChange(e.target.value)} title="Font Size"
+            className="px-1 py-1 bg-white border border-gray-200 rounded-lg text-xs text-gray-700 focus:outline-none cursor-pointer w-14">
+            {[8,9,10,11,12,13,14,16,18,20,22,24,28,32,36,48,72].map(s=>(
+              <option key={s} value={String(s)}>{s}</option>
+            ))}
+          </select>
+          {dvdr}
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('bold')} title="Bold (Ctrl+B)" className={btn}><Bold size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('italic')} title="Italic (Ctrl+I)" className={btn}><Italic size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('underline')} title="Underline (Ctrl+U)" className={btn}><Underline size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('strikeThrough')} title="Strikethrough" className={btn}><Strikethrough size={14}/></button>
+          {dvdr}
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('subscript')} title="Subscript" className={`${btn} text-[11px] font-bold`}>x₂</button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('superscript')} title="Superscript" className={`${btn} text-[11px] font-bold`}>x²</button>
+          {dvdr}
+          {/* Text Color */}
+          <label title="Text Color" className={`${btn} flex-col gap-0 cursor-pointer relative`} style={{padding:'3px 5px'}}>
+            <Type size={12}/>
+            <div className="w-4 h-[3px] rounded mt-0.5" style={{backgroundColor:textColor}}/>
+            <input type="color" value={textColor} onChange={e=>handleTextColorChange(e.target.value)}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" title="Text Color"/>
+          </label>
+          {/* Highlight */}
+          <label title="Highlight Color" className={`${btn} flex-col gap-0 cursor-pointer relative`} style={{padding:'3px 5px'}}>
+            <Highlighter size={12}/>
+            <div className="w-4 h-[3px] rounded mt-0.5" style={{backgroundColor:highlightColor}}/>
+            <input type="color" value={highlightColor} onChange={e=>handleHighlightColorChange(e.target.value)}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" title="Highlight Color"/>
+          </label>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('removeFormat')} title="Clear Formatting" className={btn}><Eraser size={14}/></button>
+          <div className="flex-1"/>
+          {/* Visual/Code Toggle */}
+          <div className="flex items-center bg-gray-200/60 p-0.5 rounded-lg border border-gray-300/20">
+            <button type="button" onClick={()=>setEditorMode('visual')}
+              className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode==='visual'?'bg-white text-gray-800 shadow-sm':'text-gray-500 hover:text-gray-700'}`}>Visual</button>
+            <button type="button" onClick={()=>setEditorMode('code')}
+              className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode==='code'?'bg-white text-gray-800 shadow-sm':'text-gray-500 hover:text-gray-700'}`}>Code</button>
+          </div>
+        </div>
+        {/* === ROW 2: Block & Insert Tools === */}
+        <div className="flex flex-wrap items-center gap-0.5 pt-1.5 border-t border-gray-200/60">
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleHeading('h1')} title="Heading 1" className={`${btn} px-2 text-xs font-bold`}>H1</button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleHeading('h2')} title="Heading 2" className={`${btn} px-2 text-xs font-bold`}>H2</button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleHeading('h3')} title="Heading 3" className={`${btn} px-2 text-xs font-bold`}>H3</button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleHeading('p')} title="Normal Paragraph" className={`${btn} px-2 text-xs`}>¶</button>
+          {dvdr}
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('justifyLeft')} title="Align Left" className={btn}><AlignLeft size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('justifyCenter')} title="Center" className={btn}><AlignCenter size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('justifyRight')} title="Align Right" className={btn}><AlignRight size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('justifyFull')} title="Justify" className={btn}><AlignJustify size={14}/></button>
+          {dvdr}
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('insertUnorderedList')} title="Bullet List" className={btn}><List size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('insertOrderedList')} title="Numbered List" className={btn}><ListOrdered size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('indent')} title="Increase Indent" className={`${btn} text-xs px-1.5`}>⇥</button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>handleFormat('outdent')} title="Decrease Indent" className={`${btn} text-xs px-1.5`}>⇤</button>
+          {dvdr}
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>{
+            insertHtmlAtCursor(`<table style="width:100%;border-collapse:collapse;margin:16px 0;border:1px solid #cbd5e1;"><thead><tr style="background:#f8fafc;"><th style="border:1px solid #cbd5e1;padding:8px;text-align:left;font-weight:bold;">Header 1</th><th style="border:1px solid #cbd5e1;padding:8px;text-align:left;font-weight:bold;">Header 2</th></tr></thead><tbody><tr><td style="border:1px solid #cbd5e1;padding:8px;">Cell 1</td><td style="border:1px solid #cbd5e1;padding:8px;">Cell 2</td></tr></tbody></table>`);
+          }} title="Insert Table" className={btn}><Table size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>{
+            saveSelection();
+            setLinkText(window.getSelection()?.toString()||'');
+            setShowLinkDialog(true);
+          }} title="Insert Link" className={btn}><Link2 size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={handleInsertImage} title="Insert Image" className={btn}><ImageInsert size={14}/></button>
+          <button type="button" onMouseDown={e=>e.preventDefault()} onClick={handleInsertHR} title="Insert Divider Line" className={btn}><Minus size={14}/></button>
+          {dvdr}
+          {/* Variable Inserter */}
+          <select onChange={e=>{if(e.target.value){insertPlaceholderVal(e.target.value);e.target.value='';}}} title="Insert Variable"
+            className="px-1.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 focus:outline-none">
+            <option value="">{`{ } Variable`}</option>
+            <option value="{{employee_name}}">Employee Name</option>
+            <option value="{{position}}">Job Title / Role</option>
+            <option value="{{department}}">Department</option>
+            <option value="{{salary}}">Salary / Stipend</option>
+            <option value="{{start_date}}">Start Date</option>
+            <option value="{{end_date}}">End Date</option>
+            <option value="{{company_name}}">Company Name</option>
+            <option value="{{company_address}}">Company Address</option>
+            <option value="{{employee_address}}">Employee Address</option>
+          </select>
+          {dvdr}
+          <button type="button" onClick={()=>setShowFindReplace(f=>!f)} title="Find & Replace"
+            className={`${btn} ${showFindReplace?'bg-blue-100 text-blue-600':''}`}><Search size={14}/></button>
+          <button type="button" onClick={handlePrint} title="Print Document" className={btn}><Printer size={14}/></button>
+        </div>
+        {/* === Find & Replace Bar === */}
+        {showFindReplace && (
+          <div className="flex flex-wrap items-center gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl mt-0.5">
+            <Search size={12} className="text-amber-600 shrink-0"/>
+            <input type="text" value={findText} onChange={e=>setFindText(e.target.value)} placeholder="Find..."
+              onKeyDown={e=>e.key==='Enter'&&handleFind()}
+              className="px-2.5 py-1.5 bg-white border border-amber-200 rounded-lg text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400 w-28"/>
+            <span className="text-gray-400 text-xs">→</span>
+            <input type="text" value={replaceText} onChange={e=>setReplaceText(e.target.value)} placeholder="Replace with..."
+              onKeyDown={e=>e.key==='Enter'&&handleReplaceAll()}
+              className="px-2.5 py-1.5 bg-white border border-amber-200 rounded-lg text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-amber-400 w-32"/>
+            <button type="button" onClick={handleFind}
+              className="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold rounded-lg">Find</button>
+            <button type="button" onClick={handleReplaceAll}
+              className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-lg">Replace All</button>
+            <button type="button" onClick={()=>{setShowFindReplace(false);setFindText('');setReplaceText('');}} className="p-1 hover:bg-gray-100 text-gray-500 rounded ml-auto"><XCircle size={13}/></button>
+          </div>
+        )}
+        {/* === Word & Char Count === */}
+        <div className="flex items-center justify-end gap-4 text-[10px] text-gray-400 px-1">
+          <span>{wordCount.toLocaleString()} words</span>
+          <span>{charCount.toLocaleString()} chars</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderHorizontalRuler = () => {
+    if (!showRuler) return null;
+    return (
+      <div className="w-full max-w-[794px] mx-auto h-6 bg-gray-100 border-b border-gray-200 flex items-center select-none text-[9px] text-gray-500 font-mono relative overflow-hidden shrink-0 rounded-t-lg">
+        {/* Left Margin Shading */}
+        <div className="absolute left-0 top-0 bottom-0 bg-gray-200/80 border-r border-gray-300" style={{ width: '64px' }} />
+        {/* Right Margin Shading */}
+        <div className="absolute right-0 top-0 bottom-0 bg-gray-200/80 border-l border-gray-300" style={{ width: '64px' }} />
+        
+        {/* Rulers Ticks (every 20px) */}
+        <div className="w-full h-full flex justify-between items-end pb-1 px-[64px] relative">
+          {Array.from({ length: 33 }).map((_, i) => {
+            const isMajor = i % 4 === 0;
+            const isMedium = i % 2 === 0;
+            return (
+              <div key={i} className="flex flex-col items-center justify-end h-full" style={{ width: '20px' }}>
+                {isMajor && <span className="mb-0.5 transform -translate-x-1/2 scale-75">{i / 4}</span>}
+                <div className={`bg-gray-400 ${isMajor ? 'h-3 w-[1.5px]' : isMedium ? 'h-2 w-[1px]' : 'h-1 w-[1px]'}`} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderVerticalRuler = () => {
+    if (!showRuler) return null;
+    return (
+      <div className="hidden xl:flex absolute left-[-24px] top-[24px] bottom-0 w-6 bg-gray-100 border-r border-gray-200 flex-col items-end select-none text-[9px] text-gray-500 font-mono pr-1 pt-[64px] relative overflow-hidden rounded-l-lg" style={{ height: '1123px' }}>
+        {/* Top Margin Shading */}
+        <div className="absolute top-0 left-0 right-0 bg-gray-200/80 border-b border-gray-300" style={{ height: '64px' }} />
+        {/* Ruler Ticks */}
+        <div className="h-full w-full flex flex-col justify-between items-end relative" style={{ height: '1123px', boxSizing: 'border-box', paddingBottom: '64px' }}>
+          {Array.from({ length: 53 }).map((_, i) => {
+            const isMajor = i % 4 === 0;
+            const isMedium = i % 2 === 0;
+            return (
+              <div key={i} className="flex items-center justify-end w-full" style={{ height: '20px' }}>
+                {isMajor && <span className="mr-0.5 transform -translate-y-1/2 scale-75">{i / 4}</span>}
+                <div className={`bg-gray-400 ${isMajor ? 'w-3 h-[1.5px]' : isMedium ? 'w-2 h-[1px]' : 'w-1 h-[1px]'}`} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const getPageStyle = (isPreview = false) => {
+    const baseBg = pageColor === 'grid' ? '#ffffff' : pageColor;
+    const gridBg = pageColor === 'grid' 
+      ? 'linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px)' 
+      : 'none';
+    const textColorStyle = pageColor === '#1e293b' ? '#f8fafc' : '#1e293b';
+
+    return {
+      fontFamily: fontFamily || 'Georgia, serif',
+      lineHeight: 1.8,
+      color: textColorStyle,
+      wordBreak: 'break-word',
+      backgroundColor: baseBg,
+      backgroundImage: pageColor === 'grid' 
+        ? gridBg 
+        : `radial-gradient(rgba(${pageColor === '#1e293b' ? '30, 41, 59' : '255, 255, 255'}, 0.94), rgba(${pageColor === '#1e293b' ? '30, 41, 59' : '255, 255, 255'}, 0.94)), url('${API}/uploads/main-logo.jpg')`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center 220px',
+      backgroundSize: pageColor === 'grid' ? '20px 20px' : '320px',
+      backgroundAttachment: 'local',
+    };
+  };
+
+  const renderLayoutBar = () => {
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 bg-slate-50 border border-slate-200/60 rounded-xl mb-4 text-xs font-bold text-gray-600">
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={showRuler} onChange={e => setShowRuler(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
+            Rulers
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" checked={showMargins} onChange={e => setShowMargins(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
+            Margins Guide
+          </label>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-0.5">
+            <button type="button" onClick={() => setZoomScale(z => Math.max(0.7, z - 0.1))} className="px-2 py-0.5 hover:bg-gray-100 rounded text-gray-500">-</button>
+            <span className="px-1.5 text-[10px] min-w-8 text-center">{Math.round(zoomScale * 100)}%</span>
+            <button type="button" onClick={() => setZoomScale(z => Math.min(1.5, z + 0.1))} className="px-2 py-0.5 hover:bg-gray-100 rounded text-gray-500">+</button>
+          </div>
+
+          {/* Page Theme */}
+          <select value={pageColor} onChange={e => setPageColor(e.target.value)} className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-[10px] text-gray-600 focus:outline-none">
+            <option value="#ffffff">Theme: White</option>
+            <option value="#faf6eb">Theme: Cream (Warm)</option>
+            <option value="#f3f4f6">Theme: Light Grey</option>
+            <option value="#1e293b">Theme: Dark Mode</option>
+            <option value="grid">Theme: Grid Paper</option>
+          </select>
+        </div>
+      </div>
+    );
+  };
+
   const saveSelection = () => {
     const sel = window.getSelection();
     if (sel.rangeCount > 0) {
@@ -337,14 +814,14 @@ export default function ContractEditor() {
       if (formData.content === lastUpdatedContentRef.current) {
         return;
       }
-      editorRef.current.innerHTML = formData.content || '';
+      editorRef.current.innerHTML = injectLetterhead(formData.content || '');
       lastUpdatedContentRef.current = formData.content || '';
     }
   }, [formData.content]);
 
   useEffect(() => {
     if (editorRef.current) {
-      editorRef.current.innerHTML = formData.content || '';
+      editorRef.current.innerHTML = injectLetterhead(formData.content || '');
       lastUpdatedContentRef.current = formData.content || '';
     }
   }, [editorMode, isSplit]);
@@ -359,10 +836,11 @@ export default function ContractEditor() {
     const validUntilStr = formData.validUntil ? new Date(formData.validUntil).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : '__________________';
 
     const replacements = {
+      '{{company_logo}}': getLetterheadHTML(),
       '{{employee_name}}': empName,
       '{{position}}': empTitle,
       '{{department}}': empDept,
-      '{{company_name}}': 'The Contractum Private Limited',
+      '{{company_name}}': 'The Contractum Integral Solution Pvt. Limited',
       '{{company_address}}': 'India',
       '{{start_date}}': validFromStr,
       '{{end_date}}': validUntilStr,
@@ -372,6 +850,10 @@ export default function ContractEditor() {
     };
 
     let result = content;
+    const alreadyHasLetterhead1 = result && result.includes('Contractum Integral Solution Pvt. Limited') && result.includes('main-logo.jpg');
+    if (result && !result.includes('{{company_logo}}') && !alreadyHasLetterhead1) {
+      result = '{{company_logo}}' + result;
+    }
     Object.entries(replacements).forEach(([k, v]) => {
       result = result.replace(new RegExp(k.replace(/[{}]/g, '\\$&'), 'g'), v);
     });
@@ -572,7 +1054,17 @@ export default function ContractEditor() {
           city: user.city || '',
           country: user.country || '',
           salary: prev.salary && prev.salary !== '₹50,000 / month' ? prev.salary : (user.salary || ''),
-          address: prev.address && prev.address !== '123 Tech Park, Bengaluru, India' ? prev.address : (`${user.city || ''}, ${user.country || ''}`.replace(/^, /, '').trim() || '')
+          address: (() => {
+            if (prev.address && prev.address !== '123 Tech Park, Bengaluru, India' && prev.address !== '') return prev.address;
+            const parts = [
+              user.street,
+              user.city,
+              user.state,
+              user.country,
+              user.pincode ? `PIN: ${user.pincode}` : ''
+            ].filter(Boolean);
+            return parts.length > 0 ? parts.join(', ') : '';
+          })()
         }));
       }
     }
@@ -588,10 +1080,11 @@ export default function ContractEditor() {
 
     if (userId === 'custom') {
       replacements = {
+        '{{company_logo}}': getLetterheadHTML(),
         '{{employee_name}}': customData.name || 'Custom Recipient',
         '{{position}}': customData.jobTitle || 'Employee',
         '{{department}}': customData.department || 'Engineering',
-        '{{company_name}}': 'The Contractum Private Limited',
+        '{{company_name}}': 'Contractum Integral Solution Pvt. Limited',
         '{{company_address}}': 'India',
         '{{start_date}}': startDateStr,
         '{{end_date}}': endDateStr,
@@ -603,20 +1096,35 @@ export default function ContractEditor() {
       const user = users.find(u => u._id === userId);
       const empName = user ? (user.name || `${user.firstName || ''} ${user.lastName || ''}`).trim() : '';
       replacements = {
+        '{{company_logo}}': getLetterheadHTML(),
         '{{employee_name}}': customData.name || empName || '__________________',
         '{{position}}': customData.jobTitle || user?.jobTitle || 'As per appointment',
         '{{department}}': customData.department || user?.department || 'General',
-        '{{company_name}}': 'The Contractum Private Limited',
+        '{{company_name}}': 'Contractum Integral Solution Pvt. Limited',
         '{{company_address}}': 'India',
         '{{start_date}}': effectiveFrom ? startDateStr : '__________________',
         '{{end_date}}': effectiveUntil ? endDateStr : '__________________',
         '{{salary}}': customData.salary || user?.salary || 'As per offer',
-        '{{employee_address}}': customData.address || (user ? `${user.city || ''}, ${user.country || ''}`.replace(/^, /, '').trim() : '') || 'India',
+        '{{employee_address}}': customData.address || (() => {
+          if (!user) return 'India';
+          const parts = [
+            user.street,
+            user.city,
+            user.state,
+            user.country,
+            user.pincode ? `PIN: ${user.pincode}` : ''
+          ].filter(Boolean);
+          return parts.length > 0 ? parts.join(', ') : 'India';
+        })(),
         '{{company_city}}': 'India'
       };
     }
 
     let newContent = contentText;
+    const alreadyHasLetterhead2 = newContent && newContent.includes('Contractum Integral Solution Pvt. Limited') && newContent.includes('main-logo.jpg');
+    if (newContent && !newContent.includes('{{company_logo}}') && !alreadyHasLetterhead2) {
+      newContent = '{{company_logo}}' + newContent;
+    }
     Object.keys(replacements).forEach(key => {
       newContent = newContent.replace(new RegExp(key, 'g'), replacements[key] || '');
     });
@@ -820,7 +1328,7 @@ export default function ContractEditor() {
     let html = `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:${color.primary};margin:0;letter-spacing:-0.5px;text-transform:uppercase;">${type}</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, ${color.primary}, ${color.secondary});margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -830,7 +1338,7 @@ export default function ContractEditor() {
 
 <div style="background-color:${color.bg};border-left:4px solid ${color.primary};padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:${color.primary};text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">First Party:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "First Party").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "First Party").</p>
 </div>
 
 <div style="background-color:${color.bg};border-left:4px solid ${color.secondary};padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -1380,7 +1888,7 @@ export default function ContractEditor() {
             <div>
               <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">FIRST PARTY (EMPLOYER):</h4>
               <p style="margin: 0; font-size: 13px; color: #475569;">
-                <strong>The Contractum Private Limited</strong><br />
+                <strong>Contractum Integral Solution Pvt. Limited</strong><br />
                 Address: India
               </p>
             </div>
@@ -1417,7 +1925,7 @@ export default function ContractEditor() {
           <table style="width: 100%; border-collapse: collapse; border: none;">
             <tr>
               <td style="width: 45%; vertical-align: top; border: none; padding: 0;">
-                <p style="margin: 0 0 40px 0; font-weight: 700;">For: The Contractum Private Limited</p>
+                <p style="margin: 0 0 40px 0; font-weight: 700;">For: Contractum Integral Solution Pvt. Limited</p>
                 <div style="border-bottom: 1px solid #94a3b8; width: 80%; margin-bottom: 6px;"></div>
                 <p style="margin: 0; font-size: 11px; color: #64748b;">Authorized Signatory</p>
                 <p style="margin: 0; font-size: 11px; color: #64748b;">Title: Compliance Officer</p>
@@ -1560,7 +2068,8 @@ export default function ContractEditor() {
     : users;
 
   return (
-    <AdminLayout>
+    <>
+      <AdminLayout>
       {/* ── Header ── */}
       <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -1801,6 +2310,7 @@ export default function ContractEditor() {
                       </label>
                     )}
                   </label>
+                  {renderLayoutBar()}
                   {isSplit ? (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -1808,88 +2318,28 @@ export default function ContractEditor() {
                           <span>Editor</span>
                           <span>{formData.content.length.toLocaleString()} chars</span>
                         </div>
-                        {isEditable && (
-                          <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-gray-50 border border-gray-200/60 rounded-xl mb-2">
-                            <div className="flex flex-wrap items-center gap-1">
-                              {editorMode === 'visual' ? (
-                                <>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('bold')} title="Bold" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('italic')} title="Italic" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('underline')} title="Underline" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Underline size={14} /></button>
-                                  <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h1')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h2')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('p')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">P</button>
-                                  <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertUnorderedList')} title="Bullet List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><List size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertOrderedList')} title="Numbered List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><ListOrdered size={14} /></button>
-                                  <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyLeft')} title="Align Left" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignLeft size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyCenter')} title="Align Center" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignCenter size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyRight')} title="Align Right" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignRight size={14} /></button>
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyFull')} title="Justify" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignJustify size={14} /></button>
-                                  <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                  <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => {
-                                    const tableHtml = `<table style="width: 100%; border-collapse: collapse; margin: 16px 0; border: 1px solid #cbd5e1;"><thead><tr style="background: #f8fafc;"><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 1</th><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 2</th></tr></thead><tbody><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 1</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 2</td></tr><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 3</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 4</td></tr></tbody></table>`;
-                                    insertHtmlAtCursor(tableHtml);
-                                  }} title="Insert Table" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Table size={14} /></button>
-                                </>
-                              ) : (
-                                <>
-                                  <button type="button" onClick={() => insertTag('<strong>', '</strong>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
-                                  <button type="button" onClick={() => insertTag('<em>', '</em>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
-                                  <button type="button" onClick={() => insertTag('<h1 style="color:#1e5cdc;font-size:20px;margin-top:24px;font-weight:700;">', '</h1>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
-                                  <button type="button" onClick={() => insertTag('<h2 style="color:#1e5cdc;font-size:16px;margin-top:18px;font-weight:700;">', '</h2>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
-                                  <button type="button" onClick={() => insertTag('<p>', '</p>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">P</button>
-                                  <button type="button" onClick={() => insertTag('<ul>\n  <li>', '</li>\n</ul>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><List size={14} /></button>
-                                  <button type="button" onClick={() => insertTag('<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">\n  <tr>\n    <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; background: #f8fafc;">Header 1</th>\n    <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; background: #f8fafc;">Header 2</th>\n  </tr>\n  <tr>\n    <td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 1</td>\n    <td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 2</td>\n  </tr>\n</table>', '')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Table size={14} /></button>
-                                </>
-                              )}
-                              <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                              <select onChange={(e) => { if (e.target.value) { insertPlaceholderVal(e.target.value); e.target.value = ''; } }} className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 focus:outline-none">
-                                <option value="">{`{ } Insert Variable`}</option>
-                                <option value="{{employee_name}}">Employee Name</option>
-                                <option value="{{position}}">Job Title / Position</option>
-                                <option value="{{department}}">Department</option>
-                                <option value="{{salary}}">Salary / Stipend</option>
-                                <option value="{{start_date}}">Start Date</option>
-                                <option value="{{end_date}}">End Date</option>
-                                <option value="{{company_name}}">Company Name</option>
-                                <option value="{{company_address}}">Company Address</option>
-                              </select>
-                            </div>
-
-                            <div className="flex items-center bg-gray-200/60 p-0.5 rounded-lg border border-gray-300/20">
-                              <button
-                                type="button"
-                                onClick={() => setEditorMode('visual')}
-                                className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'visual' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                              >
-                                Visual
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setEditorMode('code')}
-                                className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'code' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                              >
-                                Code
-                              </button>
-                            </div>
-                          </div>
-                        )}
+                        {isEditable && renderEditorToolbar()}
                         {editorMode === 'visual' ? (
-                          <div className="relative">
-                            <div
-                              ref={editorRef}
-                              contentEditable={isEditable}
-                              onInput={handleInput}
-                              onBlur={handleInput}
-                              onKeyUp={saveSelection}
-                              onMouseUp={saveSelection}
-                              onFocus={saveSelection}
-                              className="w-full h-[550px] overflow-y-auto p-12 bg-white border border-gray-200 rounded-xl outline-none prose prose-sm max-w-none focus:ring-2 focus:ring-blue-500/20 transition-all overflow-x-hidden disabled:opacity-75"
-                              style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8, color: '#1e293b' }}
-                            />
+                          <div className="w-full bg-slate-100/80 border border-gray-200/60 rounded-2xl p-4 overflow-y-auto h-[650px] shadow-inner flex flex-col items-center">
+                            <div className="relative w-full max-w-[794px] mx-auto my-4 transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomScale})` }}>
+                              {renderVerticalRuler()}
+                              <div className="w-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200 rounded-b-lg overflow-hidden relative">
+                                {renderHorizontalRuler()}
+                                {showMargins && <div className="absolute pointer-events-none inset-0 border border-dashed border-blue-300/30 m-8 sm:m-10 rounded-sm z-10" />}
+                                <div
+                                  ref={editorRef}
+                                  contentEditable={isEditable}
+                                  onInput={handleInput}
+                                  onBlur={handleInput}
+                                  onKeyDown={handleKeyDown}
+                                  onKeyUp={saveSelection}
+                                  onMouseUp={saveSelection}
+                                  onFocus={saveSelection}
+                                  className="w-full min-h-[1123px] p-8 sm:p-10 outline-none focus:outline-none transition-all prose prose-sm max-w-none disabled:opacity-75"
+                                  style={getPageStyle()}
+                                />
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <textarea
@@ -1904,103 +2354,61 @@ export default function ContractEditor() {
                       </div>
                       <div className="space-y-2">
                         <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest px-2 py-1 bg-gray-50 border border-gray-100 rounded-lg text-center">Live Preview</div>
-                        <div
-                          className="w-full h-[550px] overflow-y-auto p-8 bg-white border border-gray-100 rounded-2xl shadow-inner prose prose-sm max-w-none"
-                          style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
-                          dangerouslySetInnerHTML={{ __html: injectLivePlaceholders(formData.content, selectedUser) || '<p class="text-gray-400 italic">No content to preview.</p>' }}
-                        />
+                        <div className="w-full bg-slate-100/80 border border-gray-200/60 rounded-2xl p-4 overflow-y-auto h-[650px] shadow-inner flex flex-col items-center">
+                          <div className="relative w-full max-w-[794px] mx-auto my-4 transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomScale})` }}>
+                            {renderVerticalRuler()}
+                            <div className="w-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200 rounded-b-lg overflow-hidden relative">
+                              {renderHorizontalRuler()}
+                              {showMargins && <div className="absolute pointer-events-none inset-0 border border-dashed border-blue-300/30 m-8 sm:m-10 rounded-sm z-10" />}
+                              <div
+                                className="w-full min-h-[1123px] p-8 sm:p-10 prose prose-sm max-w-none"
+                                style={getPageStyle()}
+                                dangerouslySetInnerHTML={{ __html: injectLivePlaceholders(formData.content, selectedUser) || '<p class="text-gray-400 italic">No content to preview.</p>' }}
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ) : preview ? (
-                    <div
-                      className="w-full min-h-[500px] p-8 bg-white border border-gray-100 rounded-2xl shadow-inner prose prose-sm max-w-none"
-                      style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
-                      dangerouslySetInnerHTML={{ __html: injectLivePlaceholders(formData.content, selectedUser) || '<p class="text-gray-400 italic">No content to preview.</p>' }}
-                    />
+                    <div className="w-full bg-slate-100/80 border border-gray-200/60 rounded-2xl p-6 sm:p-8 overflow-y-auto max-h-[750px] shadow-inner flex flex-col items-center">
+                      <div className="relative w-full max-w-[794px] mx-auto my-4 transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomScale})` }}>
+                        {renderVerticalRuler()}
+                        <div className="w-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200 rounded-b-lg overflow-hidden relative">
+                          {renderHorizontalRuler()}
+                          {showMargins && <div className="absolute pointer-events-none inset-0 border border-dashed border-blue-300/30 m-12 sm:m-16 rounded-sm z-10" />}
+                          <div
+                            className="w-full min-h-[1123px] p-12 sm:p-16 prose prose-sm max-w-none"
+                            style={getPageStyle()}
+                            dangerouslySetInnerHTML={{ __html: injectLivePlaceholders(formData.content, selectedUser) || '<p class="text-gray-400 italic">No content to preview.</p>' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div className="space-y-2">
-                      {isEditable && (
-                        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-gray-50 border border-gray-200/60 rounded-xl mb-2">
-                          <div className="flex flex-wrap items-center gap-1">
-                            {editorMode === 'visual' ? (
-                              <>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('bold')} title="Bold" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('italic')} title="Italic" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('underline')} title="Underline" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Underline size={14} /></button>
-                                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h1')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('h2')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleHeading('p')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">P</button>
-                                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertUnorderedList')} title="Bullet List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><List size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('insertOrderedList')} title="Numbered List" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><ListOrdered size={14} /></button>
-                                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyLeft')} title="Align Left" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignLeft size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyCenter')} title="Align Center" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignCenter size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyRight')} title="Align Right" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignRight size={14} /></button>
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => handleFormat('justifyFull')} title="Justify" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><AlignJustify size={14} /></button>
-                                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                                <button type="button" onMouseDown={e => e.preventDefault()} onClick={() => {
-                                  const tableHtml = `<table style="width: 100%; border-collapse: collapse; margin: 16px 0; border: 1px solid #cbd5e1;"><thead><tr style="background: #f8fafc;"><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 1</th><th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; font-weight: bold;">Header 2</th></tr></thead><tbody><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 1</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 2</td></tr><tr><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 3</td><td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 4</td></tr></tbody></table>`;
-                                  insertHtmlAtCursor(tableHtml);
-                                }} title="Insert Table" className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Table size={14} /></button>
-                              </>
-                            ) : (
-                              <>
-                                <button type="button" onClick={() => insertTag('<strong>', '</strong>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Bold size={14} /></button>
-                                <button type="button" onClick={() => insertTag('<em>', '</em>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Italic size={14} /></button>
-                                <button type="button" onClick={() => insertTag('<h1 style="color:#1e5cdc;font-size:20px;margin-top:24px;font-weight:700;">', '</h1>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H1</button>
-                                <button type="button" onClick={() => insertTag('<h2 style="color:#1e5cdc;font-size:16px;margin-top:18px;font-weight:700;">', '</h2>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">H2</button>
-                                <button type="button" onClick={() => insertTag('<p>', '</p>')} className="px-2 py-1 text-xs font-bold hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">P</button>
-                                <button type="button" onClick={() => insertTag('<ul>\n  <li>', '</li>\n</ul>')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><List size={14} /></button>
-                                <button type="button" onClick={() => insertTag('<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">\n  <tr>\n    <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; background: #f8fafc;">Header 1</th>\n    <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left; background: #f8fafc;">Header 2</th>\n  </tr>\n  <tr>\n    <td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 1</td>\n    <td style="border: 1px solid #cbd5e1; padding: 8px;">Cell 2</td>\n  </tr>\n</table>', '')} className="p-1.5 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"><Table size={14} /></button>
-                              </>
-                            )}
-                            <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                            <select onChange={(e) => { if (e.target.value) { insertPlaceholderVal(e.target.value); e.target.value = ''; } }} className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 focus:outline-none">
-                              <option value="">{`{ } Insert Variable`}</option>
-                              <option value="{{employee_name}}">Employee Name</option>
-                              <option value="{{position}}">Job Title / Position</option>
-                              <option value="{{department}}">Department</option>
-                              <option value="{{salary}}">Salary / Stipend</option>
-                              <option value="{{start_date}}">Start Date</option>
-                              <option value="{{end_date}}">End Date</option>
-                              <option value="{{company_name}}">Company Name</option>
-                              <option value="{{company_address}}">Company Address</option>
-                            </select>
-                          </div>
-
-                          <div className="flex items-center bg-gray-200/60 p-0.5 rounded-lg border border-gray-300/20">
-                            <button
-                              type="button"
-                              onClick={() => setEditorMode('visual')}
-                              className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'visual' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                            >
-                              Visual
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditorMode('code')}
-                              className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded transition-all ${editorMode === 'code' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                            >
-                              Code
-                            </button>
-                          </div>
-                        </div>
-                      )}
+                      {isEditable && renderEditorToolbar()}
                       {editorMode === 'visual' ? (
-                        <div className="relative">
-                          <div
-                            ref={editorRef}
-                            contentEditable={isEditable}
-                            onInput={handleInput}
-                            onBlur={handleInput}
-                            onKeyUp={saveSelection}
-                            onMouseUp={saveSelection}
-                            onFocus={saveSelection}
-                            className="w-full min-h-[500px] p-12 bg-white border border-gray-200 rounded-xl outline-none prose prose-sm max-w-none focus:ring-2 focus:ring-blue-500/20 transition-all overflow-x-hidden disabled:opacity-75"
-                            style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8, color: '#1e293b' }}
-                          />
+                        <div className="w-full bg-slate-100/80 border border-gray-200/60 rounded-2xl p-6 sm:p-8 overflow-y-auto max-h-[750px] shadow-inner flex flex-col items-center">
+                          <div className="relative w-full max-w-[794px] mx-auto my-4 transition-transform duration-200 origin-top" style={{ transform: `scale(${zoomScale})` }}>
+                            {renderVerticalRuler()}
+                            <div className="w-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-200 rounded-b-lg overflow-hidden relative">
+                              {renderHorizontalRuler()}
+                              {showMargins && <div className="absolute pointer-events-none inset-0 border border-dashed border-blue-300/30 m-12 sm:m-16 rounded-sm z-10" />}
+                              <div
+                                ref={editorRef}
+                                contentEditable={isEditable}
+                                onInput={handleInput}
+                                onBlur={handleInput}
+                                onKeyDown={handleKeyDown}
+                                onKeyUp={saveSelection}
+                                onMouseUp={saveSelection}
+                                onFocus={saveSelection}
+                                className="w-full min-h-[1123px] p-12 sm:p-16 outline-none focus:outline-none transition-all prose prose-sm max-w-none disabled:opacity-75"
+                                style={getPageStyle()}
+                              />
+                            </div>
+                          </div>
                         </div>
                       ) : (
                         <textarea
@@ -2621,5 +3029,42 @@ export default function ContractEditor() {
         </div>
       </div>
     </AdminLayout>
+
+      {/* ===== Insert Link Dialog ===== */}
+      {showLinkDialog && (
+        <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4" onClick={() => setShowLinkDialog(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-gray-100" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-black text-gray-900 mb-4 flex items-center gap-2">
+              <Link2 size={16} className="text-blue-600" /> Insert Hyperlink
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1.5">Display Text <span className="font-normal text-gray-400">(optional — uses URL if empty)</span></label>
+                <input type="text" value={linkText} onChange={e => setLinkText(e.target.value)}
+                  placeholder="e.g. Click here..."
+                  className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1.5">URL <span className="text-red-400">*</span></label>
+                <input type="url" value={linkUrl} onChange={e => setLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white transition-all"
+                  onKeyDown={e => e.key === 'Enter' && handleInsertLink()} />
+              </div>
+            </div>
+            <div className="flex items-center gap-3 mt-5">
+              <button type="button" onClick={handleInsertLink}
+                className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-colors shadow-md shadow-blue-200">
+                Insert Link
+              </button>
+              <button type="button" onClick={() => { setShowLinkDialog(false); setLinkUrl('https://'); setLinkText(''); }}
+                className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

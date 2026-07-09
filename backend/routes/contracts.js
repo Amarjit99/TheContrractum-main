@@ -27,7 +27,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#1e5cdc;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Contract of Employment</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #1e5cdc, #6366f1);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -37,7 +37,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#f8fafc;border-left:4px solid #1e5cdc;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#0f172a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">First Party (Employer):</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, a company incorporated under the laws of India, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, a company incorporated under the laws of India, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
 </div>
 
 <div style="background-color:#f8fafc;border-left:4px solid #6366f1;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -75,7 +75,7 @@ const PROFESSIONAL_TEMPLATES = [
 <table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
   <tr>
     <td style="width:45%;vertical-align:top;border:none;padding:0;">
-      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For Contractum Integral Solution Pvt. Limited</p>
       <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
       <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
       <p style="margin:0;font-size:11px;color:#64748b;">Title: Compliance Officer</p>
@@ -99,7 +99,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#7c3aed;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Internship Agreement</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #7c3aed, #a78bfa);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -109,7 +109,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#fcfaff;border-left:4px solid #7c3aed;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#5b21b6;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its principal place of business at {{company_address}} (hereinafter referred to as the "Company").</p>
 </div>
 
 <div style="background-color:#fcfaff;border-left:4px solid #a78bfa;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -142,7 +142,7 @@ const PROFESSIONAL_TEMPLATES = [
 <table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
   <tr>
     <td style="width:45%;vertical-align:top;border:none;padding:0;">
-      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For Contractum Integral Solution Pvt. Limited</p>
       <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
       <p style="margin:0;font-size:11px;color:#64748b;">Authorized HR Signatory</p>
     </td>
@@ -165,7 +165,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#d97706;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Freelance Services & NDA</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #d97706, #fbbf24);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -175,7 +175,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#fffbeb;border-left:4px solid #d97706;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Client:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
 </div>
 
 <div style="background-color:#fffbeb;border-left:4px solid #fbbf24;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -211,7 +211,7 @@ const PROFESSIONAL_TEMPLATES = [
 <table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
   <tr>
     <td style="width:45%;vertical-align:top;border:none;padding:0;">
-      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For The Contractum Pvt. Ltd.</p>
+      <p style="margin:0 0 45px 0;font-weight:700;color:#0f172a;">For Contractum Integral Solution Pvt. Limited</p>
       <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
       <p style="margin:0;font-size:11px;color:#64748b;">Authorized Signatory</p>
     </td>
@@ -234,7 +234,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#0d9488;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Vendor Service Agreement</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #0d9488, #2dd4bf);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -244,7 +244,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#f0fdfa;border-left:4px solid #0d9488;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#115e59;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
 </div>
 
 <div style="background-color:#f0fdfa;border-left:4px solid #2dd4bf;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -302,7 +302,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#6366f1;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Consulting Services Agreement</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #6366f1, #818cf8);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -312,7 +312,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#f5f3ff;border-left:4px solid #6366f1;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#4338ca;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Client:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its registered office at {{company_address}} (hereinafter referred to as the "Client").</p>
 </div>
 
 <div style="background-color:#f5f3ff;border-left:4px solid #818cf8;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -368,7 +368,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#f59e0b;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Probationary Employment Contract</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #f59e0b, #fbbf24);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -378,7 +378,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#fffbeb;border-left:4px solid #f59e0b;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#78350f;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
 </div>
 
 <div style="background-color:#fffbeb;border-left:4px solid #fbbf24;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -428,7 +428,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#10b981;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Remote Work Agreement</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #10b981, #34d399);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -438,7 +438,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#f0fdf4;border-left:4px solid #10b981;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#065f46;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Company:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong>, having its principal office at {{company_address}} (hereinafter referred to as the "Company").</p>
 </div>
 
 <div style="background-color:#f0fdf4;border-left:4px solid #34d399;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -488,7 +488,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#ec4899;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Memorandum of Understanding</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #ec4899, #f472b6);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -498,7 +498,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#fdf2f8;border-left:4px solid #ec4899;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#9d174d;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">First Party:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong> ("Party A"), having its registered office at {{company_address}}.</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong> ("Party A"), having its registered office at {{company_address}}.</p>
 </div>
 
 <div style="background-color:#fdf2f8;border-left:4px solid #f472b6;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -544,15 +544,19 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#3b82f6;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Official Offer of Employment</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #3b82f6, #60a5fa);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
 <p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
 
+<p style="margin:0;font-weight:700;color:#0f172a;">To,</p>
+<p style="margin:0 0 3px 0;font-weight:700;color:#0f172a;">{{employee_name}}</p>
+<p style="margin:0 0 20px 0;color:#475569;font-size:13px;line-height:1.4;">{{employee_address}}</p>
+
 <p>Dear <strong>{{employee_name}}</strong>,</p>
 
-<p>We are delighted to extend to you an offer of employment with <strong>The Contractum Private Limited</strong>. We were highly impressed by your qualifications, skills, and experience during the interview process, and we are confident that you will play a vital role in our growth and success.</p>
+<p>We are delighted to extend to you an offer of employment with <strong>Contractum Integral Solution Pvt. Limited</strong>. We were highly impressed by your qualifications, skills, and experience during the interview process, and we are confident that you will play a vital role in our growth and success.</p>
 
 <h3 style="color:#3b82f6;font-size:16px;border-bottom:1px solid #dbeafe;padding-bottom:6px;margin-top:25px;">1. POSITION & REPORTING RELATIONSHIP</h3>
 <p>You are offered the position of <strong>{{position}}</strong> within the <strong>{{department}}</strong> department. In this role, you will report directly to the Department Head or such other supervisor as designated by the Company. Your primary place of work will be our office in {{company_city}}. The standard working hours are from 9:00 AM to 6:00 PM, Monday through Friday.</p>
@@ -621,6 +625,86 @@ const PROFESSIONAL_TEMPLATES = [
 </div>`
     },
     {
+        name: 'Internship Offer Letter',
+        type: 'Offer Letter',
+        category: 'Employment & HR Contracts',
+        description: 'Official Internship Offer Letter covering duration, stipend, key program components, expectations, and acceptance terms.',
+        content: `{{company_logo}}
+<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
+<div style="text-align:center;margin-bottom:30px;">
+  <h1 style="font-size:24px;font-weight:800;color:#0284c7;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">Internship Offer Letter</h1>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
+  <div style="height:3px;background:linear-gradient(to right, #0284c7, #38bdf8);margin:15px auto 0 auto;width:150px;"></div>
+</div>
+
+<p style="text-align:right;font-size:14px;color:#64748b;"><strong>Date:</strong> {{start_date}}</p>
+
+<p style="margin:0;font-weight:700;color:#0f172a;">To,</p>
+<p style="margin:0 0 3px 0;font-weight:700;color:#0f172a;">{{employee_name}}</p>
+<p style="margin:0 0 20px 0;color:#475569;font-size:13px;line-height:1.4;">{{employee_address}}</p>
+
+<p>Dear <strong>{{employee_name}}</strong>,</p>
+
+<p>We are thrilled to extend an invitation for you to join <strong>The Contractum</strong> as an intern in our "Software Web Development Internship Program". This program is designed to provide hands-on experience and mentorship in the field of software development live projects, with a focus on web technologies. We believe that your passion for learning and dedication will make a valuable contribution to our team.</p>
+
+<div style="background-color:#f0f9ff;border-left:4px solid #0284c7;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
+  <p style="margin:0 0 5px 0;font-weight:700;color:#0369a1;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">Internship Details:</p>
+  <p style="margin:0 0 5px 0;font-size:14px;"><strong>Position:</strong> {{position}}</p>
+  <p style="margin:0;font-size:14px;"><strong>Duration:</strong> {{start_date}} – {{end_date}}</p>
+</div>
+
+<h3 style="color:#0284c7;font-size:16px;border-bottom:1px solid #e0f2fe;padding-bottom:6px;margin-top:25px;">Program Overview</h3>
+<p>Our internship program is structured to provide interns with practical experience and the opportunity to develop skills in software web development through live projects. Interns will receive a monthly compensation of <strong>{{salary}}</strong>, based on performance. Exceptional performance may also lead to future employment opportunities, subject to demonstrated abilities and company requirements.</p>
+
+<h3 style="color:#0284c7;font-size:16px;border-bottom:1px solid #e0f2fe;padding-bottom:6px;margin-top:25px;">Key Components</h3>
+<ol style="padding-left:20px;margin:10px 0;">
+  <li style="margin-bottom:8px;"><strong>Mode of Internship:</strong> The internship will be conducted in <strong>offline/online mode</strong>, requiring your active participation to encourage hands-on learning, real-time collaboration with the team, and direct interaction with mentors and trainers.</li>
+  <li style="margin-bottom:8px;"><strong>Mentorship:</strong> You will be paired with an experienced mentor who will guide you through various projects and provide feedback on your work.</li>
+  <li style="margin-bottom:8px;"><strong>Training:</strong> You will have access to trainers, guidance, and digital resources to enhance your understanding of web development technologies, including HTML, React, Tailwind CSS, Node.js, Express.js, MongoDB, and SQL. You will also receive training to prepare the drafting of the web portal.</li>
+  <li style="margin-bottom:8px;"><strong>Hands-on Projects:</strong> Work on real-world projects under mentor supervision to gain practical experience.</li>
+  <li style="margin-bottom:8px;"><strong>Collaboration:</strong> Collaborate with team members, fostering a supportive learning environment and exposure to industry-standard practices.</li>
+  <li style="margin-bottom:8px;"><strong>Performance Evaluation:</strong> Regular evaluation with feedback to support improvement and growth.</li>
+  <li style="margin-bottom:8px;"><strong>Potential for Employment:</strong> Exceptional interns may be considered for future employment opportunities depending on performance and business needs.</li>
+</ol>
+
+<h3 style="color:#0284c7;font-size:16px;border-bottom:1px solid #e0f2fe;padding-bottom:6px;margin-top:25px;">Expectations</h3>
+<ul style="padding-left:20px;margin:10px 0;list-style-type:disc;">
+  <li style="margin-bottom:8px;"><strong>Diligence:</strong> Professional conduct, meeting deadlines, and effective communication with mentors and team members.</li>
+  <li style="margin-bottom:8px;"><strong>Continuous Learning:</strong> Proactive learning of new skills and technologies, seeking guidance and feedback when required.</li>
+  <li style="margin-bottom:8px;"><strong>Compliance with Company Policies:</strong> The Intern shall strictly adhere to all Company policies, rules, regulations, codes of conduct, and operational guidelines as amended from time to time. Non-compliance may result in disciplinary action, including termination of the internship.</li>
+  <li style="margin-bottom:8px;"><strong>Acceptance of Terms and Conditions:</strong> By accepting this offer, the Intern agrees to abide by all terms and conditions set forth in this letter and any additional policies communicated by the Company during the tenure of the internship.</li>
+  <li style="margin-bottom:8px;"><strong>Professional Conduct Requirement:</strong> The Intern is expected to maintain the highest standards of professionalism, integrity, confidentiality, and ethical behavior in alignment with corporate practices.</li>
+</ul>
+
+<p>Please indicate your acceptance of this internship offer by signing and returning a copy of this letter by <strong>{{end_date}}</strong>.</p>
+
+<p>We are excited to welcome you to our Software Web Development Program and look forward to supporting your growth and development as a web developer.</p>
+
+<br/><br/>
+<table style="width:100%;border-collapse:collapse;border:none;margin-top:40px;">
+  <tr>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0;font-weight:700;color:#0f172a;">Sincerely,</p>
+      <p style="margin:5px 0 35px 0;font-weight:600;color:#334155;">Contractum Integral Solution Pvt. Ltd.</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;"><strong>Narendra Singh</strong></p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Project Coordinator</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Phone: +91-96805-34740</p>
+    </td>
+    <td style="width:10%;border:none;"></td>
+    <td style="width:45%;vertical-align:top;border:none;padding:0;">
+      <p style="margin:0;color:transparent;user-select:none;">Sincerely,</p>
+      <p style="margin:5px 0 45px 0;font-weight:700;color:#0f172a;">Accepted By:</p>
+      <div style="border-bottom:1px solid #cbd5e1;width:80%;margin-bottom:6px;"></div>
+      <p style="margin:0;font-size:11px;color:#64748b;">Intern Signature</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Name: {{employee_name}}</p>
+      <p style="margin:0;font-size:11px;color:#64748b;">Date: ______________________</p>
+    </td>
+  </tr>
+</table>
+</div>`
+    },
+    {
         name: 'SaaS Agreement',
         type: 'SaaS Agreement',
         category: 'Software & IT Contracts',
@@ -628,7 +712,7 @@ const PROFESSIONAL_TEMPLATES = [
         content: `<div style="font-family:Georgia,serif;max-width:850px;margin:0 auto;color:#1e293b;line-height:1.8;padding:20px;">
 <div style="text-align:center;margin-bottom:30px;">
   <h1 style="font-size:26px;font-weight:800;color:#3b82f6;margin:0;letter-spacing:-0.5px;text-transform:uppercase;">SaaS Subscription Agreement</h1>
-  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">The Contractum Private Limited</p>
+  <p style="font-size:12px;color:#64748b;margin:5px 0 0 0;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;">Contractum Integral Solution Pvt. Limited</p>
   <div style="height:3px;background:linear-gradient(to right, #3b82f6, #60a5fa);margin:15px auto 0 auto;width:150px;"></div>
 </div>
 
@@ -638,7 +722,7 @@ const PROFESSIONAL_TEMPLATES = [
 
 <div style="background-color:#f0fdfa;border-left:4px solid #3b82f6;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
   <p style="margin:0 0 10px 0;font-weight:700;color:#1e3a8a;text-transform:uppercase;font-size:12px;letter-spacing:0.5px;">The Provider:</p>
-  <p style="margin:0;font-size:14px;"><strong>The Contractum Private Limited</strong> ("Provider"), having its principal office at {{company_address}}.</p>
+  <p style="margin:0;font-size:14px;"><strong>Contractum Integral Solution Pvt. Limited</strong> ("Provider"), having its principal office at {{company_address}}.</p>
 </div>
 
 <div style="background-color:#f0fdfa;border-left:4px solid #60a5fa;padding:15px;margin:20px 0;border-radius:0 12px 12px 0;">
@@ -684,13 +768,19 @@ const PROFESSIONAL_TEMPLATES = [
 // Get all templates (returns all for admin, seeds professional ones if DB is empty)
 router.get('/templates', protect, checkSubRole(['Legal', 'HR', 'Manager']), async (req, res) => {
     try {
-        const bulkOps = PROFESSIONAL_TEMPLATES.map(template => ({
-            updateOne: {
-                filter: { name: template.name },
-                update: { $set: { ...template, isActive: true } },
-                upsert: true
+        const bulkOps = PROFESSIONAL_TEMPLATES.map(template => {
+            let contentWithLogo = template.content;
+            if (!contentWithLogo.includes('{{company_logo}}')) {
+                contentWithLogo = '{{company_logo}}\n' + contentWithLogo;
             }
-        }));
+            return {
+                updateOne: {
+                    filter: { name: template.name },
+                    update: { $set: { ...template, content: contentWithLogo, isActive: true } },
+                    upsert: true
+                }
+            };
+        });
         await ContractTemplate.bulkWrite(bulkOps);
         await ContractTemplate.updateMany({ isActive: { $exists: false } }, { $set: { isActive: true } });
         const templates = await ContractTemplate.find({ isActive: true });
@@ -1022,22 +1112,31 @@ router.post('/bulk-generate', protect, checkSubRole(['HR', 'Legal', 'Manager']),
 
         const User = require('../models/User');
         const employees = await User.find({ _id: { $in: employeeIds } })
-            .select('name firstName lastName email jobTitle department');
+            .select('name firstName lastName email jobTitle department street city state country pincode');
 
         const created = [];
         for (const emp of employees) {
             const empName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim();
+            const addressParts = [
+                emp.street,
+                emp.city,
+                emp.state,
+                emp.country,
+                emp.pincode ? `PIN: ${emp.pincode}` : ''
+            ].filter(Boolean);
+            const employeeAddress = addressParts.length > 0 ? addressParts.join(', ') : 'India';
+
             let content = template.content;
             const replacements = {
                 '{{employee_name}}': empName,
                 '{{position}}': emp.jobTitle || 'Employee',
                 '{{department}}': emp.department || 'General',
-                '{{company_name}}': 'The Contractum Private Limited',
+                '{{company_name}}': 'Contractum Integral Solution Pvt. Limited',
                 '{{company_address}}': 'India',
                 '{{start_date}}': validFrom ? new Date(validFrom).toLocaleDateString('en-IN', { year:'numeric',month:'long',day:'numeric'}) : '___',
                 '{{end_date}}': validUntil ? new Date(validUntil).toLocaleDateString('en-IN', { year:'numeric',month:'long',day:'numeric'}) : '___',
                 '{{salary}}': '___',
-                '{{employee_address}}': '___',
+                '{{employee_address}}': employeeAddress,
                 '{{company_city}}': 'India',
             };
             Object.entries(replacements).forEach(([k, v]) => {
@@ -1112,32 +1211,313 @@ Promise.resolve().then(async () => {
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 
+function propagateAlignment(html) {
+    let result = html;
+    const centerDivRegex = /<div[^>]*text-align:\s*center[^>]*>([\s\S]*?)<\/div>/gi;
+    result = result.replace(centerDivRegex, (match, divContent) => {
+        let updatedContent = divContent;
+        updatedContent = updatedContent.replace(/<(p|h[1-6])([^>]*)>/gi, (m, tagName, attrs) => {
+            if (attrs.includes('text-align')) {
+                return m;
+            }
+            if (attrs.includes('style=')) {
+                const quote = attrs.includes('style="') ? '"' : "'";
+                const splitStr = `style=${quote}`;
+                const parts = attrs.split(splitStr);
+                return `<${tagName} style=${quote}text-align:center;${parts[1]}>`;
+            } else {
+                return `<${tagName} style="text-align:center;"${attrs}>`;
+            }
+        });
+        return `<div style="text-align:center;">${updatedContent}</div>`;
+    });
+    return result;
+}
+
+function stripLetterhead(html) {
+    if (!html) return '';
+    const startIdx = html.indexOf('<div style="position:relative;');
+    if (startIdx === -1) return html;
+    
+    let depth = 0;
+    let pos = startIdx;
+    while (pos < html.length) {
+        const nextOpen = html.indexOf('<div', pos);
+        const nextClose = html.indexOf('</div>', pos);
+        if (nextClose === -1) break;
+        
+        if (nextOpen !== -1 && nextOpen < nextClose) {
+            depth++;
+            pos = nextOpen + 4;
+        } else {
+            depth--;
+            if (depth === 0) {
+                return html.substring(0, startIdx) + html.substring(nextClose + 6);
+            }
+            pos = nextClose + 6;
+        }
+    }
+    return html;
+}
+
+function extractColor(tagHtml, defaultColor) {
+    const match = tagHtml.match(/color:\s*(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)/i);
+    return match ? match[1] : defaultColor;
+}
+
+function extractFontSize(tagHtml, defaultSize) {
+    const match = tagHtml.match(/font-size:\s*(\d+)px/i);
+    if (match) {
+        return Math.round(parseInt(match[1], 10) * 0.75);
+    }
+    return defaultSize;
+}
+
+function parseStyledText(htmlText) {
+    let text = (htmlText || '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+
+    const tagRegex = /(<strong[^>]*>[\s\S]*?<\/strong>|<b[^>]*>[\s\S]*?<\/b>|<u[^>]*>[\s\S]*?<\/u>)/gi;
+    const parts = text.split(tagRegex);
+    
+    const segments = [];
+    for (const part of parts) {
+        if (!part) continue;
+        if (part.toLowerCase().startsWith('<strong>') || part.toLowerCase().startsWith('<b')) {
+            const innerText = part.replace(/<[^>]*>/g, '');
+            if (innerText) {
+                segments.push({ text: innerText, bold: true, underline: false });
+            }
+        } else if (part.toLowerCase().startsWith('<u')) {
+            const innerText = part.replace(/<[^>]*>/g, '');
+            if (innerText) {
+                segments.push({ text: innerText, bold: false, underline: true });
+            }
+        } else {
+            segments.push({ text: part, bold: false, underline: false });
+        }
+    }
+    return segments;
+}
+
 function parseHTMLToPDFKitTokens(html) {
+    const cleanHtmlWithAlignment = propagateAlignment(html || '');
+    const tables = [];
+    let htmlWithPlaceholders = cleanHtmlWithAlignment.replace(/<table[^>]*>([\s\S]*?)<\/table>/gi, (match, tableContent) => {
+        tables.push(tableContent);
+        return `\n__TABLE_PLACEHOLDER_${tables.length - 1}__\n`;
+    });
+
     const tokens = [];
-    let cleanHtml = html
+    let cleanHtml = htmlWithPlaceholders
         .replace(/\r?\n/g, ' ')
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/<\/p>/gi, '</p>\n')
-        .replace(/<\/h[1-6]>/gi, '</h1>\n');
+        .replace(/<\/h[1-6]>/gi, '</h1>\n')
+        .replace(/<\/li>/gi, '</li>\n')
+        .replace(/<ul[^>]*>/gi, '<ul>\n')
+        .replace(/<\/ul>/gi, '</ul>\n')
+        .replace(/<ol[^>]*>/gi, '<ol>\n')
+        .replace(/<\/ol>/gi, '</ol>\n')
+        .replace(/<div[^>]*?(?:background-color|border-left)[^>]*>/gi, m => `\n${m}\n`)
+        .replace(/<\/div>/gi, '\n</div>\n');
         
     const lines = cleanHtml.split('\n');
+    let listType = null;
+    let listIndex = 1;
+    
     for (let line of lines) {
         line = line.trim();
         if (!line) continue;
         
-        const headingMatch = line.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
-        if (headingMatch) {
-            const text = stripHtmlTags(headingMatch[1]);
-            if (text) tokens.push({ type: 'heading', text });
+        if (line.includes('color:transparent') || line.includes('color: transparent')) {
             continue;
         }
         
-        const text = stripHtmlTags(line);
+        if (line.includes('<ul')) {
+            listType = 'ul';
+            continue;
+        }
+        if (line.includes('<ol')) {
+            listType = 'ol';
+            listIndex = 1;
+            continue;
+        }
+        if (line.includes('</ul>') || line.includes('</ol>')) {
+            listType = null;
+            continue;
+        }
+        
+        if (line.toLowerCase().startsWith('<div') && (line.toLowerCase().includes('background-color') || line.toLowerCase().includes('border-left'))) {
+            const bgMatch = line.match(/background-color:\s*(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)/i);
+            const bgColor = bgMatch ? bgMatch[1] : '#f8fafc';
+            const borderMatch = line.match(/border-left:\s*\d+px\s*solid\s*(#[0-9a-fA-F]{3,8}|[a-zA-Z]+)/i);
+            const borderColor = borderMatch ? borderMatch[1] : '#0284c7';
+            tokens.push({ type: 'shaded-box-start', bgColor, borderColor });
+            continue;
+        }
+        if (line.toLowerCase() === '</div>') {
+            tokens.push({ type: 'shaded-box-end' });
+            continue;
+        }
+        
+        const tableMatch = line.match(/__TABLE_PLACEHOLDER_(\d+)__/);
+        if (tableMatch) {
+            const tableIdx = parseInt(tableMatch[1], 10);
+            const tableContent = tables[tableIdx];
+            const rows = [];
+            const trRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+            let trMatch;
+            while ((trMatch = trRegex.exec(tableContent)) !== null) {
+                const rowContent = trMatch[1];
+                const cells = [];
+                const tdRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+                let tdMatch;
+                while ((tdMatch = tdRegex.exec(rowContent)) !== null) {
+                    const cellContent = tdMatch[1].trim();
+                    const cellTokens = parseHTMLToPDFKitTokens(cellContent);
+                    cells.push(cellTokens);
+                }
+                if (cells.length > 0) {
+                    rows.push(cells);
+                }
+            }
+            if (rows.length > 0) {
+                tokens.push({ type: 'table', rows });
+            }
+            continue;
+        }
+        
+        const dividerMatch = line.match(/<div[^>]*height:\s*\d+px[^>]*background:[^>]*width:\s*(\d+)px[^>]*>\s*<\/div>/i);
+        if (dividerMatch) {
+            const width = parseInt(dividerMatch[1], 10) || 150;
+            let color = '#0284c7';
+            if (line.includes('#1e5cdc')) color = '#1e5cdc';
+            else if (line.includes('#0284c7')) color = '#0284c7';
+            else if (line.includes('#3b82f6')) color = '#3b82f6';
+            tokens.push({ type: 'divider', width, color });
+            continue;
+        }
+        
+        const liMatch = line.match(/<li[^>]*>([\s\S]*?)<\/li>/i);
+        if (liMatch) {
+            const text = liMatch[1].trim();
+            const prefix = listType === 'ol' ? `${listIndex++}. ` : '• ';
+            const align = line.toLowerCase().includes('text-align:center') || line.toLowerCase().includes('text-align: center') ? 'center' : 'left';
+            const color = extractColor(line, '#1f2937');
+            const size = extractFontSize(line, 10);
+            tokens.push({ type: 'list-item', text, prefix, align, color, size });
+            continue;
+        }
+        
+        const headingMatch = line.match(/<(h[1-6])[^>]*>([\s\S]*?)<\/h[1-6]>/i);
+        if (headingMatch) {
+            const tag = headingMatch[1].toLowerCase();
+            const text = stripHtmlTags(headingMatch[2]);
+            const isCentered = line.toLowerCase().includes('text-align:center') || line.toLowerCase().includes('text-align: center');
+            const color = extractColor(line, '#0284c7');
+            
+            let defaultSize = 12;
+            if (tag === 'h1') defaultSize = 18;
+            else if (tag === 'h2') defaultSize = 15;
+            
+            const size = extractFontSize(line, defaultSize);
+            if (text) {
+                tokens.push({ type: 'heading', text, align: isCentered ? 'center' : 'left', color, size });
+            }
+            continue;
+        }
+        
+        const pMatch = line.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+        let pText = line;
+        let align = 'justify';
+        let color = '#1f2937';
+        let size = 10;
+        
+        if (pMatch) {
+            pText = pMatch[1];
+            if (line.toLowerCase().includes('text-align:center') || line.toLowerCase().includes('text-align: center')) {
+                align = 'center';
+            } else if (line.toLowerCase().includes('text-align:right') || line.toLowerCase().includes('text-align: right')) {
+                align = 'right';
+            } else if (line.toLowerCase().includes('text-align:left') || line.toLowerCase().includes('text-align: left')) {
+                align = 'left';
+            }
+            color = extractColor(line, '#1f2937');
+            size = extractFontSize(line, 10);
+        } else {
+            if (line.toLowerCase().includes('text-align:center') || line.toLowerCase().includes('text-align: center')) {
+                align = 'center';
+            }
+        }
+        
+        const text = cleanHtmlForTokens(pText);
         if (text) {
-            tokens.push({ type: 'paragraph', text });
+            tokens.push({ type: 'paragraph', text, align, color, size });
         }
     }
     return tokens;
+}
+
+function cleanHtmlForTokens(str) {
+    return str
+        .replace(/<(?!strong|\/strong|b|\/b|u|\/u)[^>]*>/gi, '')
+        .trim();
+}
+
+function renderStyledText(doc, htmlText, colWidth, isHeading = false, align = null) {
+    if (align === 'right') {
+        const resolvedFont = isHeading ? 'CustomBold' : 'CustomRegular';
+        try {
+            doc.font(resolvedFont);
+        } catch (e) {
+            doc.font(isHeading ? 'Helvetica-Bold' : 'Helvetica');
+        }
+        doc.text(stripHtmlTags(htmlText), { align: 'right', lineGap: 4 });
+        return;
+    }
+    const segments = parseStyledText(htmlText);
+    if (segments.length === 0) return;
+    
+    for (let i = 1; i < segments.length; i++) {
+        if (segments[i].text.startsWith(' ')) {
+            segments[i].text = segments[i].text.substring(1);
+            segments[i - 1].text += ' ';
+        }
+    }
+    
+    const finalSegments = segments.filter(s => s.text !== '');
+    if (finalSegments.length === 0) return;
+    
+    for (let i = 0; i < finalSegments.length; i++) {
+        const seg = finalSegments[i];
+        const isLast = (i === finalSegments.length - 1);
+        
+        const resolvedFont = (seg.bold || isHeading) ? 'CustomBold' : 'CustomRegular';
+        try {
+            doc.font(resolvedFont);
+        } catch (e) {
+            doc.font((seg.bold || isHeading) ? 'Helvetica-Bold' : 'Helvetica');
+        }
+        
+        const textOptions = {
+            continued: !isLast,
+            lineGap: 4,
+            underline: seg.underline
+        };
+        if (colWidth) {
+            textOptions.width = colWidth;
+        } else {
+            textOptions.align = align || (isHeading ? 'left' : 'justify');
+        }
+        
+        doc.text(seg.text, textOptions);
+    }
 }
 
 function stripHtmlTags(str) {
@@ -1161,60 +1541,333 @@ function generateContractPDF(contract, employeeName) {
             doc.on('data', chunk => chunks.push(chunk));
             doc.on('end', () => resolve(Buffer.concat(chunks)));
             
-            // Header
-            doc.fillColor('#1e5cdc')
-               .fontSize(22)
-               .text('THE CONTRACTUM', { align: 'center' });
+            // Register Windows Arial / Arial Bold fonts for rendering Rupee symbol (₹) and high quality unicode typography
+            const path = require('path');
+            const fs = require('fs');
+            const winArialReg = 'C:/Windows/Fonts/arial.ttf';
+            const winArialBold = 'C:/Windows/Fonts/arialbd.ttf';
+            if (fs.existsSync(winArialReg) && fs.existsSync(winArialBold)) {
+                try {
+                    doc.registerFont('CustomRegular', winArialReg);
+                    doc.registerFont('CustomBold', winArialBold);
+                } catch (e) {
+                    console.error("Error registering custom fonts:", e);
+                }
+            }
+
+            const drawLetterhead = (targetDoc) => {
+                // Save text state manually using public properties/methods to avoid corrupting internal state
+                const savedFontName = targetDoc._font ? targetDoc._font.name : null;
+                const savedFontSize = targetDoc._fontSize;
+                const savedColor = targetDoc._fillColor ? targetDoc._fillColor[0] : null;
+
+                targetDoc.save()
+                   .moveTo(0, 0)
+                   .lineTo(130, 0)
+                   .lineTo(70, 110)
+                   .lineTo(0, 110)
+                   .closePath()
+                   .fill('#1a408c');
+                
+                targetDoc.moveTo(135, 0)
+                   .lineTo(155, 0)
+                   .lineTo(95, 110)
+                   .lineTo(75, 110)
+                   .closePath()
+                   .fill('#f1a80a')
+                   .restore();
+
+                const circularLogoPath = path.join(__dirname, '..', 'uploads', 'main-logo.jpg');
+                if (fs.existsSync(circularLogoPath)) {
+                    targetDoc.save();
+                    targetDoc.circle(86, 60, 36).clip();
+                    targetDoc.image(circularLogoPath, 50, 24, { width: 72, height: 72 });
+                    targetDoc.restore();
+                    
+                    targetDoc.circle(86, 60, 36)
+                       .lineWidth(3)
+                       .strokeColor('#ffffff')
+                       .stroke();
+                }
+
+                targetDoc.fillColor('#1a408c')
+                    .font('Helvetica-Bold')
+                    .fontSize(12)
+                    .text('Contractum Integral Solution Pvt. Limited', 250, 25, { align: 'right', width: 350 })
+                    .font('Helvetica')
+                    .fontSize(8.5)
+                    .fillColor('#1a408c')
+                    .text('Head office: Plot No.169, Ground Floor, Ganesh Nagar, Kota Rajasthan', 250, 42, { align: 'right', width: 350 })
+                    .text('Pin: 324005, Phone: +91-9216654754', 250, 56, { align: 'right', width: 350 })
+                    .text('Email address: jitendra@thecontractum.com', 250, 68, { align: 'right', width: 350 })
+                    .text('Website: www.thecontractum.com', 250, 80, { align: 'right', width: 350 })
+                    .font('Helvetica-Bold')
+                    .text('CIN: U72900RJ2017PTC057530', 250, 92, { align: 'right', width: 350 });
+
+                targetDoc.strokeColor('#1a408c')
+                   .lineWidth(2)
+                    .moveTo(0, 115)
+                    .lineTo(targetDoc.page.width, 115)
+                   .stroke();
+
+                const watermarkPath = path.join(__dirname, '..', 'uploads', 'main-logo.jpg');
+                if (fs.existsSync(watermarkPath)) {
+                    targetDoc.save()
+                       .opacity(0.08);
+                    const wmWidth = 320;
+                    const wmHeight = 320;
+                    const wmX = (targetDoc.page.width - wmWidth) / 2;
+                    const wmY = (targetDoc.page.height - wmHeight) / 2;
+                    targetDoc.image(watermarkPath, wmX, wmY, { width: wmWidth, height: wmHeight });
+                    targetDoc.restore();
+                }
+
+                // Restore text state using public APIs to avoid corrupting text stream formatting state
+                if (savedFontName) {
+                    try {
+                        targetDoc.font(savedFontName);
+                    } catch (e) {
+                        targetDoc.font('Helvetica');
+                    }
+                }
+                if (savedFontSize) {
+                    targetDoc.fontSize(savedFontSize);
+                }
+                if (savedColor) {
+                    try {
+                        targetDoc.fillColor(savedColor);
+                    } catch (e) {
+                        targetDoc.fillColor('#1f2937');
+                    }
+                }
+
+                targetDoc.x = 50;
+                targetDoc.y = 135;
+            };
+
+            doc.on('pageAdded', () => {
+                drawLetterhead(doc);
+            });
+
+            drawLetterhead(doc);
+
+            let cleanContent = contract.content || '';
+            cleanContent = cleanContent.replace(/\{\{company_logo\}\}/g, '');
+            cleanContent = stripLetterhead(cleanContent);
+            cleanContent = cleanContent.replace(/<h2[^>]*>Contractum Integral Solution Pvt\. Limited<\/h2>/gi, '');
+
+            const tokens = parseHTMLToPDFKitTokens(cleanContent);
             
-            doc.fillColor('#4b5563')
-               .fontSize(10)
-               .text('Official Contract Document', { align: 'center' });
+            let inShadedBox = false;
+            let boxStartY = null;
+            let boxBgColor = null;
+            let boxBorderColor = null;
             
-            doc.moveDown(1.5);
-            
-            doc.strokeColor('#e5e7eb')
-               .lineWidth(1)
-               .moveTo(50, doc.y)
-               .lineTo(562, doc.y)
-               .stroke();
-            
-            doc.moveDown(1);
-            
-            doc.fillColor('#1f2937')
-               .fontSize(14)
-               .text(`Title: ${contract.title}`, { bold: true });
-               
-            doc.fontSize(10)
-               .fillColor('#4b5563')
-               .text(`Recipient: ${employeeName}`)
-               .text(`Type: ${contract.type}`)
-               .text(`Category: ${contract.category || 'Employment & HR Contracts'}`)
-               .text(`Status: ${contract.status}`)
-               .text(`Date Generated: ${new Date().toLocaleDateString()}`);
-            
-            doc.moveDown(1);
-            
-            doc.strokeColor('#e5e7eb')
-               .lineWidth(1)
-               .moveTo(50, doc.y)
-               .lineTo(562, doc.y)
-               .stroke();
-            
-            doc.moveDown(1.5);
-            
-            const tokens = parseHTMLToPDFKitTokens(contract.content || '');
             for (const token of tokens) {
+                if (token.type === 'shaded-box-start') {
+                    inShadedBox = true;
+                    boxBgColor = token.bgColor;
+                    boxBorderColor = token.borderColor;
+                    doc.moveDown(0.4);
+                    boxStartY = doc.y;
+                    continue;
+                }
+                
+                if (token.type === 'shaded-box-end') {
+                    if (inShadedBox) {
+                        inShadedBox = false;
+                        doc.x = doc.page.margins.left;
+                        doc.moveDown(0.4);
+                        
+                        const boxX = doc.page.margins.left;
+                        const boxW = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+                        const boxH = doc.y - boxStartY;
+                        
+                        doc.save();
+                        doc.fillColor(boxBgColor)
+                           .fillOpacity(0.08)
+                           .rect(boxX, boxStartY, boxW, boxH)
+                           .fill();
+                           
+                        doc.strokeColor(boxBorderColor)
+                           .lineWidth(4)
+                           .opacity(1.0)
+                           .moveTo(boxX, boxStartY)
+                           .lineTo(boxX, doc.y)
+                           .stroke();
+                        doc.restore();
+                        
+                        doc.moveDown(0.5);
+                    }
+                    continue;
+                }
+                
                 if (token.type === 'heading') {
                     doc.moveDown(0.5);
-                    doc.fillColor('#1e5cdc')
-                       .fontSize(14)
-                       .text(token.text, { bold: true });
+                    
+                    const drawX = inShadedBox ? (doc.page.margins.left + 15) : doc.page.margins.left;
+                    const colWidth = inShadedBox ? (doc.page.width - doc.page.margins.left - doc.page.margins.right - 30) : null;
+                    doc.x = drawX;
+                    
+                    doc.fillColor(token.color || '#0284c7')
+                       .fontSize(token.size || 14);
+                    renderStyledText(doc, token.text, colWidth, true, token.align);
+                    
+                    if (token.size && token.size <= 13) {
+                        doc.moveDown(0.2);
+                        doc.strokeColor(token.color || '#cbd5e1')
+                           .lineWidth(0.5)
+                           .moveTo(doc.x, doc.y)
+                           .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+                           .stroke();
+                    }
+                    
+                    doc.x = doc.page.margins.left;
                     doc.moveDown(0.5);
                 } else if (token.type === 'paragraph') {
-                    doc.fillColor('#1f2937')
-                       .fontSize(10)
-                       .text(token.text, { lineGap: 4, align: 'justify' });
+                    const drawX = inShadedBox ? (doc.page.margins.left + 15) : doc.page.margins.left;
+                    const colWidth = inShadedBox ? (doc.page.width - doc.page.margins.left - doc.page.margins.right - 30) : null;
+                    doc.x = drawX;
+                    
+                    doc.fillColor(token.color || '#1f2937')
+                       .fontSize(token.size || 10);
+                    renderStyledText(doc, token.text, colWidth, false, token.align);
+                    
+                    doc.x = doc.page.margins.left;
                     doc.moveDown(0.8);
+                } else if (token.type === 'list-item') {
+                    const indent = inShadedBox ? 35 : 20;
+                    const drawX = doc.page.margins.left + indent;
+                    const colWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right - indent - (inShadedBox ? 15 : 0);
+                    
+                    doc.x = drawX;
+                    doc.fillColor(token.color || '#1f2937')
+                       .fontSize(token.size || 10);
+                       
+                    // Render bold list item prefix (bullet or index number)
+                    const resolvedBoldFont = 'CustomBold';
+                    try {
+                        doc.font(resolvedBoldFont);
+                    } catch (e) {
+                        doc.font('Helvetica-Bold');
+                    }
+                    doc.text(token.prefix, { continued: true });
+                    
+                    renderStyledText(doc, token.text, colWidth, false, token.align);
+                    
+                    doc.x = doc.page.margins.left;
+                    doc.moveDown(0.5);
+                } else if (token.type === 'divider') {
+                    const drawWidth = token.width || 150;
+                    const startX = (doc.page.width - drawWidth) / 2;
+                    doc.moveDown(0.2);
+                    doc.strokeColor(token.color || '#0284c7')
+                       .lineWidth(3)
+                       .moveTo(startX, doc.y)
+                       .lineTo(startX + drawWidth, doc.y)
+                       .stroke();
+                    doc.moveDown(0.6);
+                } else if (token.type === 'table') {
+                    doc.moveDown(2.5);
+                    if (doc.y > 620) {
+                        doc.addPage();
+                    }
+                    
+                    const totalWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+                    
+                    for (const row of token.rows) {
+                        const startY = doc.y;
+                        let cellX = doc.page.margins.left;
+                        const cellsCount = row.length;
+                        
+                        const colWidths = [];
+                        if (cellsCount === 3) {
+                            colWidths.push(totalWidth * 0.45);
+                            colWidths.push(totalWidth * 0.10);
+                            colWidths.push(totalWidth * 0.45);
+                        } else {
+                            for (let i = 0; i < cellsCount; i++) {
+                                colWidths.push(totalWidth / cellsCount);
+                            }
+                        }
+                        
+                        // Detect signature row and find column indices for Sincerely and Accepted By
+                        let isSignatureRow = false;
+                        let sincerelyCellIndex = -1;
+                        let acceptedByCellIndex = -1;
+                        
+                        for (let idx = 0; idx < cellsCount; idx++) {
+                            const cellTokens = row[idx];
+                            if (cellTokens && cellTokens.length > 0) {
+                                const firstTokenText = cellTokens[0].text || '';
+                                if (typeof firstTokenText === 'string') {
+                                    if (firstTokenText.includes('Sincerely')) sincerelyCellIndex = idx;
+                                    if (firstTokenText.includes('Accepted By')) acceptedByCellIndex = idx;
+                                }
+                            }
+                        }
+                        
+                        if (sincerelyCellIndex !== -1 && acceptedByCellIndex !== -1) {
+                            isSignatureRow = true;
+                        }
+                        
+                        let maxEndY = startY;
+                        
+                        for (let i = 0; i < cellsCount; i++) {
+                            const cellTokens = row[i];
+                            const colWidth = colWidths[i];
+                            
+                            if (!cellTokens || cellTokens.length === 0) {
+                                cellX += colWidth;
+                                continue;
+                            }
+                            
+                            doc.x = cellX;
+                            doc.y = startY;
+                            
+                            if (isSignatureRow && i === acceptedByCellIndex) {
+                                // Shift "Accepted By:" down to align with the company name on the left (usually startY + 16)
+                                doc.y = startY + 16;
+                            }
+                            
+                            for (const cellToken of cellTokens) {
+                                if (cellToken.type === 'heading') {
+                                    doc.moveDown(0.2);
+                                    doc.fillColor(cellToken.color || '#0284c7')
+                                       .fontSize(cellToken.size || 10);
+                                    renderStyledText(doc, cellToken.text, colWidth - 10, true);
+                                    doc.moveDown(0.2);
+                                } else if (cellToken.type === 'paragraph' || cellToken.type === 'list-item') {
+                                    const text = cellToken.text.trim();
+                                    
+                                    if (text.includes('Narendra Singh') || text.includes('Intern Signature') || text.includes('Employee Signature') || text.includes('Authorized HR Signatory')) {
+                                        if (doc.y < startY + 90) {
+                                            doc.y = startY + 90;
+                                        }
+                                        doc.strokeColor('#cbd5e1')
+                                           .lineWidth(1)
+                                           .moveTo(doc.x, doc.y + 2)
+                                           .lineTo(doc.x + colWidth - 20, doc.y + 2)
+                                           .stroke();
+                                        doc.moveDown(0.8);
+                                    }
+                                    
+                                    doc.fillColor(cellToken.color || '#1f2937')
+                                       .fontSize(cellToken.size || 9.5);
+                                    renderStyledText(doc, cellToken.text, colWidth - 10);
+                                    doc.moveDown(0.4);
+                                }
+                            }
+                            
+                            if (doc.y > maxEndY) {
+                                maxEndY = doc.y;
+                            }
+                            cellX += colWidth;
+                        }
+                        
+                        doc.x = doc.page.margins.left;
+                        doc.y = maxEndY + 10;
+                    }
                 }
             }
             
@@ -1362,7 +2015,7 @@ async function sendContractEmailHelper(contract) {
 
     <p style="font-size:14px;color:#475569;line-height:1.6;margin:0 0 4px 0;">Warmest regards,</p>
     <p style="font-size:14px;color:#0f172a;font-weight:700;margin:0 0 2px 0;">The Talent Acquisition & HR Team</p>
-    <p style="font-size:13px;color:#64748b;margin:0;">The Contractum Private Limited</p>
+    <p style="font-size:13px;color:#64748b;margin:0;">Contractum Integral Solution Pvt. Limited</p>
   </div>
   
   <p style="color:#94a3b8;font-size:11px;text-align:center;margin-top:24px;line-height:1.5;">
@@ -1382,4 +2035,5 @@ async function sendContractEmailHelper(contract) {
     return true;
 }
 
+router.generateContractPDF = generateContractPDF;
 module.exports = router;

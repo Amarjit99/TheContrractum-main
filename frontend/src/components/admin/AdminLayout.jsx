@@ -529,7 +529,7 @@ export default function AdminLayout({ children }) {
         <>
           <div className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-64 z-50 lg:hidden shadow-2xl transition-transform transform translate-x-0">
-            <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => {}} />
+            <Sidebar admin={admin} location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => { }} />
           </div>
         </>
       )}
