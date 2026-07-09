@@ -258,12 +258,12 @@ export default function SuperAdminDashboard() {
                   <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorVisitorsSuper" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#1e5cdc" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#1e5cdc" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorViewsSuper" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#93c5fd" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F3F4F6" />
@@ -310,7 +310,7 @@ export default function SuperAdminDashboard() {
           {/* System Overview Section */}
           <div className="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-blue-900/5 border border-blue-50 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-blue-50/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl sm:blur-3xl pointer-events-none"></div>
-            
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 relative z-10">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200 shrink-0">
@@ -362,7 +362,7 @@ export default function SuperAdminDashboard() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => handleApprove(reg._id)}
                       disabled={isApproving === reg._id}
                       className="w-full bg-[#1e5cdc] text-white font-black uppercase tracking-widest py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-blue-300 transition-all flex items-center justify-center gap-2 group-hover:scale-[1.02] active:scale-95 disabled:bg-blue-200 pointer-events-auto text-xs sm:text-sm"

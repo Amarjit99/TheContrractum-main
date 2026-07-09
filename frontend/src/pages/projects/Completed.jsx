@@ -40,11 +40,11 @@ export default function Completed() {
   }, []);
 
   // Filter and sort projects
-  const filteredProjects = completedProjectsData
+  const filteredProjects = (completedProjectsData || [])
     .filter(project => {
-      const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           project.client.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (project.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (project.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (project.client || "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === "All" || project.category === selectedCategory;
       const matchesRating = selectedRating === "All" || 
                            (selectedRating === "5 Stars" && project.rating === 5) ||
@@ -52,20 +52,23 @@ export default function Completed() {
       return matchesSearch && matchesCategory && matchesRating;
     })
     .sort((a, b) => {
-      if (sortBy === "date") return new Date(b.completedDate) - new Date(a.completedDate);
-      if (sortBy === "budget") return parseFloat(b.budget.replace(/[$,]/g, '')) - parseFloat(a.budget.replace(/[$,]/g, ''));
-      if (sortBy === "rating") return b.rating - a.rating;
+      if (sortBy === "date") {
+        return (b.id || b._id || "").toString().localeCompare((a.id || a._id || "").toString());
+      }
+      if (sortBy === "budget") return parseFloat((b.budget || "0").toString().replace(/[$,]/g, '')) - parseFloat((a.budget || "0").toString().replace(/[$,]/g, ''));
+      if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
       return 0;
     });
 
   // Calculate statistics
-  const totalProjects = completedProjectsData.length;
-  const avgRating = (completedProjectsData.reduce((sum, p) => sum + p.rating, 0) / totalProjects).toFixed(1);
-  const totalBudget = completedProjectsData.reduce((sum, p) => sum + parseFloat(p.budget.replace(/[$,]/g, '')), 0);
-  const fiveStarProjects = completedProjectsData.filter(p => p.rating === 5).length;
+  const totalProjects = (completedProjectsData || []).length;
+  const avgRating = totalProjects > 0 ? ((completedProjectsData || []).reduce((sum, p) => sum + (p.rating || 0), 0) / totalProjects).toFixed(1) : "0.0";
+  const totalBudget = (completedProjectsData || []).reduce((sum, p) => sum + parseFloat((p.budget || "0").toString().replace(/[$,]/g, '') || 0), 0);
+  const fiveStarProjects = (completedProjectsData || []).filter(p => p.rating === 5).length;
 
   const getRatingStars = (rating) => {
-    return "⭐".repeat(rating);
+    const r = parseInt(rating) || 5;
+    return "⭐".repeat(Math.max(0, Math.min(5, r)));
   };
 
   const getRatingColor = (rating) => {
@@ -325,7 +328,7 @@ export default function Completed() {
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">Budget</p>
-                      <p className="text-sm font-semibold text-slate-800">{project.budget}</p>
+                      <p className="text-sm font-semibold text-slate-800">{project.budget && !project.budget.toString().startsWith('$') ? `$${project.budget}` : project.budget}</p>
                     </div>
                   </div>
 
@@ -333,7 +336,7 @@ export default function Completed() {
                   <div className="mb-4">
                     <p className="text-xs text-slate-500 mb-2 font-semibold">Key Achievements:</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {project.achievements.map((achievement, index) => (
+                      {(project.achievements || []).map((achievement, index) => (
                         <div key={index} className="flex items-center gap-1">
                           <svg className="w-3 h-3 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

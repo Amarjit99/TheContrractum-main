@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
 // POST create intern (protected)
 router.post('/', protect, adminOnly, upload.single('image'), async (req, res) => {
   try {
-    const { name, role, collegeName, description, tags } = req.body;
+    const { name, role, collegeName, description, tags, batchYear } = req.body;
     const imagePath = req.file ? `/uploads/interns/${req.file.filename}` : '';
 
     if (!imagePath) {
@@ -53,7 +53,8 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
       collegeName,
       description,
       image: imagePath,
-      tags: parsedTags
+      tags: parsedTags,
+      batchYear: batchYear || new Date().getFullYear().toString()
     });
 
     const savedIntern = await intern.save();
@@ -69,8 +70,9 @@ router.post('/', protect, adminOnly, upload.single('image'), async (req, res) =>
 // PUT update intern (protected)
 router.put('/:id', protect, adminOnly, upload.single('image'), async (req, res) => {
   try {
-    const { name, role, collegeName, description, tags } = req.body;
+    const { name, role, collegeName, description, tags, batchYear } = req.body;
     const updateData = { name, role, collegeName, description };
+    if (batchYear) updateData.batchYear = batchYear;
 
     if (tags) {
       try {

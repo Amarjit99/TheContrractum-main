@@ -13,7 +13,7 @@ export default function AdminReferrals() {
     setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/referrals`, {
-        headers: { Authorization: `Bearer ${admin?.token}` }
+        headers: { Authorization: `Bearer {admin?.token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -37,7 +37,7 @@ export default function AdminReferrals() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${admin?.token}`
+          Authorization: `Bearer {admin?.token}`
         },
         body: JSON.stringify({ status: newStatus })
       });
@@ -54,7 +54,7 @@ export default function AdminReferrals() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/referrals/${id}/reward`, {
         method: "PUT",
-        headers: { Authorization: `Bearer ${admin?.token}` }
+        headers: { Authorization: `Bearer {admin?.token}` }
       });
       if (res.ok) {
         fetchReferrals();
@@ -130,8 +130,7 @@ export default function AdminReferrals() {
                 </div>
                 <div>
                     <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Pending Payouts</p>
-                    <p className="text-xl sm:text-2xl font-black text-gray-900">
-                        ${referrals.filter(r => r.status === 'Hired' && r.rewardStatus === 'Pending').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">{referrals.filter(r => r.status === 'Hired' && r.rewardStatus === 'Pending').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
                     </p>
                 </div>
             </div>
@@ -141,8 +140,7 @@ export default function AdminReferrals() {
                 </div>
                 <div>
                     <p className="text-[10px] sm:text-sm text-gray-500 font-bold uppercase tracking-wider">Paid Rewards</p>
-                    <p className="text-xl sm:text-2xl font-black text-gray-900">
-                        ${referrals.filter(r => r.rewardStatus === 'Rewarded').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
+                    <p className="text-xl sm:text-2xl font-black text-gray-900">{referrals.filter(r => r.rewardStatus === 'Rewarded').reduce((acc, curr) => acc + curr.rewardAmount, 0)}
                     </p>
                 </div>
             </div>
@@ -193,7 +191,7 @@ export default function AdminReferrals() {
                       <select 
                         value={ref.status}
                         onChange={(e) => handleStatusChange(ref._id, e.target.value)}
-                        className={`text-xs sm:text-sm font-bold px-2 sm:px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-colors ${
+                        className={`text-xs sm:text-sm font-bold px-2 sm:px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-colors {
                             ref.status === 'Applied' ? 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300' :
                             ref.status === 'Interview' ? 'bg-blue-50 text-blue-700 border-blue-200 hover:border-blue-300' :
                             ref.status === 'Hired' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:border-emerald-300' :
@@ -213,11 +211,11 @@ export default function AdminReferrals() {
                                 onClick={() => handleApproveReward(ref._id)}
                                 className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
                             >
-                                Approve ${ref.rewardAmount}
+                                Approve {ref.rewardAmount}
                             </button>
                         ) : (
                             <span className="inline-flex items-center gap-1 sm:gap-1.5 text-emerald-600 font-bold text-[10px] sm:text-sm bg-emerald-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-emerald-100">
-                                <CheckCircle size={14} className="sm:w-4 sm:h-4" /> Paid (${ref.rewardAmount})
+                                <CheckCircle size={14} className="sm:w-4 sm:h-4" /> Paid ({ref.rewardAmount})
                             </span>
                         )
                       ) : (

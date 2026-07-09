@@ -103,7 +103,7 @@ export default function Affiliate() {
                     <div className="absolute top-0 -left-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
                     <div className="absolute bottom-0 -right-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-700"></div>
                 </div>
-                
+
                 <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
                     <div className="md:w-1/2 text-left mb-12 md:mb-0">
                         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
@@ -115,9 +115,6 @@ export default function Affiliate() {
                         <p className="text-xl text-slate-300 mb-8 max-w-lg">
                             Join our community of content creators, publishers, and bloggers who are earning with The Contractum Affiliate Program.
                         </p>
-                        <Link to="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-2xl transition-all transform hover:scale-105 inline-block">
-                            Sign Up Now
-                        </Link>
                     </div>
                     <div className="md:w-5/12">
                         <div className="bg-white/10 backdrop-blur-lg p-8 rounded-3xl border border-white/20 shadow-2xl">
@@ -155,7 +152,7 @@ export default function Affiliate() {
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">How it Works</h2>
                     <div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {steps.map((step, idx) => (
                         <div key={idx} className="bg-slate-50 p-10 rounded-3xl text-center group hover:bg-white hover:shadow-2xl transition-all duration-300 border border-slate-100 transform hover:-translate-y-2">
@@ -350,9 +347,9 @@ export default function Affiliate() {
                 <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to start earning?</h2>
                     <p className="text-xl text-blue-100 mb-10">Join our affiliate community today and grow your revenue with The Contractum.</p>
-                    <Link to="/contact/touch" className="bg-white text-blue-600 hover:bg-slate-100 font-extrabold py-5 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 inline-block text-lg">
+                    <a href="#apply-form" className="bg-white text-blue-600 hover:bg-slate-100 font-extrabold py-5 px-12 rounded-full shadow-2xl transition-all transform hover:scale-105 inline-block text-lg">
                         Apply Now for Free
-                    </Link>
+                    </a>
                 </div>
             </div>
         </div>

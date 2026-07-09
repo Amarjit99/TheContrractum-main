@@ -19,6 +19,7 @@ export default function AdminBlogs() {
   const [success, setSuccess] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [customCategory, setCustomCategory] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [imageMode, setImageMode] = useState('url'); // 'url' | 'upload'
   const [uploading, setUploading] = useState(false);
 
@@ -26,7 +27,7 @@ export default function AdminBlogs() {
   const [newPost, setNewPost] = useState({
     title: '',
     author: '',
-    category: 'Technology',
+    category: 'Information Technology Services',
     status: 'Draft',
     excerpt: '',
     content: '',
@@ -88,7 +89,11 @@ export default function AdminBlogs() {
     setUploading(false);
   };
 
-  const filteredBlogs = blogs.filter(b => b.title.toLowerCase().includes(search.toLowerCase()) || b.author.toLowerCase().includes(search.toLowerCase()));
+  const filteredBlogs = blogs.filter(b => {
+    const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) || b.author.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = categoryFilter === '' || (b.category && b.category.toLowerCase() === categoryFilter.toLowerCase());
+    return matchesSearch && matchesCategory;
+  });
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
@@ -107,7 +112,7 @@ export default function AdminBlogs() {
     setNewPost({
       title: blog.title,
       author: blog.author,
-      category: blog.category || 'Technology',
+      category: blog.category || 'Information Technology Services',
       status: blog.status || 'Draft',
       excerpt: blog.excerpt || '',
       content: isProf ? '' : (blog.content || ''),
@@ -162,7 +167,7 @@ export default function AdminBlogs() {
           setEditingId(null);
           setCustomCategory('');
           setNewPost({
-            title: '', author: '', category: 'Technology', status: 'Draft', excerpt: '', content: '', readTime: '', image: '',
+            title: '', author: '', category: 'Information Technology Services', status: 'Draft', excerpt: '', content: '', readTime: '', image: '',
             intro: '', sections: [{ heading: '', text: '', image: '' }], conclusion: '', isProfessional: false
           });
         }, 1500);
@@ -210,10 +215,28 @@ export default function AdminBlogs() {
               className="pl-10 pr-4 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] w-full sm:w-64 bg-white"
             />
           </div>
+          <select
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-200 text-gray-800 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            <option value="Information Technology Services">Information Technology Services</option>
+            <option value="GIS & Geospatial Solutions">GIS &amp; Geospatial Solutions</option>
+            <option value="Market Research & Analytics">Market Research &amp; Analytics</option>
+            <option value="E-Commerce Solutions">E-Commerce Solutions</option>
+            <option value="HR Technology Solutions">HR Technology Solutions</option>
+            <option value="Digital Marketing Services">Digital Marketing Services</option>
+            <option value="Business Process Outsourcing">Business Process Outsourcing</option>
+            <option value="Telecommunication Solutions">Telecommunication Solutions</option>
+            <option value="Network Infrastructure Services">Network Infrastructure Services</option>
+            <option value="Cloud Integration & Migration">Cloud Integration &amp; Migration</option>
+            <option value="General">General</option>
+          </select>
           <button
             onClick={() => {
               setEditingId(null);
-              setNewPost({ title: '', author: '', category: 'Technology', status: 'Draft', excerpt: '', content: '', readTime: '', image: '', intro: '', sections: [{ heading: '', text: '', image: '' }], conclusion: '', isProfessional: false });
+              setNewPost({ title: '', author: '', category: 'Information Technology Services', status: 'Draft', excerpt: '', content: '', readTime: '', image: '', intro: '', sections: [{ heading: '', text: '', image: '' }], conclusion: '', isProfessional: false });
               setIsModalOpen(true);
             }}
             className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0"
@@ -456,19 +479,17 @@ export default function AdminBlogs() {
                           onChange={e => setNewPost({ ...newPost, category: e.target.value })}
                           className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-[#1e5cdc] text-sm sm:text-base bg-white"
                         >
-                          <option value="Technology">Technology</option>
-                          <option value="Business">Business</option>
-                          <option value="AI & ML">AI &amp; ML</option>
-                          <option value="Cybersecurity">Cybersecurity</option>
-                          <option value="Digital Transformation">Digital Transformation</option>
-                          <option value="Innovation">Innovation</option>
-                          <option value="Cloud Computing">Cloud Computing</option>
-                          <option value="Data Science">Data Science</option>
-                          <option value="Leadership">Leadership</option>
-                          <option value="GIS & Mapping">GIS &amp; Mapping</option>
-                          <option value="Telecom">Telecom</option>
-                          <option value="HR Tech">HR Tech</option>
-                          <option value="E-Commerce">E-Commerce</option>
+                          <option value="Information Technology Services">Information Technology Services</option>
+                          <option value="GIS & Geospatial Solutions">GIS &amp; Geospatial Solutions</option>
+                          <option value="Market Research & Analytics">Market Research &amp; Analytics</option>
+                          <option value="E-Commerce Solutions">E-Commerce Solutions</option>
+                          <option value="HR Technology Solutions">HR Technology Solutions</option>
+                          <option value="Digital Marketing Services">Digital Marketing Services</option>
+                          <option value="Business Process Outsourcing">Business Process Outsourcing</option>
+                          <option value="Telecommunication Solutions">Telecommunication Solutions</option>
+                          <option value="Network Infrastructure Services">Network Infrastructure Services</option>
+                          <option value="Cloud Integration & Migration">Cloud Integration &amp; Migration</option>
+                          <option value="General">General</option>
                           <option value="__custom__">+ Custom Category...</option>
                         </select>
                         {newPost.category === '__custom__' && (

@@ -214,12 +214,12 @@ const seedData = [
 // GET: Fetch all projects with auto-seed capability
 router.get('/', async (req, res) => {
   try {
-    let projects = await Project.find();
+    let projects = await Project.find().sort({ _id: -1 });
 
     // Auto-seed if db completely empty
     if (projects.length === 0) {
       await Project.insertMany(seedData);
-      projects = await Project.find();
+      projects = await Project.find().sort({ _id: -1 });
     }
 
     // Convert _id to id for seamless frontend integration with existing map code

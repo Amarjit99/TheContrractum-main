@@ -92,7 +92,7 @@ export default function AboutSection() {
           <div className="mt-8">
             {/* <Link
               to="/company/about-us"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
+              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
             >
               Read More
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

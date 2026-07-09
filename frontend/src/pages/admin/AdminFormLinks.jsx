@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { 
+import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie
 } from 'recharts';
-import { 
-  Link as LinkIcon, Copy, Check, ExternalLink, 
-  FileText, ClipboardCheck, Users, BarChart3, 
-  Plus, Eye, Filter
+import {
+  Link as LinkIcon, Copy, Check, ExternalLink,
+  FileText, ClipboardCheck, Users, BarChart3,
+  Plus, Eye, Filter, X
 } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -22,11 +22,11 @@ const FORM_DETAILS = [
   { id: 'expert', name: 'Expert Consultation', path: '/team/connect-experts', adminPath: '/admin/submissions', category: 'Sales' },
   { id: 'quote', name: 'Request A Quote', path: '/contact/quote', adminPath: '/admin/contacts', category: 'Sales' },
   { id: 'support', name: 'Support Ticket', path: '/contact/support', adminPath: '/admin/contacts', category: 'Support' },
-  { id: 'newsletter', name: 'Newsletter Subscription', path: '/', adminPath: '/admin/submissions', category: 'Marketing' },
+  { id: 'newsletter', name: 'Newsletter Subscription', path: '/resources/news', adminPath: '/admin/submissions', category: 'Marketing' },
   { id: 'interns', name: 'Internship Application', path: '/careers/internships', adminPath: '/admin/student-interns', category: 'HR' },
   { id: 'affiliate', name: 'Affiliate Marketing', path: '/join/affiliate', adminPath: '/admin/affiliates', category: 'Business' },
   { id: 'survey', name: 'Awareness Survey', path: '/events', adminPath: '/admin/dashboard', category: 'Marketing' },
-  { id: 'referral', name: 'Employee Referral', path: '/join/referral', adminPath: '/admin/referrals', category: 'HR' },
+  { id: 'referral', name: 'Employee Referral', path: '/company/referral-dashboard', adminPath: '/admin/referrals', category: 'HR' },
   { id: 'staff-requests', name: 'Staff Registration', path: '/admin/login', adminPath: '/admin/staff-management', category: 'Admin' },
   { id: 'rsvps', name: 'Event RSVPs', path: '/events', adminPath: '/admin/mini-events', category: 'Community' },
   { id: 'feedback', name: 'User Feedback', path: '/contact/feedback', adminPath: '/admin/dashboard', category: 'Support' },
@@ -54,31 +54,47 @@ export default function AdminFormLinks() {
   const [copiedId, setCopiedId] = useState(null);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newForm, setNewForm] = useState({ name: '', path: '', adminPath: '', category: 'General' });
+
+  const handleCreateForm = (e) => {
+    e.preventDefault();
+    const newId = newForm.name.toLowerCase().replace(/\s+/g, '-');
+    const newEntry = { id: newId, ...newForm, count: 0 };
+    setStats(prev => ({
+      ...prev,
+      merged: [newEntry, ...(prev?.merged || [])],
+      totalForms: (prev?.totalForms || 0) + 1
+    }));
+    setIsModalOpen(false);
+    setNewForm({ name: '', path: '', adminPath: '', category: 'General' });
+  };
+
   useEffect(() => {
-    fetch(`${API}/api/admin/form-stats`, { 
-      headers: { Authorization: `Bearer ${admin?.token}` } 
+    fetch(`${API}/api/admin/form-stats`, {
+      headers: { Authorization: `Bearer ${admin?.token}` }
     })
       .then(r => r.json())
       .then(data => {
         // Merge detail info with count stats
         const merged = FORM_DETAILS.map(detail => {
-          const stat = data.stats.find(s => s.name.toLowerCase().includes(detail.id) || 
-                                           (detail.id === 'contact' && s.name === 'Contact Us') ||
-                                           (detail.id === 'jobs' && s.name === 'Job Apps') ||
-                                           (detail.id === 'partners' && s.name === 'Partner Apps') ||
-                                           (detail.id === 'advisors' && s.name === 'Advisor Apps') ||
-                                           (detail.id === 'demo' && s.name === 'Demo Requests') ||
-                                           (detail.id === 'expert' && s.name === 'Expert Consults') ||
-                                           (detail.id === 'quote' && s.name === 'Quote Apps') ||
-                                           (detail.id === 'support' && s.name === 'Support Tickets') ||
-                                           (detail.id === 'newsletter' && s.name === 'Newsletters') ||
-                                           (detail.id === 'interns' && s.name === 'Intern Apps') ||
-                                           (detail.id === 'staff-requests' && s.name === 'Staff Requests') ||
-                                           (detail.id === 'rsvps' && s.name === 'Event RSVPs') ||
-                                           (detail.id === 'feedback' && s.name === 'User Feedback') ||
-                                           (detail.id === 'volunteer' && s.name === 'Volunteer Apps')
-                                          );
-          return { ...detail, count: stat ? stat.count : 0 };
+          const stat = data.stats.find(s => s.name.toLowerCase().includes(detail.id) ||
+            (detail.id === 'contact' && s.name === 'Contact Us') ||
+            (detail.id === 'jobs' && s.name === 'Job Apps') ||
+            (detail.id === 'partners' && s.name === 'Partner Apps') ||
+            (detail.id === 'advisors' && s.name === 'Advisor Apps') ||
+            (detail.id === 'demo' && s.name === 'Demo Requests') ||
+            (detail.id === 'expert' && s.name === 'Expert Consults') ||
+            (detail.id === 'quote' && s.name === 'Quote Apps') ||
+            (detail.id === 'support' && s.name === 'Support Tickets') ||
+            (detail.id === 'newsletter' && s.name === 'Newsletters') ||
+            (detail.id === 'interns' && s.name === 'Intern Apps') ||
+            (detail.id === 'staff-requests' && s.name === 'Staff Requests') ||
+            (detail.id === 'rsvps' && s.name === 'Event RSVPs') ||
+            (detail.id === 'feedback' && s.name === 'User Feedback') ||
+            (detail.id === 'volunteer' && s.name === 'Volunteer Apps')
+          );
+          return { ...detail, count: stat ? stat.count : 0, isDynamic: false };
         });
         setStats({ ...data, merged });
       })
@@ -86,8 +102,9 @@ export default function AdminFormLinks() {
       .finally(() => setLoading(false));
   }, [admin]);
 
-  const handleCopy = (id, path) => {
-    const fullUrl = `${window.location.origin}${path}`;
+  const handleCopy = (id, path, isDynamic) => {
+    const formattedPath = isDynamic ? '/f' + (path.startsWith('/') ? path : '/' + path) : (path.startsWith('/') ? path : '/' + path);
+    const fullUrl = `${window.location.origin}${formattedPath}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -99,13 +116,16 @@ export default function AdminFormLinks() {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <span className="p-2 bg-blue-100 text-[#1e5cdc] rounded-lg">
-                <LinkIcon size={20} />
+              <LinkIcon size={20} />
             </span>
             <h1 className="text-2xl font-black text-gray-900 tracking-tight">Form Builder & Links</h1>
           </div>
           <p className="text-gray-500 text-sm font-medium">Create Google Form-like applications. Share links to collect candidate data seamlessly.</p>
         </div>
-        <button className="flex items-center gap-2 bg-[#1e5cdc] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 bg-[#1e5cdc] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+        >
           <Plus size={20} /> Create New Form
         </button>
       </div>
@@ -116,7 +136,7 @@ export default function AdminFormLinks() {
         </div>
       ) : (
         <div className="space-y-8 animate-in fade-in duration-500">
-          
+
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <SummaryCard title="Total Forms" value={stats?.totalForms || 0} icon={<FileText size={24} />} color="bg-blue-500" />
@@ -128,65 +148,65 @@ export default function AdminFormLinks() {
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
-                    <BarChart3 size={16} className="text-blue-500" /> Response Distribution
-                </h3>
-                <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={stats?.merged?.filter(f => f.count > 0) || []} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                            <XAxis dataKey="id" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#64748b'}} />
-                            <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 700, fill: '#64748b'}} />
-                            <Tooltip 
-                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                                cursor={{ fill: '#f8fafc' }}
-                            />
-                            <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={40}>
-                                {stats?.merged?.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+              <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+                <BarChart3 size={16} className="text-blue-500" /> Response Distribution
+              </h3>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stats?.merged?.filter(f => f.count > 0) || []} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="id" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                      cursor={{ fill: '#f8fafc' }}
+                    />
+                    <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={40}>
+                      {stats?.merged?.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
-                <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
-                    <Filter size={16} className="text-purple-500" /> Category Share
-                </h3>
-                <div className="flex-1 h-[250px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={stats?.merged || []}
-                                dataKey="count"
-                                nameKey="id"
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={60}
-                                outerRadius={80}
-                                paddingAngle={5}
-                            >
-                                {stats?.merged?.map((entry, index) => (
-                                    <Cell key={`cellpie-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                    {['General', 'HR', 'Business', 'Sales', 'Support', 'Marketing'].map((cat, i) => (
-                        <div key={cat} className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase">{cat}</span>
-                        </div>
-                    ))}
-                </div>
+              <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+                <Filter size={16} className="text-purple-500" /> Category Share
+              </h3>
+              <div className="flex-1 h-[250px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={stats?.merged || []}
+                      dataKey="count"
+                      nameKey="id"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                    >
+                      {stats?.merged?.map((entry, index) => (
+                        <Cell key={`cellpie-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {['General', 'HR', 'Business', 'Sales', 'Support', 'Marketing'].map((cat, i) => (
+                  <div key={cat} className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase">{cat}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          
+
           {/* Form Links Section */}
           <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
             <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50">
@@ -195,7 +215,7 @@ export default function AdminFormLinks() {
                 Available Form Links
               </h2>
             </div>
-            
+
             <div className="divide-y divide-gray-50">
               {stats?.merged?.map((form) => (
                 <div key={form.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
@@ -208,27 +228,28 @@ export default function AdminFormLinks() {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                       <p className="flex items-center gap-1">
-                        <span className="font-semibold text-gray-700">Responses:</span> 
+                        <span className="font-semibold text-gray-700">Responses:</span>
                         <span className="bg-gray-100 px-2 py-0.5 rounded font-bold text-gray-700">{form.count || 0}</span>
                       </p>
                       <p className="hidden sm:block text-gray-300">•</p>
-                      <p className="text-gray-400 truncate max-w-xs md:max-w-md xl:max-w-xl">/{form.path}</p>
+                      <p className="text-gray-400 truncate max-w-xs md:max-w-md xl:max-w-xl">
+                        {form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 mt-2 sm:mt-0 shrink-0">
-                    <button 
-                      onClick={() => handleCopy(form.id, form.path)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                        copiedId === form.id 
-                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' 
+                    <button
+                      onClick={() => handleCopy(form.id, form.path, form.isDynamic)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${copiedId === form.id
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
                           : 'bg-white border border-gray-200 text-gray-600 hover:text-[#1e5cdc] hover:border-[#1e5cdc]'
-                      }`}
+                        }`}
                     >
                       {copiedId === form.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
                     </button>
-                    <a 
-                      href={`${form.path}`}
+                    <a
+                      href={form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
                       target="_blank"
                       rel="noreferrer"
                       className="p-1.5 bg-gray-50 text-gray-500 hover:text-[#1e5cdc] rounded-lg transition-colors border border-transparent hover:border-blue-100"
@@ -241,7 +262,87 @@ export default function AdminFormLinks() {
               ))}
             </div>
           </div>
-          
+
+        </div>
+      )}
+
+      {/* Create Form Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h2 className="text-xl font-bold text-gray-800">Create New Form</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateForm} className="p-6 space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Form Name</label>
+                <input
+                  required
+                  type="text"
+                  value={newForm.name}
+                  onChange={e => setNewForm({ ...newForm, name: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] outline-none transition-all"
+                  placeholder="e.g. Fall Internship Application"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Public Link Path</label>
+                  <input
+                    required
+                    type="text"
+                    value={newForm.path}
+                    onChange={e => setNewForm({ ...newForm, path: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] outline-none transition-all"
+                    placeholder="e.g. /careers/fall-interns"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Admin Dashboard Path</label>
+                  <input
+                    required
+                    type="text"
+                    value={newForm.adminPath}
+                    onChange={e => setNewForm({ ...newForm, adminPath: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] outline-none transition-all"
+                    placeholder="e.g. /admin/submissions"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                <select
+                  value={newForm.category}
+                  onChange={e => setNewForm({ ...newForm, category: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1e5cdc]/20 focus:border-[#1e5cdc] outline-none transition-all"
+                >
+                  <option value="General">General</option>
+                  <option value="HR">HR</option>
+                  <option value="Business">Business</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Support">Support</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Community">Community</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-5 py-2 rounded-xl bg-[#1e5cdc] text-white font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                  Save Form Link
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </AdminLayout>

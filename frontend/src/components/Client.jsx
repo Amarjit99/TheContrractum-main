@@ -1,6 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function OurClients() {
   const clients = [
@@ -43,15 +42,31 @@ export default function OurClients() {
   ];
 
   const [startIndex, setStartIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  const goTo = useCallback(
+    (index) => {
+      if (animating) return;
+      setAnimating(true);
+      setTimeout(() => {
+        setStartIndex((index + clients.length) % clients.length);
+        setAnimating(false);
+      }, 300);
+    },
+    [animating, clients.length]
+  );
+
+  const prev = () => goTo(startIndex - 1);
+  const next = useCallback(() => goTo(startIndex + 1), [startIndex, goTo]);
 
   // Auto rotate every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setStartIndex((prev) => (prev + 1) % clients.length);
+      next();
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [clients.length]);
+  }, [next]);
 
   // Get 3 visible clients
   const visibleClients = Array.from({ length: 3 }, (_, i) =>
@@ -84,7 +99,7 @@ export default function OurClients() {
         </h2>
 
         {/* Client Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 transition-all duration-700">
+        <div className={`grid md:grid-cols-2 lg:grid-cols-3 gap-10 transition-opacity duration-300 ${animating ? "opacity-0" : "opacity-100"}`}>
 
           {visibleClients.map((client, index) => (
             <div
@@ -110,6 +125,67 @@ export default function OurClients() {
             </div>
           ))}
 
+        </div>
+
+        {/* Slide counter dots */}
+        <div className="flex gap-2 justify-start mt-12 mb-4">
+          {clients.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${i === startIndex
+                ? "w-8 bg-indigo-600"
+                : "w-2 bg-gray-300 hover:bg-indigo-300"
+                }`}
+              aria-label={`Go to client ${i + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-full max-w-xs h-1 bg-gray-200 rounded-full mb-10 overflow-hidden">
+          <div
+            key={startIndex}
+            className="h-full bg-indigo-600 rounded-full"
+            style={{
+              animation: "progressBar 4s linear forwards",
+            }}
+          />
+        </div>
+
+        <style>{`
+          @keyframes progressBar {
+            from { width: 0%; }
+            to { width: 100%; }
+          }
+        `}</style>
+
+        {/* Navigation arrows & counter */}
+        <div className="mt-12 flex justify-between items-center w-full">
+          {/* Left Arrow */}
+          <button
+            onClick={prev}
+            aria-label="Previous clients"
+            className="w-14 h-14 flex items-center justify-center rounded-xl text-white shadow-lg hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #2563eb)" }}
+          >
+            <ArrowLeft size={22} />
+          </button>
+
+          {/* Counter */}
+          <span className="text-gray-500 font-medium text-sm tracking-widest">
+            {String(startIndex + 1).padStart(2, "0")} / {String(clients.length).padStart(2, "0")}
+          </span>
+
+          {/* Right Arrow */}
+          <button
+            onClick={next}
+            aria-label="Next clients"
+            className="w-14 h-14 flex items-center justify-center rounded-xl text-white shadow-lg hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+            style={{ background: "linear-gradient(135deg, #4f46e5, #2563eb)" }}
+          >
+            <ArrowRight size={22} />
+          </button>
         </div>
 
       </div>

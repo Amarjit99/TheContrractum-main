@@ -48,7 +48,8 @@ export default function CompletedProjectDetails() {
   }
 
   const getRatingStars = (rating) => {
-    return Array(rating).fill("⭐").join("");
+    const r = parseInt(rating) || 5;
+    return Array(Math.max(0, Math.min(5, r))).fill("⭐").join("");
   };
 
   const getRatingColor = (rating) => {
@@ -172,7 +173,7 @@ export default function CompletedProjectDetails() {
                 Key Achievements
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
-                {project.achievements.map((achievement, index) => (
+                {(project.achievements || []).map((achievement, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                     <Award className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700 font-bold text-lg">{achievement}</span>
@@ -189,7 +190,7 @@ export default function CompletedProjectDetails() {
                 Challenges Overcome
               </h2>
               <div className="space-y-3">
-                {project.challenges.map((challenge, index) => (
+                {(project.challenges || []).map((challenge, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
                     <Target className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700">{challenge}</span>
@@ -207,7 +208,7 @@ export default function CompletedProjectDetails() {
                 Measurable Results
               </h2>
               <div className="space-y-3">
-                {project.results.map((result, index) => (
+                {(project.results || []).map((result, index) => (
                   <div key={index} className="flex items-start gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
                     <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                     <span className="text-slate-700 font-medium">{result}</span>
@@ -247,7 +248,7 @@ export default function CompletedProjectDetails() {
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 sticky top-24">
               <h3 className="text-2xl font-bold text-slate-900 mb-6">Key Metrics</h3>
               <div className="space-y-4">
-                {project.keyMetrics.map((metric, index) => (
+                {(project.keyMetrics || []).map((metric, index) => (
                   <div key={index} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-3xl">{metric.icon}</span>
@@ -272,7 +273,7 @@ export default function CompletedProjectDetails() {
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
               <h3 className="text-2xl font-bold text-slate-900 mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech, index) => (
+                {(project.technologies || []).map((tech, index) => (
                   <span
                     key={index}
                     className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-md"

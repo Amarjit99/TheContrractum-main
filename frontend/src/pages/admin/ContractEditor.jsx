@@ -6,7 +6,7 @@ import {
   FileText, ClipboardList, Info, Eye, EyeOff, RefreshCw,
   CheckCircle, LayoutTemplate, ChevronDown, Upload, XCircle, Pencil,
   Mail, Bold, Italic, List, Table, Underline, AlignLeft, AlignCenter,
-  AlignRight, AlignJustify, ListOrdered, Code
+  AlignRight, AlignJustify, ListOrdered, Code, Trash2
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -475,6 +475,30 @@ export default function ContractEditor() {
       toast.error('Failed to send email');
     } finally {
       setSendingEmail(false);
+    }
+  };
+
+  const handleDeleteContract = async () => {
+    if (!window.confirm(`Are you sure you want to delete the contract "${formData.title || 'Untitled'}"? This action cannot be undone.`)) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/contracts/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Contract deleted successfully!');
+        navigate('/admin/contracts');
+      } else {
+        toast.error(data.message || 'Failed to delete contract');
+      }
+    } catch {
+      toast.error('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1576,14 +1600,24 @@ export default function ContractEditor() {
             </button>
           )}
           {isEdit && (
-            <button
-              onClick={handleSendEmail}
-              disabled={sendingEmail || loading}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all text-sm disabled:opacity-50 shadow-sm"
-            >
-              {sendingEmail ? <RefreshCw size={16} className="animate-spin" /> : <Mail size={16} />}
-              Send Email
-            </button>
+            <>
+              <button
+                onClick={handleSendEmail}
+                disabled={sendingEmail || loading}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all text-sm disabled:opacity-50 shadow-sm"
+              >
+                {sendingEmail ? <RefreshCw size={16} className="animate-spin" /> : <Mail size={16} />}
+                Send Email
+              </button>
+              <button
+                onClick={handleDeleteContract}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-all text-sm disabled:opacity-50 shadow-sm"
+              >
+                {loading ? <RefreshCw size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                Delete Contract
+              </button>
+            </>
           )}
           {isEdit && !forceEdit && canApproveReject() && (
             <>
@@ -2052,6 +2086,17 @@ export default function ContractEditor() {
                       <CheckCircle size={16} /> Approve
                     </button>
                   </>
+                )}
+                {isEdit && (
+                  <button
+                    type="button"
+                    onClick={handleDeleteContract}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-all shadow-sm text-sm disabled:opacity-50"
+                  >
+                    {loading ? <RefreshCw size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                    Delete Contract
+                  </button>
                 )}
                 {isDraftOrRejected ? (
                   <>

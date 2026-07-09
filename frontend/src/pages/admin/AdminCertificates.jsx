@@ -514,7 +514,10 @@ export default function AdminCertificates() {
     if (!admin) return 'The Contractum';
     const name = admin.name || admin.email || 'Admin';
     const role = admin.role === 'super-admin' ? 'Super Admin' : admin.role === 'admin' ? 'Admin' : admin.role || '';
-    return role ? `${name} (${role})` : name;
+    if (role && name.toLowerCase() !== role.toLowerCase()) {
+      return `${name} (${role})`;
+    }
+    return name;
   };
 
   const isSuperAdmin = admin?.role?.toLowerCase()?.includes('admin') || admin?.email === 'admin@thecontractum.com';
@@ -720,19 +723,20 @@ export default function AdminCertificates() {
 
   const handleNotify = async (id) => {
     try {
-      const res = await fetch(`${API}/api/certificates/${id}/notify`, {
+      const baseUrl = API.replace(/\/+$/, '');
+      const res = await fetch(`${baseUrl}/api/certificates/${id}/notify`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${admin?.token}` }
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`Notification Processed: ${data.emailSent ? 'Email Sent' : 'No Email'} | ${data.waSent ? 'WhatsApp Sent' : 'No WhatsApp'}`);
+        toast.success(`Notification Processed: ${data.emailSent ? 'Email Sent' : 'No Email'} | ${data.waSent ? 'WhatsApp Sent' : 'No WhatsApp'}`);
       } else {
-        alert(`Failed: ${data.message}`);
+        toast.error(`Failed: ${data.message}`);
       }
     } catch (err) {
       console.error(err);
-      alert('Error sending notification');
+      toast.error('Error sending notification');
     }
   };
 
@@ -815,9 +819,31 @@ export default function AdminCertificates() {
   };
 
   const copyShareLink = (id) => {
-    const url = `${window.location.origin}/verify/${id}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Verification link copied to clipboard!');
+    const baseUrl = window.location.origin.replace(/\/+$/, '');
+    const url = `${baseUrl}/verify/${id}`;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(() => {
+        toast.success('Verification link copied to clipboard!');
+      }).catch(() => {
+        toast.error('Failed to copy link');
+      });
+    } else {
+      let textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        toast.success('Verification link copied to clipboard!');
+      } catch (err) {
+        toast.error('Failed to copy link');
+      }
+      textArea.remove();
+    }
   };
 
   const handleStatusChange = async (certId, newStatus) => {
@@ -1138,7 +1164,7 @@ export default function AdminCertificates() {
           onChange={(e) => setFilterDepartment(e.target.value)}
         >
           <option value="">All Departments</option>
-          {[...new Set((certificates || []).map(c => c?.department))].filter(Boolean).sort().map(dept => (
+          {[...new Set([...(DEPARTMENTS_BY_CATEGORY['Employee'] || []), ...(certificates || []).map(c => c?.department)])].filter(Boolean).sort().map(dept => (
             <option key={dept} value={dept}>{dept}</option>
           ))}
         </select>
@@ -1582,7 +1608,7 @@ export default function AdminCertificates() {
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Issued By Name</label>
                         <select value={formData.issuedBy} onChange={e => setFormData({ ...formData, issuedBy: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc] bg-white">
                           <option value="The Contractum">The Contractum</option>
-                          <option value="Amit Verma">Amit Verma</option>
+
                           <option value="Super Admin">Super Admin</option>
                           <option value="Admin">Admin</option>
                           <option value="Director">Director</option>

@@ -18,7 +18,7 @@ export default function Telecom() {
                         className="w-full h-full object-cover"
                     />
                 </div>
-                <div className="absolute inset-0 bg-linear-to-r from-zinc-900 via-zinc-900/90 to-transparent z-0"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-zinc-900/90 to-transparent z-0"></div>
 
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                     <div className="max-w-3xl">
@@ -28,7 +28,7 @@ export default function Telecom() {
                         </div> */}
                         <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                             The Future of <br />
-                            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-cyan-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#007BFF] to-cyan-400">
                                 Global Communication
                             </span>
                         </h1>
@@ -126,6 +126,8 @@ export default function Telecom() {
                                 alt="Telecom Network Infrastructure"
                                 className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-[#007BFF]/20 to-cyan-600/20 rounded-3xl transform rotate-3"></div>
                             <img
                                 src={telecomImg}
                                 alt="Fiber Optics Technology"

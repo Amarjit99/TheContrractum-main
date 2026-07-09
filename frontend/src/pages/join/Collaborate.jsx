@@ -87,14 +87,14 @@ export default function Collaborate() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/careers/jobs">
-                <button className="bg-primary text-white font-semibold py-3 px-6 rounded-lg
-            hover:bg-primary-dark transition-all duration-300 hover:scale-105 shadow-md">
+                <button className="bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold py-3 px-6 rounded-lg
+            hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 shadow-md">
                   Explore Opportunities
                 </button>
               </Link>
               <Link to="/join/collaborate/details">
-                <button className="bg-transparent border-2 border-primary text-white font-semibold py-3 px-6 rounded-lg
-            hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105 shadow-md">
+                <button className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg
+            hover:bg-blue-700 transition-all duration-300 hover:scale-105 shadow-md">
                   Learn More
                 </button>
               </Link>
@@ -276,8 +276,7 @@ export default function Collaborate() {
               },
             ].map((item, index, arr) => (
               <div key={index} className="relative flex flex-col items-center group">
-                {/* Step Number */}
-                <div className="w-16 h-16 bg-primary text-black rounded-full 
+                <div className="w-16 h-16 bg-blue-600 text-white rounded-full 
             flex items-center justify-center font-bold text-2xl shadow-lg z-10
             group-hover:scale-110 transition-transform duration-300">
                   {index + 1}
@@ -287,7 +286,7 @@ export default function Collaborate() {
                 {index < arr.length - 1 && (
                   <div className="absolute top-8 right-[-50%] w-[100%] flex items-center">
                     <div className="h-1 bg-indigo-200 flex-1 relative">
-                      <div className="absolute right-0 -top-1 w-4 h-4 bg-primary rotate-45"></div>
+                      <div className="absolute right-0 -top-1 w-4 h-4 bg-blue-600 rotate-45"></div>
                     </div>
                   </div>
                 )}
@@ -341,7 +340,7 @@ export default function Collaborate() {
             ].map((item, index, arr) => (
               <div key={index} className="relative flex items-start group">
                 {/* Step Circle */}
-                <div className="w-12 h-12 bg-primary text-black rounded-full 
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-full 
             flex items-center justify-center font-bold text-xl z-10 shrink-0
             group-hover:scale-110 transition-transform duration-300">
                   {index + 1}
@@ -351,7 +350,7 @@ export default function Collaborate() {
                 {index < arr.length - 1 && (
                   <div className="absolute left-5 top-12 w-1 h-full flex items-start">
                     <div className="flex-1 bg-indigo-200 relative">
-                      <div className="absolute bottom-0 -left-1 w-3 h-3 bg-primary rotate-45"></div>
+                      <div className="absolute bottom-0 -left-1 w-3 h-3 bg-blue-600 rotate-45"></div>
                     </div>
                   </div>
                 )}
@@ -390,15 +389,15 @@ export default function Collaborate() {
 
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Link to="/contact/touch">
-              <button className="w-full sm:w-auto bg-primary text-white font-semibold px-8 py-3 rounded-lg
+              <button className="w-full sm:w-auto bg-gradient-to-r from-orange-600 to-red-600 text-white font-semibold px-8 py-3 rounded-lg
                 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                 Start Collaboration
               </button>
             </Link>
 
             <Link to="/join/collaborate/details">
-              <button className="w-full sm:w-auto bg-transparent border-2 border-primary text-white font-semibold px-8 py-3 rounded-lg
-                hover:bg-primary hover:text-white hover:-translate-y-1 transition-all duration-300 shadow-lg">
+              <button className="w-full sm:w-auto bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg
+                hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300 shadow-lg">
                 Learn More
               </button>
             </Link>
