@@ -20,6 +20,7 @@ const MENU_ITEMS = [
       { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
+      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
       { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
