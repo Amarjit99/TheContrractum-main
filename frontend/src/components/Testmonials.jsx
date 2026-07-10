@@ -81,7 +81,6 @@ export default function TestimonialsSection() {
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-6 relative">
             What They Are <br /> Talking About Us?
-            <span className="absolute top-2 right-10 w-3 h-3 bg-primary rounded-full"></span>
           </h2>
 
           <p className="text-gray-600 text-lg leading-relaxed mb-10 max-w-xl">

@@ -100,7 +100,7 @@ export default function Internships() {
                                 We hire interns across almost every function. Find the role that suits your skills and ambitions.
                             </p>
                             <Link to="/careers/jobs">
-                                <button className="bg-primary text- blackfont-bold py-4 px-8 rounded-xl hover:bg-blue-700 transition-all flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                <button className="bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-blue-700 transition-all flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105">
                                     Apply Now <ArrowRight size={20} />
                                 </button>
                             </Link>

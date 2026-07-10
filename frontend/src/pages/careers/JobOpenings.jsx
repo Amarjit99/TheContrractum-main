@@ -227,8 +227,9 @@ export default function JobOpenings() {
                                     <span className="absolute top-4 right-4 text-xs font-black bg-emerald-500 text-white px-2.5 py-1 rounded-full uppercase tracking-wide">New</span>
                                 )}
                                 <div className="mb-6 md:mb-0 relative z-10">
-                                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-red-600 transition-colors">
+                                    <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-red-600 transition-colors flex items-center gap-3">
                                         {job.title}
+                                        {job.jobId && <span className="text-xs font-mono font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md border border-slate-200 uppercase tracking-wide">ID: {job.jobId}</span>}
                                     </h3>
                                     <div className="flex flex-wrap gap-5 text-sm font-bold text-slate-500 mb-4">
                                         <div className="flex items-center gap-2">
@@ -251,9 +252,9 @@ export default function JobOpenings() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 flex-wrap">
-                                        <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Skills:</span>
-                                        {(job.tags || []).slice(0, 3).map(tag => (
-                                            <span key={tag} className="text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full uppercase tracking-wide">
+                                        <span className="text-xs font-black text-slate-400 uppercase tracking-wider">SKILLS:</span>
+                                        {Array.from(new Set([...(job.tags || []), ...(job.skills || [])])).slice(0, 3).map(tag => (
+                                            <span key={tag} className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">
                                                 {tag}
                                             </span>
                                         ))}

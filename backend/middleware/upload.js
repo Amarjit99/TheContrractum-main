@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 
     if (req.originalUrl.includes('interns')) {
       uploadPath = 'uploads/interns';
-    } else if (req.originalUrl.includes('founders')) {
+    } else if (req.originalUrl.includes('founders') || req.originalUrl.includes('core-team')) {
       uploadPath = 'uploads/founders';
     } else if (req.originalUrl.includes('blogs')) {
       uploadPath = 'uploads/blogs';

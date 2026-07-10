@@ -153,7 +153,7 @@ export default function Themes() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
                         <div className="space-y-6 group">
                             <div className="w-20 h-20 rounded-full mx-auto overflow-hidden shadow-lg border-4 border-white group-hover:scale-110 transition-transform duration-300">
-                                <img src="https://images.unsplash.com/photo-1506784919140-1090333d45aa?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" alt="Goal" />
+                                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" alt="Goal" />
                             </div>
                             <h4 className="font-bold text-xl text-slate-900">Goal-Oriented</h4>
                             <p className="text-slate-500 leading-relaxed">Every research theme is tied to a real-world problem waiting for a solution.</p>
@@ -167,7 +167,7 @@ export default function Themes() {
                         </div>
                         <div className="space-y-6 group">
                             <div className="w-20 h-20 rounded-full mx-auto overflow-hidden shadow-lg border-4 border-white group-hover:scale-110 transition-transform duration-300">
-                                <img src="https://images.unsplash.com/photo-1521295121812-320e82c68686?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" alt="Global" />
+                                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" alt="Global" />
                             </div>
                             <h4 className="font-bold text-xl text-slate-900">Global Scale</h4>
                             <p className="text-slate-500 leading-relaxed">Our themes address problems that transcend borders and industries.</p>

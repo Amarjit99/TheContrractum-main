@@ -347,8 +347,8 @@ export default function Blogs() {
                                         setVisiblePosts(6);
                                     }}
                                     className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm md:text-base rounded-full font-semibold whitespace-nowrap border ${selectedCategory === category
-                                            ? 'bg-primary text-black border-primary'
-                                            : 'bg-transparent text-black-700 border-gray-200'
+                                            ? 'bg-primary text-white border-primary'
+                                            : 'bg-transparent text-gray-700 border-gray-200'
                                         }`}
                                 >
                                     {category}
@@ -429,7 +429,7 @@ export default function Blogs() {
                                 <div className="text-center mt-8 md:mt-12">
                                     <button
                                         onClick={() => setVisiblePosts(prev => prev + 6)}
-                                        className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-primary text-black-300 font-bold rounded-lg sm:rounded-xl hover:bg-primary-dark transition-all duration-300 hover:shadow-xl hover:scale-105"
+                                        className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-primary text-white font-bold rounded-lg sm:rounded-xl hover:bg-primary-dark transition-all duration-300 hover:shadow-xl hover:scale-105"
                                     >
                                         Load More Articles
                                     </button>

@@ -270,11 +270,11 @@ const Footer = () => {
               </h4>
               <ul className="space-y-2">
                 {[
-                  { label: "Our Vision", to: "/company/about-us/vision" },
-                  { label: "Our Mission", to: "/company/about-us/mission" },
-                  { label: "Core Values", to: "/company/about-us/values" },
-                  { label: "Leadership Team", to: "/company/leadership" },
-                  { label: "Founders & Management", to: "/company/leadership/founders" },
+                  { label: "Our Vision", to: "/company/vision" },
+                  { label: "Our Mission", to: "/company/mission" },
+                  { label: "Core Values", to: "/company/values" },
+                  { label: "Leadership Team", to: "/company/management" },
+                  { label: "Founders & Management", to: "/company/founders" },
                   { label: "Our Journey", to: "/company/our-journey" },
                   { label: "Core Team", to: "/team/core-team" },
                   { label: "Corporate Culture", to: "/team/culture" },

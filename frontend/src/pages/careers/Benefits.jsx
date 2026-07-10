@@ -205,18 +205,18 @@ export default function Benefits() {
                                 Explore our current job openings and start your journey with The Contractum today.
                             </p>
                             <div className="flex flex-wrap gap-5">
-                                <a
-                                    href="#/careers/jobs"
+                                <Link
+                                    to="/careers/jobs"
                                     className="inline-block px-8 py-4 bg-white text-blue-900 font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 shadow-xl hover:shadow-2xl"
                                 >
                                     View Job Openings
-                                </a>
-                                <a
-                                    href="#/careers/life"
-                                    className="inline-block px-8 py-4 bg-transparent text-white border-2 border-white font-bold rounded-xl hover:bg-white hover:text-blue-900 transition-all duration-300 transform hover:-translate-y-1">
-                                
+                                </Link>
+                                <Link
+                                    to="/careers/life"
+                                    className="inline-block px-8 py-4 bg-transparent text-white border-2 border-white font-bold rounded-xl hover:bg-white hover:text-blue-900 transition-all duration-300 transform hover:-translate-y-1"
+                                >
                                     Life at Company
-                                </a>
+                                </Link>
                             </div>
                         </div>
                         <div className="hidden md:block relative h-full min-h-[500px]">

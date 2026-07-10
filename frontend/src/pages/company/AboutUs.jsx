@@ -12,12 +12,12 @@ const WorkingProcessItem = ({ title, desc, icon }) => (
 
 export default function AboutUs() {
     const workingProcess = [
-        { title: "Discover & Understand", desc: "We begin by understanding your goals, constraints, and market realities to define a practical roadmap.", icon: <Users className="text-primary w-8 h-8" /> },
-        { title: "Plan with Precision", desc: "Our experts translate requirements into a clear execution plan with measurable milestones and outcomes.", icon: <ShieldCheck className="text-primary w-8 h-8" /> },
-        { title: "Build with Confidence", desc: "We deliver with quality-first engineering practices, transparent communication, and accountable ownership.", icon: <Award className="text-primary w-8 h-8" /> },
-        { title: "Integrate Technology", desc: "Modern technologies are integrated seamlessly to create scalable, secure, and future-ready solutions.", icon: <RocketIcon className="text-primary w-8 h-8" /> },
-        { title: "Innovate Continuously", desc: "Our teams continuously optimize performance and experience through research, feedback, and iteration.", icon: <Lightbulb className="text-primary w-8 h-8" /> },
-        { title: "Scale Nationwide", desc: "With strong delivery capabilities across India, we support consistent execution at every stage of growth.", icon: <Globe className="text-primary w-8 h-8" /> },
+        { title: "Discover & Understand", desc: "We begin by understanding your goals, constraints, and market realities to define a practical roadmap.", icon: <Users className="text-white w-8 h-8" /> },
+        { title: "Plan with Precision", desc: "Our experts translate requirements into a clear execution plan with measurable milestones and outcomes.", icon: <ShieldCheck className="text-white w-8 h-8" /> },
+        { title: "Build with Confidence", desc: "We deliver with quality-first engineering practices, transparent communication, and accountable ownership.", icon: <Award className="text-white w-8 h-8" /> },
+        { title: "Integrate Technology", desc: "Modern technologies are integrated seamlessly to create scalable, secure, and future-ready solutions.", icon: <RocketIcon className="text-white w-8 h-8" /> },
+        { title: "Innovate Continuously", desc: "Our teams continuously optimize performance and experience through research, feedback, and iteration.", icon: <Lightbulb className="text-white w-8 h-8" /> },
+        { title: "Scale Nationwide", desc: "With strong delivery capabilities across India, we support consistent execution at every stage of growth.", icon: <Globe className="text-white w-8 h-8" /> },
     ];
 
     return (

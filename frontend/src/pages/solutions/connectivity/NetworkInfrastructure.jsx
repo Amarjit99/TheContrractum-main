@@ -174,7 +174,7 @@ export default function NetworkInfrastructure() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link
-              to="/contact/quote"
+              to="/team/technical-experts"
               className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-xl hover:shadow-cyan-500/40 text-lg"
             >
               Get Expert Assessment

@@ -21,6 +21,85 @@ const SolutionDownload = () => {
         network: "Network Infrastructure"
     };
 
+    const countryCodes = [
+        { code: "+91", abbr: "IN", name: "India" },
+        { code: "+1", abbr: "US", name: "United States" },
+        { code: "+44", abbr: "GB", name: "United Kingdom" },
+        { code: "+61", abbr: "AU", name: "Australia" },
+        { code: "+1", abbr: "CA", name: "Canada" },
+        { code: "+971", abbr: "AE", name: "United Arab Emirates" },
+        { code: "+966", abbr: "SA", name: "Saudi Arabia" },
+        { code: "+65", abbr: "SG", name: "Singapore" },
+        { code: "+64", abbr: "NZ", name: "New Zealand" },
+        { code: "+27", abbr: "ZA", name: "South Africa" },
+        { code: "+93", abbr: "AF", name: "Afghanistan" },
+        { code: "+880", abbr: "BD", name: "Bangladesh" },
+        { code: "+975", abbr: "BT", name: "Bhutan" },
+        { code: "+86", abbr: "CN", name: "China" },
+        { code: "+62", abbr: "ID", name: "Indonesia" },
+        { code: "+98", abbr: "IR", name: "Iran" },
+        { code: "+964", abbr: "IQ", name: "Iraq" },
+        { code: "+972", abbr: "IL", name: "Israel" },
+        { code: "+81", abbr: "JP", name: "Japan" },
+        { code: "+962", abbr: "JO", name: "Jordan" },
+        { code: "+965", abbr: "KW", name: "Kuwait" },
+        { code: "+60", abbr: "MY", name: "Malaysia" },
+        { code: "+960", abbr: "MV", name: "Maldives" },
+        { code: "+977", abbr: "NP", name: "Nepal" },
+        { code: "+968", abbr: "OM", name: "Oman" },
+        { code: "+92", abbr: "PK", name: "Pakistan" },
+        { code: "+63", abbr: "PH", name: "Philippines" },
+        { code: "+974", abbr: "QA", name: "Qatar" },
+        { code: "+82", abbr: "KR", name: "South Korea" },
+        { code: "+94", abbr: "LK", name: "Sri Lanka" },
+        { code: "+66", abbr: "TH", name: "Thailand" },
+        { code: "+90", abbr: "TR", name: "Turkey" },
+        { code: "+84", abbr: "VN", name: "Vietnam" },
+        { code: "+355", abbr: "AL", name: "Albania" },
+        { code: "+43", abbr: "AT", name: "Austria" },
+        { code: "+32", abbr: "BE", name: "Belgium" },
+        { code: "+359", abbr: "BG", name: "Bulgaria" },
+        { code: "+385", abbr: "HR", name: "Croatia" },
+        { code: "+357", abbr: "CY", name: "Cyprus" },
+        { code: "+420", abbr: "CZ", name: "Czech Republic" },
+        { code: "+45", abbr: "DK", name: "Denmark" },
+        { code: "+358", abbr: "FI", name: "Finland" },
+        { code: "+33", abbr: "FR", name: "France" },
+        { code: "+49", abbr: "DE", name: "Germany" },
+        { code: "+30", abbr: "GR", name: "Greece" },
+        { code: "+36", abbr: "HU", name: "Hungary" },
+        { code: "+354", abbr: "IS", name: "Iceland" },
+        { code: "+353", abbr: "IE", name: "Ireland" },
+        { code: "+39", abbr: "IT", name: "Italy" },
+        { code: "+31", abbr: "NL", name: "Netherlands" },
+        { code: "+47", abbr: "NO", name: "Norway" },
+        { code: "+48", abbr: "PL", name: "Poland" },
+        { code: "+351", abbr: "PT", name: "Portugal" },
+        { code: "+40", abbr: "RO", name: "Romania" },
+        { code: "+7", abbr: "RU", name: "Russia" },
+        { code: "+34", abbr: "ES", name: "Spain" },
+        { code: "+46", abbr: "SE", name: "Sweden" },
+        { code: "+41", abbr: "CH", name: "Switzerland" },
+        { code: "+380", abbr: "UA", name: "Ukraine" },
+        { code: "+213", abbr: "DZ", name: "Algeria" },
+        { code: "+20", abbr: "EG", name: "Egypt" },
+        { code: "+233", abbr: "GH", name: "Ghana" },
+        { code: "+254", abbr: "KE", name: "Kenya" },
+        { code: "+212", abbr: "MA", name: "Morocco" },
+        { code: "+234", abbr: "NG", name: "Nigeria" },
+        { code: "+255", abbr: "TZ", name: "Tanzania" },
+        { code: "+256", abbr: "UG", name: "Uganda" },
+        { code: "+54", abbr: "AR", name: "Argentina" },
+        { code: "+55", abbr: "BR", name: "Brazil" },
+        { code: "+56", abbr: "CL", name: "Chile" },
+        { code: "+57", abbr: "CO", name: "Colombia" },
+        { code: "+52", abbr: "MX", name: "Mexico" },
+        { code: "+51", abbr: "PE", name: "Peru" },
+        { code: "+58", abbr: "VE", name: "Venezuela" },
+        { code: "+679", abbr: "FJ", name: "Fiji" },
+        { code: "+675", abbr: "PG", name: "Papua New Guinea" }
+    ];
+
     // Mapping service IDs to PDF brochure files
     const brochureFiles = {
         gis: "GIS.pdf",
@@ -32,6 +111,7 @@ const SolutionDownload = () => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
+        countryCode: "+91",
         contact: "",
         service: serviceParam,
         add_browcher: "true"
@@ -45,7 +125,7 @@ const SolutionDownload = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             // 1. Capture the lead in the backend
             await fetch(`${API}/api/contact`, {
@@ -54,7 +134,7 @@ const SolutionDownload = () => {
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
-                    phone: formData.contact,
+                    phone: `${formData.countryCode} ${formData.contact}`,
                     subject: `Brochure Request: ${serviceTitle}`,
                     message: `User requested the ${serviceTitle} brochure via the download form.`
                 })
@@ -209,9 +289,24 @@ const SolutionDownload = () => {
                             <label className="block text-sm font-bold text-slate-700 ml-1">
                                 Your Contact Number <span className="text-red-500">*</span>
                             </label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                                    <Phone size={18} />
+                            <div className="relative group flex gap-2">
+                                <div className="relative w-[130px] shrink-0">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                                        <Phone size={18} />
+                                    </div>
+                                    <select
+                                        name="countryCode"
+                                        value={formData.countryCode}
+                                        onChange={handleChange}
+                                        className="block w-full pl-10 pr-2 py-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-slate-900 focus:outline-none focus:border-blue-500/50 focus:bg-white transition-all font-medium appearance-none cursor-pointer"
+                                        title={countryCodes.find(c => c.code === formData.countryCode)?.name || "Country Code"}
+                                    >
+                                        {countryCodes.map((country, index) => (
+                                            <option key={index} value={country.code} title={country.name}>
+                                                {country.code} ({country.abbr})
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <input
                                     type="tel"
@@ -220,7 +315,7 @@ const SolutionDownload = () => {
                                     onChange={handleChange}
                                     required
                                     placeholder="Enter contact number"
-                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white transition-all font-medium"
+                                    className="block flex-1 px-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white transition-all font-medium"
                                 />
                             </div>
                         </div>

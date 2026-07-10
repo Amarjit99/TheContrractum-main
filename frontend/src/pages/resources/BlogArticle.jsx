@@ -659,7 +659,7 @@ export default function BlogArticle() {
 
                 {/* Conclusion - Shared for both DB and Static articles if they have it */}
                 {(currentArticle.conclusion || currentArticle.content?.conclusion) && (
-                    <div className="mt-8 sm:mt-12 bg-gradient-to-br from-primary to-primary-light rounded-2xl shadow-xl p-6 sm:p-8 md:p-12 text-white transform hover:scale-[1.02] transition-all duration-300">
+                    <div className="mt-8 sm:mt-12 bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-12 text-black transform hover:scale-[1.02] transition-all duration-300 border border-gray-100">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-black">Conclusion</h2>
                         <p className="text-base sm:text-lg text-black/95 leading-relaxed">
                             {currentArticle.conclusion || currentArticle.content?.conclusion}

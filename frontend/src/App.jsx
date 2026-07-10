@@ -231,6 +231,11 @@ export default function App() {
 <Route path="/company/our-journey" element={<OurJourney />} />
 <Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
 <Route path="/company/employee-id" element={<EmployeeId />} />
+<Route path="/company/contracts" element={<CompanyContracts />} />
+<Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
+<Route path="/company/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/company/terms-of-service" element={<TermsOfService />} />
+<Route path="/company/cookie-policy" element={<CookiePolicy />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />

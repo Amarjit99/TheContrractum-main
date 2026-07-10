@@ -176,7 +176,19 @@ export default function AdminEvents() {
                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
                                                 <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                                                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 mt-1 sm:mt-0">
-                                                        {event.imageUrl ? <img src={event.imageUrl} className="w-full h-full object-cover" /> : <Calendar className="text-slate-300 w-4 h-4 sm:w-5 sm:h-5" />}
+                                                        {event.imageUrl ? (
+                                                            <img 
+                                                                src={event.imageUrl.startsWith('http') || event.imageUrl.startsWith('data:') ? event.imageUrl : `${API}${event.imageUrl.startsWith('/') ? '' : '/'}${event.imageUrl}`} 
+                                                                className="w-full h-full object-cover" 
+                                                                onError={(e) => {
+                                                                    e.target.onerror = null;
+                                                                    e.target.src = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=100'; // Fallback event image
+                                                                }}
+                                                                alt={event.title}
+                                                            />
+                                                        ) : (
+                                                            <Calendar className="text-slate-300 w-4 h-4 sm:w-5 sm:h-5" />
+                                                        )}
                                                     </div>
                                                     <div className="min-w-0">
                                                         <p className="font-bold text-slate-900 text-sm sm:text-base truncate">{event.title}</p>
@@ -263,8 +275,23 @@ export default function AdminEvents() {
                                 <input required className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1e5cdc] text-xs sm:text-sm font-bold" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cover Image URL</label>
-                                <input className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1e5cdc] text-[10px] sm:text-xs font-mono" value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} />
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cover Image (URL or Upload)</label>
+                                <div className="flex gap-2">
+                                    <input placeholder="Enter image URL..." className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-[#1e5cdc] text-[10px] sm:text-xs font-mono" value={formData.imageUrl && formData.imageUrl.startsWith('data:') ? '[Uploaded Image Data]' : formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} />
+                                    <label className="cursor-pointer bg-white hover:bg-slate-50 border border-slate-200 rounded-xl px-4 flex items-center justify-center text-[10px] sm:text-xs font-bold text-slate-600 transition-colors shadow-sm">
+                                        Upload
+                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => {
+                                                    setFormData({ ...formData, imageUrl: reader.result });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }} />
+                                    </label>
+                                </div>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Description</label>

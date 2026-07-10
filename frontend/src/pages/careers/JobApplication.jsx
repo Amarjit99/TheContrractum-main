@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import {
-    MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap,
+    MapPin, Briefcase, Clock, DollarSign, Award, GraduationCap, IndianRupee,
     TrendingUp, Gift, FileText, ArrowLeft, Send, CheckCircle2, AlertCircle, Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -499,7 +499,10 @@ export default function JobApplication() {
                         <ArrowLeft size={20} />
                         Back to Job Openings
                     </button>
-                    <h1 className="text-4xl lg:text-5xl font-black mb-4">{job.title}</h1>
+                    <h1 className="text-4xl lg:text-5xl font-black mb-4 flex items-center gap-4 flex-wrap">
+                        {job.title}
+                        {job.jobId && <span className="text-lg font-mono font-bold bg-white/20 text-white px-3 py-1 rounded-lg border border-white/30 uppercase tracking-wide">ID: {job.jobId}</span>}
+                    </h1>
                     <div className="flex flex-wrap gap-4 text-blue-100">
                         <div className="flex items-center gap-2">
                             <Briefcase size={18} />
@@ -555,15 +558,15 @@ export default function JobApplication() {
                         )}
 
                         {/* Required Skills */}
-                        {job.skills?.length > 0 && (
+                        {(job.skills?.length > 0 || job.tags?.length > 0) && (
                             <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                                 <div className="flex items-center gap-3 mb-4">
                                     <Award className="text-blue-600" size={24} />
                                     <h2 className="text-2xl font-bold text-gray-900">Required Skills</h2>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {job.skills.map((skill, idx) => (
-                                        <span key={idx} className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm">
+                                    {Array.from(new Set([...(job.tags || []), ...(job.skills || [])])).map((skill, idx) => (
+                                        <span key={idx} className="bg-blue-50 text-blue-600 px-4 py-2 rounded-full font-medium text-sm">
                                             {skill}
                                         </span>
                                     ))}
@@ -597,7 +600,7 @@ export default function JobApplication() {
                         {job.salary && (
                             <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <DollarSign className="text-blue-600" size={24} />
+                                    <IndianRupee className="text-blue-600" size={24} />
                                     <h2 className="text-2xl font-bold text-gray-900">Salary / Compensation</h2>
                                 </div>
                                 <p className="text-gray-700 font-semibold text-lg">{job.salary}</p>

@@ -35,7 +35,7 @@ export default function Telecom() {
                             Empowering telecom providers with 5G infrastructure, AI-driven network optimization, and seamless customer experience platforms.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/company/leadership/management" className="px-8 py-4 bg-[#007BFF] hover:bg-[#0056B3] text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
+                            <Link to="/contact/quote" className="px-8 py-4 bg-[#007BFF] hover:bg-[#0056B3] text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
                                 Consult with Us
                                 <ArrowRight size={20} />
                             </Link>

@@ -37,22 +37,12 @@ export default function AboutSection() {
             className="absolute bottom-[-40px] right-10 w-[55%] rounded-lg shadow-xl border-4 border-white"
           />
 
-          {/* Experience Badge */}
-          <div className="absolute bottom-10 left-10 bg-primary text-white p-6 rounded-lg shadow-xl">
-            {/* <h2 className="text-3xl font-bold">10</h2>
-            <p className="text-sm">Years of Experience</p> */}
-          </div>
+
         </div>
 
         {/* RIGHT CONTENT */}
         <div>
-          {/* About Label */}
-          <div className="flex items-center gap-3 mb-4">
-            <span className="w-2 h-2 bg-primary rounded-full"></span>
-            {/* <p className="text-primary uppercase tracking-widest font-semibold text-sm">
-              About Us
-            </p> */}
-          </div>
+
 
           {/* Heading */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
@@ -90,7 +80,7 @@ export default function AboutSection() {
 
           {/* Read More Button */}
           <div className="mt-8">
-            {/* <Link
+            <Link
               to="/company/about-us"
               className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition shadow-lg shadow-primary/20 border-2 border-gray-500 "
             >
@@ -98,7 +88,7 @@ export default function AboutSection() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </Link> */}
+            </Link>
           </div>
         </div>
       </div>

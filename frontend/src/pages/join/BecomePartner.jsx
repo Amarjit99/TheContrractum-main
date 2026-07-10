@@ -20,7 +20,13 @@ export default function BecomePartner() {
     const [status, setStatus] = useState({ loading: false, error: null });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        if (name === "contact" && value.length > 10) {
+            return;
+        }
+
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleReset = () => {
@@ -86,7 +92,7 @@ export default function BecomePartner() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Organization Name</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Organization Name <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     name="organizationName"
@@ -98,7 +104,7 @@ export default function BecomePartner() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Contact Person</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Contact Person <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     name="contactPerson"
@@ -113,7 +119,7 @@ export default function BecomePartner() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Business Type</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Business Type <span className="text-red-500">*</span></label>
                                 <select
                                     name="businessType"
                                     required
@@ -145,7 +151,7 @@ export default function BecomePartner() {
 
                         {formData.businessType === "Others" && (
                             <div className="animate-fadeIn">
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Specify Business Type</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Specify Business Type <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     name="otherBusinessType"
@@ -160,7 +166,7 @@ export default function BecomePartner() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address <span className="text-red-500">*</span></label>
                                 <input
                                     type="email"
                                     name="email"
@@ -172,7 +178,7 @@ export default function BecomePartner() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number <span className="text-red-500">*</span></label>
                                 <div className="flex gap-2">
                                     <div className="relative group">
                                         <select
@@ -205,7 +211,7 @@ export default function BecomePartner() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Partnership Category</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Partnership Category <span className="text-red-500">*</span></label>
                             <select
                                 name="partnershipCategory"
                                 required
@@ -223,7 +229,7 @@ export default function BecomePartner() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Business Proposal</label>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Business Proposal <span className="text-red-500">*</span></label>
                             <textarea
                                 name="businessProposal"
                                 required
