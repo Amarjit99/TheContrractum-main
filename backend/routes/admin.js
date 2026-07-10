@@ -27,6 +27,9 @@ const AdminDetail = require('../models/Admin');
 const Certificate = require('../models/Certificate');
 const IdCard = require('../models/IdCard');
 const Vendor = require('../models/Vendor');
+const WhitepaperRequest = require('../models/WhitepaperRequest');
+const MediaKitRequest = require('../models/MediaKitRequest');
+const ReportRequest = require('../models/ReportRequest');
 const { protect } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/admin');
 
@@ -114,7 +117,7 @@ router.get('/form-stats', async (req, res) => {
       supportTicketsCount, newsletterCount, internAppsCount,
       affiliateAppsCount, surveyResponsesCount, referralCount,
       staffRegistrationsCount, miniEvents, feedbackCount, volunteerAppsCount,
-      eventRegistrationsCount
+      eventRegistrationsCount, whitepaperCount, mediaKitCount, reportCount
     ] = await Promise.all([
       Contact.countDocuments(),
       JobApplication.countDocuments(),
@@ -133,7 +136,10 @@ router.get('/form-stats', async (req, res) => {
       MiniEvent.find(),
       Feedback.countDocuments(),
       VolunteerApplication.countDocuments(),
-      EventRegistration.countDocuments()
+      EventRegistration.countDocuments(),
+      WhitepaperRequest.countDocuments(),
+      MediaKitRequest.countDocuments(),
+      ReportRequest.countDocuments()
     ]);
 
     const rsvpCount = miniEvents.reduce((acc, curr) => acc + (curr.attendees ? curr.attendees.length : 0), 0);
@@ -156,7 +162,10 @@ router.get('/form-stats', async (req, res) => {
       { name: 'Event RSVPs', count: rsvpCount },
       { name: 'Event Registrations', count: eventRegistrationsCount },
       { name: 'User Feedback', count: feedbackCount },
-      { name: 'Volunteer Apps', count: volunteerAppsCount }
+      { name: 'Volunteer Apps', count: volunteerAppsCount },
+      { name: 'Whitepaper Requests', count: whitepaperCount },
+      { name: 'Media Kit Requests', count: mediaKitCount },
+      { name: 'Report Requests', count: reportCount }
     ];
 
     const totalResponses = stats.reduce((acc, curr) => acc + curr.count, 0);
@@ -777,7 +786,8 @@ router.get('/submissions-dashboard', async (req, res) => {
       demoRequests, expertConsults, quoteApps,
       supportTickets, newsletters, interns,
       affiliates, surveys, referrals,
-      feedbacks, volunteers, eventRegs, vendors
+      feedbacks, volunteers, eventRegs, vendors,
+      whitepapers, mediaKits, reports
     ] = await Promise.all([
       Contact.find().sort({ createdAt: -1 }).limit(100),
       JobApplication.find().sort({ createdAt: -1 }).limit(100),
@@ -795,7 +805,10 @@ router.get('/submissions-dashboard', async (req, res) => {
       Feedback.find().sort({ createdAt: -1 }).limit(100),
       VolunteerApplication.find().sort({ createdAt: -1 }).limit(100),
       EventRegistration.find().sort({ createdAt: -1 }).limit(100),
-      Vendor.find().sort({ createdAt: -1 }).limit(100)
+      Vendor.find().sort({ createdAt: -1 }).limit(100),
+      WhitepaperRequest.find().populate('whitepaperId').sort({ createdAt: -1 }).limit(100),
+      MediaKitRequest.find().sort({ createdAt: -1 }).limit(100),
+      ReportRequest.find().populate('reportId').sort({ createdAt: -1 }).limit(100)
     ]);
 
     // Helper map of forms
@@ -875,6 +888,9 @@ router.get('/submissions-dashboard', async (req, res) => {
     addSubmissions(volunteers, 'Volunteer Application', 'CSR & Community Programs', 'CSR Team', 'Low');
     addSubmissions(eventRegs, 'Event Registrations', 'Events & Participation', 'Events Team', 'Medium');
     addSubmissions(vendors, 'Vendor Registration', 'Partnerships & Business Network', 'Finance Team', 'High');
+    addSubmissions(whitepapers, 'Whitepaper Request', 'Marketing & Engagement', 'Marketing Team', 'Medium');
+    addSubmissions(mediaKits, 'Media Kit Request', 'Marketing & Engagement', 'Marketing Team', 'Medium');
+    addSubmissions(reports, 'Report Request', 'Marketing & Engagement', 'Marketing Team', 'Medium');
 
     // Sort by Date Descending
     submissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -1135,6 +1151,9 @@ const getModelByFormType = (formType) => {
     case 'event-registration': return EventRegistration;
     case 'feedback': return Feedback;
     case 'vendor': return Vendor;
+    case 'whitepaper': return WhitepaperRequest;
+    case 'media-kit': return MediaKitRequest;
+    case 'report': return ReportRequest;
     default: return null;
   }
 };
@@ -1144,7 +1163,14 @@ router.get('/submissions/:formType', protect, adminOnly, async (req, res) => {
   try {
     const Model = getModelByFormType(req.params.formType);
     if (!Model) return res.status(400).json({ message: 'Invalid form type' });
-    const items = await Model.find().sort({ createdAt: -1 });
+    let items;
+    if (req.params.formType === 'whitepaper') {
+      items = await Model.find().populate('whitepaperId').sort({ createdAt: -1 });
+    } else if (req.params.formType === 'report') {
+      items = await Model.find().populate('reportId').sort({ createdAt: -1 });
+    } else {
+      items = await Model.find().sort({ createdAt: -1 });
+    }
     res.json(items);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch submissions', error: err.message });
@@ -1156,7 +1182,14 @@ router.put('/submissions/:formType/:id', protect, adminOnly, async (req, res) =>
   try {
     const Model = getModelByFormType(req.params.formType);
     if (!Model) return res.status(400).json({ message: 'Invalid form type' });
-    const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    let item;
+    if (req.params.formType === 'whitepaper') {
+      item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('whitepaperId');
+    } else if (req.params.formType === 'report') {
+      item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('reportId');
+    } else {
+      item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    }
     if (!item) return res.status(404).json({ message: 'Submission not found' });
     res.json(item);
   } catch (err) {

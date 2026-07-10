@@ -31,6 +31,22 @@ export default function RequestDemo() {
         setStatus("loading");
         setErrorMsg("");
 
+        // Email validation: must contain @ and end with a valid domain name
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setStatus("error");
+            setErrorMsg("Please enter a valid email address ending with a proper domain (e.g. name@email.com).");
+            return;
+        }
+
+        // Phone validation: must contain at least 10 digits
+        const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
+        if (digitsOnly.length < 10) {
+            setStatus("error");
+            setErrorMsg("Please enter a valid phone number containing at least 10 digits.");
+            return;
+        }
+
         const selectedCountry = COUNTRIES[formData.countryIndex];
         const fullPhoneNumber = `${selectedCountry.code} ${formData.phoneNumber}`;
 
@@ -80,10 +96,10 @@ export default function RequestDemo() {
     return (
         <div className="bg-slate-50 min-h-screen py-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto mt-10">
-                <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
 
                     {/* Left Column: Context & Benefits */}
-                    <div>
+                    <div className="lg:col-span-1">
                         <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold uppercase tracking-widest mb-6">
                             See It In Action
                         </span>
@@ -119,7 +135,7 @@ export default function RequestDemo() {
                     </div>
 
                     {/* Right Column: Form */}
-                    <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-2xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
+                    <div className="lg:col-span-2 bg-white rounded-3xl p-8 sm:p-12 shadow-2xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
                         {/* Decorative Background */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
 
@@ -163,7 +179,7 @@ export default function RequestDemo() {
                                                     value={formData.countryIndex}
                                                     onChange={handleChange}
                                                     title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
-                                                    className="w-28 px-2 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white text-slate-700 font-semibold cursor-pointer"
+                                                    className="w-24 px-2 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white text-slate-700 font-semibold cursor-pointer"
                                                 >
                                                     {COUNTRIES.map((c, i) => (
                                                         <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>

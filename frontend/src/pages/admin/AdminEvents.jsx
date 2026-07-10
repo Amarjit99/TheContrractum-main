@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
-import { Search, Plus, Edit, Trash2, X, Calendar, MapPin, Users, Eye, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, X, Calendar, MapPin, Users, Eye, CheckCircle, AlertCircle, Loader2, Star } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -92,6 +92,18 @@ export default function AdminEvents() {
         }
     };
 
+    const handleToggleFeatured = async (id) => {
+        try {
+            const res = await fetch(`${API}/api/mini-events/${id}/toggle-featured`, {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${admin?.token}` }
+            });
+            if (res.ok) fetchEvents();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const filteredEvents = events.filter(e => 
         e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         e.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,12 +135,12 @@ export default function AdminEvents() {
                     </div>
                     <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Participants</p>
-                        <p className="text-xl sm:text-2xl font-black text-slate-900">{events.reduce((acc, curr) => acc + curr.attendees.length, 0)}</p>
+                        <p className="text-xl sm:text-2xl font-black text-slate-900">{events.reduce((acc, curr) => acc + (curr.registeredCount || 0), 0)}</p>
                     </div>
                     <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Avg Occupancy</p>
                         <p className="text-xl sm:text-2xl font-black text-slate-900">
-                            {events.length > 0 ? ((events.reduce((acc, curr) => acc + (curr.attendees.length / curr.capacity), 0) / events.length) * 100).toFixed(1) : 0}%
+                            {events.length > 0 ? ((events.reduce((acc, curr) => acc + ((curr.registeredCount || 0) / curr.capacity), 0) / events.length) * 100).toFixed(1) : 0}%
                         </p>
                     </div>
                 </div>
@@ -222,17 +234,18 @@ export default function AdminEvents() {
                                                 <div className="flex items-center gap-4">
                                                     <div className="flex-1 max-w-[100px] h-2 bg-slate-100 rounded-full overflow-hidden">
                                                         <div 
-                                                            className={`h-full transition-all ${event.attendees.length >= event.capacity ? 'bg-red-500' : 'bg-emerald-500'}`}
-                                                            style={{ width: `${Math.min((event.attendees.length / event.capacity) * 100, 100)}%` }}
+                                                            className={`h-full transition-all ${(event.registeredCount || 0) >= event.capacity ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                                            style={{ width: `${Math.min(((event.registeredCount || 0) / event.capacity) * 100, 100)}%` }}
                                                         />
                                                     </div>
                                                     <span className="text-[10px] sm:text-xs font-black text-slate-700">
-                                                        {event.attendees.length} / {event.capacity}
+                                                        {event.registeredCount || 0} / {event.capacity}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td className="px-3 sm:px-6 py-3 sm:py-4">
                                                 <div className="flex items-center justify-end sm:justify-start gap-1 sm:gap-2">
+                                                    <button onClick={() => handleToggleFeatured(event._id)} className={`p-1.5 sm:p-2 rounded-lg transition-all ${event.featured ? 'text-yellow-500 hover:bg-yellow-50' : 'text-slate-400 hover:bg-slate-50'}`} title={event.featured ? "Unfeature Event" : "Feature Event"}><Star className="w-4 h-4 sm:w-5 sm:h-5" fill={event.featured ? "currentColor" : "none"} /></button>
                                                     <button onClick={() => fetchParticipants(event._id)} className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View Participants"><Eye className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                                     <button onClick={() => { setEditingEvent(event); setFormData({ ...event, dateTime: new Date(event.dateTime).toISOString().slice(0, 16) }); setIsModalOpen(true); }} className="p-1.5 sm:p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-all" title="Edit Event"><Edit className="w-4 h-4 sm:w-5 sm:h-5" /></button>
                                                     <button onClick={() => handleDelete(event._id)} className="p-1.5 sm:p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Delete Event"><Trash2 className="w-4 h-4 sm:w-5 sm:h-5" /></button>
@@ -347,7 +360,7 @@ export default function AdminEvents() {
                                                 </td>
                                                 <td className="px-3 sm:px-4 py-2 sm:py-3">
                                                     <p className="text-[10px] sm:text-xs font-medium text-slate-600 truncate max-w-[120px] sm:max-w-none">{p.email}</p>
-                                                    <p className="text-[8px] sm:text-[10px] text-slate-400">{p.mobile}</p>
+                                                    <p className="text-[8px] sm:text-[10px] text-slate-400">{p.phone}</p>
                                                 </td>
                                             </tr>
                                         ))}

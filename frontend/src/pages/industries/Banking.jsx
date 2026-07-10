@@ -2,6 +2,7 @@ import React from 'react';
 import { Landmark, CreditCard, Shield, TrendingUp, Smartphone, PieChart, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import bank from "../../assets/bank.webp"
+import businessImg from "../../assets/Business.jpg"
 export default function Banking() {
     return (
         <div className="min-h-screen bg-white">
@@ -28,7 +29,7 @@ export default function Banking() {
                             Transforming financial institutions with secure cloud banking, blockchain integration, and AI-driven fraud detection.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/request-consultation" className="px-10 py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Request Consultation
                                 <ArrowRight size={20} />
                             </Link>
@@ -85,13 +86,17 @@ export default function Banking() {
             <div className="py-24">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="order-2 lg:order-1 relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-green-500/20 rounded-3xl transform -rotate-3"></div>
+                        <div className="order-2 lg:order-1 flex flex-col gap-6">
                             <img
                                 src={bank}
                                 alt="Digital Finance"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
+                            <img
+                                src={businessImg}
+                                alt="Business Transactions"
                                 loading="lazy"
-                                className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                         <div className="order-1 lg:order-2">
@@ -170,7 +175,7 @@ export default function Banking() {
                                 Partner with a team that understands the intersection of finance and technology.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/projects/ongoing" className="px-10 py-4 bg-white text-emerald-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
+                                <Link to="/industries/request-consultation" className="px-10 py-4 bg-white text-emerald-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Start a Project
                                 </Link>
                                 <Link to="/industries/why-banking" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">

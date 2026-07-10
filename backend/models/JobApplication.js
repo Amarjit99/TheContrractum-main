@@ -18,6 +18,9 @@ const jobApplicationSchema = new mongoose.Schema({
   skills: { type: String },
   linkedInProfile: { type: String },
   coverLetter: { type: String },
+  collegeName: { type: String },
+  graduationYear: { type: String },
+  whyJoinYTDP: { type: String },
   status: {
     type: String,
     enum: ['New', 'Under Review', 'Shortlisted', 'Interview Scheduled', 'HR Discussion', 'Selected', 'Rejected', 'On Hold'],

@@ -73,6 +73,22 @@ const Getintouch = () => {
     setStatus("loading");
     setErrorMsg("");
 
+    // Email validation: must contain @ and end with a valid domain name
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setStatus("error");
+      setErrorMsg("Please enter a valid email address ending with a proper domain (e.g. name@email.com).");
+      return;
+    }
+
+    // Phone validation: must contain at least 10 digits
+    const digitsOnly = form.phone.replace(/\D/g, "");
+    if (digitsOnly.length < 10) {
+      setStatus("error");
+      setErrorMsg("Please enter a valid phone number containing at least 10 digits.");
+      return;
+    }
+
     const submissionData = {
       fullName: `${form.firstName} ${form.lastName}`.trim(),
       email: form.email,
@@ -167,7 +183,7 @@ const Getintouch = () => {
        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-16 items-start">
 
           {/* Send Message Form & World Map */}
-          <div className="space-y-12">
+          <div className="lg:col-span-2 space-y-12">
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-gray-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16"></div>
               <h2 className="text-5xl font-black text-slate-900 mb-6 italic">Drop Us a Line</h2>
@@ -228,7 +244,7 @@ const Getintouch = () => {
                           value={form.countryIndex}
                           onChange={handleChange}
                           title={COUNTRIES[form.countryIndex] ? COUNTRIES[form.countryIndex].name : ''}
-                          className="w-32 px-3 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
+                          className="w-24 px-2 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:outline-none transition-all font-bold appearance-none cursor-pointer"
                         >
                           {COUNTRIES.map((c, i) => (
                             <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>

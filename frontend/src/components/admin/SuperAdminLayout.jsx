@@ -5,8 +5,8 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronDown, ChevronRight, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar,
-  User, Activity, LogOut
+  Search, Bell, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar,
+  User, Activity, LogOut, HeartHandshake
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -18,18 +18,22 @@ const MENU_ITEMS = [
     hasSubmenu: true,
     subItems: [
       { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
-      { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blogs' },
+      { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
+      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
       { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
-      { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events' },
+      { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
+      { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
-      { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders' },
+      { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
       { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={18} />, label: 'Student Interns' },
+      { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={18} />, label: 'Volunteer Stories' },
       { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={18} />, label: 'Form Links' },
       { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={18} />, label: 'Submissions' },
       { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
       { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
+      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
+      { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' }
     ]
   },
   {
@@ -39,27 +43,33 @@ const MENU_ITEMS = [
     hasSubmenu: true,
     subItems: [
       { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
-      { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
-      { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliates' },
-      { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contracts' },
+      { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
+      { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
       { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
       { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={18} />, label: 'ID Cards' },
-      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' },
+      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' }
     ]
   },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
-  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' },
-  { id: 'settings', to: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
+  { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' }
 ];
 
-const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout }) => (
+const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => (
   <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
-    <div className="px-6 py-5 flex items-center gap-3 bg-white relative overflow-hidden">
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl"></div>
-      <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
-      <div className="z-10">
-        <p className="text-[#1e5cdc] text-xs font-bold uppercase tracking-tight">Super Admin</p>
+    <div className="px-6 py-5 flex items-center justify-between bg-white relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl pointer-events-none"></div>
+      <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
+        <img src={logo} alt="The Contractum Logo" className="h-10 w-auto object-contain z-10" />
+        <div className="z-10">
+          <p className="text-[#1e5cdc] text-xs font-bold uppercase tracking-tight">Super Admin</p>
+        </div>
       </div>
+      <button
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        className="p-1.5 hover:bg-gray-100 rounded text-gray-500 cursor-pointer hidden lg:block relative z-10"
+      >
+        {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+      </button>
     </div>
 
     <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto custom-scrollbar">
@@ -72,24 +82,36 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
           return (
             <div key={item.id} className="space-y-1">
               <button
-                onClick={(e) => toggleSubmenu(e, item.id)}
+                onClick={(e) => {
+                  if (sidebarCollapsed) {
+                    setSidebarCollapsed(false);
+                    if (!openMenus[item.id]) {
+                      toggleSubmenu(e, item.id);
+                    }
+                  } else {
+                    toggleSubmenu(e, item.id);
+                  }
+                }}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${isChildActive
                     ? 'bg-white/10 text-white shadow-sm'
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
                   }`}
+                title={item.label}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-blue-200">
                     {item.icon}
                   </span>
-                  {item.label}
+                  <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                    {item.label}
+                  </span>
                 </div>
-                <span className="opacity-70">
+                <span className={`opacity-70 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
                   {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </span>
               </button>
 
-              {isOpen && item.subItems && (
+              {isOpen && !sidebarCollapsed && item.subItems && (
                 <div className="pl-6 pr-2 py-1 space-y-1 transition-all duration-200">
                   {item.subItems.map(subItem => {
                     const isSubActive = location.pathname === subItem.to;
@@ -102,11 +124,14 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
                             ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.01]'
                             : 'text-blue-100 hover:bg-white/5 hover:text-white'
                           }`}
+                        title={subItem.label}
                       >
                         <span className={`${isSubActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                           {subItem.icon}
                         </span>
-                        {subItem.label}
+                        <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                          {subItem.label}
+                        </span>
                       </Link>
                     );
                   })}
@@ -125,11 +150,14 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
                   ? 'bg-white text-[#1e5cdc] shadow-md transform scale-[1.02]'
                   : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }`}
+              title={item.label}
             >
               <span className={`${isActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
                 {item.icon}
               </span>
-              {item.label}
+              <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                {item.label}
+              </span>
             </Link>
           </div>
         );
@@ -137,8 +165,9 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
     </nav>
 
     <div className="p-4 border-t border-blue-500/30">
-      <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20">
-        Logout
+      <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-700/50 hover:bg-blue-800 text-blue-100 transition-colors text-sm font-medium shadow-sm border border-blue-500/20" title="Logout">
+        <LogOut size={16} className="shrink-0" />
+        <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>Logout</span>
       </button>
     </div>
   </div>
@@ -159,6 +188,7 @@ export default function SuperAdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [openMenus, setOpenMenus] = useState(() => {
     const initial = {};
@@ -254,15 +284,15 @@ export default function SuperAdminLayout({ children }) {
 
   return (
     <div className="flex h-screen bg-[#f0f4f8] overflow-hidden font-sans">
-      <div className="hidden lg:block w-72 shrink-0 h-full shadow-xl z-20">
-        <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
+      <div className={`hidden lg:block ${sidebarCollapsed ? 'w-20' : 'w-72'} shrink-0 h-full shadow-xl z-20 transition-all duration-300`}>
+        <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
       </div>
 
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-72 z-50 lg:hidden shadow-2xl transition-transform transform translate-x-0">
-            <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
+            <Sidebar location={location} openMenus={openMenus} toggleSubmenu={toggleSubmenu} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} sidebarCollapsed={false} setSidebarCollapsed={() => {}} />
           </div>
         </>
       )}

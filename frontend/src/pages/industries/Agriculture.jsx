@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Sprout, Sun, CloudRain, Tractor, BarChart2, Leaf, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import agri from "../../assets/agri.jpg"
+import gis from "../../assets/gis.jfif"
 export default function Agriculture() {
     const [showAgritech, setShowAgritech] = useState(false);
 
@@ -30,7 +31,7 @@ export default function Agriculture() {
                             Empowering farmers with precision agriculture, IoT monitoring, and data-driven crop management systems.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-700 hover:to-lime-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/request-consultation" className="px-10 py-4 bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-700 hover:to-lime-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Request Demo
                                 <ArrowRight size={20} />
                             </Link>
@@ -143,13 +144,17 @@ export default function Agriculture() {
                                 )}
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-green-500/20 to-lime-500/20 rounded-3xl transform rotate-3"></div>
+                        <div className="flex flex-col gap-6">
                             <img
                                 src={agri}
                                 alt="Drone Farming"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
+                            <img
+                                src={gis}
+                                alt="Geographic Information System"
                                 loading="lazy"
-                                className="relative rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                     </div>
@@ -195,7 +200,7 @@ export default function Agriculture() {
                                 Join the new era of sustainable, high-tech farming.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/touch" className="px-10 py-4 bg-white text-green-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
+                                <Link to="/industries/request-consultation" className="px-10 py-4 bg-white text-green-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Contact Us
                                 </Link>
                                 <Link to="/company/about-us" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">

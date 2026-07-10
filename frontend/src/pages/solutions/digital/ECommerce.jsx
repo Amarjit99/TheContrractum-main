@@ -173,7 +173,7 @@ export default function ECommerceSolutions() {
                             Request a Consultation
                         </Link>
                         <Link
-                            to="/solutions/download?service=ecommerce"
+                            to="/solutions/info?service=ecommerce"
                             className="bg-white/5 hover:bg-white/10 text-white font-bold px-12 py-5 rounded-2xl transition-all border border-white/20 backdrop-blur-sm text-lg"
                         >
                             Get Brochure (PDF)

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
-import { 
-  FileText, Plus, Search, CheckCircle, Clock, XCircle, 
+import {
+  FileText, Plus, Search, CheckCircle, Clock, XCircle,
   Send, Eye, ArrowRight, User as UserIcon, Calendar, ClipboardList,
   Trash2, LayoutTemplate, RefreshCw, TrendingUp, Shield, FilePlus2,
   Mail, Download, AlertTriangle, X, Users, ChevronDown
@@ -16,15 +16,15 @@ import html2canvas from 'html2canvas';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const STATUS_CONFIG = {
-  Active:            { label: 'Active',            color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
-  Draft:             { label: 'Draft',             color: 'bg-gray-100 text-gray-600 border-gray-200',          dot: 'bg-gray-400' },
-  Pending_Manager:   { label: 'Pending Manager',   color: 'bg-amber-100 text-amber-700 border-amber-200',       dot: 'bg-amber-500' },
-  Pending_HR:        { label: 'Pending HR',        color: 'bg-blue-100 text-blue-700 border-blue-200',          dot: 'bg-blue-500' },
-  Pending_Legal:     { label: 'Pending Legal',     color: 'bg-purple-100 text-purple-700 border-purple-200',    dot: 'bg-purple-500' },
-  Pending_Final:     { label: 'Pending Final',     color: 'bg-indigo-100 text-indigo-700 border-indigo-200',    dot: 'bg-indigo-500' },
-  Pending_Signature: { label: 'Pending Signature', color: 'bg-cyan-100 text-cyan-700 border-cyan-200',          dot: 'bg-cyan-500' },
-  Rejected:          { label: 'Rejected',          color: 'bg-red-100 text-red-700 border-red-200',             dot: 'bg-red-500' },
-  Expired:           { label: 'Expired',           color: 'bg-rose-100 text-rose-700 border-rose-200',          dot: 'bg-rose-400' },
+  Active: { label: 'Active', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
+  Draft: { label: 'Draft', color: 'bg-gray-100 text-gray-600 border-gray-200', dot: 'bg-gray-400' },
+  Pending_Manager: { label: 'Pending Manager', color: 'bg-amber-100 text-amber-700 border-amber-200', dot: 'bg-amber-500' },
+  Pending_HR: { label: 'Pending HR', color: 'bg-blue-100 text-blue-700 border-blue-200', dot: 'bg-blue-500' },
+  Pending_Legal: { label: 'Pending Legal', color: 'bg-purple-100 text-purple-700 border-purple-200', dot: 'bg-purple-500' },
+  Pending_Final: { label: 'Pending Final', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', dot: 'bg-indigo-500' },
+  Pending_Signature: { label: 'Pending Signature', color: 'bg-cyan-100 text-cyan-700 border-cyan-200', dot: 'bg-cyan-500' },
+  Rejected: { label: 'Rejected', color: 'bg-red-100 text-red-700 border-red-200', dot: 'bg-red-500' },
+  Expired: { label: 'Expired', color: 'bg-rose-100 text-rose-700 border-rose-200', dot: 'bg-rose-400' },
 };
 
 const FILTERS = ['All', 'Draft', 'Pending_Manager', 'Pending_HR', 'Pending_Legal', 'Pending_Final', 'Pending_Signature', 'Active', 'Rejected'];
@@ -228,7 +228,7 @@ export default function AdminContracts() {
   };
 
   const filteredContracts = contracts.filter(c => {
-    const empName = c.employeeId 
+    const empName = c.employeeId
       ? (c.employeeId.name || `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim())
       : (c.customRecipient?.name || 'External Recipient');
     const matchSearch =
@@ -244,16 +244,18 @@ export default function AdminContracts() {
 
 
   const stats = [
-    { label: 'Total Contracts',    count: contracts.length,                                         icon: <FileText className="text-blue-500" size={22} />,    bg: 'bg-blue-50',    border: 'border-blue-100' },
-    { label: 'Active',            count: contracts.filter(c => c.status === 'Active').length,       icon: <CheckCircle className="text-emerald-500" size={22} />, bg: 'bg-emerald-50', border: 'border-emerald-100' },
-    { label: 'Pending Signature', count: contracts.filter(c => c.status === 'Pending_Signature').length, icon: <Clock className="text-cyan-500" size={22} />,   bg: 'bg-cyan-50',    border: 'border-cyan-100' },
-    { label: 'In Review Flow',    count: contracts.filter(c => c.status.startsWith('Pending_') && c.status !== 'Pending_Signature').length, icon: <ClipboardList className="text-amber-500" size={22} />, bg: 'bg-amber-50', border: 'border-amber-100' },
-    { label: 'Rejected',          count: contracts.filter(c => c.status === 'Rejected').length,     icon: <XCircle className="text-red-500" size={22} />,      bg: 'bg-red-50',     border: 'border-red-100' },
-    { label: 'Expiring (30d)',    count: contracts.filter(c => {
-      if (!c.validUntil || c.status !== 'Active') return false;
-      const diff = (new Date(c.validUntil) - new Date()) / 86400000;
-      return diff > 0 && diff <= 30;
-    }).length,                                                                                        icon: <TrendingUp className="text-rose-500" size={22} />,   bg: 'bg-rose-50',    border: 'border-rose-100' },
+    { label: 'Total Contracts', count: contracts.length, icon: <FileText className="text-blue-500" size={22} />, bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Active', count: contracts.filter(c => c.status === 'Active').length, icon: <CheckCircle className="text-emerald-500" size={22} />, bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: 'Pending Signature', count: contracts.filter(c => c.status === 'Pending_Signature').length, icon: <Clock className="text-cyan-500" size={22} />, bg: 'bg-cyan-50', border: 'border-cyan-100' },
+    { label: 'In Review Flow', count: contracts.filter(c => c.status.startsWith('Pending_') && c.status !== 'Pending_Signature').length, icon: <ClipboardList className="text-amber-500" size={22} />, bg: 'bg-amber-50', border: 'border-amber-100' },
+    { label: 'Rejected', count: contracts.filter(c => c.status === 'Rejected').length, icon: <XCircle className="text-red-500" size={22} />, bg: 'bg-red-50', border: 'border-red-100' },
+    {
+      label: 'Expiring (30d)', count: contracts.filter(c => {
+        if (!c.validUntil || c.status !== 'Active') return false;
+        const diff = (new Date(c.validUntil) - new Date()) / 86400000;
+        return diff > 0 && diff <= 30;
+      }).length, icon: <TrendingUp className="text-rose-500" size={22} />, bg: 'bg-rose-50', border: 'border-rose-100'
+    },
   ];
 
   const canApproveReject = (c) => {
@@ -283,7 +285,7 @@ export default function AdminContracts() {
             <div className="flex flex-wrap gap-2 mt-2">
               {expiryAlerts.map(c => (
                 <span key={c._id} className="text-[11px] bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-semibold border border-amber-200">
-                  {c.title} – {new Date(c.validUntil).toLocaleDateString('en-IN', {day:'2-digit',month:'short'})}
+                  {c.title} – {new Date(c.validUntil).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                 </span>
               ))}
             </div>
@@ -306,7 +308,7 @@ export default function AdminContracts() {
             <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Templates by Category</label>
-                <select value={bulkCategory} onChange={e => { setBulkCategory(e.target.value); setBulkForm({...bulkForm, templateId: ''}); }}
+                <select value={bulkCategory} onChange={e => { setBulkCategory(e.target.value); setBulkForm({ ...bulkForm, templateId: '' }); }}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-700 focus:outline-none mb-3">
                   <option value="All">All Categories</option>
                   {Object.keys(CONTRACT_CATEGORIES).map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -315,7 +317,7 @@ export default function AdminContracts() {
                 <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Template *</label>
                 <select value={bulkForm.templateId} onChange={e => {
                   const selectedT = templates.find(t => t._id === e.target.value);
-                  setBulkForm({...bulkForm, templateId: e.target.value, type: selectedT ? selectedT.type : 'Employment Agreement'});
+                  setBulkForm({ ...bulkForm, templateId: e.target.value, type: selectedT ? selectedT.type : 'Employment Agreement' });
                 }}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-700 focus:outline-none">
                   <option value="">Choose template…</option>
@@ -327,12 +329,12 @@ export default function AdminContracts() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Valid From</label>
-                  <input type="date" value={bulkForm.validFrom} onChange={e => setBulkForm({...bulkForm, validFrom: e.target.value})}
+                  <input type="date" value={bulkForm.validFrom} onChange={e => setBulkForm({ ...bulkForm, validFrom: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none" />
                 </div>
                 <div>
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Valid Until</label>
-                  <input type="date" value={bulkForm.validUntil} onChange={e => setBulkForm({...bulkForm, validUntil: e.target.value})}
+                  <input type="date" value={bulkForm.validUntil} onChange={e => setBulkForm({ ...bulkForm, validUntil: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none" />
                 </div>
               </div>
@@ -342,7 +344,7 @@ export default function AdminContracts() {
                   {allUsers.length === 0 ? (
                     <p className="text-xs text-gray-400 text-center py-4">No employees loaded</p>
                   ) : allUsers.map(u => {
-                    const name = u.name || `${u.firstName||''} ${u.lastName||''}`.trim();
+                    const name = u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim();
                     const checked = bulkForm.employeeIds.includes(u._id);
                     return (
                       <label key={u._id} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer ${checked ? 'bg-blue-50 border border-blue-100' : 'hover:bg-white'}`}>
@@ -438,11 +440,10 @@ export default function AdminContracts() {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border shrink-0 ${
-                    filter === f
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all border shrink-0 ${filter === f
                       ? 'bg-[#1e5cdc] text-white border-[#1e5cdc] shadow-sm shadow-blue-200'
                       : 'bg-white text-gray-500 border-gray-100 hover:border-blue-300 hover:text-blue-600'
-                  }`}
+                    }`}
                 >
                   {STATUS_CONFIG[f]?.label || f}
                 </button>
@@ -457,7 +458,7 @@ export default function AdminContracts() {
               Refresh
             </button>
           </div>
-          
+
           {/* Advanced Category & Type Filters */}
           <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-gray-50">
             <div className="flex items-center gap-2">
@@ -491,7 +492,7 @@ export default function AdminContracts() {
                 ))}
               </select>
             </div>
-            
+
             {(selectedCategory !== 'All' || selectedType !== 'All') && (
               <button
                 onClick={() => { setSelectedCategory('All'); setSelectedType('All'); }}
@@ -565,8 +566,8 @@ export default function AdminContracts() {
                             <div className="sm:hidden flex items-center gap-1.5 mt-1.5 text-gray-500">
                               <UserIcon size={10} />
                               <span className="text-[10px] font-medium truncate max-w-[110px]">
-                                {c.employeeId 
-                                  ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim() 
+                                {c.employeeId
+                                  ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim()
                                   : (c.customRecipient?.name || 'External Recipient')}
                               </span>
                             </div>
@@ -578,14 +579,14 @@ export default function AdminContracts() {
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-[11px] uppercase shrink-0">
-                            {c.employeeId 
-                              ? `${c.employeeId.firstName?.[0] || c.employeeId.name?.[0] || 'E'}${c.employeeId.lastName?.[0] || ''}` 
+                            {c.employeeId
+                              ? `${c.employeeId.firstName?.[0] || c.employeeId.name?.[0] || 'E'}${c.employeeId.lastName?.[0] || ''}`
                               : (c.customRecipient?.name?.[0] || 'E')}
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-bold text-gray-900 truncate">
-                              {c.employeeId 
-                                ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim() 
+                              {c.employeeId
+                                ? `${c.employeeId.firstName || ''} ${c.employeeId.lastName || ''}`.trim()
                                 : (c.customRecipient?.name || 'External Recipient')}
                             </p>
                             <p className="text-[11px] text-gray-400 font-medium truncate max-w-[130px]">
@@ -651,12 +652,10 @@ export default function AdminContracts() {
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                             <Eye size={17} />
                           </button>
-                          {(c.status === 'Draft' || c.status === 'Rejected') && (
-                            <button onClick={() => handleDelete(c._id, c.title)} disabled={deleting === c._id}
-                              title="Delete" className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40">
-                              <Trash2 size={17} />
-                            </button>
-                          )}
+                          <button onClick={() => handleDelete(c._id, c.title)} disabled={deleting === c._id}
+                            title="Delete" className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40">
+                            <Trash2 size={17} />
+                          </button>
                         </div>
                       </td>
                     </tr>

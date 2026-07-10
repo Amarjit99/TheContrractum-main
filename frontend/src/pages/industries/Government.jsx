@@ -2,6 +2,7 @@ import React from 'react';
 import { Building2, Shield, Users, BarChart3, Globe, Zap, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import city from "../../assets/city.jpg"
+import g1 from "../../assets/g1.jfif"
 
 export default function Government() {
     return (
@@ -29,7 +30,7 @@ export default function Government() {
                             Empowering government agencies with secure, scalable, and innovative digital solutions to better serve citizens in the digital age.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link to="/contact/quote" className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
+                            <Link to="/industries/request-consultation" className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 transform hover:scale-105">
                                 Request Consultation
                                 <ArrowRight size={20} />
                             </Link>
@@ -119,13 +120,17 @@ export default function Government() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 rounded-3xl transform rotate-3"></div>
+                        <div className="flex flex-col gap-6">
                             <img
                                 src={city}
                                 alt="Smart City Infrastructure"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
+                            />
+                            <img
+                                src={g1}
+                                alt="Public Administration"
                                 loading="lazy"
-                                className="relative rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
+                                className="w-full h-[200px] md:h-[240px] rounded-3xl shadow-xl transform -rotate-1 hover:rotate-0 hover:scale-[1.02] transition-all duration-500 object-cover"
                             />
                         </div>
                     </div>
@@ -171,7 +176,7 @@ export default function Government() {
                                 Let's collaborate to build a more efficient, transparent, and citizen-centric future.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link to="/contact/touch" className="px-10 py-4 bg-white text-blue-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
+                                <Link to="/industries/request-consultation" className="px-10 py-4 bg-white text-blue-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Get in Touch
                                 </Link>
                                 <Link to="/industries/government-details" className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:scale-105">

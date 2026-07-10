@@ -362,7 +362,10 @@ export default function JobApplication() {
         experience: "",
         skills: "",
         linkedInProfile: "",
-        coverLetter: ""
+        coverLetter: "",
+        collegeName: "",
+        graduationYear: "",
+        whyJoinYTDP: ""
     });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
 
@@ -370,14 +373,17 @@ export default function JobApplication() {
         const loadJob = async () => {
             setJobLoading(true);
 
-            // Only treat a purely numeric route param as a static job id.
-            const isStaticJobId = /^\d+$/.test(jobId);
-            if (isStaticJobId && staticJobsData[jobId]) {
-                const j = staticJobsData[jobId];
-                setJob({ ...j, _isStatic: true });
-                setFormData(prev => ({ ...prev, positionApplied: j.title }));
-                setJobLoading(false);
-                return;
+            // Check if it's a numeric id (static job)
+            const isNumericId = /^\d+$/.test(jobId);
+            if (isNumericId) {
+                const numericId = parseInt(jobId, 10);
+                if (staticJobsData[numericId]) {
+                    const j = staticJobsData[numericId];
+                    setJob({ ...j, _isStatic: true });
+                    setFormData(prev => ({ ...prev, positionApplied: j.title }));
+                    setJobLoading(false);
+                    return;
+                }
             }
 
             // Otherwise try to fetch from DB (dynamic job posted from admin)
@@ -427,19 +433,29 @@ export default function JobApplication() {
         setStatus({ loading: true, success: false, error: null });
 
         const phoneWithCode = `${COUNTRIES[formData.countryIndex].code} ${formData.phone}`;
-
+        const isYTDP = job?.department === 'YTDP' || job?.title?.includes('YTDP');
         const data = new FormData();
         data.append('fullName', formData.fullName);
         data.append('email', formData.email);
         data.append('phone', phoneWithCode);
         data.append('jobTitle', formData.positionApplied);
         data.append('positionApplied', formData.positionApplied);
-        data.append('experience', formData.experience);
         data.append('skills', formData.skills);
-        data.append('linkedInProfile', formData.linkedInProfile);
-        data.append('coverLetter', formData.coverLetter);
         if (formData.resume) {
             data.append('resume', formData.resume);
+        }
+
+        if (isYTDP) {
+            data.append('collegeName', formData.collegeName);
+            data.append('graduationYear', formData.graduationYear);
+            data.append('whyJoinYTDP', formData.whyJoinYTDP);
+            data.append('linkedInProfile', formData.linkedInProfile || '');
+            data.append('experience', 'Student / YTDP applicant');
+            data.append('coverLetter', formData.whyJoinYTDP || '');
+        } else {
+            data.append('experience', formData.experience);
+            data.append('linkedInProfile', formData.linkedInProfile);
+            data.append('coverLetter', formData.coverLetter);
         }
 
         try {
@@ -486,6 +502,7 @@ export default function JobApplication() {
     }
 
     const hasBio = (job.roles?.length > 0) || job.qualification || job.experience || job.salary;
+    const isYTDP = job?.department === 'YTDP' || job?.title?.includes('YTDP');
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -660,87 +677,190 @@ export default function JobApplication() {
                                     </div>
                                 )}
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
-                                    <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="John Doe" />
-                                </div>
+                                {isYTDP ? (
+                                    <>
+                                        {/* YTDP Program Fields */}
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                                            <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="John Doe" />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="john@example.com" />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="john@example.com" />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
-                                    <div className="flex gap-2">
-                                        <div className="relative group">
-                                            <select
-                                                name="countryIndex"
-                                                value={formData.countryIndex}
-                                                onChange={handleInputChange}
-                                                title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
-                                                className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer text-gray-800"
-                                            >
-                                                {COUNTRIES.map((c, i) => (
-                                                    <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
-                                                ))}
-                                            </select>
-                                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
-                                                {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
-                                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                                            <div className="flex gap-2">
+                                                <div className="relative group">
+                                                    <select
+                                                        name="countryIndex"
+                                                        value={formData.countryIndex}
+                                                        onChange={handleInputChange}
+                                                        title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                                                        className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer text-gray-800"
+                                                    >
+                                                        {COUNTRIES.map((c, i) => (
+                                                            <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                                                        {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                                    </div>
+                                                </div>
+                                                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                                    placeholder="98765 43210" />
                                             </div>
                                         </div>
-                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
-                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
-                                            placeholder="98765 43210" />
-                                    </div>
-                                </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Position Applied *</label>
-                                    <input type="text" name="positionApplied" value={formData.positionApplied} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
-                                        placeholder="Position Applied" />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">College / University Name *</label>
+                                            <input type="text" name="collegeName" value={formData.collegeName} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="e.g. IIT, NIT, ABC College" />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Resume Upload *</label>
-                                    <input type="file" name="resume" onChange={handleFileChange} required accept=".pdf,.doc,.docx"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-                                    <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Year of Study / Graduation Year *</label>
+                                            <select name="graduationYear" value={formData.graduationYear} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                                <option value="">Select Year of Study</option>
+                                                <option value="1st Year">1st Year Undergraduate</option>
+                                                <option value="2nd Year">2nd Year Undergraduate</option>
+                                                <option value="3rd Year">3rd Year Undergraduate</option>
+                                                <option value="4th Year">4th Year Undergraduate / Final Year</option>
+                                                <option value="Postgraduate Student">Postgraduate Student</option>
+                                                <option value="Graduated">Graduated / Other</option>
+                                            </select>
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Experience *</label>
-                                    <input type="text" name="experience" value={formData.experience} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="e.g. 3 years" />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Position Applied (YTDP Program)</label>
+                                            <input type="text" name="positionApplied" value={formData.positionApplied} readOnly required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-100 text-gray-600 cursor-not-allowed" />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Skills *</label>
-                                    <input type="text" name="skills" value={formData.skills} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="e.g. React, Node, Python" />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Resume Upload *</label>
+                                            <input type="file" name="resume" onChange={handleFileChange} required accept=".pdf,.doc,.docx"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                            <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile *</label>
-                                    <input type="url" name="linkedInProfile" value={formData.linkedInProfile} onChange={handleInputChange} required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        placeholder="https://linkedin.com/in/username" />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Key Skills *</label>
+                                            <input type="text" name="skills" value={formData.skills} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="e.g. Canva, SEO, Article Writing, Social Media" />
+                                        </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Letter</label>
-                                    <textarea name="coverLetter" value={formData.coverLetter} onChange={handleInputChange} rows="4"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                                        placeholder="Tell us why you're a great fit..." />
-                                </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile (Optional)</label>
+                                            <input type="url" name="linkedInProfile" value={formData.linkedInProfile} onChange={handleInputChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="https://linkedin.com/in/username" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Why do you want to join YTDP? *</label>
+                                            <textarea name="whyJoinYTDP" value={formData.whyJoinYTDP} onChange={handleInputChange} rows="4" required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                                placeholder="Tell us what motivates you to join the Young Talent Development Program..." />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* Standard Fields */}
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                                            <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="John Doe" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="john@example.com" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                                            <div className="flex gap-2">
+                                                <div className="relative group">
+                                                    <select
+                                                        name="countryIndex"
+                                                        value={formData.countryIndex}
+                                                        onChange={handleInputChange}
+                                                        title={COUNTRIES[formData.countryIndex] ? COUNTRIES[formData.countryIndex].name : ''}
+                                                        className="w-32 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold appearance-none cursor-pointer text-gray-800"
+                                                    >
+                                                        {COUNTRIES.map((c, i) => (
+                                                            <option key={i} value={i} title={c.name}>{c.code} ({c.iso})</option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-md font-bold">
+                                                        {COUNTRIES[formData.countryIndex] ? `${COUNTRIES[formData.countryIndex].flag} ${COUNTRIES[formData.countryIndex].name}` : ''}
+                                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                                                    </div>
+                                                </div>
+                                                <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                                    placeholder="98765 43210" />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Position Applied *</label>
+                                            <input type="text" name="positionApplied" value={formData.positionApplied} readOnly required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-gray-100 text-gray-600 cursor-not-allowed"
+                                                placeholder="Position Applied" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Resume Upload *</label>
+                                            <input type="file" name="resume" onChange={handleFileChange} required accept=".pdf,.doc,.docx"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                            <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX (Max 5MB)</p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Experience *</label>
+                                            <input type="text" name="experience" value={formData.experience} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="e.g. 3 years" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Skills *</label>
+                                            <input type="text" name="skills" value={formData.skills} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="e.g. React, Node, Python" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile *</label>
+                                            <input type="url" name="linkedInProfile" value={formData.linkedInProfile} onChange={handleInputChange} required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                placeholder="https://linkedin.com/in/username" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Letter</label>
+                                            <textarea name="coverLetter" value={formData.coverLetter} onChange={handleInputChange} rows="4"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                                placeholder="Tell us why you're a great fit..." />
+                                        </div>
+                                    </>
+                                )}
 
                                 <button disabled={status.loading} type="submit"
                                     className={`w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2 ${status.loading ? 'opacity-70' : ''}`}>

@@ -1,228 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from 'react-hot-toast';
 
-// Events Data
-const staticEvents = [
-  {
-    id: 1,
-    title: "AI & Machine Learning Summit 2026",
-    date: "2026-03-15",
-    time: "9:00 AM - 6:00 PM",
-    location: "Tech Convention Center, San Francisco",
-    category: "Conference",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop",
-    description: "Join industry leaders and AI experts for a full-day summit exploring the latest advancements in artificial intelligence, machine learning, and deep learning. Network with 500+ professionals and attend hands-on workshops.",
-    speaker: "Dr. Andrew Chen, Chief AI Scientist",
-    seatsAvailable: 150,
-    totalSeats: 500,
-    price: "Free",
-    registrationLink: "#",
-    featured: true,
-    tags: ["AI", "Machine Learning", "Technology"]
-  },
-  {
-    id: 2,
-    title: "Cloud Computing Workshop: AWS & Azure",
-    date: "2026-03-22",
-    time: "2:00 PM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Workshop",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop",
-    description: "Hands-on workshop covering cloud architecture, deployment strategies, and best practices for AWS and Azure. Learn from certified cloud architects and get practical experience with real-world scenarios.",
-    speaker: "Sarah Johnson, Senior Cloud Architect",
-    seatsAvailable: 75,
-    totalSeats: 100,
-    price: "$49",
-    registrationLink: "#",
-    featured: true,
-    tags: ["Cloud Computing", "AWS", "Azure"]
-  },
-  {
-    id: 3,
-    title: "Cybersecurity Awareness Training",
-    date: "2026-03-28",
-    time: "10:00 AM - 1:00 PM",
-    location: "TheContractum Headquarters, Building A",
-    category: "Training",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=600&fit=crop",
-    description: "Essential cybersecurity training for businesses covering threat detection, data protection, and incident response. Learn how to protect your organization from modern cyber threats.",
-    speaker: "Michael Zhang, Cybersecurity Expert",
-    seatsAvailable: 40,
-    totalSeats: 50,
-    price: "Free for Members",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Cybersecurity", "Security", "Training"]
-  },
-  {
-    id: 4,
-    title: "Startup Pitch Night & Networking",
-    date: "2026-04-05",
-    time: "6:00 PM - 9:00 PM",
-    location: "Innovation Hub, Downtown",
-    category: "Networking",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200&h=600&fit=crop",
-    description: "Watch innovative startups pitch their ideas to investors and industry experts. Network with entrepreneurs, investors, and tech enthusiasts. Light refreshments provided.",
-    speaker: "Multiple Startup Founders",
-    seatsAvailable: 200,
-    totalSeats: 250,
-    price: "Free",
-    registrationLink: "#",
-    featured: true,
-    tags: ["Startup", "Networking", "Investment"]
-  },
-  {
-    id: 5,
-    title: "Blockchain & Web3 Developer Bootcamp",
-    date: "2026-04-12",
-    time: "9:00 AM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Bootcamp",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=600&fit=crop",
-    description: "Intensive bootcamp for developers wanting to build on blockchain. Learn Solidity, smart contracts, DApp development, and Web3 integration. Includes certification upon completion.",
-    speaker: "Dr. Priya Sharma, Blockchain Architect",
-    seatsAvailable: 30,
-    totalSeats: 50,
-    price: "$299",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Blockchain", "Web3", "Development"]
-  },
-  {
-    id: 6,
-    title: "Digital Transformation Panel Discussion",
-    date: "2026-04-18",
-    time: "3:00 PM - 5:00 PM",
-    location: "Business Center, Room 301",
-    category: "Webinar",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&h=600&fit=crop",
-    description: "Industry leaders discuss digital transformation strategies, challenges, and success stories. Q&A session with panel experts from Fortune 500 companies.",
-    speaker: "Panel of 5 Industry Leaders",
-    seatsAvailable: 120,
-    totalSeats: 150,
-    price: "Free",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Digital Transformation", "Business", "Strategy"]
-  },
-  {
-    id: 7,
-    title: "Data Science & Analytics Masterclass",
-    date: "2026-02-10",
-    time: "10:00 AM - 4:00 PM",
-    location: "Data Science Institute, Boston",
-    category: "Masterclass",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
-    description: "Comprehensive masterclass covering data analysis, visualization, predictive modeling, and machine learning algorithms. Hands-on projects with real datasets.",
-    speaker: "Dr. Robert Taylor, Data Scientist",
-    attendees: 180,
-    totalSeats: 200,
-    price: "$199",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Data Science", "Analytics", "Machine Learning"],
-    highlights: ["180 attendees", "4.9/5 rating", "98% would recommend"]
-  },
-  {
-    id: 8,
-    title: "Tech Innovation Expo 2025",
-    date: "2025-12-08",
-    time: "9:00 AM - 7:00 PM",
-    location: "Convention Center, Las Vegas",
-    category: "Conference",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&h=600&fit=crop",
-    description: "The largest tech expo of 2025 showcasing cutting-edge innovations in AI, robotics, IoT, and quantum computing. Featured 50+ exhibitors and 20+ speakers.",
-    speaker: "Multiple Industry Experts",
-    attendees: 2500,
-    totalSeats: 3000,
-    price: "$99",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Innovation", "Technology", "Expo"],
-    highlights: ["2500+ attendees", "50+ exhibitors", "20+ speakers", "Best Tech Event 2025"]
-  },
-  {
-    id: 9,
-    title: "DevOps Best Practices Workshop",
-    date: "2026-01-25",
-    time: "1:00 PM - 5:00 PM",
-    location: "Virtual (Online)",
-    category: "Workshop",
-    type: "past",
-    image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&h=600&fit=crop",
-    description: "Learn CI/CD pipelines, containerization with Docker, Kubernetes orchestration, and infrastructure as code. Practical workshop with live demos.",
-    speaker: "James Wilson, DevOps Lead",
-    attendees: 95,
-    totalSeats: 100,
-    price: "$79",
-    registrationLink: "#",
-    featured: false,
-    tags: ["DevOps", "CI/CD", "Docker", "Kubernetes"],
-    highlights: ["95 participants", "Hands-on labs", "Certificate awarded"]
-  },
-  {
-    id: 10,
-    title: "UX/UI Design Sprint Challenge",
-    date: "2026-04-25",
-    time: "9:00 AM - 6:00 PM",
-    location: "Design Studio, New York",
-    category: "Workshop",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop",
-    description: "Intensive one-day design sprint where teams compete to solve real-world UX challenges. Win prizes and get feedback from top designers. Portfolio-worthy projects guaranteed.",
-    speaker: "Emma Davis, Lead UX Designer",
-    seatsAvailable: 60,
-    totalSeats: 80,
-    price: "$149",
-    registrationLink: "#",
-    featured: false,
-    tags: ["UX", "UI", "Design", "Challenge"]
-  },
-  {
-    id: 11,
-    title: "IoT & Smart Cities Conference",
-    date: "2026-05-08",
-    time: "9:00 AM - 5:00 PM",
-    location: "Smart City Center, Singapore",
-    category: "Conference",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=1200&h=600&fit=crop",
-    description: "Explore the future of smart cities with IoT sensors, 5G connectivity, and AI-powered urban management. Case studies from leading smart city projects worldwide.",
-    speaker: "Multiple IoT Experts",
-    seatsAvailable: 300,
-    totalSeats: 400,
-    price: "$199",
-    registrationLink: "#",
-    featured: true,
-    tags: ["IoT", "Smart Cities", "5G"]
-  },
-  {
-    id: 12,
-    title: "Women in Tech Leadership Forum",
-    date: "2026-05-15",
-    time: "2:00 PM - 6:00 PM",
-    location: "Leadership Center, Seattle",
-    category: "Networking",
-    type: "upcoming",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop",
-    description: "Empowering women in technology through leadership development, mentorship, and networking. Hear from successful women leaders and build valuable connections.",
-    speaker: "Panel of Women Tech Leaders",
-    seatsAvailable: 100,
-    totalSeats: 150,
-    price: "Free",
-    registrationLink: "#",
-    featured: false,
-    tags: ["Leadership", "Diversity", "Networking"]
-  }
-];
+// Removed static mock events
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -249,6 +28,17 @@ export default function Events() {
   });
   const [isRegistering, setIsRegistering] = useState(false);
   const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
+  const [regStep, setRegStep] = useState(1);
+  const [countryCode, setCountryCode] = useState("+91");
+  const [validationErrors, setValidationErrors] = useState({});
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentData, setPaymentData] = useState({
+    cardName: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvc: "",
+    transactionId: ""
+  });
 
   const categories = ["All", "Conference", "Workshop", "Training", "Networking", "Bootcamp", "Webinar", "Masterclass"];
 
@@ -271,26 +61,46 @@ export default function Events() {
   }, [lastScrollY]);
 
   // Fetch Events from API
-  useEffect(() => {
-    const fetchEvents = async () => {
+  const fetchEvents = async () => {
       try {
         const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await fetch(`${API}/api/resource-events`);
+        const response = await fetch(`${API}/api/mini-events`);
         const data = await response.json();
+        
         if (Array.isArray(data)) {
-            // Combine with static events or just use DB events
-            // User wants "reflect on the featured events subsection", so we combine
-            setEvents([...data, ...staticEvents]);
+            const now = new Date();
+            const processedEvents = data.map(event => {
+              const eventDate = new Date(event.dateTime || event.createdAt || now);
+              const isPast = eventDate < now;
+              return {
+                ...event,
+                id: event._id,
+                date: event.dateTime,
+                time: eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                image: event.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop',
+                type: isPast ? 'past' : event.type,
+                featured: isPast ? false : event.featured,
+                category: "Event",
+                speaker: event.creator?.name || "TBA",
+                totalSeats: event.capacity || 100,
+                seatsAvailable: Math.max(0, (event.capacity || 100) - (event.registeredCount || 0)),
+                price: "Free",
+                tags: []
+              };
+            });
+            setEvents(processedEvents);
         } else {
-            setEvents(staticEvents);
+            setEvents([]);
         }
       } catch (err) {
         console.error("Error fetching events:", err);
-        setEvents(staticEvents);
+        setEvents([]);
       } finally {
         setLoading(false);
       }
     };
+  
+  useEffect(() => {
     fetchEvents();
   }, []);
 
@@ -326,22 +136,140 @@ export default function Events() {
   const handleRegisterClick = (event) => {
     setSelectedEvent(event);
     setShowRegisterModal(true);
+    setRegStep(1);
+    setCountryCode("+91");
+    setValidationErrors({});
+    setPaymentMethod("card");
+    setPaymentData({
+      cardName: "",
+      cardNumber: "",
+      cardExpiry: "",
+      cardCvc: "",
+      transactionId: ""
+    });
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      organization: ""
+    });
   };
 
-  const handleRegistrationSubmit = async (e) => {
+  const validateStep1 = () => {
+    const errs = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.firstName.trim()) {
+      errs.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      errs.lastName = "Last name is required";
+    }
+    if (!formData.email) {
+      errs.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      errs.email = "Please enter a valid email address";
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!formData.phone) {
+      errs.phone = "Phone number is required";
+    } else if (!phoneRegex.test(formData.phone)) {
+      errs.phone = "Phone number must be exactly 10 digits";
+    }
+
+    setValidationErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleStep1Submit = (e) => {
     e.preventDefault();
+    if (!validateStep1()) return;
+
+    const isPaid = selectedEvent.price && selectedEvent.price.trim().toLowerCase() !== "free";
+    if (isPaid) {
+      setRegStep(2);
+      setValidationErrors({});
+    } else {
+      submitEventRegistration();
+    }
+  };
+
+  const validateStep2 = () => {
+    const errs = {};
+    if (paymentMethod === "card") {
+      if (!paymentData.cardName.trim()) {
+        errs.cardName = "Cardholder name is required";
+      }
+      const cardNumClean = paymentData.cardNumber.replace(/\s+/g, "");
+      if (!/^\d{16}$/.test(cardNumClean)) {
+        errs.cardNumber = "Card number must be 16 digits";
+      }
+      if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(paymentData.cardExpiry)) {
+        errs.cardExpiry = "Expiry must be MM/YY";
+      }
+      if (!/^\d{3}$/.test(paymentData.cardCvc)) {
+        errs.cardCvc = "CVC must be 3 digits";
+      }
+    } else if (paymentMethod === "qr") {
+      if (!/^[a-zA-Z0-9]{12}$/.test(paymentData.transactionId)) {
+        errs.transactionId = "Transaction ID must be exactly 12 alphanumeric characters";
+      }
+    }
+    setValidationErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleStep2Submit = (e) => {
+    e.preventDefault();
+    if (!validateStep2()) return;
+
+    let details = {};
+    if (paymentMethod === "card") {
+      const cardNumClean = paymentData.cardNumber.replace(/\s+/g, "");
+      details = {
+        cardholderName: paymentData.cardName,
+        cardLast4: cardNumClean.slice(-4),
+        cardBrand: "Simulated Card"
+      };
+    } else {
+      details = {
+        transactionId: paymentData.transactionId
+      };
+    }
+
+    submitEventRegistration({
+      method: paymentMethod === "card" ? "Card" : "QR Code",
+      details
+    });
+  };
+
+  const submitEventRegistration = async (paymentDetailsParams = null) => {
     setIsRegistering(true);
     try {
       const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const fullPhone = `${countryCode} ${formData.phone}`;
+      
+      const payload = {
+        eventId: selectedEvent.id,
+        eventName: selectedEvent.title,
+        eventDate: selectedEvent.date,
+        eventTime: selectedEvent.time,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: fullPhone,
+        organization: formData.organization,
+        amountPaid: selectedEvent.price || "Free",
+        paymentMethod: paymentDetailsParams ? paymentDetailsParams.method : "N/A",
+        paymentStatus: paymentDetailsParams ? "Completed" : "N/A",
+        paymentDetails: paymentDetailsParams ? paymentDetailsParams.details : {}
+      };
+
       const response = await fetch(`${API}/api/event-registrations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventName: selectedEvent.title,
-          eventDate: selectedEvent.date,
-          eventTime: selectedEvent.time,
-          ...formData
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -349,6 +277,9 @@ export default function Events() {
         setShowRegisterSuccess(true);
         setFormData({ firstName: "", lastName: "", email: "", phone: "", organization: "" });
         setTimeout(() => setShowRegisterSuccess(false), 5000);
+        
+        // Re-fetch events to update the seat count on the UI
+        fetchEvents();
       } else {
         const data = await response.json();
         alert(data.message || "Registration failed");
@@ -614,8 +545,8 @@ export default function Events() {
                       <span className="text-lg font-bold text-primary">{event.price}</span>
                     </div>
 
-                    <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg">
-                      Register Now →
+                    <button onClick={() => handleRegisterClick(event)} disabled={event.seatsAvailable <= 0} className={`w-full py-3 rounded-full font-semibold transition-all duration-300 shadow-md ${event.seatsAvailable <= 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg'}`}>
+                      {event.seatsAvailable <= 0 ? "Sold Out" : "Register Now →"}
                     </button>
                   </div>
                 </div>
@@ -691,8 +622,8 @@ export default function Events() {
                         </span>
                         <span className="font-bold text-primary">{event.price}</span>
                       </div>
-                      <button onClick={() => handleRegisterClick(event)} className="w-full bg-red-600 text-white py-2.5 rounded-full font-semibold hover:bg-red-700 transition-all duration-300">
-                        Register Now
+                      <button onClick={() => handleRegisterClick(event)} disabled={event.seatsAvailable <= 0} className={`w-full py-2.5 rounded-full font-semibold transition-all duration-300 ${event.seatsAvailable <= 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700'}`}>
+                        {event.seatsAvailable <= 0 ? "Sold Out" : "Register Now"}
                       </button>
                     </>
                   ) : (
@@ -760,7 +691,7 @@ export default function Events() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 px-6 py-4 rounded-lg text-slate-900 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
+                className="flex-1 px-6 py-4 rounded-lg bg-white/10 text-white placeholder-white/60 font-medium border-2 border-white/20 focus:border-white focus:ring-4 focus:ring-white/30 outline-none transition-all"
               />
               <button
                 type="submit"
@@ -849,41 +780,218 @@ export default function Events() {
                 </div>
               </div>
 
-              <form onSubmit={handleRegistrationSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">First Name *</label>
-                    <input type="text" required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="John" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Last Name *</label>
-                    <input type="text" required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Doe" />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="john@example.com" />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
-                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="+1 (555) 000-0000" />
-                </div>
+              <form onSubmit={regStep === 1 ? handleStep1Submit : handleStep2Submit} className="space-y-4">
+                {regStep === 1 ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1">First Name *</label>
+                        <input type="text" required value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="John" />
+                        {validationErrors.firstName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.firstName}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1">Last Name *</label>
+                        <input type="text" required value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="Doe" />
+                        {validationErrors.lastName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.lastName}</p>}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address *</label>
+                      <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="john@example.com" />
+                      {validationErrors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.email}</p>}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Phone Number *</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 font-semibold text-slate-700 outline-none"
+                        >
+                          <option value="+91">+91 (IN)</option>
+                          <option value="+1">+1 (US/CA)</option>
+                          <option value="+44">+44 (UK)</option>
+                          <option value="+61">+61 (AU)</option>
+                          <option value="+49">+49 (DE)</option>
+                          <option value="+65">+65 (SG)</option>
+                          <option value="+971">+971 (AE)</option>
+                        </select>
+                        <input
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10)})}
+                          className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800"
+                          placeholder="10-digit number"
+                        />
+                      </div>
+                      {validationErrors.phone && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.phone}</p>}
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Company / College</label>
-                  <input type="text" value={formData.organization} onChange={(e) => setFormData({...formData, organization: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white" placeholder="Optional" />
-                </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">Company / College</label>
+                      <input type="text" value={formData.organization} onChange={(e) => setFormData({...formData, organization: e.target.value})} className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-slate-50 focus:bg-white text-slate-800" placeholder="Optional" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-slate-700">Registration Fee:</span>
+                      <span className="text-lg font-black text-blue-950">{selectedEvent.price}</span>
+                    </div>
+
+                    <div className="flex gap-4 border-b border-slate-200 pb-2">
+                      <button
+                        type="button"
+                        onClick={() => { setPaymentMethod("card"); setValidationErrors({}); }}
+                        className={`flex-1 py-2 text-center font-bold text-sm rounded-lg transition-all ${
+                          paymentMethod === "card"
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        💳 Card Payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setPaymentMethod("qr"); setValidationErrors({}); }}
+                        className={`flex-1 py-2 text-center font-bold text-sm rounded-lg transition-all ${
+                          paymentMethod === "qr"
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        📱 Scan QR Code
+                      </button>
+                    </div>
+
+                    {paymentMethod === "card" ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Cardholder Name</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.cardName}
+                            onChange={(e) => setPaymentData({...paymentData, cardName: e.target.value})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                            placeholder="John Doe"
+                          />
+                          {validationErrors.cardName && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardName}</p>}
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Card Number</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.cardNumber}
+                            onChange={(e) => setPaymentData({...paymentData, cardNumber: e.target.value.replace(/\D/g, "").slice(0, 16)})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                            placeholder="1234 5678 1234 5678"
+                          />
+                          {validationErrors.cardNumber && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardNumber}</p>}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Expiry (MM/YY)</label>
+                            <input
+                              type="text"
+                              required
+                              value={paymentData.cardExpiry}
+                              onChange={(e) => {
+                                let val = e.target.value;
+                                if (val.length === 2 && !val.includes('/')) {
+                                  val = val + '/';
+                                }
+                                setPaymentData({...paymentData, cardExpiry: val.slice(0, 5)});
+                              }}
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                              placeholder="MM/YY"
+                            />
+                            {validationErrors.cardExpiry && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardExpiry}</p>}
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">CVC</label>
+                            <input
+                              type="password"
+                              required
+                              value={paymentData.cardCvc}
+                              onChange={(e) => setPaymentData({...paymentData, cardCvc: e.target.value.replace(/\D/g, "").slice(0, 3)})}
+                              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 text-slate-800"
+                              placeholder="123"
+                            />
+                            {validationErrors.cardCvc && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.cardCvc}</p>}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 text-center">
+                        <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col items-center justify-center">
+                          <svg className="w-36 h-36 text-slate-800" viewBox="0 0 100 100" fill="currentColor">
+                            <path d="M5,5 h90 v90 h-90 z" fill="none" stroke="currentColor" strokeWidth="2"/>
+                            <rect x="10" y="10" width="20" height="20" fill="currentColor"/>
+                            <rect x="15" y="15" width="10" height="10" fill="white"/>
+                            <rect x="70" y="10" width="20" height="20" fill="currentColor"/>
+                            <rect x="75" y="15" width="10" height="10" fill="white"/>
+                            <rect x="10" y="70" width="20" height="20" fill="currentColor"/>
+                            <rect x="15" y="75" width="10" height="10" fill="white"/>
+                            <rect x="40" y="10" width="10" height="10" fill="currentColor"/>
+                            <rect x="55" y="10" width="5" height="20" fill="currentColor"/>
+                            <rect x="40" y="25" width="20" height="5" fill="currentColor"/>
+                            <rect x="40" y="35" width="15" height="15" fill="currentColor"/>
+                            <rect x="70" y="35" width="20" height="10" fill="currentColor"/>
+                            <rect x="75" y="50" width="10" height="15" fill="currentColor"/>
+                            <rect x="10" y="45" width="15" height="5" fill="currentColor"/>
+                            <rect x="10" y="55" width="5" height="10" fill="currentColor"/>
+                            <rect x="20" y="55" width="10" height="5" fill="currentColor"/>
+                            <rect x="40" y="60" width="20" height="20" fill="currentColor"/>
+                            <rect x="45" y="65" width="10" height="10" fill="white"/>
+                            <rect x="70" y="70" width="10" height="5" fill="currentColor"/>
+                            <rect x="85" y="70" width="5" height="15" fill="currentColor"/>
+                            <rect x="70" y="85" width="15" height="5" fill="currentColor"/>
+                          </svg>
+                          <p className="text-xs font-bold text-slate-600 mt-3">Scan to Pay via UPI</p>
+                          <p className="text-[10px] text-slate-400">Merchant: TheContractum Events</p>
+                        </div>
+                        
+                        <div className="text-left">
+                          <label className="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Transaction ID / UTR (12 Digits)</label>
+                          <input
+                            type="text"
+                            required
+                            value={paymentData.transactionId}
+                            onChange={(e) => setPaymentData({...paymentData, transactionId: e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 12)})}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-slate-50 font-mono text-slate-800"
+                            placeholder="e.g. 123456789012"
+                          />
+                          {validationErrors.transactionId && <p className="text-red-500 text-xs mt-1 font-semibold">{validationErrors.transactionId}</p>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="pt-4 mt-6 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+                  {regStep === 2 && (
+                    <button type="button" onClick={() => { setRegStep(1); setValidationErrors({}); }} className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 transition-colors mr-auto">
+                      ← Back
+                    </button>
+                  )}
                   <button type="button" onClick={() => setShowRegisterModal(false)} className="px-6 py-2.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
                     Cancel
                   </button>
                   <button type="submit" disabled={isRegistering} className="px-8 py-2.5 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
                     {isRegistering ? (
                       <><svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</>
-                    ) : "Complete Registration"}
+                    ) : regStep === 1 && selectedEvent.price && selectedEvent.price.trim().toLowerCase() !== "free" ? (
+                      "Proceed to Payment"
+                    ) : (
+                      "Complete Registration"
+                    )}
                   </button>
                 </div>
               </form>

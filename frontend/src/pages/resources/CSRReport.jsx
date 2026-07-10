@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Download, FileText, Leaf, Users, Shield, Globe, Award, Target, BarChart, CheckCircle2 } from 'lucide-react';
 
 const CSRReport = () => {
@@ -29,11 +30,11 @@ const CSRReport = () => {
           </p>
           
           {/* The ONLY button on the page as requested */}
-          <button className="group relative px-12 py-5 bg-white text-slate-900 font-black rounded-2xl shadow-2xl hover:bg-emerald-50 transition-all duration-500 transform hover:-translate-y-2 flex items-center gap-4 mx-auto overflow-hidden">
+          <Link to="/resources/csr-report/download" className="group relative px-12 py-5 bg-white text-slate-900 font-black rounded-2xl shadow-2xl hover:bg-emerald-50 transition-all duration-500 transform hover:-translate-y-2 inline-flex items-center gap-4 mx-auto overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-100 to-teal-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <Download className="relative z-10 w-6 h-6 group-hover:bounce" />
             <span className="relative z-10 text-lg">Download Full PDF Report</span>
-          </button>
+          </Link>
         </div>
       </section>
 
