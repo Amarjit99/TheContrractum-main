@@ -20,20 +20,7 @@ const MENU_ITEMS = [
       { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
       { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
       { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
-      {
-        id: 'projects',
-        label: 'Projects',
-        icon: <FolderKanban size={18} />,
-        hasSubmenu: true,
-        subItems: [
-          { id: 'projects-overview', to: '/admin/projects?tab=overview', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
-          { id: 'projects-ongoing', to: '/admin/projects?tab=ongoing', icon: <FolderKanban size={16} />, label: 'Ongoing Projects' },
-          { id: 'projects-completed', to: '/admin/projects?tab=completed', icon: <CheckSquare size={16} />, label: 'Completed Projects' },
-          { id: 'projects-cases', to: '/admin/projects?tab=casestudies', icon: <FileText size={16} />, label: 'Case Studies' },
-          { id: 'projects-research', to: '/admin/projects?tab=research', icon: <Award size={16} />, label: 'Research & Innovation' },
-          { id: 'projects-testimonials', to: '/admin/projects?tab=testimonials', icon: <Users size={16} />, label: 'Client Testimonials' }
-        ]
-      },
+      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
       { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
       { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
