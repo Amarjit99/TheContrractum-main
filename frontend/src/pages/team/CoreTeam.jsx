@@ -1,37 +1,29 @@
+import { useState, useEffect } from "react";
 import { Linkedin, Mail, Twitter, Target, Rocket, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import team from "../../assets/team.jpeg"
+import team from "../../assets/team.jpeg";
+
 export default function CoreTeam() {
-    const leaders = [
-        {
-            name: "Amit Verma",
-            role: "Founder & CEO",
-            bio: "Visionary leader with 15+ years in tech innovation. Driving Contractum's mission to reshape digital landscapes.",
-            image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400",
-            linkedin: "https://www.linkedin.com/in/amit-verma-tech-leader",
-        },
-        {
-            name: "Sarah Jenkins",
-            role: "Chief Technology Officer",
-            bio: "Expert in AI & Blockchain architectures. Leading our engineering teams to build scalable, future-proof solutions.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-            linkedin: "https://www.linkedin.com/in/sarah-jenkins-cto-expert",
-        },
-        {
-            name: "David Chen",
-            role: "Head of Operations",
-            bio: "Operational excellence strategist ensuring seamless delivery and execution across all global projects.",
-            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400",
-            linkedin: "https://www.linkedin.com/in/david-chen-ops-strategist",
-        },
-        {
-            name: "Priya Sharma",
-            role: "Chief Marketing Officer",
-            bio: "Brand builder and storyteller connecting our innovations with the communities that need them most.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            linkedin: "https://www.linkedin.com/in/priya-sharma-cmo-branding",
-        },
-    ];
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const [leaders, setLeaders] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTeam = async () => {
+            try {
+                const res = await fetch(`${API_URL}/api/core-team`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setLeaders(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch core team:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTeam();
+    }, []);
 
     return (
         <div className="min-h-screen">
@@ -70,14 +62,18 @@ export default function CoreTeam() {
                         <p className="text-slate-600 text-lg max-w-2xl mx-auto">Experienced leaders driving innovation and excellence</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                        {leaders.map((leader, index) => (
+                        {loading ? (
+                            <div className="col-span-full text-center py-12 text-slate-500">Loading Core Team...</div>
+                        ) : leaders.length === 0 ? (
+                            <div className="col-span-full text-center py-12 text-slate-500">No core team members found.</div>
+                        ) : leaders.map((leader, index) => (
                             <div
                                 key={index}
                                 className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden hover:-translate-y-2 transition-all duration-300 border-2 border-transparent hover:border-blue-400"
                             >
                                 <div className="relative h-64 overflow-hidden">
                                     <img
-                                        src={leader.image}
+                                        src={leader.image?.startsWith('/') ? `${API_URL}${leader.image}` : leader.image}
                                         alt={leader.name}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
@@ -92,15 +88,21 @@ export default function CoreTeam() {
                                         {leader.bio}
                                     </p>
                                     <div className="flex justify-center space-x-3">
-                                        <a href={leader.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
-                                            <Linkedin size={18} />
-                                        </a>
-                                        <a href="#" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-400 rounded-full transition transform hover:scale-110">
-                                            <Twitter size={18} />
-                                        </a>
-                                        <a href="mailto:contact@contrractum.com" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
-                                            <Mail size={18} />
-                                        </a>
+                                        {leader.linkedin && (
+                                            <a href={leader.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
+                                                <Linkedin size={18} />
+                                            </a>
+                                        )}
+                                        {leader.twitter && (
+                                            <a href={leader.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-400 rounded-full transition transform hover:scale-110">
+                                                <Twitter size={18} />
+                                            </a>
+                                        )}
+                                        {leader.email && (
+                                            <a href={`mailto:${leader.email}`} className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600 rounded-full transition transform hover:scale-110">
+                                                <Mail size={18} />
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>

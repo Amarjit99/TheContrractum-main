@@ -164,7 +164,7 @@ export default function HrTech() {
 
                     <div className="flex flex-col sm:flex-row justify-center gap-6">
                         <Link
-                            to="/contact/quote"
+                            to="/join/partner"
                             className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-xl hover:shadow-cyan-500/40 text-lg"
                         >
                             Partner with Us

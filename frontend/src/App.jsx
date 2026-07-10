@@ -230,15 +230,20 @@ export default function App() {
                 <Route path="/company/our-impact" element={<OurImpact />} />
                 <Route path="/company/learn-more" element={<LearnMore />} />
 
-                <Route path="/company/about-us" element={<AboutUs />} />
-                <Route path="/company/vision" element={<Vision />} />
-                <Route path="/company/mission" element={<Mission />} />
-                <Route path="/company/values" element={<Value />} />
-                <Route path="/company/founders" element={<Founder />} />
-                <Route path="/company/management" element={<Leadership />} />
-                <Route path="/company/our-journey" element={<OurJourney />} />
-                <Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
-                <Route path="/company/employee-id" element={<EmployeeId />} />
+<Route path="/company/about-us" element={<AboutUs />} />
+<Route path="/company/vision" element={<Vision />} />
+<Route path="/company/mission" element={<Mission />} />
+<Route path="/company/values" element={<Value />} />
+<Route path="/company/founders" element={<Founder />} />
+<Route path="/company/management" element={<Leadership />} />
+<Route path="/company/our-journey" element={<OurJourney />} />
+<Route path="/company/code-of-conduct" element={<CodeOfConduct />} />
+<Route path="/company/employee-id" element={<EmployeeId />} />
+<Route path="/company/contracts" element={<CompanyContracts />} />
+<Route path="/company/referral-dashboard" element={<ReferralDashboard />} />
+<Route path="/company/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/company/terms-of-service" element={<TermsOfService />} />
+<Route path="/company/cookie-policy" element={<CookiePolicy />} />
 
                 {/* ///////////////////////// team Routes///////////////////////// */}
                 <Route path="/team/core-team" element={<CoreTeam />} />

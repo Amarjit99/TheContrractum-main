@@ -21,7 +21,13 @@ const Support = () => {
   const [status, setStatus] = useState({ loading: false, error: null });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === "phoneNumber" && value.length > 10) {
+      return;
+    }
+    
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleFileChange = (e) => {
@@ -154,7 +160,7 @@ const Support = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                  Ticket Subject
+                  Ticket Subject <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="ticketSubject"
@@ -176,7 +182,7 @@ const Support = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Name
+                    Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -191,7 +197,7 @@ const Support = () => {
 
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Email Address
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -208,7 +214,7 @@ const Support = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                    <div className="flex gap-2">
                      <div className="relative group">
@@ -242,7 +248,7 @@ const Support = () => {
 
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Issue Category
+                    Issue Category <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="category"
@@ -265,7 +271,7 @@ const Support = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                    Priority Level
+                    Priority Level <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="priority"
@@ -297,7 +303,7 @@ const Support = () => {
 
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">
-                  Description
+                  Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="description"

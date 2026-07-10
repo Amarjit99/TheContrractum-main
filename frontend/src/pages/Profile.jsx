@@ -516,7 +516,7 @@ export default function Profile() {
                         <div 
                            className="bg-gray-50 p-4 rounded-xl max-h-40 overflow-y-auto text-[11px] text-gray-600 leading-relaxed border border-gray-100 prose prose-sm max-w-none shadow-inner"
                            style={{ fontFamily: 'Georgia, serif' }}
-                           dangerouslySetInnerHTML={{ __html: contracts.find(c => c._id === signingId)?.content || '' }}
+                           dangerouslySetInnerHTML={{ __html: (contracts.find(c => c._id === signingId)?.content || '').replace(/padding-right:\s*\d+(\.\d+)?px/g, 'padding-right:2px') }}
                         />
                      </div>
 
@@ -683,7 +683,7 @@ export default function Profile() {
                     <div 
                       className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 prose prose-sm max-w-none animate-in fade-in duration-500"
                       style={{ fontFamily: 'Georgia, serif', lineHeight: 1.8 }}
-                      dangerouslySetInnerHTML={{ __html: viewingContract.content || '<p class="italic text-gray-400">No content.</p>' }}
+                      dangerouslySetInnerHTML={{ __html: (viewingContract.content || '').replace(/padding-right:\s*\d+(\.\d+)?px/g, 'padding-right:2px') || '<p class="italic text-gray-400">No content.</p>' }}
                     />
 
                     {/* Approval comments audit timeline */}

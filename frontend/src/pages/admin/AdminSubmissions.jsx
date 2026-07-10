@@ -29,24 +29,21 @@ const CATEGORIES = [
 ];
 
 const FORM_CATEGORIES = [
-  { id: 'contact', name: 'Contact Inquiries', endpoint: 'contact', category: 'General' },
-  { id: 'demo', name: 'Demo Requests', endpoint: 'demo', category: 'Sales' },
-  { id: 'expert', name: 'Expert Consults', endpoint: 'expert', category: 'Sales' },
-  { id: 'quote', name: 'Quote Requests', endpoint: 'quote', category: 'Sales' },
-  { id: 'support', name: 'Support Tickets', endpoint: 'support', category: 'Support' },
-  { id: 'partner', name: 'Partner Applications', endpoint: 'partner', category: 'Business' },
-  { id: 'advisor', name: 'Advisor Applications', endpoint: 'advisor', category: 'Business' },
-  { id: 'volunteer', name: 'Volunteer Applications', endpoint: 'volunteer', category: 'Community' },
-  { id: 'newsletter', name: 'Newsletter Opt-ins', endpoint: 'newsletter', category: 'Marketing' },
-  { id: 'survey', name: 'Awareness Surveys', endpoint: 'survey', category: 'Marketing' },
-  { id: 'referral', name: 'Employee Referrals', endpoint: 'referral', category: 'HR' },
-  { id: 'intern', name: 'Internship Applications', endpoint: 'intern', category: 'HR' },
-  { id: 'event-registration', name: 'Event Registrations', endpoint: 'event-registration', category: 'Community' },
-  { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support' },
-  { id: 'vendor', name: 'Vendor Registrations', endpoint: 'vendor', category: 'Business' },
-  { id: 'whitepaper', name: 'Whitepaper Requests', endpoint: 'whitepaper', category: 'Marketing' },
-  { id: 'media-kit', name: 'Media Kit Requests', endpoint: 'media-kit', category: 'Marketing' },
-  { id: 'report', name: 'Report Requests', endpoint: 'report', category: 'Marketing' }
+  { id: 'contact', name: 'Contact Inquiries', endpoint: 'contact', category: 'General', path: '/contact/touch' },
+  { id: 'demo', name: 'Demo Requests', endpoint: 'demo', category: 'Sales', path: '/contact/request-demo' },
+  { id: 'expert', name: 'Expert Consults', endpoint: 'expert', category: 'Sales', path: '/team/connect-experts' },
+  { id: 'quote', name: 'Quote Requests', endpoint: 'quote', category: 'Sales', path: '/contact/quote' },
+  { id: 'support', name: 'Support Tickets', endpoint: 'support', category: 'Support', path: '/contact/support' },
+  { id: 'partner', name: 'Partner Applications', endpoint: 'partner', category: 'Business', path: '/join/become-partner' },
+  { id: 'advisor', name: 'Advisor Applications', endpoint: 'advisor', category: 'Business', path: '/team/become-advisor' },
+  { id: 'volunteer', name: 'Volunteer Applications', endpoint: 'volunteer', category: 'Community', path: '/join/volunteer' },
+  { id: 'newsletter', name: 'Newsletter Opt-ins', endpoint: 'newsletter', category: 'Marketing', path: '/resources/news' },
+  { id: 'survey', name: 'Awareness Surveys', endpoint: 'survey', category: 'Marketing', path: '/events' },
+  { id: 'referral', name: 'Employee Referrals', endpoint: 'referral', category: 'HR', path: '/company/referral-dashboard' },
+  { id: 'intern', name: 'Internship Applications', endpoint: 'intern', category: 'HR', path: '/careers/internships' },
+  { id: 'event-registration', name: 'Event Registrations', endpoint: 'event-registration', category: 'Community', path: '/events' },
+  { id: 'feedback', name: 'User Feedback', endpoint: 'feedback', category: 'Support', path: '/contact/feedback' },
+  { id: 'vendor', name: 'Vendor Registrations', endpoint: 'vendor', category: 'Business', path: '/join/collaborate' }
 ];
 
 // Mapping Forms to Categories
@@ -68,10 +65,7 @@ const FORM_DETAILS = [
   { id: 'rsvps', name: 'Event RSVPs', category: 'Events & Participation' },
   { id: 'event-registrations', name: 'Event Registrations', category: 'Events & Participation' },
   { id: 'feedback', name: 'User Feedback', category: 'Customer Support Services' },
-  { id: 'volunteer', name: 'Volunteer Application', category: 'CSR & Community Programs' },
-  { id: 'whitepaper', name: 'Whitepaper Request', category: 'Marketing & Engagement' },
-  { id: 'media-kit', name: 'Media Kit Request', category: 'Marketing & Engagement' },
-  { id: 'report', name: 'Report Request', category: 'Marketing & Engagement' }
+  { id: 'volunteer', name: 'Volunteer Application', category: 'CSR & Community Programs' }
 ];
 
 // Helper to generate dynamic SVG Sparklines
@@ -115,7 +109,6 @@ export default function AdminSubmissions() {
 
   // Sub-Navigation Tabs: 'overview' | 'contact' | 'demo' | etc.
   const [activeSubTab, setActiveSubTab] = useState('overview');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
@@ -629,57 +622,45 @@ export default function AdminSubmissions() {
     <AdminLayout>
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-[100] px-5 py-3.5 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-3 animate-in slide-in-from-top-4 duration-300 ${
-          toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
-        }`}>
+        <div className={`fixed top-6 right-6 z-[100] px-5 py-3.5 rounded-xl shadow-lg text-sm font-semibold flex items-center gap-3 animate-in slide-in-from-top-4 duration-300 ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+          }`}>
           <span>{toast.type === 'success' ? '✓' : '✗'}</span>
           {toast.message}
         </div>
       )}
 
       {/* Outer Flex Container for Sidebar + Workspace */}
-      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-5.5rem)] bg-gray-50/50 -mx-6 -mb-6 mt-3 rounded-2xl overflow-hidden border border-gray-150 shadow-sm">
-        
+      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50/50 -m-6 rounded-2xl overflow-hidden border border-gray-150 shadow-sm mt-1">
+
         {/* Left Side Subcategory Sub-Sidebar */}
-        <aside className={`w-full ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'} bg-white flex flex-col p-5 shrink-0 border-r border-gray-150 transition-all duration-300`}>
-          <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-            <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'lg:hidden' : 'flex'}`}>
-              <div className="p-2.5 bg-[#1e5cdc]/10 text-[#1e5cdc] rounded-xl">
-                <ClipboardList size={22} />
-              </div>
-              <div>
-                <h2 className="font-extrabold text-gray-800 text-sm tracking-tight leading-none">Submissions</h2>
-                <span className="text-[9px] text-[#1e5cdc] font-black tracking-widest uppercase block mt-1">Contractum CRM</span>
-              </div>
+        <aside className="w-full lg:w-72 bg-white flex flex-col p-5 shrink-0 border-r border-gray-150">
+          <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+            <div className="p-2.5 bg-[#1e5cdc]/10 text-[#1e5cdc] rounded-xl">
+              <ClipboardList size={22} />
             </div>
-            <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-1.5 hover:bg-gray-100 rounded text-gray-400 cursor-pointer hidden lg:block"
-            >
-              {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            </button>
+            <div>
+              <h2 className="font-extrabold text-gray-800 text-sm tracking-tight leading-none">Submissions</h2>
+              <span className="text-[9px] text-[#1e5cdc] font-black tracking-widest uppercase block mt-1">Contractum CRM</span>
+            </div>
           </div>
 
           <nav className="flex-1 space-y-1 overflow-y-auto max-h-[65vh] pr-1 custom-scrollbar">
             <button
               onClick={() => setActiveSubTab('overview')}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
-                activeSubTab === 'overview'
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${activeSubTab === 'overview'
                   ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-              title="Overview Dashboard"
+                }`}
             >
               <LayoutDashboard size={16} />
-              {!sidebarCollapsed && <span>Overview Dashboard</span>}
-              {sidebarCollapsed && <span className="lg:hidden">Overview Dashboard</span>}
+              Overview Dashboard
             </button>
 
-            <div className={`pt-4 pb-1 text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>Forms List</div>
+            <div className="pt-4 pb-1 text-[9px] font-black text-gray-400 uppercase tracking-widest px-2">Forms List</div>
 
             {FORM_CATEGORIES.map(cat => {
-              const stat = formStats.find(s => 
-                s.name.toLowerCase().includes(cat.id) || 
+              const stat = formStats.find(s =>
+                s.name.toLowerCase().includes(cat.id) ||
                 (cat.id === 'contact' && s.name === 'Contact Us') ||
                 (cat.id === 'demo' && s.name === 'Demo Requests') ||
                 (cat.id === 'expert' && s.name === 'Expert Consults') ||
@@ -690,10 +671,7 @@ export default function AdminSubmissions() {
                 (cat.id === 'referral' && s.name === 'Referrals') ||
                 (cat.id === 'intern' && s.name === 'Intern Apps') ||
                 (cat.id === 'event-registration' && s.name === 'Event Registrations') ||
-                (cat.id === 'volunteer' && s.name === 'Volunteer Apps') ||
-                (cat.id === 'whitepaper' && s.name === 'Whitepaper Requests') ||
-                (cat.id === 'media-kit' && s.name === 'Media Kit Requests') ||
-                (cat.id === 'report' && s.name === 'Report Requests')
+                (cat.id === 'volunteer' && s.name === 'Volunteer Apps')
               );
               const count = stat ? stat.count : 0;
 
@@ -701,21 +679,18 @@ export default function AdminSubmissions() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveSubTab(cat.id)}
-                  className={`w-full flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                    activeSubTab === cat.id
+                  className={`w-full flex items-center justify-between px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${activeSubTab === cat.id
                       ? 'bg-[#1e5cdc] text-white shadow-md shadow-blue-100'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                  title={cat.name}
+                    }`}
                 >
                   <div className="flex items-center gap-2.5 truncate">
                     <FileText size={15} className={`shrink-0 ${activeSubTab === cat.id ? 'text-white' : 'text-gray-400'}`} />
-                    <span className={`truncate ${sidebarCollapsed ? 'lg:hidden' : ''}`}>{cat.name}</span>
+                    <span className="truncate">{cat.name}</span>
                   </div>
                   {count > 0 && (
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${sidebarCollapsed ? 'lg:hidden' : ''} ${
-                      activeSubTab === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
-                    }`}>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${activeSubTab === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                      }`}>
                       {count}
                     </span>
                   )}
@@ -725,28 +700,14 @@ export default function AdminSubmissions() {
           </nav>
 
           <div className="mt-6 pt-4 border-t border-gray-100 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-            {!sidebarCollapsed ? (
-              <>
-                Total Responses:
-                <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
-              </>
-            ) : (
-              <>
-                <div className="lg:hidden">
-                  Total Responses:
-                  <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-[#1e5cdc]/15 text-[#1e5cdc] flex items-center justify-center font-bold text-xs mx-auto hidden lg:flex" title={`Total Responses: ${statsOverview.total || 0}`}>
-                  {statsOverview.total || 0}
-                </div>
-              </>
-            )}
+            Total Responses:
+            <p className="text-gray-800 font-black text-sm mt-0.5">{statsOverview.total || 0}</p>
           </div>
         </aside>
 
         {/* Right Content Workspace Area */}
         <main className="flex-1 flex flex-col min-w-0 bg-white">
-          
+
           {/* Top Header Row */}
           <header className="border-b border-gray-100 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-20">
             <div className="flex flex-wrap items-center gap-2 max-w-lg flex-1">
@@ -838,10 +799,10 @@ export default function AdminSubmissions() {
                 {/* 1. Tab: OVERVIEW (Aggregated analytical dashboard) */}
                 {activeSubTab === 'overview' && (
                   <div className="space-y-6">
-                    
+
                     {/* High-Fidelity Metric Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-                      
+
                       {/* Metric Card 1: Total Submissions */}
                       <div className="bg-white border border-gray-150 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-blue-200 transition-all group">
                         <div className="flex items-start justify-between">
@@ -960,7 +921,7 @@ export default function AdminSubmissions() {
 
                     {/* Recharts Analytics Row */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      
+
                       {/* Submissions by Category Donut Chart */}
                       <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col h-[340px]">
                         <div className="flex items-center justify-between mb-2">
@@ -1046,10 +1007,10 @@ export default function AdminSubmissions() {
 
                     {/* Aggregated Interactive Submission Database Table & Operations Widgets */}
                     <div className="flex flex-col xl:flex-row gap-6 mt-4">
-                      
+
                       {/* Left Side: Filterable Submission List Table */}
                       <div className="flex-1 bg-white border border-gray-150 rounded-2xl p-5 shadow-xs flex flex-col min-w-0">
-                        
+
                         {/* Interactive Aggregated Filters Box */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
                           <div className="flex flex-wrap items-center gap-3">
@@ -1213,7 +1174,7 @@ export default function AdminSubmissions() {
 
                       {/* Right Side Widget Box */}
                       <div className="w-full xl:w-80 shrink-0 space-y-6">
-                        
+
                         {/* Widget A: High Priority Follow-Ups */}
                         <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-xs space-y-4">
                           <div className="flex items-center justify-between border-b border-gray-50 pb-2">
@@ -1278,7 +1239,7 @@ export default function AdminSubmissions() {
                 {/* 2. Tab: Specific Form CRUD list */}
                 {activeSubTab !== 'overview' && (
                   <div className="space-y-6">
-                    
+
                     {/* Shareable Form Link Quick Share Widget */}
                     <div className="bg-white border border-gray-150 p-5 rounded-2xl shadow-xs">
                       <div className="flex justify-between items-center mb-4">
@@ -1287,7 +1248,7 @@ export default function AdminSubmissions() {
                         </h3>
                         <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active API Endpoint</span>
                       </div>
-                      
+
                       {FORM_CATEGORIES.filter(f => f.id === activeSubTab).map(form => (
                         <div key={form.id} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-between gap-4 max-w-2xl">
                           <div className="flex items-center gap-3">
@@ -1295,9 +1256,9 @@ export default function AdminSubmissions() {
                             <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{form.category}</span>
                           </div>
                           <div className="flex items-center gap-2 bg-white border border-gray-150 p-1.5 rounded-lg text-[10px] font-mono text-gray-500 w-80">
-                            <span className="truncate flex-1">{`/forms/${form.id}`}</span>
+                            <span className="truncate flex-1">{`${window.location.origin}${form.path}`}</span>
                             <button
-                              onClick={() => handleCopyLink(`/forms/${form.id}`, form.id)}
+                              onClick={() => handleCopyLink(form.path, form.id)}
                               className={`p-1 rounded shrink-0 cursor-pointer ${copiedId === form.id ? 'bg-emerald-500 text-white' : 'hover:bg-gray-100 text-gray-400'}`}
                             >
                               {copiedId === form.id ? <Check size={11} /> : <Copy size={11} />}
@@ -1327,11 +1288,7 @@ export default function AdminSubmissions() {
                             {filteredSubmissionsCRUD.length > 0 ? (
                               filteredSubmissionsCRUD.map((sub) => {
                                 const name = sub.name || sub.fullName || `${sub.firstName || ''} ${sub.lastName || ''}`;
-                                const subject = (sub.whitepaperId?.title || (sub.details?.whitepaperId && sub.details.whitepaperId.title)) ||
-                                   (sub.reportId?.title || (sub.details?.reportId && sub.details.reportId.title)) ||
-                                   (activeSubTab === 'media-kit' || sub.formType === 'Media Kit Request' ? 'Corporate Media Kit' : '') ||
-                                   sub.subject || sub.service || sub.jobTitle || sub.interestArea || 
-                                   'Form Entry';
+                                const subject = sub.subject || sub.service || sub.jobTitle || sub.interestArea || 'Form Entry';
 
                                 return (
                                   <tr key={sub._id} className="hover:bg-gray-50/50 transition duration-150">
@@ -1398,7 +1355,7 @@ export default function AdminSubmissions() {
       {selectedSubDetail && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl border border-gray-150 flex flex-col animate-in fade-in zoom-in-95 duration-200">
-            
+
             {/* Modal Header */}
             <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
               <div className="flex items-center gap-2">
@@ -1460,22 +1417,6 @@ export default function AdminSubmissions() {
               <div className="space-y-3">
                 <h4 className="font-extrabold text-gray-800 text-xs uppercase tracking-wider border-b border-gray-100 pb-2">Submitted Content Inputs</h4>
                 <div className="bg-white rounded-2xl border border-gray-150 p-5 space-y-4 text-xs font-semibold text-gray-600">
-                  {(selectedSubDetail.whitepaperId || selectedSubDetail.details?.whitepaperId) && (
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Requested Whitepaper</span>
-                      <div className="bg-red-50 p-3 rounded-xl border border-red-100 text-gray-700 text-xs font-bold leading-relaxed">
-                        {(selectedSubDetail.whitepaperId?.title || selectedSubDetail.details?.whitepaperId?.title) || 'N/A'} (ID: {(selectedSubDetail.whitepaperId?._id || selectedSubDetail.details?.whitepaperId?._id) || 'N/A'})
-                      </div>
-                    </div>
-                  )}
-                  {(selectedSubDetail.reportId || selectedSubDetail.details?.reportId) && (
-                    <div className="space-y-1">
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Requested Report</span>
-                      <div className="bg-red-50 p-3 rounded-xl border border-red-100 text-gray-700 text-xs font-bold leading-relaxed">
-                        {(selectedSubDetail.reportId?.title || selectedSubDetail.details?.reportId?.title) || 'N/A'} (ID: {(selectedSubDetail.reportId?._id || selectedSubDetail.details?.reportId?._id) || 'N/A'})
-                      </div>
-                    </div>
-                  )}
                   {Object.keys(selectedSubDetail.details || {}).map((key) => {
                     const val = selectedSubDetail.details[key];
                     if (
@@ -1550,7 +1491,7 @@ export default function AdminSubmissions() {
             </div>
 
             <div className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
-              
+
               {/* Form Details Grid */}
               <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100 text-xs font-semibold text-gray-500">
                 <div className="col-span-2 sm:col-span-1">
@@ -1900,22 +1841,6 @@ export default function AdminSubmissions() {
                   </div>
                 )}
 
-                {(selectedSub.whitepaperId || selectedSub.details?.whitepaperId) && (
-                  <div className="col-span-2 font-semibold">
-                    <span className="font-bold text-gray-400 block uppercase mb-1">Requested Whitepaper</span>
-                    <span className="font-extrabold text-gray-800 block mt-0.5 bg-white p-2.5 rounded-xl border border-gray-150">
-                      {(selectedSub.whitepaperId?.title || selectedSub.details?.whitepaperId?.title) || 'N/A'} (ID: {(selectedSub.whitepaperId?._id || selectedSub.details?.whitepaperId?._id) || 'N/A'})
-                    </span>
-                  </div>
-                )}
-                {(selectedSub.reportId || selectedSub.details?.reportId) && (
-                  <div className="col-span-2 font-semibold">
-                    <span className="font-bold text-gray-400 block uppercase mb-1">Requested Report</span>
-                    <span className="font-extrabold text-gray-800 block mt-0.5 bg-white p-2.5 rounded-xl border border-gray-150">
-                      {(selectedSub.reportId?.title || selectedSub.details?.reportId?.title) || 'N/A'} (ID: {(selectedSub.reportId?._id || selectedSub.details?.reportId?._id) || 'N/A'})
-                    </span>
-                  </div>
-                )}
                 {selectedSub.coverLetter && (
                   <div className="col-span-2 border-t border-gray-150 pt-3 mt-1">
                     <span className="font-bold text-gray-400 block uppercase mb-1">Cover Letter Message</span>

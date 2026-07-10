@@ -44,7 +44,6 @@ export default function Navbar() {
     {
       name: 'Company',
       submenu:[
-  { title: 'About Us', path: '/company/about-us', items: [] },
   { title: 'Our Vision', path: '/company/vision', items: [] },
   { title: 'Our Mission', path: '/company/mission', items: [] },
   { title: 'Our Values', path: '/company/values', items: [] },
@@ -53,6 +52,7 @@ export default function Navbar() {
   { title: 'Our Journey', path: '/company/our-journey', items: [] },
   { title: 'Code of Conduct', path: '/company/code-of-conduct', items: [] },
   { title: 'Employee ID Verification', path: '/company/employee-id', items: [] },
+  { title: 'About Us', path: '/company/about-us', items: [] },
 ]
 
     },
@@ -199,7 +199,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex flex-1 justify-start items-center gap-0.5 lg:gap-1 xl:gap-2 ml-0 xl:ml-2">
+          <div className="hidden lg:flex flex-1 justify-center items-center gap-0.5 lg:gap-1 xl:gap-2 ml-0 xl:ml-2">
             {menuItems.map((item, index) => (
               <div
                 key={index}

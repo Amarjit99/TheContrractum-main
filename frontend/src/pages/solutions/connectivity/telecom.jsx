@@ -167,7 +167,7 @@ export default function TelecomSolutions() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link
-              to="/contact/quote"
+              to="/projects/ongoing"
               className="bg-orange-600 hover:bg-orange-500 text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-xl hover:shadow-orange-500/40 text-lg"
             >
               Start Project

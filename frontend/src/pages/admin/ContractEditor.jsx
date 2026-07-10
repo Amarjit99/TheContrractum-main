@@ -18,6 +18,33 @@ import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// Helper to strip the old letterhead HTML structure from content
+const stripLetterhead = (html) => {
+  if (!html) return '';
+  const startIdx = html.indexOf('<div style="position:relative;');
+  if (startIdx === -1) return html;
+
+  let depth = 0;
+  let pos = startIdx;
+  while (pos < html.length) {
+    const nextOpen = html.indexOf('<div', pos);
+    const nextClose = html.indexOf('</div>', pos);
+    if (nextClose === -1) break;
+
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      depth++;
+      pos = nextOpen + 4;
+    } else {
+      depth--;
+      if (depth === 0) {
+        return html.substring(0, startIdx) + html.substring(nextClose + 6);
+      }
+      pos = nextClose + 6;
+    }
+  }
+  return html;
+};
+
 // Corporate letterhead HTML — used in editor, preview, and PDF
 const getLetterheadHTML = () => `<div style="position:relative;border-bottom:2px solid #1a408c;padding-bottom:15px;margin-bottom:30px;font-family:Arial,sans-serif;text-align:left;margin-top:1px;margin-left:1px;margin-right:1px;">
   <div style="position:absolute;top:0;left:0;width:150px;height:120px;overflow:hidden;z-index:1;pointer-events:none;">
@@ -30,7 +57,7 @@ const getLetterheadHTML = () => `<div style="position:relative;border-bottom:2px
     <div style="margin-left:25px;margin-top:0;">
       <img src="${API}/uploads/main-logo.jpg" alt="The Contractum Logo" style="height:75px;width:75px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.15);" />
     </div>
-    <div style="text-align:right;color:#1a408c;font-size:10.5px;line-height:1.4;font-family:sans-serif;padding-right:12px;">
+    <div style="text-align:right;color:#1a408c;font-size:10.5px;line-height:1.4;font-family:sans-serif;padding-right:2px;">
       <h2 style="margin:0;font-size:14px;font-weight:800;color:#1a408c;text-transform:uppercase;letter-spacing:0.5px;">Contractum Integral Solution Pvt. Limited</h2>
       <p style="margin:2px 0 0 0;color:#1a408c;">Head office: Plot No.169, Ground Floor, Ganesh Nagar, Kota Rajasthan</p>
       <p style="margin:1px 0 0 0;color:#1a408c;">Pin: 324005, Phone: +91-9216654754</p>
@@ -44,10 +71,9 @@ const getLetterheadHTML = () => `<div style="position:relative;border-bottom:2px
 // Replaces {{company_logo}} in content with the letterhead HTML, prepending if missing
 const injectLetterhead = (content) => {
   if (!content) return content;
-  let result = content;
-  // Check if the letterhead is already rendered (from a previous save)
-  const alreadyHasLetterhead = result.includes('Contractum Integral Solution Pvt. Limited') && result.includes('main-logo.jpg');
-  if (!result.includes('{{company_logo}}') && !alreadyHasLetterhead) {
+  // Always strip any old letterhead format first to keep it fresh
+  let result = stripLetterhead(content);
+  if (!result.includes('{{company_logo}}')) {
     result = '{{company_logo}}' + result;
   }
   return result.replace(/\{\{company_logo\}\}/g, getLetterheadHTML());
@@ -284,6 +310,34 @@ export default function ContractEditor() {
     const html = e.currentTarget.innerHTML;
     lastUpdatedContentRef.current = html;
     setFormData(prev => ({ ...prev, content: html }));
+  };
+
+  const saveSelection = () => {
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      if (editorRef.current && editorRef.current.contains(range.commonAncestorContainer)) {
+        setSavedRange(range);
+      }
+    }
+  };
+
+  const handleFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+    if (editorRef.current) {
+      const updatedHtml = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = updatedHtml;
+      setFormData(prev => ({ ...prev, content: updatedHtml }));
+    }
+  };
+
+  const handleHeading = (tag) => {
+    document.execCommand('formatBlock', false, `<${tag}>`);
+    if (editorRef.current) {
+      const updatedHtml = editorRef.current.innerHTML;
+      lastUpdatedContentRef.current = updatedHtml;
+      setFormData(prev => ({ ...prev, content: updatedHtml }));
+    }
   };
 
   // Handle Enter key in the visual editor to insert proper paragraph elements
@@ -676,11 +730,11 @@ export default function ContractEditor() {
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 bg-slate-50 border border-slate-200/60 rounded-xl mb-4 text-xs font-bold text-gray-600">
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={showRuler} onChange={e => setShowRuler(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
+            <input type="checkbox" checked={showRuler} onChange={e => setShowRuler(e.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
             Rulers
           </label>
           <label className="flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" checked={showMargins} onChange={e => setShowMargins(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
+            <input type="checkbox" checked={showMargins} onChange={e => setShowMargins(e.checked)} className="rounded text-blue-600 focus:ring-blue-500/20 w-3.5 h-3.5" />
             Margins Guide
           </label>
         </div>
@@ -704,34 +758,6 @@ export default function ContractEditor() {
         </div>
       </div>
     );
-  };
-
-  const saveSelection = () => {
-    const sel = window.getSelection();
-    if (sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0);
-      if (editorRef.current && editorRef.current.contains(range.commonAncestorContainer)) {
-        setSavedRange(range);
-      }
-    }
-  };
-
-  const handleFormat = (command, value = null) => {
-    document.execCommand(command, false, value);
-    if (editorRef.current) {
-      const updatedHtml = editorRef.current.innerHTML;
-      lastUpdatedContentRef.current = updatedHtml;
-      setFormData(prev => ({ ...prev, content: updatedHtml }));
-    }
-  };
-
-  const handleHeading = (tag) => {
-    document.execCommand('formatBlock', false, `<${tag}>`);
-    if (editorRef.current) {
-      const updatedHtml = editorRef.current.innerHTML;
-      lastUpdatedContentRef.current = updatedHtml;
-      setFormData(prev => ({ ...prev, content: updatedHtml }));
-    }
   };
 
   const insertHtmlAtCursor = (html) => {
@@ -810,7 +836,7 @@ export default function ContractEditor() {
   };
 
   useEffect(() => {
-    if (editorRef.current) {
+    if (editorRef.current && editorMode === 'visual') {
       if (formData.content === lastUpdatedContentRef.current) {
         return;
       }
@@ -840,7 +866,7 @@ export default function ContractEditor() {
       '{{employee_name}}': empName,
       '{{position}}': empTitle,
       '{{department}}': empDept,
-      '{{company_name}}': 'The Contractum Integral Solution Pvt. Limited',
+      '{{company_name}}': 'Contractum Integral Solution Pvt. Limited',
       '{{company_address}}': 'India',
       '{{start_date}}': validFromStr,
       '{{end_date}}': validUntilStr,
@@ -1054,17 +1080,7 @@ export default function ContractEditor() {
           city: user.city || '',
           country: user.country || '',
           salary: prev.salary && prev.salary !== '₹50,000 / month' ? prev.salary : (user.salary || ''),
-          address: (() => {
-            if (prev.address && prev.address !== '123 Tech Park, Bengaluru, India' && prev.address !== '') return prev.address;
-            const parts = [
-              user.street,
-              user.city,
-              user.state,
-              user.country,
-              user.pincode ? `PIN: ${user.pincode}` : ''
-            ].filter(Boolean);
-            return parts.length > 0 ? parts.join(', ') : '';
-          })()
+          address: prev.address && prev.address !== '123 Tech Park, Bengaluru, India' ? prev.address : (`${user.city || ''}, ${user.country || ''}`.replace(/^, /, '').trim() || '')
         }));
       }
     }
@@ -1105,24 +1121,13 @@ export default function ContractEditor() {
         '{{start_date}}': effectiveFrom ? startDateStr : '__________________',
         '{{end_date}}': effectiveUntil ? endDateStr : '__________________',
         '{{salary}}': customData.salary || user?.salary || 'As per offer',
-        '{{employee_address}}': customData.address || (() => {
-          if (!user) return 'India';
-          const parts = [
-            user.street,
-            user.city,
-            user.state,
-            user.country,
-            user.pincode ? `PIN: ${user.pincode}` : ''
-          ].filter(Boolean);
-          return parts.length > 0 ? parts.join(', ') : 'India';
-        })(),
+        '{{employee_address}}': customData.address || (user ? `${user.city || ''}, ${user.country || ''}`.replace(/^, /, '').trim() : '') || 'India',
         '{{company_city}}': 'India'
       };
     }
 
-    let newContent = contentText;
-    const alreadyHasLetterhead2 = newContent && newContent.includes('Contractum Integral Solution Pvt. Limited') && newContent.includes('main-logo.jpg');
-    if (newContent && !newContent.includes('{{company_logo}}') && !alreadyHasLetterhead2) {
+    let newContent = stripLetterhead(contentText);
+    if (newContent && !newContent.includes('{{company_logo}}')) {
       newContent = '{{company_logo}}' + newContent;
     }
     Object.keys(replacements).forEach(key => {
