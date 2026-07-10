@@ -136,6 +136,7 @@ app.use("/api/news", require("./routes/news")); // Exposing a cleaner public rea
 app.use("/api/interns", require("./routes/interns"));
 app.use("/api/volunteer-stories", require("./routes/volunteerStories"));
 app.use("/api/founders", require("./routes/founders"));
+app.use("/api/core-team", require("./routes/coreTeam"));
 app.use("/api/id-cards", require("./routes/idCards"));
 app.use("/api/referrals", require("./routes/referrals"));
 app.use("/api/projects", require("./routes/projects"));

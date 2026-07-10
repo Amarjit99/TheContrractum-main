@@ -33,7 +33,7 @@ export default function Banking() {
                                 Request Consultation
                                 <ArrowRight size={20} />
                             </Link>
-                            <Link to="/contact/request-demo" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
+                            <Link to="/solutions/business/csit" className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl backdrop-blur-sm transition-all border-2 border-white/30 hover:border-white/50 transform hover:scale-105">
                                 Explore Services
                             </Link>
                         </div>
@@ -174,7 +174,7 @@ export default function Banking() {
                             <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                                 Partner with a team that understands the intersection of finance and technology.
                             </p>
-                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link to="/industries/request-consultation" className="px-10 py-4 bg-white text-emerald-900 font-bold rounded-xl hover:bg-gray-100 transition-all shadow-xl transform hover:scale-105">
                                     Start a Project
                                 </Link>

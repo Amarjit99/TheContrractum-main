@@ -121,7 +121,8 @@ function AdminCareers() {
   const [editingJob, setEditingJob] = useState(null);
   const [jobForm, setJobForm] = useState({
     title: '', department: 'Technology', location: 'Remote', type: 'Full-Time',
-    tags: [], startDate: '', endDate: '', jobId: ''
+    tags: [], startDate: '', endDate: '', jobId: '',
+    roles: '', qualification: '', experience: '', salary: '', benefits: ''
   });
   const [customSkill, setCustomSkill] = useState('');
 
@@ -365,10 +366,18 @@ function reverseLinkedList(head) {
       const url = editingJob ? `${API}/api/cms/jobs/${editingJob._id}` : `${API}/api/cms/jobs`;
       const method = editingJob ? 'PUT' : 'POST';
 
+      const payload = {
+        ...jobForm,
+        roles: Array.isArray(jobForm.roles) ? jobForm.roles : (jobForm.roles || '').split('\n').map(s => s.trim()).filter(Boolean),
+        benefits: Array.isArray(jobForm.benefits) ? jobForm.benefits : (jobForm.benefits || '').split('\n').map(s => s.trim()).filter(Boolean),
+        tags: jobForm.tags,
+        skills: jobForm.tags, // Keep in sync to ensure JobApplication doesn't fallback to template data
+        status: 'Active'
+      };
       const res = await fetch(url, {
         method,
         headers,
-        body: JSON.stringify({ ...jobForm, status: 'Active' })
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         showToast(`Job posting ${editingJob ? 'updated' : 'created'} successfully!`);
@@ -376,7 +385,8 @@ function reverseLinkedList(head) {
         setEditingJob(null);
         setJobForm({
           title: '', department: 'Technology', location: 'Remote', type: 'Full-Time',
-          tags: [], startDate: '', endDate: '', jobId: ''
+          tags: [], startDate: '', endDate: '', jobId: '',
+          roles: '', qualification: '', experience: '', salary: '', benefits: ''
         });
         fetchJobs();
       } else {
@@ -2002,12 +2012,12 @@ function reverseLinkedList(head) {
                               {job.jobId && <div className="text-[10px] font-mono bg-gray-100 border border-gray-200 px-2 py-0.5 rounded w-fit">ID: {job.jobId}</div>}
                             </div>
 
-                            <div className="flex flex-wrap gap-1 mb-4">
+                            <div className="flex flex-wrap gap-1.5 mb-4">
                               {(job.tags || []).slice(0, 3).map(t => (
-                                <span key={t} className="text-[9px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{t}</span>
+                                <span key={t} className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">{t}</span>
                               ))}
                               {(job.tags || []).length > 3 && (
-                                <span className="text-[9px] font-bold bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full">+{job.tags.length - 3}</span>
+                                <span className="text-[11px] font-semibold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">+{job.tags.length - 3}</span>
                               )}
                             </div>
                           </div>
@@ -2026,10 +2036,15 @@ function reverseLinkedList(head) {
                                     department: job.department,
                                     location: job.location,
                                     type: job.type,
-                                    tags: job.tags || [],
+                                    tags: Array.from(new Set([...(job.tags || []), ...(job.skills || [])])),
                                     startDate: job.startDate || '',
                                     endDate: job.endDate || '',
-                                    jobId: job.jobId || ''
+                                    jobId: job.jobId || '',
+                                    roles: (job.roles || []).join('\n'),
+                                    qualification: job.qualification || '',
+                                    experience: job.experience || '',
+                                    salary: job.salary || '',
+                                    benefits: (job.benefits || []).join('\n')
                                   });
                                   setJobModalOpen(true);
                                 }}
@@ -2039,24 +2054,7 @@ function reverseLinkedList(head) {
                                 <Edit size={14} />
                               </button>
                               
-                              <button
-                                onClick={() => {
-                                  setBioJob(job);
-                                  setBioForm({
-                                    roles: (job.roles || []).join('\n'),
-                                    skills: (job.skills || []).join(', '),
-                                    qualification: job.qualification || '',
-                                    experience: job.experience || '',
-                                    salary: job.salary || '',
-                                    benefits: (job.benefits || []).join('\n')
-                                  });
-                                  setBioModalOpen(true);
-                                }}
-                                className="p-2 hover:bg-gray-100 text-gray-500 hover:text-indigo-600 rounded-lg transition-colors"
-                                title="Manage Job Description/Bio"
-                              >
-                                <BookOpen size={14} />
-                              </button>
+
 
                               <button
                                 onClick={() => handleJobDelete(job._id)}
@@ -3346,7 +3344,7 @@ function reverseLinkedList(head) {
                         }
                       }
                     }}
-                    className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-xs outline-none text-gray-700"
+                    className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-sm outline-none text-gray-700"
                   />
                   <button
                     type="button"
@@ -3362,6 +3360,32 @@ function reverseLinkedList(head) {
                     Add
                   </button>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Roles & Responsibilities (one per line)</label>
+                <textarea rows={3} value={jobForm.roles} onChange={e => setJobForm({ ...jobForm, roles: e.target.value })} className="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-gray-700" placeholder="Build responsive components...&#10;Write clean unit tests..." />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Qualification</label>
+                  <input type="text" value={jobForm.qualification} onChange={e => setJobForm({ ...jobForm, qualification: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none font-semibold text-gray-700" placeholder="B.Tech, B.E., MCA" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Experience Required</label>
+                  <input type="text" value={jobForm.experience} onChange={e => setJobForm({ ...jobForm, experience: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none font-semibold text-gray-700" placeholder="2-4 years" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Salary Range / Compensation</label>
+                <input type="text" value={jobForm.salary} onChange={e => setJobForm({ ...jobForm, salary: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none font-semibold text-gray-700" placeholder="₹10L - ₹15L P.A." />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">Additional Benefits (one per line)</label>
+                <textarea rows={2} value={jobForm.benefits} onChange={e => setJobForm({ ...jobForm, benefits: e.target.value })} className="w-full p-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-gray-700" placeholder="Health Insurance&#10;Work From Home allowance" />
               </div>
 
               <div className="pt-4 border-t border-gray-100 flex justify-end gap-3.5">

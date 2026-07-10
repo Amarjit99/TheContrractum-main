@@ -233,7 +233,7 @@ export default function AdminFormLinks() {
                       </p>
                       <p className="hidden sm:block text-gray-300">•</p>
                       <p className="text-gray-400 truncate max-w-xs md:max-w-md xl:max-w-xl">
-                        {form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
+                        {window.location.origin}{form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
                       </p>
                     </div>
                   </div>

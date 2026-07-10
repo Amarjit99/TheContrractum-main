@@ -160,7 +160,7 @@ export default function MRASservices() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link
-              to="/contact/quote"
+              to="/projects/research"
               className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-xl hover:shadow-amber-500/40 text-lg"
             >
               Start Your Research

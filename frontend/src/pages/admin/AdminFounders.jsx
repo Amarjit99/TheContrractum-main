@@ -10,6 +10,7 @@ export default function AdminFounders() {
   const { admin } = useAdminAuth();
   const [founders, setFounders] = useState([]);
   const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState('founder');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFounder, setEditingFounder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,9 @@ export default function AdminFounders() {
     bio: '',
     expertise: '',
     achievements: '',
+    linkedin: '',
+    twitter: '',
+    email: '',
     image: null
   });
 
@@ -35,9 +39,17 @@ export default function AdminFounders() {
     try {
       const res = await fetch(`${API}/api/founders`);
       const data = await res.json();
-      setFounders(data);
+      
+      const resCore = await fetch(`${API}/api/core-team`);
+      let dataCore = [];
+      if (resCore.ok) {
+          dataCore = await resCore.json();
+      }
+      
+      // Merge all and sort if necessary (using their inherent API sort for now)
+      setFounders([...data, ...dataCore]);
     } catch (err) {
-      console.error('Failed to fetch founders:', err);
+      console.error('Failed to fetch data:', err);
     }
     setLoading(false);
   }, []);
@@ -48,10 +60,11 @@ export default function AdminFounders() {
     });
   }, [fetchFounders]);
 
-  const filteredFounders = founders.filter(f =>
-    f.name.toLowerCase().includes(search.toLowerCase()) ||
-    f.role.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredFounders = founders.filter(f => {
+    const matchesSearch = f.name.toLowerCase().includes(search.toLowerCase()) || f.role.toLowerCase().includes(search.toLowerCase());
+    const matchesTab = activeTab === 'all' || f.type === activeTab;
+    return matchesSearch && matchesTab;
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -72,6 +85,9 @@ export default function AdminFounders() {
       bio: '',
       expertise: '',
       achievements: '',
+      linkedin: '',
+      twitter: '',
+      email: '',
       image: null
     });
     setImagePreview(null);
@@ -90,6 +106,9 @@ export default function AdminFounders() {
       bio: founder.bio || '',
       expertise: founder.expertise ? (Array.isArray(founder.expertise) ? founder.expertise.join(', ') : founder.expertise) : '',
       achievements: founder.achievements ? (Array.isArray(founder.achievements) ? founder.achievements.join(', ') : founder.achievements) : '',
+      linkedin: founder.linkedin || '',
+      twitter: founder.twitter || '',
+      email: founder.email || '',
       image: null
     });
     setImagePreview(founder.image && founder.image.includes('/uploads/') ? `${API}${founder.image}` : founder.image);
@@ -97,9 +116,12 @@ export default function AdminFounders() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this founder/director?")) {
+    if (window.confirm("Are you sure you want to delete this profile?")) {
       try {
-        const res = await fetch(`${API}/api/founders/${id}`, {
+        const isCore = founders.find(f => f._id === id)?.type === 'coreTeam';
+        const endpoint = isCore ? `${API}/api/core-team/${id}` : `${API}/api/founders/${id}`;
+        
+        const res = await fetch(endpoint, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${admin?.token}` }
         });
@@ -125,6 +147,11 @@ export default function AdminFounders() {
       data.append('background', formData.background);
       data.append('focusArea', formData.focusArea);
       data.append('contribution', formData.contribution);
+    } else if (formData.type === 'coreTeam') {
+      data.append('bio', formData.bio);
+      data.append('linkedin', formData.linkedin);
+      data.append('twitter', formData.twitter);
+      data.append('email', formData.email);
     } else {
       data.append('bio', formData.bio);
       data.append('expertise', formData.expertise);
@@ -136,7 +163,8 @@ export default function AdminFounders() {
     }
 
     try {
-      const url = editingFounder ? `${API}/api/founders/${editingFounder._id}` : `${API}/api/founders`;
+      const baseUrl = formData.type === 'coreTeam' ? `${API}/api/core-team` : `${API}/api/founders`;
+      const url = editingFounder ? `${baseUrl}/${editingFounder._id}` : baseUrl;
       const method = editingFounder ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -182,9 +210,33 @@ export default function AdminFounders() {
             <Plus size={16} /> Add Founders
           </button>
           <button onClick={() => { resetForm('director'); setIsModalOpen(true); }} className="flex items-center gap-2 bg-[#1e5cdc] hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
-            <Plus size={16} /> Add Founders & Directors
+            <Plus size={16} /> Add Directors
+          </button>
+          <button onClick={() => { resetForm('coreTeam'); setIsModalOpen(true); }} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shrink-0">
+            <Plus size={16} /> Add Core Team
           </button>
         </div>
+      </div>
+
+      <div className="flex border-b border-gray-200 mb-6 mt-4 overflow-x-auto whitespace-nowrap hide-scrollbar">
+        <button
+          onClick={() => setActiveTab('founder')}
+          className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'founder' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+        >
+          Founders
+        </button>
+        <button
+          onClick={() => setActiveTab('director')}
+          className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'director' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+        >
+          Directors
+        </button>
+        <button
+          onClick={() => setActiveTab('coreTeam')}
+          className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'coreTeam' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+        >
+          Core Team
+        </button>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
@@ -217,8 +269,8 @@ export default function AdminFounders() {
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-gray-600 font-medium hidden sm:table-cell text-xs sm:text-sm">{f.role}</td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${f.type === 'founder' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {f.type === 'founder' ? 'Founder' : 'Director'}
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${f.type === 'founder' ? 'bg-emerald-100 text-emerald-700' : f.type === 'coreTeam' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                        {f.type === 'founder' ? 'Founder' : f.type === 'coreTeam' ? 'Core Team' : 'Director'}
                       </span>
                     </td>
                     {/* founder permantes */}
@@ -241,7 +293,7 @@ export default function AdminFounders() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200" style={{ maxHeight: 'calc(100vh - 1rem)' }}>
             <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingFounder ? 'Edit' : 'Add'} {formData.type === 'founder' ? 'Founder' : 'Founder/Director'}</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{editingFounder ? 'Edit' : 'Add'} {formData.type === 'founder' ? 'Founder' : formData.type === 'coreTeam' ? 'Core Team' : 'Director'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X size={20} />
               </button>
@@ -285,6 +337,27 @@ export default function AdminFounders() {
                           <Award size={16} className="absolute left-3 top-3 text-gray-400" />
                           <textarea rows={2} value={formData.achievements} onChange={e => setFormData({ ...formData, achievements: e.target.value })} className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="e.g. Led company to IPO, Recognized as Industry Leader" />
                         </div>
+                      </div>
+                    </div>
+                  </>
+                ) : formData.type === 'coreTeam' ? (
+                  <>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Bio (Description)</label>
+                      <textarea required rows={3} value={formData.bio} onChange={e => setFormData({ ...formData, bio: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="Tell us about the team member..." />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">LinkedIn URL</label>
+                        <input type="url" value={formData.linkedin} onChange={e => setFormData({ ...formData, linkedin: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="https://linkedin.com/in/..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Twitter URL</label>
+                        <input type="url" value={formData.twitter} onChange={e => setFormData({ ...formData, twitter: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="https://twitter.com/..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                        <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e5cdc]" placeholder="example@email.com" />
                       </div>
                     </div>
                   </>
@@ -344,7 +417,7 @@ export default function AdminFounders() {
 
                 <div className="pt-4 flex items-center justify-end gap-3 mt-6">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
-                  <button type="submit" className={`px-4 py-2 text-sm font-semibold text-white ${formData.type === 'founder' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#1e5cdc] hover:bg-blue-700'} rounded-lg transition-all shadow-sm inline-flex items-center gap-2`}>
+                  <button type="submit" className={`px-4 py-2 text-sm font-semibold text-white ${formData.type === 'founder' ? 'bg-emerald-600 hover:bg-emerald-700' : formData.type === 'coreTeam' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-[#1e5cdc] hover:bg-blue-700'} rounded-lg transition-all shadow-sm inline-flex items-center gap-2`}>
                     <Rocket size={16} />
                     {editingFounder ? 'Update Details' : 'Save Details'}
                   </button>

@@ -25,7 +25,8 @@ export default function TechnicalExperts() {
         errorScreenshot: "",
         deviceInformation: "",
         email: "",
-        phone: ""
+        phone: "",
+        countryCode: "+1"
     });
     const [status, setStatus] = useState(null); // null | "loading" | "success" | "error"
     const [errorMsg, setErrorMsg] = useState("");
@@ -58,7 +59,8 @@ export default function TechnicalExperts() {
             errorScreenshot: "",
             deviceInformation: "",
             email: "",
-            phone: ""
+            phone: "",
+            countryCode: "+1"
         });
         setStatus(null);
         setErrorMsg("");
@@ -75,7 +77,7 @@ export default function TechnicalExperts() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...form,
-                    contactDetails: `Email: ${form.email} | Phone: ${form.phone}`
+                    contactDetails: `Email: ${form.email} | Phone: ${form.countryCode} ${form.phone}`
                 }),
             });
 
@@ -89,7 +91,8 @@ export default function TechnicalExperts() {
                     errorScreenshot: "",
                     deviceInformation: "",
                     email: "",
-                    phone: ""
+                    phone: "",
+                    countryCode: "+1"
                 });
                 // Reset file input element if any
                 const fileInput = document.getElementById("errorScreenshotInput");
@@ -418,8 +421,97 @@ export default function TechnicalExperts() {
                                     <div>
                                         <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email Address" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
                                     </div>
-                                    <div>
-                                        <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" className="w-full px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
+                                    <div className="flex gap-4">
+                                        <select
+                                            name="countryCode"
+                                            value={form.countryCode}
+                                            onChange={handleChange}
+                                            className="w-1/3 px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition bg-white"
+                                        >
+                                            {[
+                                                { code: "+91", label: "+91 (IN)", name: "India" },
+                                                { code: "+1", label: "+1 (US)", name: "United States" },
+                                                { code: "+44", label: "+44 (GB)", name: "United Kingdom" },
+                                                { code: "+61", label: "+61 (AU)", name: "Australia" },
+                                                { code: "+1", label: "+1 (CA)", name: "Canada" },
+                                                { code: "+971", label: "+971 (AE)", name: "United Arab Emirates" },
+                                                { code: "+966", label: "+966 (SA)", name: "Saudi Arabia" },
+                                                { code: "+65", label: "+65 (SG)", name: "Singapore" },
+                                                { code: "+64", label: "+64 (NZ)", name: "New Zealand" },
+                                                { code: "+27", label: "+27 (ZA)", name: "South Africa" },
+                                                { code: "+93", label: "+93 (AF)", name: "Afghanistan" },
+                                                { code: "+880", label: "+880 (BD)", name: "Bangladesh" },
+                                                { code: "+975", label: "+975 (BT)", name: "Bhutan" },
+                                                { code: "+86", label: "+86 (CN)", name: "China" },
+                                                { code: "+62", label: "+62 (ID)", name: "Indonesia" },
+                                                { code: "+98", label: "+98 (IR)", name: "Iran" },
+                                                { code: "+964", label: "+964 (IQ)", name: "Iraq" },
+                                                { code: "+972", label: "+972 (IL)", name: "Israel" },
+                                                { code: "+81", label: "+81 (JP)", name: "Japan" },
+                                                { code: "+962", label: "+962 (JO)", name: "Jordan" },
+                                                { code: "+965", label: "+965 (KW)", name: "Kuwait" },
+                                                { code: "+60", label: "+60 (MY)", name: "Malaysia" },
+                                                { code: "+960", label: "+960 (MV)", name: "Maldives" },
+                                                { code: "+977", label: "+977 (NP)", name: "Nepal" },
+                                                { code: "+968", label: "+968 (OM)", name: "Oman" },
+                                                { code: "+92", label: "+92 (PK)", name: "Pakistan" },
+                                                { code: "+63", label: "+63 (PH)", name: "Philippines" },
+                                                { code: "+974", label: "+974 (QA)", name: "Qatar" },
+                                                { code: "+82", label: "+82 (KR)", name: "South Korea" },
+                                                { code: "+94", label: "+94 (LK)", name: "Sri Lanka" },
+                                                { code: "+66", label: "+66 (TH)", name: "Thailand" },
+                                                { code: "+90", label: "+90 (TR)", name: "Turkey" },
+                                                { code: "+84", label: "+84 (VN)", name: "Vietnam" },
+                                                { code: "+355", label: "+355 (AL)", name: "Albania" },
+                                                { code: "+43", label: "+43 (AT)", name: "Austria" },
+                                                { code: "+32", label: "+32 (BE)", name: "Belgium" },
+                                                { code: "+359", label: "+359 (BG)", name: "Bulgaria" },
+                                                { code: "+385", label: "+385 (HR)", name: "Croatia" },
+                                                { code: "+357", label: "+357 (CY)", name: "Cyprus" },
+                                                { code: "+420", label: "+420 (CZ)", name: "Czech Republic" },
+                                                { code: "+45", label: "+45 (DK)", name: "Denmark" },
+                                                { code: "+358", label: "+358 (FI)", name: "Finland" },
+                                                { code: "+33", label: "+33 (FR)", name: "France" },
+                                                { code: "+49", label: "+49 (DE)", name: "Germany" },
+                                                { code: "+30", label: "+30 (GR)", name: "Greece" },
+                                                { code: "+36", label: "+36 (HU)", name: "Hungary" },
+                                                { code: "+354", label: "+354 (IS)", name: "Iceland" },
+                                                { code: "+353", label: "+353 (IE)", name: "Ireland" },
+                                                { code: "+39", label: "+39 (IT)", name: "Italy" },
+                                                { code: "+31", label: "+31 (NL)", name: "Netherlands" },
+                                                { code: "+47", label: "+47 (NO)", name: "Norway" },
+                                                { code: "+48", label: "+48 (PL)", name: "Poland" },
+                                                { code: "+351", label: "+351 (PT)", name: "Portugal" },
+                                                { code: "+40", label: "+40 (RO)", name: "Romania" },
+                                                { code: "+7", label: "+7 (RU)", name: "Russia" },
+                                                { code: "+34", label: "+34 (ES)", name: "Spain" },
+                                                { code: "+46", label: "+46 (SE)", name: "Sweden" },
+                                                { code: "+41", label: "+41 (CH)", name: "Switzerland" },
+                                                { code: "+380", label: "+380 (UA)", name: "Ukraine" },
+                                                { code: "+213", label: "+213 (DZ)", name: "Algeria" },
+                                                { code: "+20", label: "+20 (EG)", name: "Egypt" },
+                                                { code: "+233", label: "+233 (GH)", name: "Ghana" },
+                                                { code: "+254", label: "+254 (KE)", name: "Kenya" },
+                                                { code: "+212", label: "+212 (MA)", name: "Morocco" },
+                                                { code: "+234", label: "+234 (NG)", name: "Nigeria" },
+                                                { code: "+255", label: "+255 (TZ)", name: "Tanzania" },
+                                                { code: "+256", label: "+256 (UG)", name: "Uganda" },
+                                                { code: "+54", label: "+54 (AR)", name: "Argentina" },
+                                                { code: "+55", label: "+55 (BR)", name: "Brazil" },
+                                                { code: "+56", label: "+56 (CL)", name: "Chile" },
+                                                { code: "+57", label: "+57 (CO)", name: "Colombia" },
+                                                { code: "+52", label: "+52 (MX)", name: "Mexico" },
+                                                { code: "+51", label: "+51 (PE)", name: "Peru" },
+                                                { code: "+58", label: "+58 (VE)", name: "Venezuela" },
+                                                { code: "+679", label: "+679 (FJ)", name: "Fiji" },
+                                                { code: "+675", label: "+675 (PG)", name: "Papua New Guinea" }
+                                            ].map((country, idx) => (
+                                                <option key={idx} value={country.code} title={country.name}>
+                                                    {country.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="Phone Number" className="w-2/3 flex-1 px-5 py-4 rounded-xl text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent transition placeholder-slate-500 bg-white" required />
                                     </div>
                                     {status === "success" && (
                                         <p className="p-4 bg-green-500/20 text-green-300 rounded-xl font-bold border border-green-500/30">✅ Request sent successfully! We'll get back to you soon.</p>

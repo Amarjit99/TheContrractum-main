@@ -183,7 +183,7 @@ const Getintouch = () => {
        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-16 items-start">
 
           {/* Send Message Form & World Map */}
-          <div className="lg:col-span-2 space-y-12">
+          <div className="space-y-12">
             <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-gray-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16"></div>
               <h2 className="text-5xl font-black text-slate-900 mb-6 italic">Drop Us a Line</h2>
