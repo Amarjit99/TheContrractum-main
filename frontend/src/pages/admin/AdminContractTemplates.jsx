@@ -13,6 +13,28 @@ import { CONTRACT_CATEGORIES } from '../../utils/contractConstants';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+const getLetterheadHTML = () => `<div style="position:relative;border-bottom:2px solid #1a408c;padding-bottom:15px;margin-bottom:30px;font-family:Arial,sans-serif;text-align:left;margin-top:1px;margin-left:1px;margin-right:1px;">
+  <div style="position:absolute;top:0;left:0;width:150px;height:120px;overflow:hidden;z-index:1;pointer-events:none;">
+    <svg width="150" height="120" viewBox="0 0 150 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0 L110 0 L50 120 L0 120 Z" fill="#1a408c"/>
+      <path d="M115 0 L135 0 L75 120 L55 120 Z" fill="#f1a80a"/>
+    </svg>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2;padding-top:15px;">
+    <div style="margin-left:25px;margin-top:0;">
+      <img src="${API}/uploads/main-logo.jpg" alt="The Contractum Logo" style="height:75px;width:75px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.15);" />
+    </div>
+    <div style="text-align:right;color:#1a408c;font-size:10.5px;line-height:1.4;font-family:sans-serif;padding-right:1.5px;">
+      <h2 style="margin:0;font-size:14px;font-weight:800;color:#1a408c;text-transform:uppercase;letter-spacing:0.5px;">Contractum Integral Solution Pvt. Limited</h2>
+      <p style="margin:2px 0 0 0;color:#1a408c;">Head office: Plot No.169, Ground Floor, Ganesh Nagar, Kota Rajasthan</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Pin: 324005, Phone: +91-9216654754</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Email address: jitendra@thecontractum.com</p>
+      <p style="margin:1px 0 0 0;color:#1a408c;">Website: www.thecontractum.com</p>
+      <p style="margin:1px 0 0 0;font-weight:bold;color:#1a408c;">CIN: U72900RJ2017PTC057530</p>
+    </div>
+  </div>
+</div>`;
+
 const TYPE_COLORS = {
   Employee:   'bg-blue-100 text-blue-700 border-blue-200',
   Intern:     'bg-purple-100 text-purple-700 border-purple-200',
@@ -512,7 +534,7 @@ export default function AdminContractTemplates() {
           <div
             className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
             style={{ fontFamily: 'Georgia, serif' }}
-            dangerouslySetInnerHTML={{ __html: selected?.content || '<p>No content.</p>' }}
+            dangerouslySetInnerHTML={{ __html: (selected?.content || '<p>No content.</p>').replace(/\{\{company_logo\}\}/g, getLetterheadHTML()).replace(/padding-right:\s*\d+px/g, 'padding-right:1.5px') }}
           />
         </div>
         <div className="flex justify-end gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50/50 rounded-b-3xl shrink-0">
