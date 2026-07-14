@@ -103,8 +103,13 @@ export default function AdminFormLinks() {
   }, [admin]);
 
   const handleCopy = (id, path, isDynamic) => {
-    const formattedPath = isDynamic ? '/f' + (path.startsWith('/') ? path : '/' + path) : (path.startsWith('/') ? path : '/' + path);
-    const fullUrl = `${window.location.origin}${formattedPath}`;
+    let fullUrl = '';
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      fullUrl = path;
+    } else {
+      const formattedPath = isDynamic ? '/f' + (path.startsWith('/') ? path : '/' + path) : (path.startsWith('/') ? path : '/' + path);
+      fullUrl = `${window.location.origin}${formattedPath}`;
+    }
     navigator.clipboard.writeText(fullUrl);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -233,7 +238,7 @@ export default function AdminFormLinks() {
                       </p>
                       <p className="hidden sm:block text-gray-300">•</p>
                       <p className="text-gray-400 truncate max-w-xs md:max-w-md xl:max-w-xl">
-                        {window.location.origin}{form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
+                        {form.path.startsWith('http') ? form.path : (form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path))}
                       </p>
                     </div>
                   </div>
@@ -249,7 +254,7 @@ export default function AdminFormLinks() {
                       {copiedId === form.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
                     </button>
                     <a
-                      href={form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path)}
+                      href={form.path.startsWith('http') ? form.path : (form.isDynamic ? '/f' + (form.path.startsWith('/') ? form.path : '/' + form.path) : (form.path.startsWith('/') ? form.path : '/' + form.path))}
                       target="_blank"
                       rel="noreferrer"
                       className="p-1.5 bg-gray-50 text-gray-500 hover:text-[#1e5cdc] rounded-lg transition-colors border border-transparent hover:border-blue-100"

@@ -696,18 +696,38 @@ export default function AdminResources() {
     try {
       const url = editingWhitepaper ? `${API}/api/whitepapers/${editingWhitepaper._id}` : `${API}/api/whitepapers`;
       const res = await fetch(url, { method: editingWhitepaper ? 'PUT' : 'POST', headers, body: JSON.stringify(payload) });
-      if (res.ok) { showToast('Whitepaper saved'); fetchWhitepapers(); setIsWhitepaperModalOpen(false); }
-    } catch (err) { console.error(err); }
+      if (res.ok) { 
+        showToast('Whitepaper saved'); 
+        fetchWhitepapers(); 
+        setIsWhitepaperModalOpen(false); 
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.message || 'Failed to save whitepaper', 'error');
+      }
+    } catch (err) { 
+      console.error(err); 
+      showToast('An error occurred while saving', 'error');
+    }
   };
 
   const handleSaveReport = async (e) => {
     e.preventDefault();
-    const payload = { ...reportForm, highlights: Array.isArray(reportForm.highlights) ? reportForm.highlights : reportForm.highlights.split('\\n').map(h => h.trim()) };
+    const payload = { ...reportForm, highlights: Array.isArray(reportForm.highlights) ? reportForm.highlights : reportForm.highlights.split('\n').map(h => h.trim()) };
     try {
       const url = editingReport ? `${API}/api/reports/${editingReport._id}` : `${API}/api/reports`;
       const res = await fetch(url, { method: editingReport ? 'PUT' : 'POST', headers, body: JSON.stringify(payload) });
-      if (res.ok) { showToast('Report saved'); fetchReports(); setIsReportModalOpen(false); }
-    } catch (err) { console.error(err); }
+      if (res.ok) { 
+        showToast('Report saved'); 
+        fetchReports(); 
+        setIsReportModalOpen(false); 
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.message || 'Failed to save report', 'error');
+      }
+    } catch (err) { 
+      console.error(err); 
+      showToast('An error occurred while saving report', 'error');
+    }
   };
 
   const handleSaveMedia = async (e) => {
@@ -716,8 +736,18 @@ export default function AdminResources() {
     try {
       const url = editingMedia ? `${API}/api/media/${editingMedia._id}` : `${API}/api/media`;
       const res = await fetch(url, { method: editingMedia ? 'PUT' : 'POST', headers, body: JSON.stringify(payload) });
-      if (res.ok) { showToast('Media saved'); fetchMedia(); setIsMediaModalOpen(false); }
-    } catch (err) { console.error(err); }
+      if (res.ok) { 
+        showToast('Media saved'); 
+        fetchMedia(); 
+        setIsMediaModalOpen(false); 
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.message || 'Failed to save media', 'error');
+      }
+    } catch (err) { 
+      console.error(err); 
+      showToast('An error occurred while saving media', 'error');
+    }
   };
 
 
@@ -2435,11 +2465,49 @@ export default function AdminResources() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
-                    <input required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" value={reportForm.type} onChange={e => setReportForm({...reportForm, type: e.target.value})} />
+                    <div className="flex flex-col gap-2">
+                      <select required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white" value={['Annual Report', 'Quarterly Report', 'Industry Report', 'Technical Report', 'Market Report', 'Sustainability Report', 'Research Report', 'HR Report'].includes(reportForm.type) || reportForm.type === '' ? reportForm.type : 'Other'} onChange={e => {
+                        if (e.target.value === 'Other') setReportForm({...reportForm, type: 'Other'});
+                        else setReportForm({...reportForm, type: e.target.value});
+                      }}>
+                        <option value="" disabled>Select Type</option>
+                        <option value="Annual Report">Annual Report</option>
+                        <option value="Quarterly Report">Quarterly Report</option>
+                        <option value="Industry Report">Industry Report</option>
+                        <option value="Technical Report">Technical Report</option>
+                        <option value="Market Report">Market Report</option>
+                        <option value="Sustainability Report">Sustainability Report</option>
+                        <option value="Research Report">Research Report</option>
+                        <option value="HR Report">HR Report</option>
+                        <option value="Other">Add New Type...</option>
+                      </select>
+                      {(!['Annual Report', 'Quarterly Report', 'Industry Report', 'Technical Report', 'Market Report', 'Sustainability Report', 'Research Report', 'HR Report', ''].includes(reportForm.type) || reportForm.type === 'Other') && (
+                        <input required placeholder="Enter new type" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm animate-in fade-in slide-in-from-top-2" value={reportForm.type === 'Other' ? '' : reportForm.type} onChange={e => setReportForm({...reportForm, type: e.target.value})} />
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
-                    <input required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" value={reportForm.category} onChange={e => setReportForm({...reportForm, category: e.target.value})} />
+                    <div className="flex flex-col gap-2">
+                      <select required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white" value={['Technical', 'Quarterly', 'Industry', 'Annual', 'Research', 'Sustainability', 'Market', 'HR'].includes(reportForm.category) || reportForm.category === '' ? reportForm.category : 'Other'} onChange={e => {
+                        if (e.target.value === 'Other') setReportForm({...reportForm, category: 'Other'});
+                        else setReportForm({...reportForm, category: e.target.value});
+                      }}>
+                        <option value="" disabled>Select Category</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Industry">Industry</option>
+                        <option value="Annual">Annual</option>
+                        <option value="Research">Research</option>
+                        <option value="Sustainability">Sustainability</option>
+                        <option value="Market">Market</option>
+                        <option value="HR">HR</option>
+                        <option value="Other">Add New Category...</option>
+                      </select>
+                      {(!['Technical', 'Quarterly', 'Industry', 'Annual', 'Research', 'Sustainability', 'Market', 'HR', ''].includes(reportForm.category) || reportForm.category === 'Other') && (
+                        <input required placeholder="Enter new category" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm animate-in fade-in slide-in-from-top-2" value={reportForm.category === 'Other' ? '' : reportForm.category} onChange={e => setReportForm({...reportForm, category: e.target.value})} />
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Publication Date</label>
@@ -2447,7 +2515,10 @@ export default function AdminResources() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Year</label>
-                    <input required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" value={reportForm.year} onChange={e => setReportForm({...reportForm, year: e.target.value})} />
+                    <input required list="report-years" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" value={reportForm.year} onChange={e => setReportForm({...reportForm, year: e.target.value})} />
+                    <datalist id="report-years">
+                      {[...new Set(reports.map(r => r.year).filter(Boolean))].sort((a, b) => b.localeCompare(a)).map(y => <option key={y} value={y} />)}
+                    </datalist>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Pages</label>

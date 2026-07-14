@@ -6,7 +6,7 @@ import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake,
   UsersRound, Users, BarChart3, Settings,
   Search, Bell, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar,
-  User, Activity, LogOut, HeartHandshake
+  User, Activity, LogOut, HeartHandshake, Building2, ClipboardList
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -17,22 +17,50 @@ const MENU_ITEMS = [
     icon: <Newspaper size={20} />,
     hasSubmenu: true,
     subItems: [
+      {
+        id: 'company',
+        label: 'Company',
+        icon: <Building2 size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'founders', to: '/admin/founders', icon: <Users size={16} />, label: 'Founders & Directors' }
+        ]
+      },
+      {
+        id: 'our-team',
+        label: 'Our Team',
+        icon: <Users size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={16} />, label: 'Student Interns' }
+        ]
+      },
       { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
-      { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
-      { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
-      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
-      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
-      { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
-      { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
-      { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
-      { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={18} />, label: 'Student Interns' },
-      { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={18} />, label: 'Volunteer Stories' },
-      { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={18} />, label: 'Form Links' },
-      { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={18} />, label: 'Submissions' },
-      { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
+      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
+      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
+      {
+        id: 'join-us',
+        label: 'Join Us',
+        icon: <Handshake size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'partners', to: '/admin/partners', icon: <Handshake size={16} />, label: 'Partners' },
+          { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={16} />, label: 'Volunteer Stories' }
+        ]
+      },
       { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
+      {
+        id: 'surveys-forms',
+        label: 'Surveys & Forms',
+        icon: <ClipboardList size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={16} />, label: 'Surveys' },
+          { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={16} />, label: 'Form Links' },
+          { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={16} />, label: 'Submissions' }
+        ]
+      },
       { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' }
     ]
   },
@@ -42,19 +70,74 @@ const MENU_ITEMS = [
     icon: <UsersRound size={20} />,
     hasSubmenu: true,
     subItems: [
-      { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
-      { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
-      { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
-      { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
-      { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={18} />, label: 'ID Cards' },
-      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' }
+      {
+        id: 'cms-company',
+        label: 'Company',
+        icon: <Building2 size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'referrals', to: '/admin/referrals', icon: <Gift size={16} />, label: 'Referrals' },
+          { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={16} />, label: 'ID Cards' },
+          { id: 'contracts', to: '/admin/contracts', icon: <FileText size={16} />, label: 'Contract Management' },
+          { id: 'certificates', to: '/admin/certificates', icon: <Award size={16} />, label: 'Certificates' },
+        ]
+      },
+      {
+        id: 'cms-join-us',
+        label: 'Join Us',
+        icon: <Handshake size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={16} />, label: 'Affiliate Program' },
+        ]
+      },
+      { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' }
     ]
   },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
   { id: 'analytics', to: '/admin/analytics', icon: <BarChart3 size={20} />, label: 'Analytics' }
 ];
 
-const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => (
+const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => {
+  const [openNestedMenus, setOpenNestedMenus] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('superAdminNestedMenus');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {};
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminNestedMenus', JSON.stringify(openNestedMenus));
+  }, [openNestedMenus]);
+
+  const toggleNestedSubmenu = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenNestedMenus(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  useEffect(() => {
+    const activeNested = {};
+    MENU_ITEMS.forEach(item => {
+      if (item && item.hasSubmenu && item.subItems) {
+        item.subItems.forEach(sub => {
+          if (sub && sub.hasSubmenu && sub.subItems) {
+            const isChildActive = sub.subItems.some(nested => {
+              const fullPath = location.pathname + location.search;
+              return fullPath.includes(nested.to);
+            });
+            if (isChildActive) {
+              activeNested[sub.id] = true;
+            }
+          }
+        });
+      }
+    });
+    setOpenNestedMenus(prev => ({ ...prev, ...activeNested }));
+  }, [location.pathname, location.search]);
+
+  return (
   <div className="flex flex-col h-full bg-[#1e5cdc] text-white">
     <div className="px-6 py-5 flex items-center justify-between bg-white relative overflow-hidden">
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#1e5cdc]/5 rounded-full blur-2xl pointer-events-none"></div>
@@ -78,7 +161,15 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
         const isOpen = openMenus[item.id];
 
         if (item.hasSubmenu) {
-          const isChildActive = item.subItems?.some(sub => location.pathname === sub.to);
+          const isChildActive = item.subItems?.some(sub => {
+            if (sub.hasSubmenu) {
+              return sub.subItems?.some(nested => {
+                const fullPath = location.pathname + location.search;
+                return fullPath.includes(nested.to);
+              });
+            }
+            return location.pathname === sub.to;
+          });
           return (
             <div key={item.id} className="space-y-1">
               <button
@@ -114,6 +205,61 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
               {isOpen && !sidebarCollapsed && item.subItems && (
                 <div className="pl-6 pr-2 py-1 space-y-1 transition-all duration-200">
                   {item.subItems.map(subItem => {
+                    if (subItem.hasSubmenu) {
+                      const isNestedOpen = openNestedMenus[subItem.id];
+                      const isNestedActive = subItem.subItems?.some(nested => {
+                        const fullPath = location.pathname + location.search;
+                        return fullPath.includes(nested.to);
+                      });
+                      return (
+                        <div key={subItem.id} className="space-y-1">
+                          <button
+                            onClick={(e) => toggleNestedSubmenu(e, subItem.id)}
+                            className={`w-full flex items-center justify-between pl-8 pr-4 py-2 rounded-lg text-sm font-medium transition-colors ${isNestedActive
+                              ? 'bg-white/10 text-white shadow-sm font-semibold'
+                              : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                              }`}
+                            title={subItem.label}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-blue-200">
+                                {subItem.icon}
+                              </span>
+                              <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{subItem.label}</span>
+                            </div>
+                            <span className={`opacity-70 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                              {isNestedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </span>
+                          </button>
+                          {isNestedOpen && subItem.subItems && (
+                            <div className="pl-4 space-y-1 transition-all duration-200">
+                              {subItem.subItems.map(nestedItem => {
+                                const fullPath = location.pathname + location.search;
+                                const isDeepActive = fullPath.includes(nestedItem.to);
+                                return (
+                                  <Link
+                                    key={nestedItem.id}
+                                    to={nestedItem.to}
+                                    onClick={() => setSidebarOpen(false)}
+                                    className={`flex items-center gap-3 pl-8 pr-4 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${isDeepActive
+                                      ? 'bg-white text-[#1e5cdc] shadow-md font-semibold transform scale-[1.01]'
+                                      : 'text-blue-105 hover:bg-white/5 hover:text-white'
+                                      }`}
+                                    title={nestedItem.label}
+                                  >
+                                    <span className={`${isDeepActive ? 'text-[#1e5cdc]' : 'text-blue-200'}`}>
+                                      {nestedItem.icon}
+                                    </span>
+                                    <span className={`${sidebarCollapsed ? 'lg:hidden' : ''}`}>{nestedItem.label}</span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
                     const isSubActive = location.pathname === subItem.to;
                     return (
                       <Link
@@ -172,6 +318,7 @@ const Sidebar = ({ location, openMenus, toggleSubmenu, setSidebarOpen, handleLog
     </div>
   </div>
 );
+};
 
 const getAvatarInitials = (usr) => {
   if (!usr) return 'SA';
@@ -191,6 +338,10 @@ export default function SuperAdminLayout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [openMenus, setOpenMenus] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('superAdminOpenMenus');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
     const initial = {};
     MENU_ITEMS.forEach(item => {
       if (item.hasSubmenu && item.subItems) {
@@ -202,6 +353,10 @@ export default function SuperAdminLayout({ children }) {
     });
     return initial;
   });
+
+  useEffect(() => {
+    sessionStorage.setItem('superAdminOpenMenus', JSON.stringify(openMenus));
+  }, [openMenus]);
 
   useEffect(() => {
     MENU_ITEMS.forEach(item => {

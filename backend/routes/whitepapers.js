@@ -50,6 +50,50 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// @route   POST /api/whitepapers
+// @desc    Create a new whitepaper
+// @access  Private (Admin)
+router.post('/', async (req, res) => {
+  try {
+    const newWhitepaper = new Whitepaper(req.body);
+    const savedWhitepaper = await newWhitepaper.save();
+    res.status(201).json(savedWhitepaper);
+  } catch (err) {
+    console.error('Create whitepaper error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   PUT /api/whitepapers/:id
+// @desc    Update a whitepaper
+// @access  Private (Admin)
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedWhitepaper = await Whitepaper.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.json(updatedWhitepaper);
+  } catch (err) {
+    console.error('Update whitepaper error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   DELETE /api/whitepapers/:id
+// @desc    Delete a whitepaper
+// @access  Private (Admin)
+router.delete('/:id', async (req, res) => {
+  try {
+    await Whitepaper.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Whitepaper deleted' });
+  } catch (err) {
+    console.error('Delete whitepaper error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 // @route   GET /api/whitepapers/:id/download
 // @desc    Download the dynamically generated whitepaper PDF
 // @access  Public

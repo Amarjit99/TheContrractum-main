@@ -5,7 +5,7 @@ import logo from '../../assets/main-logo.jpg';
 import {
   LayoutDashboard, FileText, FileEdit, Briefcase, Handshake, HeartHandshake,
   UsersRound, Users, BarChart3, Settings,
-  Search, Bell, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity, CheckSquare
+  Search, Bell, ChevronLeft, ChevronRight, ChevronDown, Menu, X, Link as LinkIcon, ClipboardCheck, Newspaper, IdCard, Gift, FolderKanban, Award, Calendar, ShieldAlert, User, LogOut, Activity, CheckSquare, Building2, ClipboardList
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -16,23 +16,64 @@ const MENU_ITEMS = [
     icon: <Newspaper size={20} />,
     hasSubmenu: true,
     subItems: [
+      {
+        id: 'company',
+        label: 'Company',
+        icon: <Building2 size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'founders', to: '/admin/founders', icon: <Users size={16} />, label: 'Founders & Directors' }
+        ]
+      },
+      {
+        id: 'our-team',
+        label: 'Our Team',
+        icon: <Users size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={16} />, label: 'Student Interns' }
+        ]
+      },
       { id: 'services', to: '/admin/services', icon: <FileText size={18} />, label: 'Services' },
-      { id: 'blogs', to: '/admin/blogs', icon: <FileEdit size={18} />, label: 'Blog Posts' },
-      { id: 'news', to: '/admin/news', icon: <Newspaper size={18} />, label: 'News' },
-      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
-      { id: 'projects', to: '/admin/projects', icon: <FolderKanban size={18} />, label: 'Projects' },
       { id: 'careers', to: '/admin/careers', icon: <Briefcase size={18} />, label: 'Careers' },
-      { id: 'events', to: '/admin/events', icon: <Calendar size={18} />, label: 'Events Management' },
-      { id: 'event-registrations', to: '/admin/event-registrations', icon: <Users size={18} />, label: 'Event Registrations' },
-      { id: 'founders', to: '/admin/founders', icon: <Users size={18} />, label: 'Founders & Directors' },
-      { id: 'interns', to: '/admin/student-interns', icon: <UsersRound size={18} />, label: 'Student Interns' },
-      { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={18} />, label: 'Volunteer Stories' },
-      { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={18} />, label: 'Form Links' },
-      { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={18} />, label: 'Submissions' },
-      { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={18} />, label: 'Surveys' },
+      {
+        id: 'projects',
+        label: 'Projects',
+        icon: <FolderKanban size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'projects-overview', to: '/admin/projects?tab=overview', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
+          { id: 'projects-ongoing', to: '/admin/projects?tab=ongoing', icon: <FolderKanban size={16} />, label: 'Ongoing Projects' },
+          { id: 'projects-completed', to: '/admin/projects?tab=completed', icon: <CheckSquare size={16} />, label: 'Completed Projects' },
+          { id: 'projects-cases', to: '/admin/projects?tab=casestudies', icon: <FileText size={16} />, label: 'Case Studies' },
+          { id: 'projects-research', to: '/admin/projects?tab=research', icon: <Award size={16} />, label: 'Research & Innovation' },
+          { id: 'projects-testimonials', to: '/admin/projects?tab=testimonials', icon: <Users size={16} />, label: 'Client Testimonials' }
+        ]
+      },
+      { id: 'resources', to: '/admin/resources', icon: <FileText size={18} />, label: 'Resources Management' },
+      {
+        id: 'join-us',
+        label: 'Join Us',
+        icon: <Handshake size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'partners', to: '/admin/partners', icon: <Handshake size={16} />, label: 'Partners' },
+          { id: 'volunteers', to: '/admin/volunteers', icon: <HeartHandshake size={16} />, label: 'Volunteer Stories' }
+        ]
+      },
       { id: 'leads', to: '/admin/contacts', icon: <UsersRound size={18} />, label: 'Leads' },
-      { id: 'partners', to: '/admin/partners', icon: <Handshake size={18} />, label: 'Partners' },
-      { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' },
+      {
+        id: 'surveys-forms',
+        label: 'Surveys & Forms',
+        icon: <ClipboardList size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'surveys', to: '/admin/surveys', icon: <ClipboardCheck size={16} />, label: 'Surveys' },
+          { id: 'form-links', to: '/admin/form-links', icon: <LinkIcon size={16} />, label: 'Form Links' },
+          { id: 'submissions', to: '/admin/submissions', icon: <ClipboardCheck size={16} />, label: 'Submissions' }
+        ]
+      },
+      { id: 'settings', to: '/admin/settings', icon: <Settings size={18} />, label: 'Settings' }
     ]
   },
   {
@@ -41,13 +82,28 @@ const MENU_ITEMS = [
     icon: <Users size={20} />,
     hasSubmenu: true,
     subItems: [
-      { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' },
-
-      { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={18} />, label: 'Affiliate Program' },
-      { id: 'contracts', to: '/admin/contracts', icon: <FileText size={18} />, label: 'Contract Management' },
-      { id: 'certificates', to: '/admin/certificates', icon: <Award size={18} />, label: 'Certificates' },
-      { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={18} />, label: 'ID Cards' },
-      { id: 'referrals', to: '/admin/referrals', icon: <Gift size={18} />, label: 'Referrals' },
+      {
+        id: 'cms-company',
+        label: 'Company',
+        icon: <Building2 size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'referrals', to: '/admin/referrals', icon: <Gift size={16} />, label: 'Referrals' },
+          { id: 'id-cards', to: '/admin/id-cards', icon: <IdCard size={16} />, label: 'ID Cards' },
+          { id: 'contracts', to: '/admin/contracts', icon: <FileText size={16} />, label: 'Contract Management' },
+          { id: 'certificates', to: '/admin/certificates', icon: <Award size={16} />, label: 'Certificates' },
+        ]
+      },
+      {
+        id: 'cms-join-us',
+        label: 'Join Us',
+        icon: <Handshake size={18} />,
+        hasSubmenu: true,
+        subItems: [
+          { id: 'affiliates', to: '/admin/affiliates', icon: <LayoutDashboard size={16} />, label: 'Affiliate Program' },
+        ]
+      },
+      { id: 'users', to: '/admin/users', icon: <Users size={18} />, label: 'User & Access Management' }
     ]
   },
   { id: 'tasks', to: '/admin/tasks', icon: <FolderKanban size={20} />, label: 'Tasks' },
@@ -55,7 +111,17 @@ const MENU_ITEMS = [
 ];
 
 const Sidebar = ({ admin, location, openMenus, toggleSubmenu, setSidebarOpen, handleLogout, sidebarCollapsed, setSidebarCollapsed }) => {
-  const [openNestedMenus, setOpenNestedMenus] = useState({});
+  const [openNestedMenus, setOpenNestedMenus] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('adminNestedMenus');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {};
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('adminNestedMenus', JSON.stringify(openNestedMenus));
+  }, [openNestedMenus]);
 
   const toggleNestedSubmenu = (e, id) => {
     e.preventDefault();
@@ -376,6 +442,10 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('adminOpenMenus');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
     const initial = {};
     MENU_ITEMS.forEach(item => {
       if (item.hasSubmenu && item.subItems) {
@@ -387,6 +457,10 @@ export default function AdminLayout({ children }) {
     });
     return initial;
   });
+
+  useEffect(() => {
+    sessionStorage.setItem('adminOpenMenus', JSON.stringify(openMenus));
+  }, [openMenus]);
 
   useEffect(() => {
     MENU_ITEMS.forEach(item => {

@@ -6,6 +6,7 @@ export default function Reports() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedYear, setSelectedYear] = useState("All");
   const [lastScrollY, setLastScrollY] = useState(0);
   const [email, setEmail] = useState("");
@@ -19,8 +20,14 @@ export default function Reports() {
 
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  const types = ["All", "Annual Report", "Quarterly Report", "Industry Report", "Technical Report", "Market Report", "Sustainability Report", "Research Report", "HR Report"];
-  const years = ["All", "2026", "2025"];
+  const dynamicTypes = ["All", ...new Set(reports.map(r => r.type).filter(Boolean))];
+  const types = dynamicTypes.length > 1 ? dynamicTypes : ["All", "Annual Report", "Quarterly Report", "Industry Report", "Technical Report", "Market Report", "Sustainability Report", "Research Report", "HR Report"];
+  
+  const dynamicCategories = ["All", ...new Set(reports.map(r => r.category).filter(Boolean))];
+  const categories = dynamicCategories.length > 1 ? dynamicCategories : ["All", "Technology", "Business", "Finance", "Healthcare", "Energy"];
+
+  const dynamicYears = ["All", ...new Set(reports.map(r => r.year).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+  const years = dynamicYears.length > 1 ? dynamicYears : ["All", "2026", "2025"];
 
   // Fetch reports on mount
   useEffect(() => {
@@ -141,8 +148,9 @@ export default function Reports() {
                          report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          report.type.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "All" || report.type === selectedType;
+    const matchesCategory = selectedCategory === "All" || report.category === selectedCategory;
     const matchesYear = selectedYear === "All" || report.year === selectedYear;
-    return matchesSearch && matchesType && matchesYear;
+    return matchesSearch && matchesType && matchesCategory && matchesYear;
   });
 
   const featuredReports = filteredReports.filter(r => r.featured);
@@ -280,6 +288,22 @@ export default function Reports() {
               >
                 {types.map(type => (
                   <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all bg-slate-50 font-medium text-slate-800"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
                 ))}
               </select>
             </div>

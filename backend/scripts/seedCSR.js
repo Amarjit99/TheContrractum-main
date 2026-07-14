@@ -14,7 +14,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "5,000+ children",
       locations: "50 schools in 10 states",
-      investment: "$1.2M",
+      investment: "?1.2M",
       outcomes: "85% students now digitally literate"
     },
     goals: [
@@ -37,7 +37,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "Entire ecosystem",
       locations: "Pan-India + Global offices",
-      investment: "$2.5M",
+      investment: "?2.5M",
       outcomes: "60% reduction in carbon footprint"
     },
     goals: [
@@ -60,7 +60,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "25,000+ patients treated",
       locations: "150 villages",
-      investment: "$800K",
+      investment: "?800K",
       outcomes: "90% improvement in healthcare access"
     },
     goals: [
@@ -83,7 +83,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "2,500+ women trained",
       locations: "15 training centers",
-      investment: "$950K",
+      investment: "?950K",
       outcomes: "70% job placement rate"
     },
     goals: [
@@ -106,7 +106,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "35,000+ people",
       locations: "80 villages",
-      investment: "$650K",
+      investment: "?650K",
       outcomes: "100% access to clean water in target areas"
     },
     goals: [
@@ -129,7 +129,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "8,000+ youth trained",
       locations: "20 cities",
-      investment: "$1.5M",
+      investment: "?1.5M",
       outcomes: "65% employment within 6 months"
     },
     goals: [
@@ -152,7 +152,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "15,000+ disaster victims",
       locations: "Disaster-affected regions",
-      investment: "$1.8M",
+      investment: "?1.8M",
       outcomes: "Response time under 24 hours"
     },
     goals: [
@@ -175,7 +175,7 @@ const csrInitiatives = [
     impact: {
       beneficiaries: "3,000+ elderly people",
       locations: "12 cities",
-      investment: "$400K",
+      investment: "?400K",
       outcomes: "90% now use digital services independently"
     },
     goals: [
@@ -206,7 +206,7 @@ async function seedData() {
 
     // Insert new
     await CSRInitiative.insertMany(csrInitiatives);
-    console.log(`Successfully seeded ${csrInitiatives.length} CSR Initiatives!`);
+    console.log(`Successfully seeded ?{csrInitiatives.length} CSR Initiatives!`);
     
     process.exit(0);
   } catch (error) {

@@ -53,6 +53,50 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// @route   POST /api/reports
+// @desc    Create a new report
+// @access  Private (Admin)
+router.post('/', async (req, res) => {
+  try {
+    const newReport = new Report(req.body);
+    const savedReport = await newReport.save();
+    res.status(201).json(savedReport);
+  } catch (err) {
+    console.error('Create report error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   PUT /api/reports/:id
+// @desc    Update a report
+// @access  Private (Admin)
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedReport = await Report.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.json(updatedReport);
+  } catch (err) {
+    console.error('Update report error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// @route   DELETE /api/reports/:id
+// @desc    Delete a report
+// @access  Private (Admin)
+router.delete('/:id', async (req, res) => {
+  try {
+    await Report.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Report deleted' });
+  } catch (err) {
+    console.error('Delete report error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 // @route   GET /api/reports/:id/download
 // @desc    Download the dynamically generated report PDF
 // @access  Public

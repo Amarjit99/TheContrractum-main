@@ -63,7 +63,7 @@ export default function CSR() {
 
   // Calculate total impact
   const totalBeneficiaries = "95,000+";
-  const totalInvestment = "$9.8M";
+  const totalInvestment = "₹9.8M";
   const activeInitiatives = csrInitiatives.filter(i => i.status === "Active").length;
   const sdgGoalsCount = [...new Set(csrInitiatives.flatMap(i => i.sdgGoals || []))].length;
 
